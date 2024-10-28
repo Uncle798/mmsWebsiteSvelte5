@@ -1,8 +1,11 @@
 import { encodeBase32LowerCaseNoPadding, encodeHexLowerCase } from '@oslojs/encoding';
+import { generateRandomString } from '@oslojs/crypto/random';
+import type { RandomReader } from '@oslojs/crypto/random';
 import { sha256 } from '@oslojs/crypto/sha2';
 import { prisma } from './prisma';
 import type { PartialUser } from "./partialTypes";
-import type { Session } from "@prisma/client";
+import type { Session, } from "@prisma/client";
+import dayjs from 'dayjs';
 
 const day = 1000*60*60*24
 
@@ -36,6 +39,7 @@ export async function validateSessionToken(token:string):Promise<SessionValidati
          user: true,
       }
    });
+   console.log(result?.user);
    if(!result){
       return {session: null, user: null};
    }
@@ -69,6 +73,44 @@ export async function invalidateSession(sessionId:string):Promise<void> {
          id: sessionId
       }
    })
+}
+
+export function generateRandomOTP():string {
+   const bytes = new Uint8Array(5);
+   crypto.getRandomValues(bytes);
+   const code = encodeBase32LowerCaseNoPadding(bytes);
+   return code;
+}
+
+export function generateRandomRecoveryCode(): string {
+   const recoveryCodeBytes = new Uint8Array(10);
+   crypto.getRandomValues(recoveryCodeBytes);
+   const recoveryCode = encodeBase32LowerCaseNoPadding(recoveryCodeBytes);
+   return recoveryCode;
+}
+
+export async function generateEmailVerificationRequest(userId:string, email: string): Promise<string> {
+   await prisma.verification.deleteMany({
+      where: {
+         id: userId,
+      }
+   })
+   const random:RandomReader = {
+      read(bytes) {
+         crypto.getRandomValues(bytes)
+      }
+   }
+   const code = generateRandomString(random, '0123456789', 8);
+   const expiresAt = dayjs(new Date).add(15, 'minutes').toDate();
+   await prisma.verification.create({
+      data:{
+         userId,
+         email,
+         code,
+         expiresAt,
+      }
+   })
+   return code;
 }
 
 export type SessionValidationResult =

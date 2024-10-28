@@ -1,9 +1,11 @@
 import { Redis } from "@upstash/redis";
 import { Ratelimit } from "@upstash/ratelimit";
+import { UPSTASH_PASSWORD, UPSTASH_ENDPOINT } from '$env/static/private';
+
 
 const redis = new Redis({
-   url: `https://${process.env.UPSTASH_ENDPOINT}`,
-   token: process.env.UPSTASH_PASSWORD,
+   url: `https://${UPSTASH_ENDPOINT}`,
+   token: UPSTASH_PASSWORD,
 })
 
 export const ratelimit = {
