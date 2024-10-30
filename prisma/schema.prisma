@@ -9,7 +9,7 @@ datasource db {
 }
 
 model User {
-  id               String          @id @default(cuid()) @map("id") @unique()
+  id               String          @id @unique @default(cuid()) @map("id")
   createdAt        DateTime        @default(now()) @map("created_at")
   updatedAt        DateTime?       @updatedAt @map("updated_at")
   email            String?         @unique
@@ -29,6 +29,10 @@ model User {
   session          Session[]
   verification     Verification[]
 
+  name    String
+  image   String?
+  Account Account[]
+
   @@unique([id, email])
   @@unique([email, givenName, familyName])
   @@index([id, email])
@@ -36,7 +40,7 @@ model User {
 }
 
 model ContactInfo {
-  contactId          String  @id @default(cuid()) @unique()
+  contactId          String  @id @unique @default(cuid())
   userId             String
   address1           String
   address2           String?
@@ -53,7 +57,7 @@ model ContactInfo {
 }
 
 model Unit {
-  num             String  @id @unique()
+  num             String  @id @unique
   building        String
   size            String
   description     String
@@ -68,7 +72,7 @@ model Unit {
 }
 
 model Lease {
-  leaseId            String      @id @default(cuid()) @unique()
+  leaseId            String      @id @unique @default(cuid())
   customerId         String
   employeeId         String
   contactInfoId      String
@@ -79,7 +83,7 @@ model Lease {
   leaseEffectiveDate DateTime
   leaseEnded         DateTime?
   dropboxURL         String?
-  anvilEID           String?     @unique()
+  anvilEID           String?     @unique
   invoices           Invoice[]
   contactInfo        ContactInfo @relation(fields: [contactInfoId], references: [contactId], onDelete: NoAction, onUpdate: NoAction)
   customer           User        @relation("customer", fields: [customerId], references: [id], onDelete: NoAction, onUpdate: NoAction)
@@ -91,7 +95,7 @@ model Lease {
 }
 
 model PaymentRecord {
-  paymentId        String      @id @default(cuid()) @unique()
+  paymentId        String      @id @unique @default(cuid())
   paymentNumber    Int         @default(autoincrement())
   customerId       String
   unitNum          String?
@@ -112,7 +116,7 @@ model PaymentRecord {
 }
 
 model Invoice {
-  invoiceId       String         @id @default(cuid()) @unique()
+  invoiceId       String         @id @unique @default(cuid())
   invoiceNum      Int            @default(autoincrement())
   customerId      String?
   leaseId         String
@@ -134,15 +138,23 @@ model Session {
   userId    String
   expiresAt DateTime
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  ipAddress String?
+  userAgent String?
+
+  @@map("session")
 }
 
 model Verification {
-  id        String   @id @default(cuid())
-  code      String
-  userId    String   @map("user_id")
-  email     String
-  expiresAt DateTime @map("expires_at")
-  user      User     @relation(fields: [userId, email], references: [id, email])
+  id         String   @id @default(cuid())
+  code       String
+  userId     String   @map("user_id")
+  email      String
+  expiresAt  DateTime @map("expires_at")
+  user       User     @relation(fields: [userId, email], references: [id, email])
+  identifier String
+  value      String
+
+  @@map("verification")
 }
 
 model PasswordReset {
@@ -155,4 +167,19 @@ enum PaymentType {
   STRIPE
   CASH
   CHECK
+}
+
+model Account {
+  id           String    @id
+  accountId    String
+  providerId   String
+  userId       String
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken  String?
+  refreshToken String?
+  idToken      String?
+  expiresAt    DateTime?
+  password     String?
+
+  @@map("account")
 }
