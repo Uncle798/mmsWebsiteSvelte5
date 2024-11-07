@@ -17,13 +17,15 @@ import type { PageServerLoad, Actions } from "./$types";
 export const load:PageServerLoad = (async (event) =>{
 	const unitNum = event.url.searchParams.get('unitNum');
    const registerForm = await superValidate(zod(registerFormSchema))
+	
    return { unitNum, registerForm }
 })
 
 
 export const actions: Actions = {
    default: async(event) =>{
-      const registerForm = await superValidate(event.request, zod(registerFormSchema));
+		const formData = await event.request.formData()
+      const registerForm = await superValidate(formData, zod(registerFormSchema));
 		if(!registerForm.valid){
 			return fail(400, registerForm)
 		}
@@ -52,7 +54,10 @@ export const actions: Actions = {
 			}
 		})
 		if(userAlreadyExists){
-			return message(registerForm, 'Email already in use, please login')
+			if(userAlreadyExists.emailVerified === false){
+				redirect(302, '/register/emailVerification')
+			}
+			redirect(302, '/login?toast=userAlreadyExists')
 		}
 		const hashedPass = await hash(validPass, {
 			memoryCost: 19456,
@@ -66,7 +71,6 @@ export const actions: Actions = {
 				passwordHash: hashedPass
 			}
 		});
-		console.log(user);
 		const verificationCode = await generateEmailVerificationRequest(user.id, user.email!);
 		const sender = {
 			name: 'computer@bransonschlegel.com',

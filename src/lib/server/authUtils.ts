@@ -6,8 +6,9 @@ import { prisma } from './prisma';
 import type { PartialUser } from "./partialTypes";
 import type { Session, } from "@prisma/client";
 import dayjs from 'dayjs';
+import type { RequestEvent } from '@sveltejs/kit';
 
-const day = 1000*60*60*24
+const dayOfMs = 1000*60*60*24
 
 export function generateSessionToken():string {
    const bytes = new Uint8Array(20);
@@ -18,10 +19,11 @@ export function generateSessionToken():string {
 
 export async function createSession(token: string, userId:string):Promise<Session> {
    const sessionId = encodeHexLowerCase(sha256(new TextEncoder().encode(token)))
+   console.log('createSession sessionId: ' + sessionId);
    const session: Session = {
       id: sessionId,
       userId, 
-      expiresAt: new Date(Date.now() + day * 30)
+      expiresAt: new Date(Date.now() + dayOfMs * 30)
    }
    await prisma.session.create({
       data:session
@@ -31,19 +33,25 @@ export async function createSession(token: string, userId:string):Promise<Sessio
 
 export async function validateSessionToken(token:string):Promise<SessionValidationResult> {
    const sessionId = encodeHexLowerCase(sha256(new TextEncoder().encode(token)));
-   const result = await prisma.session.findUnique({
+   console.log('validateSessionToken sessionId: ' + sessionId);
+   const session = await prisma.session.findUnique({
       where: {
          id: sessionId,
       },
-      include: {
-         user: true,
-      }
    });
-   console.log(result?.user);
-   if(!result){
+   const user = await prisma.user.findFirst({
+      where: {
+         id: session?.userId
+      },
+      omit:{
+         createdAt: true,
+         updatedAt: true,
+      }
+   })
+   console.log('validateSession: ' + session);
+   if(!session){
       return {session: null, user: null};
    }
-   const { user, ...session } = result;
    if(Date.now() >= session.expiresAt.getTime()) {
       await prisma.session.delete({
          where: {
@@ -52,8 +60,8 @@ export async function validateSessionToken(token:string):Promise<SessionValidati
       });
       return { session: null, user: null};
    }
-   if(Date.now() >= session.expiresAt.getDate() - day * 15){
-      session.expiresAt = new Date(Date.now() + day * 30);
+   if(Date.now() >= session.expiresAt.getDate() - dayOfMs * 15){
+      session.expiresAt = new Date(Date.now() + dayOfMs * 30);
       await prisma.session.update({
          where: {
             id: sessionId
@@ -62,7 +70,6 @@ export async function validateSessionToken(token:string):Promise<SessionValidati
             expiresAt: session.expiresAt
          }
       });
-
    }
    return { session, user }
 }
@@ -72,6 +79,25 @@ export async function invalidateSession(sessionId:string):Promise<void> {
       where:{
          id: sessionId
       }
+   })
+}
+
+export function setSessionTokenCookie(event: RequestEvent, token:string, expiresAt: Date):void {
+   event.cookies.set('session', token, {
+      httpOnly: true,
+      path: '/',
+      secure: import.meta.env.PROD,
+      sameSite: 'lax',
+      expires: expiresAt
+   })
+}
+export function deleteSessionTokenCookie(event: RequestEvent):void {
+   event.cookies.set('session', '', {
+      httpOnly: true,
+      path: '/',
+      secure: import.meta.env.PROD,
+      sameSite: 'lax',
+      maxAge: 0
    })
 }
 
@@ -114,5 +140,5 @@ export async function generateEmailVerificationRequest(userId:string, email: str
 }
 
 export type SessionValidationResult =
-   | {session:Session; user:PartialUser}
+   | {session:Session; user:PartialUser | null}
    | {session:null; user:null};

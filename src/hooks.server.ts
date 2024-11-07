@@ -3,14 +3,16 @@ import { validateSessionToken } from "$lib/server/authUtils";
 
 import type { Handle } from "@sveltejs/kit";
 
-export const authHandle: Handle = async ({ event, resolve }) => {
+export const handle: Handle = async ({ event, resolve }) => {
    const token = event.cookies.get('session') ?? null;
+   console.log('handle token: ' + token)
    if(!token){
       event.locals.user = null;
       event.locals.session = null;
-      return resolve(event);
+      return await resolve(event);
    }
    const { session, user } = await validateSessionToken(token);
+   console.log('handle: ' + session)
    if(session){
       event.cookies.set('session', token, {
          httpOnly: true,
@@ -30,5 +32,5 @@ export const authHandle: Handle = async ({ event, resolve }) => {
    }
    event.locals.session = session;
    event.locals.user = user;
-   return resolve(event)
+   return await resolve(event)
 }

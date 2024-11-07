@@ -19,7 +19,11 @@ export default {
 
 	plugins: [typography, forms, containerQueries, aspectRatio,
 		skeleton({
-			themes: [ themes.catppuccin]
+			themes: [ 
+				themes.catppuccin,
+				themes.mint,
+				themes.cerberus
+			]
 		})
 	]
 } as Config;

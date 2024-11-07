@@ -7,8 +7,9 @@
       errors: string[] | undefined;
       constraints: InputConstraint | undefined;
       placeholder:string | undefined;
+      name: string | null | undefined;
    }
-   let { value = $bindable(), label, errors, constraints, placeholder}:Props = $props()
+   let { value = $bindable(), label, errors, constraints, placeholder, name, ...others }:Props = $props()
 </script>
 
 <label>
@@ -16,10 +17,12 @@
    <input
       type="text"
       class="input"
+      name={name}
       bind:value={value}
       aria-invalid={errors ? 'true' : undefined}
       placeholder={placeholder}
       {...constraints}
+      {...others}
    />
  </label>
  {#if errors}<span class="invalid">{errors}</span>{/if}

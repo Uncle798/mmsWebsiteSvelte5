@@ -16,7 +16,7 @@
 
 <h1 class="h1">{PUBLIC_COMPANY_NAME}</h1>
 {#if data.user}
-   You're logged in
+   You're logged in {data.user.givenName} 
    {:else}
-   You're not logged in
+   You're not logged in 
 {/if}
