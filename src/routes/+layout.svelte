@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { Nav } from '@skeletonlabs/skeleton-svelte'
-
 	import '../app.css';
+	import { ToastProvider } from '@skeletonlabs/skeleton-svelte';
 	import type { PageData } from './$types';
-	import Menu from 'lucide-svelte/icons/menu'
-	import SquareMenu from 'lucide-svelte/icons/square-menu'
+	import { Modal } from '@skeletonlabs/skeleton-svelte';
+	import Menu from 'lucide-svelte/icons/menu';
+	import SquareMenu from 'lucide-svelte/icons/square-menu';
 	import { fade, draw } from 'svelte/transition';
 	import { enhance } from '$app/forms';
 	interface Link {
@@ -25,22 +25,36 @@
 
 </script>
 
-{#if !menuOpen}
-	<button class="btn" onclick={()=> menuOpen = true} ><Menu /></button>
-	{:else}
-	<button class="btn" onclick={()=> menuOpen = false} ><SquareMenu /></button>
-	<ul>
-		{#each links as link}
-			<li class="li"><a class="btn" href={link.link}>{link.label}</a></li>
-		{/each}
-		{#if !data.user}
-			<li><a href="/login" class="btn">Login</a></li>
-			{:else}
-			<form method="POST" action="/logout">
-				<button class="btn">Logout</button>
-			</form>
-		{/if}
-	</ul>
-{/if}
-
-{@render children()}
+<Modal
+	bind:open={menuOpen}
+	triggerBase="btn preset-tonal"
+	contentBase="bg-surface-100-900 p-2 space-y-2 shadow-xl w-[200px] h-screen"
+	positionerJustify="justify-start"
+	positionerAlign=""
+	positionerPadding=""
+	transitionsPositionerIn={{ x: -480, duration: 200 }}
+	transitionsPositionerOut={{ x: -480, duration: 200 }}
+>
+{#snippet trigger()}
+	<Menu />	
+{/snippet}
+{#snippet content()}
+	<article>
+		<ul>
+			{#each links as link}
+				<li><a class="btn" href={link.link}>{link.label}</a></li>
+			{/each}
+			{#if data.user}
+				<form action="/logout" method="post" use:enhance>
+					<li><button class="btn">Logout</button></li>
+				</form>
+				{:else}
+				<li><a class="btn" href="/login">Login</a></li>
+			{/if}
+		</ul>
+	</article>
+{/snippet}
+</Modal>
+<ToastProvider>
+	{@render children()}
+</ToastProvider>
