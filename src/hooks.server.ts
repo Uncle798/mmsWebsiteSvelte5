@@ -5,14 +5,12 @@ import type { Handle } from "@sveltejs/kit";
 
 export const handle: Handle = async ({ event, resolve }) => {
    const token = event.cookies.get('session') ?? null;
-   console.log('handle token: ' + token)
    if(!token){
       event.locals.user = null;
       event.locals.session = null;
       return await resolve(event);
    }
    const { session, user } = await validateSessionToken(token);
-   console.log('handle: ' + session)
    if(session){
       event.cookies.set('session', token, {
          httpOnly: true,
