@@ -10,7 +10,7 @@
 {#if $message}
     {$message}
 {/if}
-<form method="post" action="/register?/verify" use:enhance>
+<form method="post" action="/register/emailVerification?/verify" use:enhance>
     <TextInput
         label="Code: "
         name="code"
