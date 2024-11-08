@@ -8,10 +8,11 @@ import { loginSchema } from '$lib/formSchemas/schemas';
 import { createSession, generateSessionToken, setSessionTokenCookie } from '$lib/server/authUtils';
 import { redirect } from '@sveltejs/kit';
 
-export const load = (async () => {
+export const load:PageServerLoad = (async (event) => {
     const loginForm = await superValidate(zod(loginSchema));
-    return { loginForm };
-}) satisfies PageServerLoad;
+    const toast = await event.url.searchParams.get('toast');
+    return { loginForm, toast };
+})
 
 export const actions:Actions = {
     default: async (event) =>{
@@ -49,6 +50,9 @@ export const actions:Actions = {
         const session = await createSession(token, user.id);
         setSessionTokenCookie(event, token, session.expiresAt);
         console.log('login session: ' + event.cookies.get('session'));
+        if(!user.emailVerified){
+            redirect(302, '/register/emailVerification')
+        }
         redirect(302,'/');
     }
 }   
