@@ -6,13 +6,13 @@ import { hash } from '@node-rs/argon2';
 import { createSession, generateEmailVerificationRequest, generateSessionToken, setSessionTokenCookie } from "$lib/server/authUtils";
 import { registerFormSchema } from "$lib/formSchemas/schemas";
 import { superValidate, message, fail } from 'sveltekit-superforms';
-import { mailtrap } from "$lib/server/mailtrap";
 import { zxcvbn, zxcvbnOptions } from '@zxcvbn-ts/core'
 import * as zxcvbnCommonPackage from '@zxcvbn-ts/language-common'
 import * as zxcvbnEnPackage from '@zxcvbn-ts/language-en'
 
 
 import type { PageServerLoad, Actions } from "./$types";
+import { sendVerificationEmail } from "$lib/server/mailtrap";
 
 export const load:PageServerLoad = (async (event) =>{
 	const unitNum = event.url.searchParams.get('unitNum');
@@ -75,6 +75,8 @@ export const actions: Actions = {
 		const session = await createSession(token, user.id);
 		setSessionTokenCookie(event, token, session.expiresAt);
 		const unitNum = event.url.searchParams.get('unitNum');
+		const code = await generateEmailVerificationRequest(user.id, user.email!);
+		sendVerificationEmail(code, user.email!);
 		if(unitNum){	
 			redirect(302, `/register/emailVerification?unitNum=${unitNum}`);
 		}
