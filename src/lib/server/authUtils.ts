@@ -139,6 +139,7 @@ export async function generateEmailVerificationRequest(userId:string, email: str
    return code;
 }
 
+
 export type SessionValidationResult =
    | {session:Session; user:PartialUser | null}
    | {session:null; user:null};

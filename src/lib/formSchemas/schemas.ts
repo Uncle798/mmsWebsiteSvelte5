@@ -142,3 +142,7 @@ export const registerFormSchema = z.object({
    }
 });
 export type RegisterFormSchema = typeof registerFormSchema;
+
+export const emailVerificationFormSchema = z.object({
+   code: z.string().min(8).max(8)
+})

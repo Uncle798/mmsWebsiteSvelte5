@@ -3,7 +3,7 @@ import { redirect} from '@sveltejs/kit';
 import { ratelimit } from "$lib/server/rateLimit";
 import { zod } from 'sveltekit-superforms/adapters';
 import { hash } from '@node-rs/argon2';
-import { generateEmailVerificationRequest } from "$lib/server/authUtils";
+import { createSession, generateEmailVerificationRequest, generateSessionToken, setSessionTokenCookie } from "$lib/server/authUtils";
 import { registerFormSchema } from "$lib/formSchemas/schemas";
 import { superValidate, message, fail } from 'sveltekit-superforms';
 import { mailtrap } from "$lib/server/mailtrap";
@@ -71,19 +71,9 @@ export const actions: Actions = {
 				passwordHash: hashedPass
 			}
 		});
-		const verificationCode = await generateEmailVerificationRequest(user.id, user.email!);
-		const sender = {
-			name: 'computer@bransonschlegel.com',
-			email: 'computer@bransonschlegel.com',
-		}
-		mailtrap.send({
-			from:sender,
-			to: [{email: user.email!}],
-			subject: "Please verify your email",
-			html: `Verification code: ${verificationCode}`
-		}).catch((err) =>{
-			console.error(err);
-		})
+		const token = generateSessionToken();
+		const session = await createSession(token, user.id);
+		setSessionTokenCookie(event, token, session.expiresAt);
 		const unitNum = event.url.searchParams.get('unitNum');
 		if(unitNum){	
 			redirect(302, `/register/emailVerification?unitNum=${unitNum}`);

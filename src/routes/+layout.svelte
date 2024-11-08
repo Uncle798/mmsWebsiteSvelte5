@@ -3,6 +3,10 @@
 
 	import '../app.css';
 	import type { PageData } from './$types';
+	import Menu from 'lucide-svelte/icons/menu'
+	import SquareMenu from 'lucide-svelte/icons/square-menu'
+	import { fade, draw } from 'svelte/transition';
+	import { enhance } from '$app/forms';
 	interface Link {
 		link: string;
 		label: string;
@@ -17,27 +21,26 @@
 		children: import('svelte').Snippet
 	}
 	let { data, children } = $props();
+	let menuOpen = $state(false);
 
-	let navValue = $state('')
 </script>
 
-<Nav.Bar bind:value={navValue}>
-	{#each links as link, i}
-		<Nav.Tile id={i.toString()} label={link.label} href={link.link}>
-			{link.label}
-		</Nav.Tile>
+{#if !menuOpen}
+	<button class="btn" onclick={()=> menuOpen = true} ><Menu /></button>
+	{:else}
+	<button class="btn" onclick={()=> menuOpen = false} ><SquareMenu /></button>
+	<ul>
+		{#each links as link}
+			<li class="li"><a class="btn" href={link.link}>{link.label}</a></li>
 		{/each}
-		{#if data.user}
-			<form action="/logout">
-				<Nav.Tile id={links.length.toString()} label='Logout' >
-					Logout
-				</Nav.Tile>
-			</form>
+		{#if !data.user}
+			<li><a href="/login" class="btn">Login</a></li>
 			{:else}
-				<Nav.Tile id={links.length.toString()} label='Login' href='/login' >
-					Login
-				</Nav.Tile>
+			<form method="POST" action="/logout">
+				<button class="btn">Logout</button>
+			</form>
 		{/if}
-</Nav.Bar>
+	</ul>
+{/if}
 
 {@render children()}
