@@ -29,10 +29,6 @@ model User {
   session          Session[]
   verification     Verification[]
 
-  name    String
-  image   String?
-  Account Account[]
-
   @@unique([id, email])
   @@unique([email, givenName, familyName])
   @@index([id, email])
@@ -138,8 +134,6 @@ model Session {
   userId    String
   expiresAt DateTime
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  ipAddress String?
-  userAgent String?
 
   @@map("session")
 }
@@ -151,8 +145,6 @@ model Verification {
   email      String
   expiresAt  DateTime @map("expires_at")
   user       User     @relation(fields: [userId, email], references: [id, email])
-  identifier String
-  value      String
 
   @@map("verification")
 }
@@ -167,19 +159,4 @@ enum PaymentType {
   STRIPE
   CASH
   CHECK
-}
-
-model Account {
-  id           String    @id
-  accountId    String
-  providerId   String
-  userId       String
-  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  accessToken  String?
-  refreshToken String?
-  idToken      String?
-  expiresAt    DateTime?
-  password     String?
-
-  @@map("account")
 }
