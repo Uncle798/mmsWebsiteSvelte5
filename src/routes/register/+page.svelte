@@ -66,6 +66,14 @@
          constraints={$constraints.familyName}
          placeholder='Bear'
       />
+      <TextInput
+         bind:value={$form.organizationName}
+         errors={$errors.organizationName}
+         constraints={$constraints.organizationName}
+         label='Organization name (optional)'
+         name='organizationName'
+         placeholder='The Forrest'
+      />
       <EmailInput
         label="Email"
         name="email"

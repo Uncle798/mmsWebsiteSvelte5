@@ -68,7 +68,10 @@ export const actions: Actions = {
 		const user = await prisma.user.create({
 			data:{ 
 				email: validEmail, 
-				passwordHash: hashedPass
+				passwordHash: hashedPass,
+				givenName: registerForm.data.givenName,
+				familyName: registerForm.data.familyName,
+				organizationName: registerForm.data.organizationName,
 			}
 		});
 		const token = generateSessionToken();
