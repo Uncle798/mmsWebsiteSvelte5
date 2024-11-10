@@ -1,5 +1,6 @@
 <script lang="ts">
    import type { InputConstraint } from 'sveltekit-superforms';
+   import type { MouseEventHandler } from 'svelte/elements';
    
    interface Props {
       value:string;
@@ -7,9 +8,10 @@
       errors: string[] | undefined;
       constraints: InputConstraint | undefined;
       placeholder:string | undefined;
-      name: string | null | undefined
+      name: string | null | undefined;
+      onclick?: MouseEventHandler<HTMLInputElement> | undefined; 
    }
-   let { value = $bindable(), label, errors, constraints, placeholder='Password', name, ...others }:Props = $props()
+   let { value = $bindable(), label, errors, constraints, placeholder='Password', name, onclick, ...others }:Props = $props()
 </script>
 
 <label>
@@ -22,6 +24,7 @@
       aria-invalid={errors ? 'true' : undefined}
       placeholder={placeholder}
       autocomplete="new-password"
+      onclick={onclick}
       {...constraints}
       {...others}
    />
