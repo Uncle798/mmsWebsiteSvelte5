@@ -7,6 +7,11 @@
 	import SquareMenu from 'lucide-svelte/icons/square-menu';
 	import { fade, draw } from 'svelte/transition';
 	import { enhance } from '$app/forms';
+	interface Props {
+		data: PageData,
+		children: import('svelte').Snippet
+	}
+	let { data, children } = $props();
 	interface Link {
 		link: string;
 		label: string;
@@ -15,12 +20,8 @@
 		{link: '/', label: 'Home'},
 		{link: '/register', label: 'Register'},
 		{link: '/register/emailVerification', label:'Email Verification'},
+		{link: '/forms/addressForm', label: 'Address Form'}
 	]
-	interface Props {
-		data: PageData,
-		children: import('svelte').Snippet
-	}
-	let { data, children } = $props();
 	let menuOpen = $state(false);
 
 </script>
@@ -48,6 +49,7 @@
 				<form action="/logout" method="post" use:enhance>
 					<li><button class="btn">Logout</button></li>
 				</form>
+				<li><a class="btn" href="/users/{data.user.id}">Settings</a></li>
 				{:else}
 				<li><a class="btn" href="/login">Login</a></li>
 			{/if}
@@ -55,6 +57,6 @@
 	</article>
 {/snippet}
 </Modal>
-<ToastProvider>
+<ToastProvider placement='top-start'>
 	{@render children()}
 </ToastProvider>

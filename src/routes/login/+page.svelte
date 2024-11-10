@@ -11,15 +11,13 @@
     export const toast:ToastContext = getContext('toast');
     const toastReason = data.toast;
     onMount(() => {
-        (async ()=>{
-            if(toastReason === 'userAlreadyExists'){
-                toast.create({
-                    title: 'Email already in use',
-                    description: 'That email has been used already please login',
-                    type: 'info'
-                })
-            }
-        })
+        if(toastReason === 'userAlreadyExists'){
+            toast.create({
+                title: 'Email already in use',
+                description: 'That email has been used already please login',
+                type: 'info'
+            })
+        }
     })
 </script>
 {#if $message}
