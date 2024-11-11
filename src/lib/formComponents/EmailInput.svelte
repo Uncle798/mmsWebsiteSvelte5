@@ -6,7 +6,7 @@
       label: string | undefined;
       errors: string[] | undefined;
       constraints: InputConstraint | undefined;
-      placeholder:string | undefined;
+      placeholder?:string | undefined;
       name: string | null | undefined
    }
    let { value = $bindable(), label, errors, constraints, placeholder='email@email.com', name, ...others }:Props = $props()
