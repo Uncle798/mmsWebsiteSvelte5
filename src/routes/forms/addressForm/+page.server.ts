@@ -8,7 +8,7 @@ import { redirect } from '@sveltejs/kit';
 
 export const load:PageServerLoad = (async () => {
    const addressForm = await superValidate(zod(addressFormSchema));
-   console.log(addressForm);
+
    return { addressForm, };
 })
 
