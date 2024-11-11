@@ -5,6 +5,7 @@ import { addressFormSchema, nameFormSchema, newLeaseSchema } from "$lib/formSche
 import { zod } from 'sveltekit-superforms/adapters';
 import { redirect } from "@sveltejs/kit";
 import { ratelimit } from "$lib/server/rateLimit";
+import { fail } from "assert";
 
 export const load:PageServerLoad = (async (event) =>{
    if(!event.locals.user){
@@ -72,7 +73,15 @@ export const actions:Actions = {
       if(currentLease){
          message(leaseForm, 'That unit is already leased');
       }
-      const contactInfoId = leaseForm.data.contactInfoId;
+      const address = await prisma.contactInfo.findFirst({
+         where: {
+            softDelete: false,
+            userId: event.locals.user?.id
+         }
+      })
+      if(!address){
+         return fail('unable to find address')
+      }
       const employees = await prisma.user.findMany({
          where:{
             employee: true,
@@ -85,7 +94,7 @@ export const actions:Actions = {
             employeeId: employee.id,
             unitNum: leaseForm.data.unitNum,
             price:unit!.advertisedPrice,
-            contactInfoId,
+            contactInfoId:address?.contactId,
             leaseEffectiveDate: new Date(),
          }
       })
@@ -97,6 +106,6 @@ export const actions:Actions = {
             invoiceNotes:'Deposit for unit ' + lease.unitNum.replace(/^0+/gm,''), 
          }
       })
-      redirect(302, '/units/newLease/payDeposit?invoiceId=' + invoice.invoiceId + '&contactInfoId=' + contactInfoId)
+      redirect(302, '/newLease/payDeposit?invoiceId=' + invoice.invoiceId)
    }
 }
