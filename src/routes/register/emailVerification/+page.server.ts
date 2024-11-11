@@ -13,15 +13,15 @@ export const load:PageServerLoad = (async (event) => {
         return fail(401);
     }
     const emailVerificationForm = await superValidate(zod(emailVerificationFormSchema));
-    // const verification = await prisma.verification.findFirst({
-    //     where: {
-    //         userId: event.locals.user?.id
-    //     }
-    // });
-    // if(!verification ||verification?.expiresAt.getTime() <= Date.now() ){
-    //     const code = await generateEmailVerificationRequest(event.locals.user.id, event.locals.user.email!);
-    //     sendVerificationEmail(code, event.locals.user.email!);
-    // }
+    const verification = await prisma.verification.findFirst({
+        where: {
+            userId: event.locals.user?.id
+        }
+    });
+    if(!verification || verification?.expiresAt.getTime() <= Date.now() ){
+        const code = await generateEmailVerificationRequest(event.locals.user.id, event.locals.user.email!);
+        sendVerificationEmail(code, event.locals.user.email!);
+    }
     return { emailVerificationForm };
 })
 
