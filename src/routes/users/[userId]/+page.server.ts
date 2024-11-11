@@ -3,7 +3,7 @@ import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
 import { superValidate, message } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
-import { addressFormSchema, nameFormSchema } from '$lib/formSchemas/schemas';
+import { addressFormSchema, emailFormSchema, emailVerificationFormSchema, nameFormSchema } from '$lib/formSchemas/schemas';
 
 export const load:PageServerLoad = (async (event) => {
    if(!event.locals.user){
@@ -11,6 +11,8 @@ export const load:PageServerLoad = (async (event) => {
    }
    const addressForm = await superValidate(zod(addressFormSchema));
    const nameForm = await superValidate(zod(nameFormSchema));
+   const emailForm = await superValidate(zod(emailFormSchema));
+   const emailVerificationForm = await superValidate(zod(emailVerificationFormSchema));
    const address = await prisma.contactInfo.findFirst({
       where: {
          userId: event.locals.user.id,
@@ -18,7 +20,7 @@ export const load:PageServerLoad = (async (event) => {
       },
 
    })
-   return { addressForm, nameForm, address };
+   return { addressForm, nameForm, emailForm, emailVerificationForm, address };
 })
 
 
