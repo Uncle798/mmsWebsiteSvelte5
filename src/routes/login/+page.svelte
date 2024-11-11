@@ -1,13 +1,14 @@
 <script lang="ts">
     import EmailInput from '$lib/formComponents/EmailInput.svelte';
     import { getContext, onMount } from 'svelte';
-    import type { ToastContext } from '@skeletonlabs/skeleton-svelte'
+    import { Progress, ProgressRing } from '@skeletonlabs/skeleton-svelte'
+    import type { ToastContext, } from '@skeletonlabs/skeleton-svelte'
 	import { superForm } from 'sveltekit-superforms';
     import type { PageData } from './$types';
 	import PasswordInput from '$lib/formComponents/PasswordInput.svelte';
     
     export let data: PageData;
-    let { form, message, errors, constraints, enhance } = superForm(data.loginForm);
+    let { form, message, errors, constraints, enhance, delayed, timeout } = superForm(data.loginForm);
     export const toast:ToastContext = getContext('toast');
     const toastReason = data.toast;
     onMount(() => {
@@ -16,6 +17,13 @@
                 title: 'Email already in use',
                 description: 'That email has been used already please login',
                 type: 'info'
+            })
+        }
+        if(toastReason === 'unauthorized'){
+            toast.create({
+                title: 'You must be logged in to access that page',
+                description: 'To access that page please log in',
+                type: 'error'
             })
         }
     })
@@ -41,4 +49,10 @@
         placeholder='Passw0rd1234'
     />
     <button class="btn">Submit</button>
+    {#if $delayed && !$timeout}
+        <ProgressRing value={null} size="size-10" meterStroke="stroke-tertiary-600-400" trackStroke="stroke-tertiary-50-950" />
+    {/if}
+    {#if $timeout}
+        <Progress value={null} />
+    {/if}   
 </form>
