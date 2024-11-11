@@ -14,7 +14,8 @@
       onUpdate(){
          emailVerificationOpen=true;
          emailModalOpen=false;
-      }
+      }, 
+      dataType: 'json'
    })
 </script>
 {#if $message}
