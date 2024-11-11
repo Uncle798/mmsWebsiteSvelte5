@@ -5,8 +5,9 @@ import { verify } from '@node-rs/argon2';
 import type { PageServerLoad, Actions } from './$types';
 import { zod } from 'sveltekit-superforms/adapters';
 import { loginSchema } from '$lib/formSchemas/schemas';
-import { createSession, generateSessionToken, setSessionTokenCookie } from '$lib/server/authUtils';
+import { createSession, generateEmailVerificationRequest, generateSessionToken, setSessionTokenCookie } from '$lib/server/authUtils';
 import { redirect } from '@sveltejs/kit';
+import { sendVerificationEmail } from '$lib/server/mailtrap';
 
 export const load:PageServerLoad = (async (event) => {
     const loginForm = await superValidate(zod(loginSchema));
@@ -51,6 +52,8 @@ export const actions:Actions = {
         setSessionTokenCookie(event, token, session.expiresAt);
         console.log('login session: ' + event.cookies.get('session'));
         if(!user.emailVerified){
+            const code = await generateEmailVerificationRequest(user.id, user.email!);
+            sendVerificationEmail(code, user.email!);
             redirect(302, '/register/emailVerification')
         }
         redirect(302,'/');
