@@ -33,7 +33,6 @@ export const endLeaseSchema = z.object({
 export type EndLeaseSchema = typeof endLeaseSchema;
 
 export const newLeaseSchema = z.object({
-   contactInfoId: z.string().min(23).max(30),
    unitNum: z.string().min(3).max(9),
    organization: z.boolean(),
 })
