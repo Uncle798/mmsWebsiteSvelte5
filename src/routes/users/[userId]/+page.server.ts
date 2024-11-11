@@ -28,7 +28,6 @@ export const actions: Actions = {
    default: async (event) => {
       const formData = await event.request.formData();
       const addressForm = await superValidate(formData, zod(addressFormSchema));
-      console.log(addressForm.data);
       return message(addressForm, 'Address updated')
    }
 };
