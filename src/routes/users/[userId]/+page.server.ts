@@ -3,24 +3,27 @@ import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
 import { superValidate, message } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
-import { addressFormSchema, emailFormSchema, emailVerificationFormSchema, nameFormSchema } from '$lib/formSchemas/schemas';
+import { addressFormSchema } from '$lib/formSchemas/schemas';
+import type { PartialContactInfo } from '$lib/server/partialTypes';
+
+const address:PartialContactInfo = {
+   address1: '555 N Main',
+   city: 'Anytown',
+   state: 'ID',
+   zip: '83838',
+   country: 'US',
+   phoneNum1: '2085556789',
+   phoneNum1Country: 'US',
+   userId: 'dfjdfsjkldsfjlksdf'
+}
 
 export const load:PageServerLoad = (async (event) => {
    if(!event.locals.user){
       redirect(302, '/login?toast=unauthorized')
    }
    const addressForm = await superValidate(zod(addressFormSchema));
-   const nameForm = await superValidate(zod(nameFormSchema));
-   const emailForm = await superValidate(zod(emailFormSchema));
-   const emailVerificationForm = await superValidate(zod(emailVerificationFormSchema));
-   const address = await prisma.contactInfo.findFirst({
-      where: {
-         userId: event.locals.user.id,
-         softDelete: false
-      },
 
-   })
-   return { addressForm, nameForm, emailForm, emailVerificationForm, address };
+   return { addressForm, address };
 })
 
 
@@ -28,6 +31,11 @@ export const actions: Actions = {
    default: async (event) => {
       const formData = await event.request.formData();
       const addressForm = await superValidate(formData, zod(addressFormSchema));
+      address.address1 = addressForm.data.address1;
+      address.city = addressForm.data.city;
+      address.state = addressForm.data.state;
+      address.zip = addressForm.data.zip;
+      address.country = addressForm.data.country;
       return message(addressForm, 'Address updated')
    }
 };

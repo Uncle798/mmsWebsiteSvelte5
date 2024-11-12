@@ -18,11 +18,8 @@
 	}
 	let links:Link[] =[
 		{link: '/', label: 'Home'},
-		{link: '/register', label: 'Register'},
-		{link: '/register/emailVerification', label:'Email Verification'},
+		{link: '/users/emailVerification', label:'setting'},
 		{link: '/forms/addressForm', label: 'Address Form'},
-		{link: '/units/available', label:'Available Units'},
-		{link: '/forms/emailUpdateForm', label:'Email update form'}
 	]
 	let menuOpen = $state(false);
 
@@ -47,14 +44,6 @@
 			{#each links as link}
 				<li><a class="btn" href={link.link}>{link.label}</a></li>
 			{/each}
-			{#if data.user}
-				<form action="/logout" method="post" use:enhance>
-					<li><button class="btn">Logout</button></li>
-				</form>
-				<li><a class="btn" href="/users/{data.user.id}">Settings</a></li>
-				{:else}
-				<li><a class="btn" href="/login">Login</a></li>
-			{/if}
 		</ul>
 	</article>
 {/snippet}
