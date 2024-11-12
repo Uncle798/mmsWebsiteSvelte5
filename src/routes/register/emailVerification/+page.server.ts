@@ -34,6 +34,7 @@ export const actions: Actions ={
             return redirect(302, '/');
         }
         const formData = await event.request.formData();
+        console.log(formData)
         const emailVerificationForm = await superValidate(formData, zod(emailVerificationFormSchema));
         if(!emailVerificationForm.valid){
             return superFormFail(400, emailVerificationForm);
@@ -64,7 +65,7 @@ export const actions: Actions ={
                 id: verification.id
             }
         })
-        await prisma.user.update({
+        const user = await prisma.user.update({
             where: {
                 id: event.locals.user.id
             },
@@ -72,6 +73,7 @@ export const actions: Actions ={
                 emailVerified: true
             }
         })
+        console.log(user);
         redirect(302, '/')
     },
     resend: async(event) =>{

@@ -50,6 +50,7 @@ export const actions:Actions = {
         const token = generateSessionToken();
         const session = await createSession(token, user.id);
         setSessionTokenCookie(event, token, session.expiresAt);
+        console.log(user);
         if(!user.emailVerified){
             const code = await generateEmailVerificationRequest(user.id, user.email!);
             sendVerificationEmail(code, user.email!);
