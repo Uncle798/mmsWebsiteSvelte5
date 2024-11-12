@@ -9,14 +9,14 @@
       data:SuperValidated<Infer<AddressFormSchema>>, 
       addressModalOpen:boolean,
       } = $props();
-   let { form, message, errors, constraints, enhance, submitting, delayed, timeout} = superForm(data, {
+   let { form, message, errors, constraints, enhance, delayed, timeout} = superForm(data, {
       onUpdate() {
          addressModalOpen=false;
       },
       dataType:'json',
       delayMs: 500,
       timeoutMs: 8000,
-      invalidateAll: true
+      invalidateAll: 'force'
    });
 </script>
 

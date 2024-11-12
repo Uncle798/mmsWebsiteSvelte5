@@ -13,6 +13,9 @@
     let emailModalOpen = $state(false);
     let emailVerificationOpen = $state(false);
     let address = $state(data.address);
+    $effect(()=>{
+        address = data.address
+    })
 </script>
 
 <span class="h1">{data.user?.givenName} {data.user?.familyName}</span>

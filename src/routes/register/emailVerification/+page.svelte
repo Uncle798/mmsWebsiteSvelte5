@@ -16,7 +16,7 @@
 {#if $message}
     {$message}
 {/if}
-<form method="post" action="/register/emailVerification?/verify" use:enhance>
+<form method="POST" action="/register/emailVerification?/verify" use:enhance>
     <TextInput
         label="Code: "
         name="code"
@@ -27,11 +27,11 @@
     />
     <button class="btn">Submit</button>
     {#if $delayed && !$timeout}
-    <ProgressRing value={null} size="size-14" meterStroke="stroke-tertiary-600-400" trackStroke="stroke-tertiary-50-950" />
- {/if}
- {#if $timeout}
-    <Progress value={null} />
- {/if}
+        <ProgressRing value={null} size="size-14" meterStroke="stroke-tertiary-600-400" trackStroke="stroke-tertiary-50-950" />
+    {/if}
+    {#if $timeout}
+        <Progress value={null} />
+    {/if}
 </form>
 
 <form action="/register/emailVerification?/resend" use:enhance method="POST">
