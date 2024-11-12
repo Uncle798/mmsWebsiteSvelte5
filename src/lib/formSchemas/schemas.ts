@@ -13,19 +13,19 @@ export const adminConfirmSchema = z.object({
 });
 export type AdminConfirmSchema = typeof adminConfirmSchema;
 
-export const pricingSchema = z.object({
+export const unitPricingFormSchema = z.object({
    size: z.string().min(5).max(7).trim(),
    price: z.number().int().min(0).max(10000),
    lowerPrice: z.boolean().nullable(),
 });
-export type PricingSchema = typeof pricingSchema;
+export type UnitPricingForm = typeof unitPricingFormSchema;
 
-export const unitComponentSchema =  z.object({
+export const unitNotesFormSchema =  z.object({
    notes: z.string().optional(),
    unavailable: z.boolean().nullable(),
    unitNum: z.string().min(3).max(6),
 });
-export type  UnitComponentSchema = typeof unitComponentSchema;
+export type  UnitNotesFormSchema = typeof unitNotesFormSchema;
 
 export const endLeaseSchema = z.object({
    leaseId: z.string().min(23).max(30),
