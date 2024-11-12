@@ -21,3 +21,4 @@ vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 app.log
 .vscode/settings.json
+seed.log
