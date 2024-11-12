@@ -5,7 +5,7 @@ import { hash } from '@node-rs/argon2';
 import  unitData from './unitData'
 import pricingData  from './pricingData'
 import sizeDescription  from './sizeDescription'
-import { PartialContactInfo, PartialLease, PartialInvoice, PartialPaymentRecord } from '../src/lib/server/partialTypes'
+import { PartialContactInfo, PartialLease, PartialInvoice, PartialPaymentRecord, PartialUnit } from '../src/lib/server/partialTypes'
 const numUsers=unitData.length + 1500;
 const earliestStarting = new Date('2018-01-01');
 const hashedPass = await hash(String(process.env.USER_PASSWORD), {
@@ -233,7 +233,7 @@ async function createLease(unit: Unit, leaseStart, leaseEnd: Date | null, randEm
 
  function makeContactInfo(users:User[]){
    const contactInfos:PartialContactInfo[]=[]
-   users.forEach((user, i) =>{
+   users.forEach((user) =>{
       const contactInfo:PartialContactInfo = {
          userId: user.id,
          address1: faker.location.streetAddress(), 
@@ -245,35 +245,33 @@ async function createLease(unit: Unit, leaseStart, leaseEnd: Date | null, randEm
          phoneNum1Country: '+1'
       }
       contactInfos.push(contactInfo);
-      if(i%12 === 0 ) {
-         const contactInfo2:PartialContactInfo = {
-            userId: user.id,
-            address1: faker.location.streetAddress(), 
-            city: faker.location.city(),
-            state: faker.location.state({abbreviated: true}),
-            zip: faker.location.zipCode(),
-            country: faker.location.countryCode(),
-            phoneNum1: faker.phone.number(),
-            phoneNum1Country: '+1'
-         }
-         contactInfos.push(contactInfo2);
-      }
    });
    return contactInfos;
  }
 
- function makeUnit(unit){
+ function makeUnit(unit:PartialUnit){
     const sD = sizeDescription.find((description) => description.size === unit.size);
     const price = pricingData.find((p) => p.size === unit.size);
     const newUnit:Unit= {} as Unit;
-      newUnit.building=unit.building;
-      newUnit.num = unit.num;
-      newUnit.size = unit.size;
-      newUnit.leasedPrice = price?.price || 0;
-      newUnit.advertisedPrice = price?.price || 0;
-      newUnit.deposit = price?.price || 5;
-
-      newUnit.description = sD?.description ? sD.description : '';
+    if(unit.size === 'ours'){
+         newUnit.building=unit.building;
+         newUnit.num = unit.num;
+         newUnit.size = unit.size;
+         newUnit.leasedPrice = price?.price || 0;
+         newUnit.advertisedPrice = price?.price || 0;
+         newUnit.deposit = price?.price || 5;
+         newUnit.description = sD?.description ? sD.description : '';
+         newUnit.unavailable = true;
+      } else {
+         newUnit.building=unit.building;
+         newUnit.num = unit.num;
+         newUnit.size = unit.size;
+         newUnit.leasedPrice = price?.price || 0;
+         newUnit.advertisedPrice = price?.price || 0;
+         newUnit.deposit = price?.price || 5;
+         newUnit.description = sD?.description ? sD.description : '' 
+         newUnit.unavailable = false;
+    }
    return newUnit
  }
 
@@ -307,7 +305,7 @@ async function  main (){
    const dbContacts = await prisma.contactInfo.createManyAndReturn({
       data: contactInfos
    })
-   await createEmployees();
+      await createEmployees();
    const totalUsers = await prisma.user.count();
    const userEndTime = dayjs(new Date);
    console.log(`👥 ${totalUsers} users created in ${userEndTime.diff(deleteEndTime, 's')} sec`);
