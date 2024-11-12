@@ -1,12 +1,9 @@
-import { prisma } from '$lib/server/prisma';
-import { redirect } from '@sveltejs/kit';
-import type { PageServerLoad, Actions } from './users/[userId]/$types';
+import type { PageServerLoad, Actions } from './$types';
 import { superValidate, message } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
 import { addressFormSchema } from '$lib/formSchemas/schemas';
-import type { PartialContactInfo } from '$lib/server/partialTypes';
 
-const address:PartialContactInfo = {
+const address = {
    address1: '555 N Main',
    city: 'Anytown',
    state: 'ID',
@@ -17,7 +14,7 @@ const address:PartialContactInfo = {
    userId: 'dfjdfsjkldsfjlksdf'
 }
 
-export const load:PageServerLoad = (async (event) => {
+export const load:PageServerLoad = (async () => {
    const addressForm = await superValidate(zod(addressFormSchema));
 
    return { addressForm, address };
