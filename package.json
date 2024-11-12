@@ -61,7 +61,6 @@
 		"@zxcvbn-ts/core": "^3.0.4",
 		"@zxcvbn-ts/language-common": "^3.0.4",
 		"@zxcvbn-ts/language-en": "^3.0.2",
-		"better-auth": "^0.6.2",
 		"dayjs": "^1.11.13",
 		"lucide-svelte": "^0.454.0",
 		"mailtrap": "^3.4.0"
