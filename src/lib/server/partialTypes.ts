@@ -67,3 +67,12 @@ export const partialPaymentRecord = Prisma.validator<Prisma.PaymentRecordDefault
    }
 })
 export type PartialPaymentRecord = Prisma.PaymentRecordGetPayload<typeof partialPaymentRecord>
+
+export const partialUnit = Prisma.validator<Prisma.UnitDefaultArgs>()({
+   select: {
+      num: true,
+      size: true,
+      building: true,
+   }
+})
+export type PartialUnit = Prisma.UnitGetPayload<typeof partialUnit>
