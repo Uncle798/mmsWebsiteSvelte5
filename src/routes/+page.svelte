@@ -1,22 +1,37 @@
 <script lang="ts">
-   // @ts-ignore: it works
-   import { PUBLIC_COMPANY_NAME } from '$env/static/public'
-   import type { PageData } from "./$types";
+    import { Modal } from '@skeletonlabs/skeleton-svelte';
+    import type { PageData } from './$types';
+    import AddressForm from './forms/addressForm/+page.svelte';
+	import Address from '$lib/displayComponents/Address.svelte';
+    
+    let {data}:{ data: PageData} = $props();
+    let addressModalOpen = $state(false);
 
-   interface Props {
-      data: PageData;
-   }
-
-   let { data }: Props = $props();
+    let address = $state(data.address);
+    $effect(()=>{
+        address = data.address
+    })
 </script>
 
-<svelte:head>
-	<title>{PUBLIC_COMPANY_NAME} | Home</title>
-</svelte:head>
 
-<h1 class="h1">{PUBLIC_COMPANY_NAME}</h1>
-{#if data.user}
-   You're logged in {data.user.givenName} 
-   {:else}
-   You're not logged in 
+{#if address}
+    <Address address={address} />
 {/if}
+<Modal
+	bind:open={addressModalOpen}
+	triggerBase="btn preset-tonal"
+	contentBase="card bg-surface-400-600 p-4 space-y-4 shadow-xl max-w-screen-sm"
+	backdropClasses="backdrop-blur-sm"
+>
+    {#snippet trigger()}
+        {#if data.address}
+            Change Address
+        {:else}
+            Add address
+        {/if}
+    {/snippet}
+    {#snippet content()}
+        <AddressForm data={data.addressForm} bind:addressModalOpen={addressModalOpen}/>
+        <button class="btn" onclick={()=>addressModalOpen=false}>Close</button>
+    {/snippet}
+</Modal>

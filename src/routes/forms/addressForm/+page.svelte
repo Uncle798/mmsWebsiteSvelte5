@@ -24,7 +24,7 @@
 {#if $message}
    <span>{$message} </span>
 {/if}
-<form action='/forms/addressForm' method='POST' use:enhance>
+<form action='/' method='POST' use:enhance>
     <TextInput
       bind:value={$form.address1}
       errors={$errors.address1}

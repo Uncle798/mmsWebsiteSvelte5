@@ -8,17 +8,15 @@
 	import { fade, draw } from 'svelte/transition';
 	import { enhance } from '$app/forms';
 	interface Props {
-		data: PageData,
 		children: import('svelte').Snippet
 	}
-	let { data, children } = $props();
+	let { children } = $props();
 	interface Link {
 		link: string;
 		label: string;
 	}
 	let links:Link[] =[
 		{link: '/', label: 'Home'},
-		{link: '/users/emailVerification', label:'setting'},
 		{link: '/forms/addressForm', label: 'Address Form'},
 	]
 	let menuOpen = $state(false);
