@@ -4,8 +4,6 @@
 	import type { PageData } from './$types';
 	import { Modal } from '@skeletonlabs/skeleton-svelte';
 	import Menu from 'lucide-svelte/icons/menu';
-	import SquareMenu from 'lucide-svelte/icons/square-menu';
-	import { fade, draw } from 'svelte/transition';
 	import { enhance } from '$app/forms';
 	interface Props {
 		data: PageData,

@@ -9,10 +9,6 @@ export const load:PageServerLoad = (async (event) => {
    if(!event.locals.user){
       redirect(302, '/login?toast=unauthorized')
    }
-   const addressForm = await superValidate(zod(addressFormSchema));
-   const nameForm = await superValidate(zod(nameFormSchema));
-   const emailForm = await superValidate(zod(emailFormSchema));
-   const emailVerificationForm = await superValidate(zod(emailVerificationFormSchema));
    const address = await prisma.contactInfo.findFirst({
       where: {
          userId: event.locals.user.id,
@@ -20,6 +16,10 @@ export const load:PageServerLoad = (async (event) => {
       },
 
    })
+   const addressForm = await superValidate(zod(addressFormSchema));
+   const nameForm = await superValidate(zod(nameFormSchema));
+   const emailForm = await superValidate(zod(emailFormSchema));
+   const emailVerificationForm = await superValidate(zod(emailVerificationFormSchema));
    return { addressForm, nameForm, emailForm, emailVerificationForm, address };
 })
 

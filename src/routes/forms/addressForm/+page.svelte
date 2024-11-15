@@ -13,10 +13,8 @@
       onUpdate() {
          addressModalOpen=false;
       },
-      dataType:'json',
       delayMs: 500,
       timeoutMs: 8000,
-      invalidateAll: 'force'
    });
 </script>
 

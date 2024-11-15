@@ -12,10 +12,6 @@
     let nameModalOpen = $state(false);
     let emailModalOpen = $state(false);
     let emailVerificationOpen = $state(false);
-    let address = $state(data.address);
-    $effect(()=>{
-        address = data.address
-    })
 </script>
 
 <span class="h1">{data.user?.givenName} {data.user?.familyName}</span>
@@ -61,8 +57,8 @@ backdropClasses="backdrop-blur-sm"
 </Modal>
 
 
-{#if address}
-    <Address address={address} />
+{#if data.address}
+    <Address address={data.address} />
 {/if}
 <Modal
 	bind:open={addressModalOpen}
