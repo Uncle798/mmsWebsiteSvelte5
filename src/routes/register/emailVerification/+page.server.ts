@@ -7,6 +7,7 @@ import { ratelimit } from '$lib/server/rateLimit';
 import { generateEmailVerificationRequest } from '$lib/server/authUtils';
 import { sendVerificationEmail } from '$lib/server/mailtrap';
 import { prisma } from '$lib/server/prisma';
+import dayjs from 'dayjs';
 
 export const load:PageServerLoad = (async (event) => {
     if(!event.locals.user){
@@ -18,8 +19,10 @@ export const load:PageServerLoad = (async (event) => {
             userId: event.locals.user?.id
         }
     });
-    if(!verification || verification?.expiresAt.getTime() <= Date.now() ){
+    if(!verification || verification?.expiresAt.getTime() >= Date.now() ){
         const code = await generateEmailVerificationRequest(event.locals.user.id, event.locals.user.email!);
+
+        console.log(dayjs(new Date).format('HH:mm:ss')+" "+ code)
         sendVerificationEmail(code, event.locals.user.email!);
     }
     return { emailVerificationForm };
@@ -30,15 +33,15 @@ export const actions: Actions ={
         if(!event.locals.user){
             return redirect(302, '/login')
         }
-        if(!event.locals.user.emailVerified){
+        if(event.locals.user.emailVerified){
             return redirect(302, '/');
         }
         const formData = await event.request.formData();
-        console.log(formData)
         const emailVerificationForm = await superValidate(formData, zod(emailVerificationFormSchema));
         if(!emailVerificationForm.valid){
             return superFormFail(400, emailVerificationForm);
         }
+        console.log(emailVerificationForm)
         const { success, reset } = await ratelimit.emailVerification.limit(event.locals.user?.id || event.getClientAddress());
         if(!success) {
             const timeRemaining = Math.floor((reset - Date.now()) / 1000);
@@ -53,10 +56,13 @@ export const actions: Actions ={
             return fail(401, {verify:'Not authenticated'})
         }
         if(verification?.expiresAt.getTime() <= Date.now() ){
+            console.log(verification.expiresAt +  " " + Date.now())
             const code = await generateEmailVerificationRequest(event.locals.user.id, event.locals.user.email!);
             sendVerificationEmail(code, event.locals.user.email!)
+            console.log(dayjs(new Date).format('HH:mm:ss')+" "+ code)
             return message(emailVerificationForm, 'The code had expired, we\'ve sent a new code to the email address on file');
         }
+        console.log(verification);
         if(verification.code !== emailVerificationForm.data.code){
             return message(emailVerificationForm, 'Code was invalid');
         }
@@ -97,7 +103,8 @@ export const actions: Actions ={
             redirect(301, '/register')
         }
         const code = await generateEmailVerificationRequest(event.locals.user.id, event.locals.user.email);
+        console.log(dayjs(new Date).format('HH:mm:ss')+" "+ code)
         sendVerificationEmail(code, event.locals.user.email);
-        return { resend:{message:'A code has been sent to the email on file'}}
+        return {  }
     }
 }

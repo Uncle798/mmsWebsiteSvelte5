@@ -25,6 +25,6 @@ export const ratelimit = {
       redis,
       analytics: false, 
       prefix: 'ratelimit:emailVerification',
-      limiter: Ratelimit.slidingWindow(1, '10m')
+      limiter: Ratelimit.slidingWindow(1, '20s')
    })
 }

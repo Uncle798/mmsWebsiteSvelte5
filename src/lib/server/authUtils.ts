@@ -88,6 +88,7 @@ export function setSessionTokenCookie(event: RequestEvent, token:string, expires
       expires: expiresAt
    })
 }
+
 export function deleteSessionTokenCookie(event: RequestEvent):void {
    event.cookies.set('session', '', {
       httpOnly: true,
@@ -113,17 +114,25 @@ export function generateRandomRecoveryCode(): string {
 }
 
 export async function generateEmailVerificationRequest(userId:string, email: string): Promise<string> {
-   await prisma.verification.deleteMany({
+   const user = await prisma.user.findFirst({
       where: {
-         id: userId,
+         id: userId
       }
    })
+   console.log(user)
+   const del = await prisma.verification.deleteMany({
+      where: {
+         userId: userId,
+      }
+   })
+   console.log(del)
    const random:RandomReader = {
       read(bytes) {
          crypto.getRandomValues(bytes)
       }
    }
    const code = generateRandomString(random, '0123456789', 8);
+   console.log(code)
    const expiresAt = dayjs(new Date).add(15, 'minutes').toDate();
    await prisma.verification.create({
       data:{

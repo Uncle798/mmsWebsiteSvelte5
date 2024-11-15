@@ -34,6 +34,6 @@
     {/if}
 </form>
 
-<form method="POST" action="/register/emailVerification?/resend" use:enhance >
+<form method="POST" action="/register/emailVerification?/resend" >
     <button class="btn">Resend email</button>
 </form>
