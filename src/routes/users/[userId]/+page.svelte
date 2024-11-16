@@ -1,9 +1,9 @@
 <script lang="ts">
     import { Modal } from '@skeletonlabs/skeleton-svelte';
     import type { PageData } from './$types';
-    import AddressForm from '../../forms/addressForm/+page.svelte';
-    import NameForm from '../../forms/nameForm/+page.svelte';
-    import EmailForm from '../../forms/emailUpdateForm/+page.svelte';
+    import AddressForm from '$lib/forms/AddressForm.svelte';
+    import NameForm from '$lib/forms/NameChangeForm.svelte';
+    import EmailForm from '$lib/forms/EmailChangeForm.svelte';
     import EmailVerification from '../../register/emailVerification/+page.svelte'
 	import Address from '$lib/displayComponents/Address.svelte';
     
@@ -56,10 +56,10 @@ backdropClasses="backdrop-blur-sm"
     {/snippet}
 </Modal>
 
+    {#if data.address}
+        <Address address={data.address} />
+    {/if}
 
-{#if data.address}
-    <Address address={data.address} />
-{/if}
 <Modal
 	bind:open={addressModalOpen}
 	triggerBase="btn preset-tonal"

@@ -7,6 +7,8 @@
 	import * as zxcvbnEnPackage from "@zxcvbn-ts/language-en";
 	import EmailInput from "$lib/formComponents/EmailInput.svelte";
 	import PasswordInput from "$lib/formComponents/PasswordInput.svelte";
+   import FormProgress from "$lib/formComponents/FormProgress.svelte";
+	import FormMessage from "$lib/formComponents/FormMessage.svelte";
    interface Props {
 		data: PageData;
 	}
@@ -22,7 +24,7 @@
 		dictionary: { ...commonDictionary, ...englishDictionary },
 	};
 	zxcvbnOptions.setOptions(options);
-	const { form, errors, constraints, message, enhance } = superForm(data.registerForm)
+	const { form, errors, constraints, message, enhance, delayed, timeout } = superForm(data.registerForm)
 	let {
 	score,
 	feedback: { warning, suggestions },
@@ -46,9 +48,7 @@
 </script>
 
 <div>
-   {#if $message}
-      {$message}
-   {/if}
+   <FormMessage message={$message} />
    <form method="POST" action="/register" use:enhance>
       <TextInput
          label='Given name'
@@ -113,5 +113,6 @@
          {/if}
      {/if} 
       <button class="btn">Submit</button>
+      <FormProgress delayed={$delayed} timeout={$timeout}/>
    </form>
 </div>

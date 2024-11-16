@@ -16,6 +16,7 @@ export const load:PageServerLoad = (async (event) => {
       },
 
    })
+   console.log(address);
    const addressForm = await superValidate(zod(addressFormSchema));
    const nameForm = await superValidate(zod(nameFormSchema));
    const emailForm = await superValidate(zod(emailFormSchema));

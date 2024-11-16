@@ -10,5 +10,5 @@
 <div class="card p-4">
    <span>${invoice.invoiceAmount}</span>
    <span>Created: {dayjs(invoice.invoiceCreated).format('M/D/YYYY')}</span>
-   <span>Due: {dayjs(invoice.invoiceCreated).add(1, 'month').format('M/D/YYYY')}</span>
+   
 </div>

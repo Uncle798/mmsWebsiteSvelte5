@@ -1,11 +1,12 @@
 <script lang="ts">
     import EmailInput from '$lib/formComponents/EmailInput.svelte';
     import { getContext, onMount } from 'svelte';
-    import { Progress, ProgressRing } from '@skeletonlabs/skeleton-svelte'
+    import FormProgress from '$lib/formComponents/FormProgress.svelte';
     import type { ToastContext, } from '@skeletonlabs/skeleton-svelte'
 	import { superForm } from 'sveltekit-superforms';
     import type { PageData } from './$types';
 	import PasswordInput from '$lib/formComponents/PasswordInput.svelte';
+	import FormMessage from '$lib/formComponents/FormMessage.svelte';
     
     export let data: PageData;
     let { form, message, errors, constraints, enhance, delayed, timeout } = superForm(data.loginForm);
@@ -28,9 +29,7 @@
         }
     })
 </script>
-{#if $message}
-    {$message}
-{/if}
+<FormMessage message={$message} />
 <form action="/login" method="POST" use:enhance>
     <EmailInput
         label='Email'
@@ -49,10 +48,5 @@
         placeholder='Passw0rd1234'
     />
     <button class="btn">Submit</button>
-    {#if $delayed && !$timeout}
-        <ProgressRing value={null} size="size-10" meterStroke="stroke-tertiary-600-400" trackStroke="stroke-tertiary-50-950" />
-    {/if}
-    {#if $timeout}
-        <Progress value={null} />
-    {/if}   
+    <FormProgress delayed={$delayed} timeout={$timeout}/>  
 </form>

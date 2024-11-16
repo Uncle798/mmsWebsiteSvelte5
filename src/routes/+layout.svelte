@@ -20,7 +20,8 @@
 		{link: '/register/emailVerification', label:'Email Verification'},
 		{link: '/forms/addressForm', label: 'Address Form'},
 		{link: '/units/available', label:'Available Units'},
-		{link: '/forms/emailUpdateForm', label:'Email update form'}
+		{link: '/forms/emailUpdateForm', label:'Email update form'},
+		{link: '/newLease', label: 'New lease'}
 	]
 	let menuOpen = $state(false);
 

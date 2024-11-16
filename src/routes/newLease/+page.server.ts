@@ -39,11 +39,14 @@ export const load:PageServerLoad = (async (event) =>{
 
 export const actions:Actions = {
    default: async (event) =>{
+      if(!event.locals.user){
+         redirect(302, '/login?toast=unauthorized');
+      }
       const leaseForm = await superValidate(event.request, zod(newLeaseSchema));
       if(!leaseForm.valid){
          message(leaseForm, 'no good')
       }
-      const { success, reset } = await ratelimit.register.limit(event.getClientAddress())
+      const { success, reset } = await ratelimit.register.limit(event.locals.user.id || event.getClientAddress())
 		if(!success) {
 			const timeRemaining = Math.floor((reset - Date.now()) /1000);
 			return message(leaseForm, `Please wait ${timeRemaining}s before trying again.`)

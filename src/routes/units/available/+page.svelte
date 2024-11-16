@@ -2,7 +2,6 @@
     import type { PageData } from './$types';
     
     let { data }:{data:PageData} = $props();
-    $inspect(data)
 </script>
 
 <div class="table-wrap">
@@ -19,10 +18,10 @@
         <tbody class="hover:[&>tr]:preset-tonal-primary">
             {#each data.availableUnits as unit}
                 <tr>
-                    <td><a href="/newLease?unitNum={unit.num}">{unit.num.replace(/^0+/gm,'')}</a></td>
-                    <td><a href="/newLease?unitNum={unit.num}">{unit.size.replace(/^0+/gm,'').replace(/x0/gm, 'x')}</a></td>
-                    <td><a href="/newLease?unitNum={unit.num}">{unit.description}</a></td>
-                    <td><a href="/newLease?unitNum={unit.num}">${unit.advertisedPrice}</a></td>
+                    <td><a class="btn" href="/newLease?unitNum={unit.num}">{unit.num.replace(/^0+/gm,'')}</a></td>
+                    <td><a class="btn" href="/newLease?unitNum={unit.num}">{unit.size.replace(/^0+/gm,'').replace(/x0/gm, 'x')}</a></td>
+                    <td><a class="btn" href="/newLease?unitNum={unit.num}">{unit.description}</a></td>
+                    <td><a class="btn" href="/newLease?unitNum={unit.num}">${unit.advertisedPrice}</a></td>
                 </tr>
             {/each}
         </tbody>

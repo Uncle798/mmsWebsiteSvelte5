@@ -1,12 +1,14 @@
 <script lang="ts">
     import Address from '$lib/displayComponents/Address.svelte';
-    import AddressForm from '../forms/addressForm/+page.svelte'
-    import { Modal, Progress, ProgressRing } from '@skeletonlabs/skeleton-svelte';
+    import AddressForm from '../../lib/forms/AddressForm.svelte'
+    import { Modal, } from '@skeletonlabs/skeleton-svelte';
+    import FormProgress from '$lib/formComponents/FormProgress.svelte';
     import { superForm } from 'sveltekit-superforms';
     import type { PageData } from './$types';
 	import UnitCustomer from '$lib/displayComponents/UnitCustomer.svelte';
 	import User from '$lib/displayComponents/User.svelte';
 	import Checkbox from '$lib/formComponents/Checkbox.svelte';
+	import FormMessage from '$lib/formComponents/FormMessage.svelte';
     
     let { data }: {data:PageData} = $props();
     let { form, message, errors, constraints, enhance, delayed, timeout } = superForm(data.leaseForm);
@@ -15,6 +17,7 @@
 {#if data.user}
     <User user={data.user} />
 {/if}
+<FormMessage message={$message} />
 <form method="post" use:enhance>
     {#if data.user?.organizationName}
         <Checkbox
@@ -49,12 +52,7 @@
     {/if}
     
     {#if data.unit && data.address}
-        <button class="btn">The above is correct please email me my lease.</button>
+        <button class="btn">The above is correct I would like to pay my deposit</button>
     {/if}
-    {#if $delayed && !$timeout}
-        <ProgressRing value={null} size="size-14" meterStroke="stroke-tertiary-600-400" trackStroke="stroke-tertiary-50-950" />
-    {/if}
-    {#if $timeout}
-        <Progress value={null} />
-    {/if}
+    <FormProgress delayed={$delayed} timeout={$timeout}/>
 </form>

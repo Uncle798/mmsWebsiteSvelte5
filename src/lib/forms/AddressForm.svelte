@@ -3,7 +3,10 @@
    import TextInput from '$lib/formComponents/textInput.svelte';
    import countries from '$lib/countryCodes.json'
 	import { type AddressFormSchema } from '$lib/formSchemas/schemas';
-	import { Progress, ProgressRing } from '@skeletonlabs/skeleton-svelte';
+	import { invalidateAll } from '$app/navigation';
+	import { onMount } from 'svelte';
+	import FormProgress from '$lib/formComponents/FormProgress.svelte';
+	import FormMessage from '$lib/formComponents/FormMessage.svelte';
 
    let {data, addressModalOpen=$bindable(false)}: {
       data:SuperValidated<Infer<AddressFormSchema>>, 
@@ -12,16 +15,30 @@
    let { form, message, errors, constraints, enhance, delayed, timeout} = superForm(data, {
       onUpdate() {
          addressModalOpen=false;
+         invalidateAll();
       },
       delayMs: 500,
       timeoutMs: 8000,
    });
+   onMount(() => {
+   if (typeof window !== 'undefined') {
+      import('@mapbox/search-js-web').then(({ config, autofill }) => {
+         /* cspell:disable-next-line */
+         config.accessToken = 'pk.eyJ1IjoiZXJpY2JyYW5zb24iLCJhIjoiY20wYjh6b29yMDE4dDJqb2sxc3ZjZHgzMyJ9.3kAYNtGfsqEPi8a3Zlvlzg';
+         autofill({
+         options: {
+            country: 'us'
+         }
+         });
+      }).catch((error) => {
+         console.error('Error loading Mapbox Search JS:', error);
+      });
+   }
+   });
 </script>
 
 <span class="h2">Update your address</span>
-{#if $message}
-   <span>{$message} </span>
-{/if}
+<FormMessage message={$message} />
 <form action='/forms/addressForm' method='POST' use:enhance>
     <TextInput
       bind:value={$form.address1}
@@ -76,11 +93,8 @@
           {/each}
       </select>
    </label>
-   <button class="btn">Submit</button>
-   {#if $delayed && !$timeout}
-      <ProgressRing value={null} size="size-14" meterStroke="stroke-tertiary-600-400" trackStroke="stroke-tertiary-50-950" />
-   {/if}
-   {#if $timeout}
-      <Progress value={null} />
-   {/if}
+   <div class="flex">   
+      <button class="btn">Submit</button>
+      <FormProgress delayed={$delayed} timeout={$timeout}/>
+   </div>
 </form>

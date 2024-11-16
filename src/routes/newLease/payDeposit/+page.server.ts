@@ -15,8 +15,15 @@ export const load:PageServerLoad = (async (event) => {
          invoiceId:invoiceId!,
       }
    })
-   console.log(invoice);
-   return { invoice };
+   if(!invoice){
+      return fail(404)
+   }
+   const address = await prisma.contactInfo.findFirst({
+      where: {
+         userId: invoice.customerId!
+      }
+   })
+   return { invoice, address };
 })
 
 export const actions: Actions = {

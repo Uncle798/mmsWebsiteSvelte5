@@ -3,6 +3,9 @@
 	import { superForm, type Infer, type SuperValidated } from 'sveltekit-superforms';
    import { Progress, ProgressRing } from '@skeletonlabs/skeleton-svelte';
 	import type { EmailFormSchema } from '$lib/formSchemas/schemas';
+	import { invalidateAll } from '$app/navigation';
+	import FormProgress from '$lib/formComponents/FormProgress.svelte';
+	import FormMessage from '$lib/formComponents/FormMessage.svelte';
     
     let { data, emailModalOpen=$bindable(false), emailVerificationOpen=$bindable(false) }: {
       data: SuperValidated<Infer<EmailFormSchema>>, 
@@ -14,13 +17,12 @@
       onUpdate(){
          emailVerificationOpen=true;
          emailModalOpen=false;
+         invalidateAll();
       }, 
-      dataType: 'json'
+      
    })
 </script>
-{#if $message}
-   <span>{$message}</span>
-{/if}
+<FormMessage message={$message}/>
 <form action="/forms/emailUpdateForm" method="POST" use:enhance>
    <EmailInput
       bind:value={$form.email}
@@ -37,10 +39,5 @@
       name='emailConfirm'
    />
    <button class="btn">Submit</button>
-   {#if $delayed && !$timeout}
-      <ProgressRing value={null} size="size-14" meterStroke="stroke-tertiary-600-400" trackStroke="stroke-tertiary-50-950" />
-   {/if}
-   {#if $timeout}
-      <Progress value={null} />
-   {/if}
+   <FormProgress delayed={$delayed} timeout={$timeout}/>
 </form>
