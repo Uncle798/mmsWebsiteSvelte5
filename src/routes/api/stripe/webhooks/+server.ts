@@ -1,6 +1,6 @@
 import { STRIPE_SIGNING_SECRET } from '$env/static/private';
 import { stripe } from '$lib/server/stripe';
-import prisma from '$lib/server/prisma';
+import { prisma } from '$lib/server/prisma';
 import type { RequestHandler } from './$types'; 
 
 
