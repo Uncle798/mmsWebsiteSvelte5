@@ -5,6 +5,8 @@ import { zod } from 'sveltekit-superforms/adapters';
 import type { PageServerLoad, Actions } from './$types';
 import { emailFormSchema } from '$lib/formSchemas/schemas';
 import { prisma } from '$lib/server/prisma';
+import { generateEmailVerificationRequest } from '$lib/server/authUtils';
+import { sendVerificationEmail } from '$lib/server/mailtrap';
 
 export const load = (async () => {
     return {};
@@ -26,7 +28,7 @@ export const actions: Actions = {
         if(!emailForm.valid){
             return message(emailForm, 'not valid');
         }
-        await prisma.user.update({
+        const user = await prisma.user.update({
             where: {
                 id: event.locals.user.id
             },
@@ -35,6 +37,8 @@ export const actions: Actions = {
                 emailVerified: false,
             }
         })
+        const code = await generateEmailVerificationRequest(event.locals.user.id, user.email!);
+        sendVerificationEmail(code, user.email!);
         return message(emailForm, 'email updated successfully')
     }
 };
