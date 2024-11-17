@@ -2,18 +2,21 @@
     import Address from '$lib/displayComponents/Address.svelte';
     import AddressForm from '../../lib/forms/AddressForm.svelte'
     import { Modal, } from '@skeletonlabs/skeleton-svelte';
-    import FormProgress from '$lib/formComponents/FormProgress.svelte';
+    import FormProgress from '$lib/formComponents/FormSubmitWithProgress.svelte';
     import { superForm } from 'sveltekit-superforms';
     import type { PageData } from './$types';
 	import UnitCustomer from '$lib/displayComponents/UnitCustomer.svelte';
 	import User from '$lib/displayComponents/User.svelte';
 	import Checkbox from '$lib/formComponents/Checkbox.svelte';
 	import FormMessage from '$lib/formComponents/FormMessage.svelte';
+	import Header from '$lib/Header.svelte';
     
     let { data }: {data:PageData} = $props();
     let { form, message, errors, constraints, enhance, delayed, timeout } = superForm(data.leaseForm);
     let addressModalOpen = $state(false);
 </script>
+<Header title='New lease'/>
+
 {#if data.user}
     <User user={data.user} />
 {/if}
@@ -50,9 +53,9 @@
         <UnitCustomer unit={data.unit} />
         <input type="hidden" name="unitNum" value={data.unit.num}>
     {/if}
-    
-    {#if data.unit && data.address}
-        <button class="btn">The above is correct I would like to pay my deposit</button>
-    {/if}
-    <FormProgress delayed={$delayed} timeout={$timeout}/>
+    <div class="flex">
+        {#if data.unit && data.address}
+            <FormProgress delayed={$delayed} timeout={$timeout} buttonText='The above is correct I would like to pay my deposit'/>
+        {/if}
+    </div>
 </form>

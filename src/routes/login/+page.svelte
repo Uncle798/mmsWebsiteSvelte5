@@ -1,12 +1,13 @@
 <script lang="ts">
     import EmailInput from '$lib/formComponents/EmailInput.svelte';
     import { getContext, onMount } from 'svelte';
-    import FormProgress from '$lib/formComponents/FormProgress.svelte';
+    import FormProgress from '$lib/formComponents/FormSubmitWithProgress.svelte';
     import type { ToastContext, } from '@skeletonlabs/skeleton-svelte'
 	import { superForm } from 'sveltekit-superforms';
     import type { PageData } from './$types';
 	import PasswordInput from '$lib/formComponents/PasswordInput.svelte';
 	import FormMessage from '$lib/formComponents/FormMessage.svelte';
+	import Header from '$lib/Header.svelte';
     
     export let data: PageData;
     let { form, message, errors, constraints, enhance, delayed, timeout } = superForm(data.loginForm);
@@ -29,6 +30,8 @@
         }
     })
 </script>
+<Header title='Login' />
+
 <FormMessage message={$message} />
 <form action="/login" method="POST" use:enhance>
     <EmailInput
@@ -47,6 +50,5 @@
         constraints={$constraints.password}
         placeholder='Passw0rd1234'
     />
-    <button class="btn">Submit</button>
     <FormProgress delayed={$delayed} timeout={$timeout}/>  
 </form>

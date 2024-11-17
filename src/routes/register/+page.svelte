@@ -7,7 +7,7 @@
 	import * as zxcvbnEnPackage from "@zxcvbn-ts/language-en";
 	import EmailInput from "$lib/formComponents/EmailInput.svelte";
 	import PasswordInput from "$lib/formComponents/PasswordInput.svelte";
-   import FormProgress from "$lib/formComponents/FormProgress.svelte";
+   import FormProgress from "$lib/formComponents/FormSubmitWithProgress.svelte";
 	import FormMessage from "$lib/formComponents/FormMessage.svelte";
    interface Props {
 		data: PageData;
@@ -112,7 +112,6 @@
          </ul>
          {/if}
      {/if} 
-      <button class="btn">Submit</button>
       <FormProgress delayed={$delayed} timeout={$timeout}/>
    </form>
 </div>

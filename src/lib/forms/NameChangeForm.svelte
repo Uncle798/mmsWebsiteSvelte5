@@ -1,7 +1,7 @@
 <script lang="ts">
    import TextInput from '$lib/formComponents/textInput.svelte';
 	import { superForm, type Infer, type SuperValidated } from 'sveltekit-superforms';
-   import FormProgress from '$lib/formComponents/FormProgress.svelte';
+   import FormProgress from '$lib/formComponents/FormSubmitWithProgress.svelte';
 	import type { NameFormSchema } from '$lib/formSchemas/schemas';
 	import FormMessage from '$lib/formComponents/FormMessage.svelte';
     
@@ -33,6 +33,5 @@
    name='familyName'
    placeholder='Bear'
    />
-   <button class="btn">Submit</button>
    <FormProgress delayed={$delayed} timeout={$timeout}/>
 </form>

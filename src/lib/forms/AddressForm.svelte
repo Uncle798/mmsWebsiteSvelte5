@@ -5,7 +5,7 @@
 	import { type AddressFormSchema } from '$lib/formSchemas/schemas';
 	import { invalidateAll } from '$app/navigation';
 	import { onMount } from 'svelte';
-	import FormProgress from '$lib/formComponents/FormProgress.svelte';
+	import FormProgress from '$lib/formComponents/FormSubmitWithProgress.svelte';
 	import FormMessage from '$lib/formComponents/FormMessage.svelte';
 
    let {data, addressModalOpen=$bindable(false)}: {
@@ -93,8 +93,5 @@
           {/each}
       </select>
    </label>
-   <div class="flex">   
-      <button class="btn">Submit</button>
       <FormProgress delayed={$delayed} timeout={$timeout}/>
-   </div>
 </form>
