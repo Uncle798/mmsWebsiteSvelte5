@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { PUBLIC_COMPANY_NAME, PUBLIC_STRIPE_TEST } from '$env/static/public';
+    import { PUBLIC_COMPANY_NAME, PUBLIC_STRIPE_TEST, PUBLIC_URL } from '$env/static/public';
     import Invoice from '$lib/displayComponents/Invoice.svelte';
     import { Elements, PaymentElement, LinkAuthenticationElement, Address, } from 'svelte-stripe';
     import { onMount } from 'svelte';
@@ -8,13 +8,14 @@
 
     import type { PageData } from './$types';
 	import { goto } from '$app/navigation';
-	import { defaultValues } from 'sveltekit-superforms';
+	import Header from '$lib/Header.svelte';
+
 
     let { data }: { data: PageData } = $props();
 
-    let stripe:Stripe | null;
-    let clientSecret: string;
-    let elements:StripeElements;
+    let stripe:Stripe | null = $state(null);
+    let clientSecret: string = $state('');
+    let elements:StripeElements | undefined = $state();
     let error = null;
     let processing = $state(false);
     let mounted = $state(false);
@@ -42,8 +43,12 @@
         processing = true;
         const result = await stripe.confirmPayment({
             elements,
-            redirect: 'if_required'
+            clientSecret,
+            confirmParams:{
+                return_url:`${PUBLIC_URL}/newLease/leaseSent?invoiceId=${data.invoice?.invoiceId}`
+            }
         });
+        console.log(elements)
         if(result.error){
             error = result.error;
             processing = false;
@@ -52,24 +57,23 @@
         }
 
     }
+    
 </script>
-<svelte:head>
-	<title>{PUBLIC_COMPANY_NAME} | Pay your deposit</title>
-</svelte:head>
-
+<Header title='Pay your deposit'/>
 {#if !mounted}
     ...loading
     {:else}
     {#if data.invoice}
     <Invoice invoice={data.invoice} />
     {/if}
+    <form onsubmit={submit}>
     <Elements {stripe} clientSecret={clientSecret} bind:elements >
-        <form onsubmit={submit}>
             {#if data.user?.email}
                 <LinkAuthenticationElement defaultValues={{email:data.user.email}} />
             {/if}
             <PaymentElement />
             {#if data.address}
+                Please enter your billing address
                 <Address
                     mode='billing'
                     display={{name: 'split'}}
@@ -77,16 +81,17 @@
                         firstName: data.user?.givenName,
                         lastName: data.user?.familyName,
                         address: {
-                            line1: data.address?.address1,
-                            line2: data.address?.address2,
-                            city: data.address?.city,
-                            state: data.address?.state,
-                            postal_code: data.address?.zip,
+                            line1: data.address.address1,
+                            line2: data.address.address2,
+                            city: data.address.city,
+                            state: data.address.state,
+                            postal_code: data.address.zip,
                             country: data.address.country!
                         }
                     }}
                 />
             {/if}
-        </form>
-    </Elements>
+            <button class="btn">Submit</button>
+        </Elements>
+    </form>
 {/if}
