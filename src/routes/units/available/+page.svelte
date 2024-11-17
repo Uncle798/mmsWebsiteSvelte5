@@ -1,9 +1,10 @@
 <script lang="ts">
-    import type { PageData } from './$types';
+    import Header from '$lib/Header.svelte';
+import type { PageData } from './$types';
     
     let { data }:{data:PageData} = $props();
 </script>
-
+<Header title='Available Units' />
 <div class="table-wrap">
     <table class="table">
         <caption>Available units.</caption>
