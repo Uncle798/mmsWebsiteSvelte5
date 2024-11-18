@@ -28,5 +28,6 @@ export const POST:RequestHandler = async (event) => {
       },
       setup_future_usage: 'off_session'
    })
+   console.log(paymentIntent.id);
    return new Response(JSON.stringify(paymentIntent.client_secret), {status:200});
 }

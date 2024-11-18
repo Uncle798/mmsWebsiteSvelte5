@@ -77,7 +77,6 @@ export const actions:Actions = {
             size: form.data.size,
          }
       })
-      console.log(form.data.lowerPrice);
          if(form.data.price < unit?.advertisedPrice && form.data.lowerPrice === null){
             return message(form, `Please select Lower Price to lower the price of all\
                 ${form.data.size.replace(/^0+/gm,'').replace(/x0/gm,'x')} units.` )

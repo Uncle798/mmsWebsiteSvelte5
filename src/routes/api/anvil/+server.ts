@@ -27,7 +27,7 @@ export const POST: RequestHandler = async (event) => {
             console.log(response);
           })
           .catch((uploadErr: Error<files.UploadError>) => {
-            console.log(uploadErr);
+            console.error(uploadErr);
           });
       }
    }

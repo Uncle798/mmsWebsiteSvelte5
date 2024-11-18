@@ -119,20 +119,17 @@ export async function generateEmailVerificationRequest(userId:string, email: str
          id: userId
       }
    })
-   console.log(user)
-   const del = await prisma.verification.deleteMany({
+   await prisma.verification.deleteMany({
       where: {
          userId: userId,
       }
    })
-   console.log(del)
    const random:RandomReader = {
       read(bytes) {
          crypto.getRandomValues(bytes)
       }
    }
    const code = generateRandomString(random, '0123456789', 8);
-   console.log(code)
    const expiresAt = dayjs(new Date).add(15, 'minutes').toDate();
    await prisma.verification.create({
       data:{

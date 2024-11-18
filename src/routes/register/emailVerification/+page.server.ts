@@ -13,6 +13,9 @@ export const load:PageServerLoad = (async (event) => {
     if(!event.locals.user){
         return fail(401);
     }
+    if(event.locals.user.emailVerified){
+        redirect(302, '/users/' + event.locals.user.id)
+    }
     const emailVerificationForm = await superValidate(zod(emailVerificationFormSchema));
     const verification = await prisma.verification.findFirst({
         where: {
@@ -21,8 +24,6 @@ export const load:PageServerLoad = (async (event) => {
     });
     if(!verification || verification?.expiresAt.getTime() >= Date.now() ){
         const code = await generateEmailVerificationRequest(event.locals.user.id, event.locals.user.email!);
-
-        console.log(dayjs(new Date).format('HH:mm:ss')+" "+ code)
         sendVerificationEmail(code, event.locals.user.email!);
     }
     return { emailVerificationForm };
@@ -41,7 +42,6 @@ export const actions: Actions ={
         if(!emailVerificationForm.valid){
             return superFormFail(400, emailVerificationForm);
         }
-        console.log(emailVerificationForm)
         const { success, reset } = await ratelimit.emailVerification.limit(event.locals.user?.id || event.getClientAddress());
         if(!success) {
             const timeRemaining = Math.floor((reset - Date.now()) / 1000);
@@ -56,13 +56,10 @@ export const actions: Actions ={
             return fail(401, {verify:'Not authenticated'})
         }
         if(verification?.expiresAt.getTime() <= Date.now() ){
-            console.log(verification.expiresAt +  " " + Date.now())
             const code = await generateEmailVerificationRequest(event.locals.user.id, event.locals.user.email!);
             sendVerificationEmail(code, event.locals.user.email!)
-            console.log(dayjs(new Date).format('HH:mm:ss')+" "+ code)
             return message(emailVerificationForm, 'The code had expired, we\'ve sent a new code to the email address on file');
         }
-        console.log(verification);
         if(verification.code !== emailVerificationForm.data.code){
             return message(emailVerificationForm, 'Code was invalid');
         }
@@ -79,8 +76,11 @@ export const actions: Actions ={
                 emailVerified: true
             }
         })
-        console.log(user);
-        redirect(302, '/')
+        const redirectTo = event.url.searchParams.get('redirect');
+        if(redirectTo === 'home'){
+            redirect(302, '/')
+        }
+        return message(emailVerificationForm, 'Email verified');
     },
     resend: async(event) =>{
         if(!event.locals.user){
@@ -89,6 +89,9 @@ export const actions: Actions ={
                     message: 'Not authenticated'
                 }
             })
+        }
+        if(event.locals.user.emailVerified){
+            redirect(302, '/users/' + event.locals.user.id)
         }
         const { success, reset } = await ratelimit.emailVerification.limit(event.locals.user.id);
         if(!success){
@@ -103,7 +106,6 @@ export const actions: Actions ={
             redirect(301, '/register')
         }
         const code = await generateEmailVerificationRequest(event.locals.user.id, event.locals.user.email);
-        console.log(dayjs(new Date).format('HH:mm:ss')+" "+ code)
         sendVerificationEmail(code, event.locals.user.email);
         return {  }
     }
