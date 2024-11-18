@@ -8,21 +8,29 @@
    
    let {
       data, 
-      emailVerificationModalOpen=$bindable(false),
-      redirect=$bindable('')
+      emailVerificationModalOpen=$bindable(),
+      redirect=$bindable(''),
+      emailVerification=$bindable(),
    }:{
       data:SuperValidated<Infer<EmailVerificationFormSchema>>, 
       emailVerificationModalOpen:boolean,
-      redirect:string
+      redirect:string, 
+      emailVerification:Boolean
    } = $props();
    let { form, errors, constraints, message, enhance, submitting, delayed, timeout } = superForm(data, {
-       onUpdate(event) {
-         console.log(event);
+      onSubmit(){
+         emailVerification=false;
+         console.log('onSubmit')
+      }, 
+      onUpdated(event) {
+         emailVerificationModalOpen = false;
+         emailVerification = false;
+         console.log(emailVerification)
        },
    });
 </script>
 <FormMessage message={$message} />
-<form method="POST" action="/register/emailVerification?/verify" use:enhance>
+<form method="POST" action="/register/emailVerification?/verify&redirect={redirect}" use:enhance>
    <TextInput
        label="Code: "
        name="code"

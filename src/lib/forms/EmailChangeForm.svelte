@@ -1,23 +1,21 @@
 <script lang="ts">
    import EmailInput from '$lib/formComponents/EmailInput.svelte';
-	import { superForm, type Infer, type SuperValidated } from 'sveltekit-superforms';
+	import SuperDebug, { superForm, type Infer, type SuperValidated } from 'sveltekit-superforms';
 	import type { EmailFormSchema } from '$lib/formSchemas/schemas';
 	import { invalidateAll } from '$app/navigation';
 	import FormProgress from '$lib/formComponents/FormSubmitWithProgress.svelte';
 	import FormMessage from '$lib/formComponents/FormMessage.svelte';
     
-    let { data, emailModalOpen=$bindable(false), emailVerificationModalOpen=$bindable(false) }: {
+    let { data, emailModalOpen=$bindable(false), emailVerification=$bindable(false) }: {
       data: SuperValidated<Infer<EmailFormSchema>>, 
       emailModalOpen:boolean,
-      emailVerificationModalOpen:boolean
+      emailVerification:boolean
       } = $props();
 
    let { form, message, errors, constraints, enhance, delayed, timeout} = superForm(data, {
-      onUpdate(){
-         emailVerificationModalOpen=true;
-         emailModalOpen=false;
-      }, 
-      
+      onUpdated(){
+         emailVerification=true;
+      },   
    })
 </script>
 <FormMessage message={$message}/>
@@ -36,5 +34,5 @@
       label='Confirm your email'
       name='emailConfirm'
    />
-      <FormProgress delayed={$delayed} timeout={$timeout}/>
+   <FormProgress delayed={$delayed} timeout={$timeout}/>
 </form>

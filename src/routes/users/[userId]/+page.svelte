@@ -13,11 +13,15 @@
     let addressModalOpen = $state(false);
     let nameModalOpen = $state(false);
     let emailModalOpen = $state(false);
+    let emailVerification = $state(false);
     let emailVerificationModalOpen = $state(false);
 </script>
 <Header title='Settings for {data.user?.givenName}' />
 
 <span class="h1">{data.user?.givenName} {data.user?.familyName}</span>
+{#if data.user?.organizationName}
+    <span class="h2">{data.user.organizationName}</span>
+{/if}
 <Modal
 bind:open={nameModalOpen}
 triggerBase="btn preset-tonal"
@@ -56,18 +60,22 @@ backdropClasses="backdrop-blur-sm"
         Change email address
     {/snippet}
     {#snippet content()}
-        <EmailForm data={data.emailForm} bind:emailModalOpen={emailModalOpen} bind:emailVerificationModalOpen={emailVerificationModalOpen} />
-        <button class="btn" onclick={()=>emailModalOpen = false}>Cancel</button>
+        {#if !emailVerification}
+            <EmailForm data={data.emailForm} bind:emailModalOpen={emailModalOpen} bind:emailVerification={emailVerification} />
+        {:else}
+            <EmailVerification data={data.emailVerificationForm} bind:emailVerificationModalOpen={emailVerificationModalOpen} redirect='false' bind:emailVerification={emailVerification}/>
+            {/if}
+            <button class="btn" onclick={()=>emailModalOpen = false}>Cancel</button>
         {/snippet}
 </Modal>
-        
+    
 <Modal
     bind:open={emailVerificationModalOpen}
     contentBase="card bg-surface-400-600 p-4 space-y-4 shadow-xl max-w-screen-sm"
     backdropClasses="backdrop-blur-sm"
     >
     {#snippet content()}
-        <EmailVerification data={data.emailVerificationForm} bind:emailVerificationModalOpen={emailVerificationModalOpen} redirect='false'/>
+        <EmailVerification data={data.emailVerificationForm} bind:emailVerificationModalOpen={emailVerificationModalOpen} redirect='false' bind:emailVerification={emailVerification}/>
         <button class="btn" onclick={()=>emailVerificationModalOpen = false}>Cancel</button>
     {/snippet}
 </Modal>

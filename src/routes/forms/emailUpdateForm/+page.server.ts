@@ -18,7 +18,6 @@ export const actions: Actions = {
             redirect(302, '/login?toast=unauthorized')
         }
         const formData = await event.request.formData();
-        console.log(formData);
         const emailForm = await superValidate(formData, zod(emailFormSchema));
         const { success, reset } = await ratelimit.register.limit(event.getClientAddress())
           if(!success) {

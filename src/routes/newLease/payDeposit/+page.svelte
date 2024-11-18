@@ -41,6 +41,9 @@
             return;
         }
         processing = true;
+        if(!stripe){
+            return;
+        }
         const result = await stripe.confirmPayment({
             elements,
             clientSecret,
@@ -48,7 +51,7 @@
                 return_url:`${PUBLIC_URL}/newLease/leaseSent?invoiceId=${data.invoice?.invoiceId}`
             }
         });
-        console.log(elements)
+        console.log(result)
         if(result.error){
             error = result.error;
             processing = false;
@@ -64,7 +67,7 @@
     ...loading
     {:else}
     {#if data.invoice}
-    <Invoice invoice={data.invoice} />
+        <Invoice invoice={data.invoice} />
     {/if}
     <form onsubmit={submit}>
     <Elements {stripe} clientSecret={clientSecret} bind:elements >
@@ -91,7 +94,7 @@
                     }}
                 />
             {/if}
-            <button class="btn">Submit</button>
+            <button class="btn" onclick={submit}>Submit</button>
         </Elements>
     </form>
 {/if}
