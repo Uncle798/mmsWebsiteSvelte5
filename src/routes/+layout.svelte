@@ -21,7 +21,8 @@
 		{link: '/forms/addressForm', label: 'Address Form'},
 		{link: '/units/available', label:'Available Units'},
 		{link: '/forms/emailUpdateForm', label:'Email update form'},
-		{link: '/newLease', label: 'New lease'}
+		{link: '/newLease', label: 'New lease'},
+		{link: '/minimalReproductions/ModalCloseIssue', label:'Modal Close Reproduction'}
 	]
 	let menuOpen = $state(false);
 
