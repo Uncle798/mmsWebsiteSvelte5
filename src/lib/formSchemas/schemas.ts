@@ -114,6 +114,7 @@ export type AddressFormSchema = typeof addressFormSchema;
 export const nameFormSchema = z.object({
    familyName: z.string().min(1).max(255).trim(),
    givenName: z.string().min(1).max(255).trim(),
+   organizationName: z.string().min(1).max(255).nullable(),
 });
 export type NameFormSchema = typeof nameFormSchema;
 

@@ -26,7 +26,8 @@ export const actions: Actions = {
             },
             data:{
                 givenName: nameForm.data.givenName,
-                familyName: nameForm.data.familyName
+                familyName: nameForm.data.familyName,
+                organizationName: nameForm.data.organizationName
             }
         })
         return message(nameForm, 'Name updated successfully')
