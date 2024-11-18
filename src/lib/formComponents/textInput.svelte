@@ -2,7 +2,7 @@
    import type { InputConstraint } from 'sveltekit-superforms';
    
    interface Props {
-      value:string | undefined;
+      value:string | undefined | null;
       label: string | undefined;
       errors: string[] | undefined;
       constraints: InputConstraint | undefined;
