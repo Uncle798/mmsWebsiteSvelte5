@@ -18,6 +18,6 @@ export const { POST } = serve(
    { 
       env,
       verbose: true,
-      baseUrl: process.env.NODE_ENV === 'development' ? 'https://relative-oryx-endlessly.ngrok-free.app/' : undefined
+      baseUrl: process.env.NODE_ENV === 'development' ? 'https://relative-oryx-endlessly.ngrok-free.app' : undefined
    }
 )
