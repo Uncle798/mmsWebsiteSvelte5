@@ -52,7 +52,7 @@
 				<form action="/logout" method="post" use:enhance>
 					<li><button class="btn">Logout</button></li>
 				</form>
-				<li><a class="btn" href="/users/{data.user.id}">Settings</a></li>
+				<li><a class="btn" href="/accountSettings">Settings</a></li>
 				{:else}
 				<li><a class="btn" href="/login">Login</a></li>
 			{/if}
