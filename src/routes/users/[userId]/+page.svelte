@@ -18,6 +18,7 @@
 </script>
 <Header title='Settings for {data.user?.givenName}' />
 
+
 <span class="h1">{data.user?.givenName} {data.user?.familyName}</span>
 {#if data.user?.organizationName}
     <span class="h2">{data.user.organizationName}</span>
