@@ -12,7 +12,8 @@ export const actions: Actions = {
             return fail(401)
         }
         invalidateSession(event.locals.session.id)
-        deleteSessionTokenCookie(event)
+        deleteSessionTokenCookie(event);
+        event.locals.user = null;
         return redirect(302,'/')
     }
 };
