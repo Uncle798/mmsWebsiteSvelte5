@@ -8,7 +8,7 @@
 </script>
 
 <div class="card p-4">
-   <span class="h2">{user.givenName} {user.familyName}</span>
+   <span class="h2"><a href="/users/{user.id}">{user.givenName} {user.familyName}</a></span>
    {#if user.organizationName}
       <span class="h3">{user.organizationName}</span>
    {/if}
