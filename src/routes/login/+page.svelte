@@ -28,6 +28,13 @@
                 type: 'error'
             })
         }
+        if(toastReason === 'admin'){
+            toast.create({
+                title: 'Unauthorized',
+                description: 'To access that page you must be an Administrator',
+                type: 'error'
+            })
+        }
     })
 </script>
 <Header title='Login' />
