@@ -9,5 +9,10 @@
 
     <Header title='Email Verification' />
     {#if data.emailVerificationForm}
-        <EmailVerificationForm data={data.emailVerificationForm} emailVerificationModalOpen={emailVerificationOpen} redirect='home'/>
+        <EmailVerificationForm 
+            data={data.emailVerificationForm} 
+            emailVerificationModalOpen={emailVerificationOpen} 
+            redirect='home'
+            emailVerification={false}
+        />
     {/if}
