@@ -6,15 +6,14 @@
       lease: Lease;
       customer: PartialUser
    }
-   let { lease, customer }:Props = $props()
+   let { lease }:Props = $props()
 </script>
 
 <div class="card p-4">
-   <span>Customer name: <a href="/users/{customer.id}">{customer.givenName} {customer.familyName}<br/>
-      {#if customer.organizationName}
-         {customer.organizationName}
-      {/if}   
-   </a></span>
+   <span>Unit number: {lease.unitNum}</span>
    <span>Lease effective date {dayjs(lease.leaseEffectiveDate).format('M/D/YYYY')}</span>
+   {#if lease.leaseEnded}
+      <span>Lease end date: {dayjs(lease.leaseEnded).format('M/D/YYYY')}</span>
+   {/if}
    <span>Lease price ${lease.price}</span>
 </div>
