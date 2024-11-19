@@ -22,7 +22,8 @@
 		{link: '/units/available', label:'Available Units'},
 		{link: '/forms/emailUpdateForm', label:'Email update form'},
 		{link: '/newLease', label: 'New lease'},
-		{link: '/minimalReproductions/ModalCloseIssue', label:'Modal Close Reproduction'}
+		{link: '/units', label:'Units'},
+		{link: '/users', label:'Users'}
 	]
 	let menuOpen = $state(false);
 
@@ -31,7 +32,7 @@
 <Modal
 	bind:open={menuOpen}
 	triggerBase="btn preset-tonal"
-	contentBase="bg-surface-100-900 p-2 space-y-2 shadow-xl w-[200px] h-screen"
+	contentBase="bg-surface-100-900 p-2 space-y-2 shadow-xl w-[275px] h-screen"
 	positionerJustify="justify-start"
 	positionerAlign=""
 	positionerPadding=""
