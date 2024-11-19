@@ -27,8 +27,17 @@ export const load:PageServerLoad = async (event) =>{
          },
          where: {
             leaseEnded: null
-         }
+         },
       });
+      const customers = await prisma.lease.findMany({
+         where: {
+            leaseEnded: null
+         },
+         include: {
+            customer: true
+         }
+      })
+      console.log(customers);
       const units = await prisma.unit.findMany({
          orderBy: {
             num: 'asc'
