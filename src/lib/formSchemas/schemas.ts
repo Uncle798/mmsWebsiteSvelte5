@@ -1,17 +1,11 @@
 import { z } from "zod"
 
-export const employeeConfirmSchema = z.object({
+export const employmentFormSchema = z.object({
    employee: z.boolean().nullable(),
    admin: z.boolean().nullable(),
    userId: z.string().min(23).max(30),
 });
-export type EmployeeConfirmSchema = typeof employeeConfirmSchema;
-
-export const adminConfirmSchema = z.object({
-   admin: z.boolean().optional(),
-   userId: z.string().min(23).max(30),
-});
-export type AdminConfirmSchema = typeof adminConfirmSchema;
+export type EmploymentFormSchema = typeof employmentFormSchema;
 
 export const unitPricingFormSchema = z.object({
    size: z.string().min(5).max(7).trim(),
