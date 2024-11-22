@@ -18,7 +18,7 @@ export const actions:Actions = {
       }
       const formData = await event.request.formData();
       const employmentChangeForm = await superValidate(formData, zod(employmentFormSchema));
-      const { success, reset } = await ratelimit.register.limit(event.getClientAddress())
+      const { success, reset } = await ratelimit.register.limit(event.locals.user.id)
       if(!success) {
           const timeRemaining = Math.floor((reset - Date.now()) /1000);
           return message(employmentChangeForm, `Please wait ${timeRemaining}s before trying again.`)
