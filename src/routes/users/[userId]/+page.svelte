@@ -1,5 +1,6 @@
 <script lang="ts">
     import Address from '$lib/displayComponents/Address.svelte';
+	import Invoice from '$lib/displayComponents/Invoice.svelte';
 	import LeaseEmployee from '$lib/displayComponents/LeaseEmployee.svelte';
 import User from '$lib/displayComponents/User.svelte';
 import type { PageData } from './$types';
@@ -25,6 +26,15 @@ import type { PageData } from './$types';
    {#if leases} 
       {#each leases as lease}
          <LeaseEmployee lease={lease} customer={data.dbUser}/>
+      {/each}
+   {/if}
+{/await}
+{#await data.invoicesPromise}
+   ...loading invoices
+{:then invoices}
+   {#if invoices} 
+      {#each invoices as invoice}
+         <Invoice invoice={invoice} />
       {/each}
    {/if}
 {/await}
