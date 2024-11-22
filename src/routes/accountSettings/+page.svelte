@@ -8,6 +8,9 @@
 	import Address from '$lib/displayComponents/Address.svelte';
 	import Header from '$lib/Header.svelte';
 	import { BadgeCheck, Check, Verified } from 'lucide-svelte';
+	import PasswordForm from '$lib/forms/PasswordForm.svelte';
+	import LeaseCustomer from '$lib/displayComponents/LeaseCustomer.svelte';
+	import LeaseEndForm from '$lib/forms/LeaseEndForm.svelte';
     
     let {data}:{ data: PageData} = $props();
     let addressModalOpen = $state(false);
@@ -15,6 +18,13 @@
     let emailModalOpen = $state(false);
     let emailVerification = $state(false);
     let emailVerificationModalOpen = $state(false);
+    let passwordChangeModalOpen = $state(false);
+    let leaseEndModalOpen = $state(false);
+    let currentLeaseId = $state('');
+    function setCurrentLeaseId(leaseId:string){
+        currentLeaseId = leaseId;
+        leaseEndModalOpen = true;
+    }
 </script>
 <Header title='Settings for {data.user?.givenName}' />
 
@@ -37,11 +47,24 @@ backdropClasses="backdrop-blur-sm"
     {/snippet}
 </Modal>
 
+<Modal
+    bind:open={passwordChangeModalOpen}
+    triggerBase="btn preset-tonal"
+    contentBase="card bg-surface-400-600 p-4 space-y-4 shadow-xl max-w-screen-sm"
+    backdropClasses="backdrop-blur-sm"
+>
+    {#snippet trigger()}
+        Change Password
+    {/snippet}
+    {#snippet content()}
+        <PasswordForm data={data.passwordChangeForm} bind:passwordModalOpen={passwordChangeModalOpen}/>
+    {/snippet}
+</Modal> 
 <span class="h4 flex">{data.user?.email}
     {#if data.user?.emailVerified}
     <div class="flex p-1">
         <BadgeCheck />  
-        <div class="h6 p-1">
+        <div class=" p-1">
             Email Verified
         </div>
     </div>
@@ -80,18 +103,21 @@ backdropClasses="backdrop-blur-sm"
     {/snippet}
 </Modal>
 
-{#if data.address}
-    <Address address={data.address} />
-{/if}
-
-<Modal
-	bind:open={addressModalOpen}
-	triggerBase="btn preset-tonal"
-	contentBase="card bg-surface-400-600 p-4 space-y-4 shadow-xl max-w-screen-sm"
-	backdropClasses="backdrop-blur-sm"
->
+{#await data.addressPromise}
+    ...loading address
+{:then address} 
+    {#if address}
+        <Address address={address} />
+    {/if}
+    
+    <Modal
+        bind:open={addressModalOpen}
+        triggerBase="btn preset-tonal"
+        contentBase="card bg-surface-400-600 p-4 space-y-4 shadow-xl max-w-screen-sm"
+        backdropClasses="backdrop-blur-sm"
+    >
     {#snippet trigger()}
-        {#if data.address}
+        {#if address}
             Change Address
         {:else}
             Add address
@@ -102,3 +128,26 @@ backdropClasses="backdrop-blur-sm"
         <button class="btn" onclick={()=>addressModalOpen=false}>Close</button>
     {/snippet}
 </Modal>
+{/await}
+
+{#await data.leasesPromise}
+    ...loading leases
+{:then leases}
+    {#if leases}
+    <Modal 
+        bind:open={leaseEndModalOpen}
+        triggerBase="btn preset-tonal"
+        contentBase="card bg-surface-400-600 p-4 space-y-4 shadow-xl max-w-screen-sm"
+        backdropClasses="backdrop-blur-sm"
+    >
+        {#snippet content()}
+            <LeaseEndForm data={data.leaseEndForm} bind:leaseEndModalOpen={leaseEndModalOpen} leaseId={currentLeaseId}/>
+            <button class="btn" onclick={()=>leaseEndModalOpen=false}>Cancel</button>
+        {/snippet}
+    </Modal>
+        {#each leases as lease}
+            <LeaseCustomer lease={lease} />
+            <button class="btn preset-tonal" onclick={()=> setCurrentLeaseId(lease.leaseId)}>End Lease</button>
+        {/each}
+    {/if}
+{/await}
