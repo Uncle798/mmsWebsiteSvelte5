@@ -4,7 +4,6 @@
 	import dayjs from "dayjs";
    interface Props {
       lease: Lease;
-      customer: PartialUser
    }
    let { lease }:Props = $props()
 </script>
