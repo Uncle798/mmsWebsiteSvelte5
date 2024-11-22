@@ -29,15 +29,17 @@ export const load:PageServerLoad = async (event) =>{
             leaseEnded: null
          },
       });
-      const customers = await prisma.lease.findMany({
-         where: {
-            leaseEnded: null
-         },
-         include: {
-            customer: true
+      const customers:PartialUser[] = [];
+      leases.forEach(async (lease) =>{
+         const customer = await prisma.user.findUnique({
+            where: {
+               id: lease.customerId
+            }
+         });
+         if(customer){
+            customers.push(customer);
          }
       })
-      console.log(customers);
       const units = await prisma.unit.findMany({
          orderBy: {
             num: 'asc'
@@ -62,6 +64,7 @@ export const load:PageServerLoad = async (event) =>{
       return {
          units,
          leases, 
+         customers,
          sizesPrices,
          unitNotesForm,
          unitPricingForm,
@@ -107,14 +110,14 @@ export const actions:Actions = {
    },
    unitComponentForm: async (event) => {
       const formData = await event.request.formData();
-      const unit = await superValidate(formData, zod(unitComponentSchema));
-      if(!form.valid){
-         return fail(400, {form});
+      const unitComponentForm = await superValidate(formData, zod(unitComponentSchema));
+      if(!unitComponentForm.valid){
+         return fail(400, {unitComponentForm});
       }
       const { success, reset } = await ratelimit.login.limit(event.locals.user?.id || event.getClientAddress())
       if(!success) {
          const timeRemaining = Math.floor((reset - Date.now()) /1000);
-         return message(form, `Please wait ${timeRemaining}s before trying again.`)
+         return message(unitComponentForm, `Please wait ${timeRemaining}s before trying again.`)
       }
       await prisma.unit.update({
          where: {
@@ -127,18 +130,4 @@ export const actions:Actions = {
       })
       return { form }
    },
-   endLease: async (event) =>{
-      const formData = await event.request.formData();
-      const endLeaseForm = await superValidate(formData, zod(endLeaseSchema));
-      await prisma.lease.update({
-         where: {
-            leaseId: endLeaseForm.data.leaseId
-         },
-         data:{
-            leaseEnded: new Date,
-         }
-      })
-      return { endLeaseForm }
-   }
-   
 }
