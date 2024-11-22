@@ -1,12 +1,10 @@
 import { prisma } from '$lib/server/prisma';
-import { superValidate } from 'sveltekit-superforms';
+import { fail, superValidate } from 'sveltekit-superforms';
 import type { PageServerLoad, Actions } from './$types';
 import { zod } from 'sveltekit-superforms/adapters';
 import { employmentFormSchema } from '$lib/formSchemas/schemas';
 import { z } from 'zod';
 
-let page:number=0;
-let take:number=25;
 let search:string | null = null;
 const userSearchFormSchema = z.object({
    search: z.string().min(1).max(255),
@@ -23,8 +21,6 @@ export const load = (async () => {
             {familyName: 'asc'},
             {givenName: 'asc'}
          ],
-         take: take,
-         skip: page,
          where: {
             OR:[
                {givenName: {
@@ -39,29 +35,26 @@ export const load = (async () => {
          }
          
       });
-      console.log(users)
-      return { users, userCount,employmentChangeForm, page, take, search, userSearchForm };
+      return { users, userCount,employmentChangeForm, search, userSearchForm };
    }
    const users = await prisma.user.findMany({
       orderBy: [
          {familyName: 'asc'},
          {givenName: 'asc'}
       ],
-      take: take,
-      skip: page,
    });
-   return { users, userCount, employmentChangeForm, page, take, search, userSearchForm };
+   return { users, userCount, employmentChangeForm, search, userSearchForm };
 }) satisfies PageServerLoad;
 
 
 
 export const actions: Actions = {
-   changePage: async (event) => {
-      const formData = await event.request.formData();
-   },
    searchUsers: async (event) => {
       const formData = await event.request.formData();
       const searchForm = await superValidate(formData, zod(userSearchFormSchema));
+      if(!searchForm.valid){
+         fail(500, searchForm);
+      }
       search =  searchForm.data.search;
       return {searchForm}
    }
