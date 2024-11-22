@@ -38,7 +38,6 @@ export const POST: RequestHandler = async (event) => {
                }
                handlePaymentIntent(paymentIntent);
                return new Response(JSON.stringify('ok'), {status: 200});
-               break;
             }
             case 'payment_intent.succeeded':{
                const paymentIntent = stripeEvent.data.object;
@@ -55,7 +54,6 @@ export const POST: RequestHandler = async (event) => {
                }
                handlePaymentIntent(paymentIntent);
                return new Response(JSON.stringify('ok'), {status: 200});
-               break;
 
             }
             default:

@@ -44,6 +44,7 @@
         if(!stripe){
             return;
         }
+        elements?.submit();
         const result = await stripe.confirmPayment({
             elements,
             clientSecret,
@@ -94,7 +95,7 @@
                     }}
                 />
             {/if}
-            <button class="btn" onclick={submit}>Submit</button>
+            <button class="btn" onclick={submit}>Pay deposit of ${data.invoice?.invoiceAmount}</button>
         </Elements>
     </form>
 {/if}
