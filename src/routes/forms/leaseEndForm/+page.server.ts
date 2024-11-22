@@ -40,6 +40,16 @@ export const actions: Actions = {
          data:{
             leaseEnded: new Date,
          }
+      });
+      await prisma.unit.update({
+         where: {
+            num: lease.unitNum,
+         },
+         data: {
+            unavailable: true,
+            notes: 'Customer has ended lease. Need to check if it\'s clear and clean',
+            leasedPrice: null
+         }
       })
       return { leaseEndForm }
    }

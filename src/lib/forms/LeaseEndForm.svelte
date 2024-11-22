@@ -9,7 +9,7 @@
       leaseEndModalOpen: boolean
    }
 
-   let {data, leaseEndModalOpen=$bindable(true), leaseId}:Props = $props()
+   let {data, leaseEndModalOpen=$bindable(false), leaseId}:Props = $props()
    let { form, errors, message, constraints, enhance, delayed, timeout} = superForm(data, {
       onUpdated(){
          leaseEndModalOpen = false;

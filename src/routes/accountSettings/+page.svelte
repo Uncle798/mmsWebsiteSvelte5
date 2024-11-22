@@ -147,7 +147,9 @@ backdropClasses="backdrop-blur-sm"
     </Modal>
         {#each leases as lease}
             <LeaseCustomer lease={lease} />
+            {#if !lease.leaseEnded}
             <button class="btn preset-tonal" onclick={()=> setCurrentLeaseId(lease.leaseId)}>End Lease</button>
+            {/if}
         {/each}
     {/if}
 {/await}
