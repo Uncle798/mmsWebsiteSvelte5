@@ -257,7 +257,7 @@ async function createLease(unit: Unit, leaseStart, leaseEnd: Date | null, randEm
          newUnit.building=unit.building;
          newUnit.num = unit.num;
          newUnit.size = unit.size;
-         newUnit.leasedPrice = price?.price || 0;
+         newUnit.leasedPrice =  0;
          newUnit.advertisedPrice = price?.price || 0;
          newUnit.deposit = price?.price || 5;
          newUnit.description = sD?.description ? sD.description : '';
@@ -266,7 +266,7 @@ async function createLease(unit: Unit, leaseStart, leaseEnd: Date | null, randEm
          newUnit.building=unit.building;
          newUnit.num = unit.num;
          newUnit.size = unit.size;
-         newUnit.leasedPrice = price?.price || 0;
+         newUnit.leasedPrice =  0;
          newUnit.advertisedPrice = price?.price || 0;
          newUnit.deposit = price?.price || 5;
          newUnit.description = sD?.description ? sD.description : '' 
@@ -367,6 +367,21 @@ async function  main (){
    }
    const dbLeases = await prisma.lease.createManyAndReturn({
       data: leases
+   })
+   const currentLeases = await prisma.lease.findMany({
+      where: {
+         leaseEnded: null
+      }
+   })
+   currentLeases.forEach(async(lease)=>{
+      await prisma.unit.update({
+         where: {
+            num: lease.unitNum
+         },
+         data: {
+            leasedPrice: lease.price
+         }
+      })
    })
    const leaseEndTime = dayjs(new Date);
    console.log(`🎫 ${leases.length} leases created in ${leaseEndTime.diff(unitEndTime, 'ms')} ms`);
