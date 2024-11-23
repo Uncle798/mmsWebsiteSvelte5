@@ -38,6 +38,6 @@ export const actions:Actions = {
             employee: employmentChangeForm.data.employee ? true : false,
          }
       })
-      return {employmentChangeForm}
+      return message(employmentChangeForm, 'Employment changed successfully ')
    }
 }

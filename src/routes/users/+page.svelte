@@ -3,23 +3,36 @@
    import User from '$lib/displayComponents/User.svelte';
 	import EmploymentChangeForm from '$lib/forms/EmploymentChangeForm.svelte';
 	import Header from '$lib/Header.svelte';
-   import { createSearchStore, searchHandler } from '$lib/stores/search'
-	import { superForm, superValidate } from 'sveltekit-superforms';
+	import SuperDebug, { superForm, } from 'sveltekit-superforms';
+   import { page } from '$app/stores';
    import type { PageData } from './$types';
 	import type { PartialUser } from '$lib/server/partialTypes';
+	import { goto } from '$app/navigation';
 
    let { data = $bindable() }: { data: PageData } = $props();
-   let {form:searchForm} = superForm(data.userSearchForm);
-   let page = $state(1);
+   let {form:searchForm, enhance} = superForm(data.userSearchForm, {
+      onSubmit(input) {
+         input.cancel()
+         const search = input.formData.get('search')?.toString();
+         console.log(search);
+         if(search){
+            goto(`/users?search=${search}`)
+         }
+      },
+   });
+   let pageNum = $state(1);
    let size = $state(25);
-   let slicedSource = $derived((s:PartialUser[]) => s.slice((page-1)*size, page*size))
+   let slicedSource = $derived((s:PartialUser[]) => s.slice((pageNum-1)*size, pageNum*size))
+   let searchParams = $state();
 </script>
 <Header title='All users' />
-
-<form action="/users?/searchUsers" method="post">
+{#if !data.users}
+   ...loading users
+{:else }
+<form method="post" use:enhance>
    <input type="text" name="search" class="input" placeholder="Search by name" bind:value={$searchForm.search}>
    <button class="btn">Submit</button>
-   <button class="btn" onclick={()=> $searchForm.search = ''}>Clear</button>
+   <button class="btn" onclick={()=> goto('/users', {invalidateAll: true})}>Clear</button>
 </form>
 {#each slicedSource(data.users) as user (user.id)}
 <div class="flex">
@@ -39,5 +52,6 @@
       {/each}
          <option value={data.users.length}>Show all {data.users.length} users</option>
    </select>
-   <Pagination data={data.users} bind:page bind:pageSize={size} count={data.users.length} alternative/>
+   <Pagination data={data.users} bind:page={pageNum} bind:pageSize={size} count={data.users.length} alternative/>
 </footer>
+{/if}

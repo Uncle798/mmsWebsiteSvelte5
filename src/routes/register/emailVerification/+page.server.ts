@@ -1,4 +1,4 @@
-import { fail as superFormFail, message, superValidate } from 'sveltekit-superforms';
+import { fail as superFormFail, superValidate, message } from 'sveltekit-superforms';
 import type { PageServerLoad, Actions } from './$types';
 import { zod } from 'sveltekit-superforms/adapters';
 import { emailVerificationFormSchema } from '$lib/formSchemas/schemas';
@@ -7,14 +7,14 @@ import { ratelimit } from '$lib/server/rateLimit';
 import { generateEmailVerificationRequest } from '$lib/server/authUtils';
 import { sendVerificationEmail } from '$lib/server/mailtrap';
 import { prisma } from '$lib/server/prisma';
-import dayjs from 'dayjs';
 
 export const load:PageServerLoad = (async (event) => {
     if(!event.locals.user){
-        return fail(401);
+        fail(401);
+        return{};
     }
     if(event.locals.user.emailVerified){
-        redirect(302, '/users/' + event.locals.user.id)
+        redirect(302, 'accountSettings')
     }
     const emailVerificationForm = await superValidate(zod(emailVerificationFormSchema));
     const verification = await prisma.verification.findFirst({
@@ -32,10 +32,10 @@ export const load:PageServerLoad = (async (event) => {
 export const actions: Actions ={
     verify: async(event) => {
         if(!event.locals.user){
-            return redirect(302, '/login')
+            redirect(302, '/login')
         }
         if(event.locals.user.emailVerified){
-            return redirect(302, '/');
+            redirect(302, '/');
         }
         const formData = await event.request.formData();
         const emailVerificationForm = await superValidate(formData, zod(emailVerificationFormSchema));
@@ -61,14 +61,14 @@ export const actions: Actions ={
             return message(emailVerificationForm, 'The code had expired, we\'ve sent a new code to the email address on file');
         }
         if(verification.code !== emailVerificationForm.data.code){
-            return message(emailVerificationForm, 'Code was invalid');
+            message(emailVerificationForm, 'Code was invalid');
         }
         await prisma.verification.delete({
             where: {
                 id: verification.id
             }
         })
-        const user = await prisma.user.update({
+        await prisma.user.update({
             where: {
                 id: event.locals.user.id
             },
@@ -107,6 +107,7 @@ export const actions: Actions ={
         }
         const code = await generateEmailVerificationRequest(event.locals.user.id, event.locals.user.email);
         sendVerificationEmail(code, event.locals.user.email);
-        return {  }
+        const message = { message: 'Email sent'}
+        return { message }
     }
 }

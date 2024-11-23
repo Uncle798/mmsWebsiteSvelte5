@@ -19,8 +19,9 @@ export const load:PageServerLoad = async (event) =>{
       throw redirect(302, '/units/available')
    }
    if(event.locals.user.employee){
-      const unitPricingForm = superValidate(zod(unitPricingFormSchema), {id: 'pricingFrom'});
-      const unitNotesForm = superValidate(zod(unitNotesFormSchema), {id: 'unitNotesForm'});
+      const unitPricingForm = await superValidate(zod(unitPricingFormSchema), {id: 'pricingFrom'});
+      const unitNotesForm = await superValidate(zod(unitNotesFormSchema), {id: 'unitNotesForm'});
+      const leaseEndForm = await superValidate(zod(endLeaseSchema));
       const leases = await prisma.lease.findMany({
          orderBy: {
             unitNum: 'asc'
@@ -29,22 +30,13 @@ export const load:PageServerLoad = async (event) =>{
             leaseEnded: null
          },
       });
-      const customers:PartialUser[] = [];
-      leases.forEach(async (lease) =>{
-         const customer = await prisma.user.findUnique({
-            where: {
-               id: lease.customerId
-            }
-         });
-         if(customer){
-            customers.push(customer);
-         }
-      })
+      const customers = await prisma.user.findMany()
       const units = await prisma.unit.findMany({
          orderBy: {
             num: 'asc'
          }
       });
+
       type SizePrice ={
          size: string,
          price: number,
@@ -68,6 +60,7 @@ export const load:PageServerLoad = async (event) =>{
          sizesPrices,
          unitNotesForm,
          unitPricingForm,
+         leaseEndForm
       }
    }
 }
