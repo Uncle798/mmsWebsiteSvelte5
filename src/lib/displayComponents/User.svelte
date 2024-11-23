@@ -8,9 +8,9 @@
 </script>
 
 <div class="card p-4">
-   <span class="h2"><a href="/users/{user.id}">{user.givenName} {user.familyName}</a></span>
+   <p ><a href="/users/{user.id}">{user.givenName} {user.familyName}</a></p>
    {#if user.organizationName}
-      <span class="h3">{user.organizationName}</span>
+      <p >{user.organizationName}</p>
    {/if}
-   <span class="h3">{user.email}</span>
+   <p>{user.email}</p>
 </div>
