@@ -23,6 +23,7 @@ export type  UnitNotesFormSchema = typeof unitNotesFormSchema;
 
 export const endLeaseSchema = z.object({
    leaseId: z.string().min(23).max(30),
+   customer: z.boolean().nullable(),
 })
 export type EndLeaseSchema = typeof endLeaseSchema;
 

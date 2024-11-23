@@ -6,22 +6,25 @@
    interface Props{
       data: SuperValidated<Infer<EndLeaseSchema>>;
       leaseId: string;
+      customer?: boolean;
       leaseEndModalOpen: boolean
    }
 
-   let {data, leaseEndModalOpen=$bindable(false), leaseId}:Props = $props()
+   let {data, leaseEndModalOpen=$bindable(false), leaseId, customer}:Props = $props()
    let { form, errors, message, constraints, enhance, delayed, timeout} = superForm(data, {
       onUpdated(){
          leaseEndModalOpen = false;
       },
       warnings:{
          duplicateId: false,
-      }
+      },
+      invalidateAll: 'force'
    });
 </script>
 
 <FormMessage message={$message} />
 <form action="/forms/leaseEndForm " method="POST" use:enhance>
    <input type="hidden" name="leaseId" id="leaseId" value={leaseId}>
+   <input type="hidden" name="customer" id="customer" value={customer}>
    <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} buttonText="I'm sure I've cleaned out the unit"/>
 </form>

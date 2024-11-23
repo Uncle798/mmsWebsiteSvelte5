@@ -5,6 +5,7 @@ import { zod } from 'sveltekit-superforms/adapters';
 import type { PageServerLoad, Actions } from './$types';
 import { endLeaseSchema } from '$lib/formSchemas/schemas';
 import { prisma } from '$lib/server/prisma';
+import { fail } from '@sveltejs/kit';
 
 export const load = (async () => {
     return {};
@@ -30,7 +31,10 @@ export const actions: Actions = {
             leaseId: leaseEndForm.data.leaseId
          }
       })
-      if(lease?.customerId !== event.locals.user.id){
+      if(!lease){
+         fail(404)
+      }
+      if(lease?.customerId !== event.locals.user.id && !event.locals.user.employee){
          return message(leaseEndForm, 'Not your lease')
       }
       await prisma.lease.update({
@@ -41,13 +45,17 @@ export const actions: Actions = {
             leaseEnded: new Date,
          }
       });
+      let notes = ''
+      if(leaseEndForm.data.customer){
+         notes='Customer has ended lease. Need to check if it\'s clear and clean'
+      }
       await prisma.unit.update({
          where: {
             num: lease.unitNum,
          },
          data: {
-            unavailable: true,
-            notes: 'Customer has ended lease. Need to check if it\'s clear and clean',
+            unavailable: leaseEndForm.data.customer ? true : false,
+            notes,
             leasedPrice: null
          }
       })

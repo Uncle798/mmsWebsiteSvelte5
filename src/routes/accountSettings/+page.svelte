@@ -141,7 +141,7 @@ backdropClasses="backdrop-blur-sm"
         backdropClasses="backdrop-blur-sm"
     >
         {#snippet content()}
-            <LeaseEndForm data={data.leaseEndForm} bind:leaseEndModalOpen={leaseEndModalOpen} leaseId={currentLeaseId}/>
+            <LeaseEndForm data={data.leaseEndForm} bind:leaseEndModalOpen={leaseEndModalOpen} leaseId={currentLeaseId} customer={data.user?.employee}/>
             <button class="btn" onclick={()=>leaseEndModalOpen=false}>Cancel</button>
         {/snippet}
     </Modal>
