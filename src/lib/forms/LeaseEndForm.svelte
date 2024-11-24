@@ -1,8 +1,9 @@
 <script lang='ts'>
    import { superForm, type Infer, type SuperValidated } from "sveltekit-superforms";
-   import { endLeaseSchema, type EndLeaseSchema } from "$lib/formSchemas/schemas";
+   import type { EndLeaseSchema } from "$lib/formSchemas/schemas";
 	import FormMessage from "$lib/formComponents/FormMessage.svelte";
 	import FormSubmitWithProgress from "$lib/formComponents/FormSubmitWithProgress.svelte";
+	import { invalidateAll } from "$app/navigation";
    interface Props{
       data: SuperValidated<Infer<EndLeaseSchema>>;
       leaseId: string;
@@ -14,11 +15,11 @@
    let { form, errors, message, constraints, enhance, delayed, timeout} = superForm(data, {
       onUpdated(){
          leaseEndModalOpen = false;
+         invalidateAll();
       },
       warnings:{
          duplicateId: false,
       },
-      invalidateAll: 'force'
    });
 </script>
 
