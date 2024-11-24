@@ -15,8 +15,8 @@ export const unitPricingFormSchema = z.object({
 export type UnitPricingForm = typeof unitPricingFormSchema;
 
 export const unitNotesFormSchema =  z.object({
-   notes: z.string().optional(),
-   unavailable: z.boolean().nullable(),
+   notes: z.string().nullable(),
+   unavailable: z.boolean(),
    unitNum: z.string().min(3).max(6),
 });
 export type  UnitNotesFormSchema = typeof unitNotesFormSchema;
