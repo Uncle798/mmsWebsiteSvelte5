@@ -5,7 +5,7 @@
 	import User from '$lib/displayComponents/User.svelte';
     import type { PageData } from './$types';
 	import LeaseEndForm from '$lib/forms/LeaseEndForm.svelte';
-	import { invalidateAll } from '$app/navigation';
+	import UnitNotesForm from '$lib/forms/UnitNotesForm.svelte';
 
     let { data }: { data: PageData } = $props();
     let { units, leases, customers,} = data;
@@ -24,8 +24,8 @@
     {#snippet content()}
         {#if data.leaseEndForm}
             <LeaseEndForm data={data.leaseEndForm} leaseId={currentLeaseId} customer={false} bind:leaseEndModalOpen={modalOpen}/>
-            <button class="btn" onclick={()=>modalOpen = false}>Cancel</button>
         {/if}
+        <button class="btn" onclick={()=>modalOpen = false}>Cancel</button>
     {/snippet}
 </Modal>
 
@@ -36,6 +36,9 @@
         {@const lease = leases?.find((lease) => lease.unitNum === unit.num)}
         <div class="flex">
             <UnitEmployee unit={unit} />
+            {#if data.unitNotesForm}
+                <UnitNotesForm data={data.unitNotesForm} unitNum={unit.num} available={unit.unavailable}/>
+            {/if}
             {#if lease}
                 {@const customer = customers?.find((customer) => customer.id === lease.customerId)}
                 <div>
@@ -47,6 +50,5 @@
                 {/if}
             {/if}
         </div>
-
     {/each}
 {/if}

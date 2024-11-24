@@ -68,59 +68,62 @@ export const load:PageServerLoad = async (event) =>{
 export const actions:Actions = {
    changePrice: async (event) => {
       const formData = await event.request.formData();
-      const form = await superValidate(formData, zod(unitPricingFormSchema));
-      if(!form.valid){
-         return fail(400, {form});
+      const unitPricingForm = await superValidate(formData, zod(unitPricingFormSchema));
+      if(!unitPricingForm.valid){
+         return fail(400, {unitPricingForm});
       }
       const { success, reset } = await ratelimit.login.limit(event.locals.user?.id || event.getClientAddress())
 		if(!success) {
          const timeRemaining = Math.floor((reset - Date.now()) /1000);
-			return message(form, `Please wait ${timeRemaining}s before trying again.`)
+			return message(unitPricingForm, `Please wait ${timeRemaining}s before trying again.`)
 		}
       const unit = await prisma.unit.findFirst({
          where: {
-            size: form.data.size,
+            size: unitNotesFormSchema.data.size,
          }
       })
-         if(form.data.price < unit?.advertisedPrice && form.data.lowerPrice === null){
-            return message(form, `Please select Lower Price to lower the price of all\
-                ${form.data.size.replace(/^0+/gm,'').replace(/x0/gm,'x')} units.` )
+      if(!unit?.size){
+         return message(unitPricingForm, 'Size of unit not found')
+      }
+         if(unitPricingForm.data.price < unit?.advertisedPrice && unitPricingForm.data.lowerPrice === null){
+            return message(unitPricingForm, `Please select Lower Price to lower the price of all\
+                ${unitPricingForm.data.size.replace(/^0+/gm,'').replace(/x0/gm,'x')} units.` )
          }
-         if(form.data.price === unit?.advertisedPrice && form.data.lowerPrice === null){
-            return message(form, 
-               `No change in price for ${form.data.size.replace(/^0+/gm,'').replace(/x0/gm,'x')} units.` )
+         if(unitPricingForm.data.price === unit?.advertisedPrice && unitPricingForm.data.lowerPrice === null){
+            return message(unitPricingForm, 
+               `No change in price for ${unitPricingForm.data.size.replace(/^0+/gm,'').replace(/x0/gm,'x')} units.` )
          }
       const units = await prisma.unit.updateMany({
          where: {
-            size: form.data.size,
+            size: unitPricingForm.data.size,
          },
          data: {
-            advertisedPrice: form.data.price
+            advertisedPrice: unitPricingForm.data.price
          }
       })
       console.log(units)
-      return { form }
+      return { unitPricingForm }
    },
-   unitComponentForm: async (event) => {
+   unitNotesForm: async (event) => {
       const formData = await event.request.formData();
-      const unitComponentForm = await superValidate(formData, zod(unitComponentSchema));
-      if(!unitComponentForm.valid){
-         return fail(400, {unitComponentForm});
+      const unitNotesForm = await superValidate(formData, zod(unitNotesFormSchema));
+      if(!unitNotesForm.valid){
+         return fail(400, {unitNotesForm});
       }
       const { success, reset } = await ratelimit.login.limit(event.locals.user?.id || event.getClientAddress())
       if(!success) {
          const timeRemaining = Math.floor((reset - Date.now()) /1000);
-         return message(unitComponentForm, `Please wait ${timeRemaining}s before trying again.`)
+         return message(unitNotesForm, `Please wait ${timeRemaining}s before trying again.`)
       }
       await prisma.unit.update({
          where: {
-            num: form.data.unitNum,
+            num: unitNotesForm.data.unitNum,
          },
          data:{
-            unavailable: form.data.unavailable || false,
-            notes: form.data.notes,
+            unavailable: unitNotesForm.data.unavailable || false,
+            notes: unitNotesForm.data.notes,
          }
       })
-      return { form }
+      return { unitNotesForm }
    },
 }
