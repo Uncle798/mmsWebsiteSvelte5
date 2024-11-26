@@ -21,11 +21,11 @@ export const unitNotesFormSchema =  z.object({
 });
 export type  UnitNotesFormSchema = typeof unitNotesFormSchema;
 
-export const endLeaseSchema = z.object({
+export const leaseEndFormSchema = z.object({
    leaseId: z.string().min(23).max(30),
    customer: z.boolean().nullable(),
 })
-export type EndLeaseSchema = typeof endLeaseSchema;
+export type LeaseEndFormSchema = typeof leaseEndFormSchema;
 
 export const newLeaseSchema = z.object({
    unitNum: z.string().min(3).max(9),
@@ -143,3 +143,8 @@ export const emailVerificationFormSchema = z.object({
    code: z.string().min(8).max(8)
 })
 export type EmailVerificationFormSchema = typeof emailVerificationFormSchema;
+
+export const userSearchFormSchema = z.object({
+   search: z.string().min(1).max(255),
+});
+export type UserSearchFormSchema = typeof userSearchFormSchema;
