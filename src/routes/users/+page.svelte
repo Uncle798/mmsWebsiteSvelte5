@@ -3,18 +3,16 @@
    import User from '$lib/displayComponents/User.svelte';
 	import EmploymentChangeForm from '$lib/forms/EmploymentChangeForm.svelte';
 	import Header from '$lib/Header.svelte';
-	import SuperDebug, { superForm, } from 'sveltekit-superforms';
-   import { page } from '$app/stores';
+	import { superForm, } from 'sveltekit-superforms';
    import type { PageData } from './$types';
 	import type { PartialUser } from '$lib/server/partialTypes';
 	import { goto } from '$app/navigation';
 
-   let { data = $bindable() }: { data: PageData } = $props();
+   let { data }: { data: PageData } = $props();
    let {form:searchForm, enhance} = superForm(data.userSearchForm, {
       onSubmit(input) {
          input.cancel()
          const search = input.formData.get('search')?.toString();
-         console.log(search);
          if(search){
             goto(`/users?search=${search}`)
          }
@@ -22,8 +20,7 @@
    });
    let pageNum = $state(1);
    let size = $state(25);
-   let slicedSource = $derived((s:PartialUser[]) => s.slice((pageNum-1)*size, pageNum*size))
-   let searchParams = $state();
+   let slicedSource = $derived((s:PartialUser[]) => s.slice((pageNum-1)*size, pageNum*size));
 </script>
 <Header title='All users' />
 {#if !data.users}
