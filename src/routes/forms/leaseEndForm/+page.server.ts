@@ -3,7 +3,7 @@ import { superValidate, message } from 'sveltekit-superforms';
 import { ratelimit } from "$lib/server/rateLimit";
 import { zod } from 'sveltekit-superforms/adapters';
 import type { PageServerLoad, Actions } from './$types';
-import { endLeaseSchema } from '$lib/formSchemas/schemas';
+import { leaseEndFormSchema } from '$lib/formSchemas/schemas';
 import { prisma } from '$lib/server/prisma';
 import { fail } from '@sveltejs/kit';
 
@@ -17,7 +17,7 @@ export const actions: Actions = {
          redirect(302, '/login?toast=unauthorized');
       }
       const formData = await event.request.formData();
-      const leaseEndForm = await superValidate(formData, zod(endLeaseSchema));
+      const leaseEndForm = await superValidate(formData, zod(leaseEndFormSchema));
       const { success, reset } = await ratelimit.register.limit(event.locals.user.id)
       if(!success) {
           const timeRemaining = Math.floor((reset - Date.now()) /1000);
@@ -51,7 +51,7 @@ export const actions: Actions = {
       }
       await prisma.unit.update({
          where: {
-            num: lease.unitNum,
+            num: lease?.unitNum,
          },
          data: {
             unavailable: leaseEndForm.data.customer ? true : false,
