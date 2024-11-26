@@ -23,7 +23,8 @@
 		{link: '/forms/emailUpdateForm', label:'Email update form'},
 		{link: '/newLease', label: 'New lease'},
 		{link: '/units', label:'Units'},
-		{link: '/users', label:'Users'}
+		{link: '/users', label:'Users'},
+		{link: '/users/customers', label: 'Customers'}
 	]
 	let menuOpen = $state(false);
 
