@@ -4,7 +4,7 @@ import type { PageServerLoad, Actions } from './$types';
 import { zod } from 'sveltekit-superforms/adapters';
 import { addressFormSchema } from '$lib/formSchemas/schemas';
 import { prisma } from '$lib/server/prisma';
-import { redirect } from '@sveltejs/kit';
+import { fail, redirect } from '@sveltejs/kit';
 
 export const load:PageServerLoad = (async () => {
    const addressForm = await superValidate(zod(addressFormSchema));
@@ -17,21 +17,30 @@ export const actions: Actions = {
       if(!event.locals.user){
          redirect(302, '/login?toast=unauthorized')
       }
+      const userId = event.url.searchParams.get('userId');
+      if(!userId){
+         return fail(400, {message: 'User not specified'})
+      }
       const formData = await event.request.formData();
       const addressForm = await superValidate(formData, zod(addressFormSchema));
       const { success, reset } = await ratelimit.register.limit(event.locals.user.id)
 		if(!success) {
-			const timeRemaining = Math.floor((reset - Date.now()) /1000);
+         const timeRemaining = Math.floor((reset - Date.now()) /1000);
 			return message(addressForm, `Please wait ${timeRemaining}s before trying again.`)
 		}
-      const oldAddress = await prisma.contactInfo.findFirst({
+      if( !event.locals.user.employee && userId !== event.locals.user.id){
+         return fail(403, {message: 'Not your address to change'});
+      }
+      let oldAddress = await prisma.contactInfo.findFirst({
          where: {
-            userId: event.locals.user.id,
-            softDelete: false
+            AND: [
+               {userId: userId},
+               {softDelete: false},
+            ]
          }
       });
       if(oldAddress){
-         await prisma.contactInfo.update({
+         oldAddress = await prisma.contactInfo.update({
             where:{
                contactId: oldAddress.contactId
             },
@@ -41,13 +50,12 @@ export const actions: Actions = {
          })
       }
       const newAddress = {
-         userId: event.locals.user.id,
+         userId,
          ...addressForm.data
       }
       await prisma.contactInfo.create({
          data: newAddress
       })
-
       return message(addressForm, 'Address updated')
    }
 };
