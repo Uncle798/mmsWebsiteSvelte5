@@ -29,7 +29,7 @@ export const actions:Actions = {
       if(employmentChangeForm.data.userId === event.locals.user.id){
          return message(employmentChangeForm, 'Unable to change own employment status'); 
       }
-      const user = await prisma.user.update({
+      await prisma.user.update({
          where: {
             id: employmentChangeForm.data.userId,
          },

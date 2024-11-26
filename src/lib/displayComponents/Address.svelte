@@ -3,7 +3,7 @@
    interface Props {
       address: ContactInfo;
    }
-   let {address}:Props = $props()
+   let { address = $bindable() }:Props = $props()
 </script>
 
 <div class="card p-4">
@@ -11,5 +11,5 @@
    {#if address.address2}
       <p>{address.address2}</p>
    {/if}
-   <p>{address.city.trim()}, {address.state.trim()}, {address.zip.trim()}</p>
+   <p>{address.city}, {address.state}, {address.zip}</p>
 </div>

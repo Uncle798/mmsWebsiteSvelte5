@@ -1,14 +1,12 @@
 import { prisma } from '$lib/server/prisma';
-import { fail, superValidate } from 'sveltekit-superforms';
+import {  superValidate } from 'sveltekit-superforms';
 import type { PageServerLoad, Actions } from './$types';
 import { zod } from 'sveltekit-superforms/adapters';
 import { employmentFormSchema } from '$lib/formSchemas/schemas';
-import { z } from 'zod';
+import { userSearchFormSchema } from '$lib/formSchemas/schemas';
 
 
-const userSearchFormSchema = z.object({
-   search: z.string().min(1).max(255),
-})
+
 
 export const load = (async (event) => {
    const employmentChangeForm = await superValidate(zod(employmentFormSchema));
