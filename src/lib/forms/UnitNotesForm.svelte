@@ -4,7 +4,7 @@
 	import type { Infer, SuperValidated } from "sveltekit-superforms";
 	import FormMessage from "$lib/formComponents/FormMessage.svelte";
 	import FormSubmitWithProgress from "$lib/formComponents/FormSubmitWithProgress.svelte";
-	import TextInput from "$lib/formComponents/textInput.svelte";
+	import TextInput from "$lib/formComponents/TextInput.svelte";
 	import { Switch } from "@skeletonlabs/skeleton-svelte";
 	import { invalidateAll } from "$app/navigation";
 

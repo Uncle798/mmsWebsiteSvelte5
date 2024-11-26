@@ -12,7 +12,7 @@ export const unitPricingFormSchema = z.object({
    price: z.number().int().min(0).max(10000),
    lowerPrice: z.boolean().nullable(),
 });
-export type UnitPricingForm = typeof unitPricingFormSchema;
+export type UnitPricingFormSchema = typeof unitPricingFormSchema;
 
 export const unitNotesFormSchema =  z.object({
    notes: z.string().nullable(),

@@ -1,5 +1,5 @@
 <script lang="ts">
-   import TextInput from '$lib/formComponents/textInput.svelte';
+   import TextInput from '$lib/formComponents/TextInput.svelte';
 	import { superForm, type Infer, type SuperValidated } from 'sveltekit-superforms';
    import FormProgress from '$lib/formComponents/FormSubmitWithProgress.svelte';
 	import type { NameFormSchema } from '$lib/formSchemas/schemas';

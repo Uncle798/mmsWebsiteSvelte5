@@ -1,6 +1,6 @@
 <script lang="ts">
    import { superForm, type SuperValidated, type Infer } from 'sveltekit-superforms';
-   import TextInput from '$lib/formComponents/textInput.svelte';
+   import TextInput from '$lib/formComponents/TextInput.svelte';
    import countries from '$lib/countryCodes.json'
 	import { type AddressFormSchema } from '$lib/formSchemas/schemas';
 	import { invalidateAll } from '$app/navigation';

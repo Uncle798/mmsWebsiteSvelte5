@@ -1,6 +1,6 @@
 <script lang="ts">
    import { superForm, type Infer, type SuperValidated } from "sveltekit-superforms";  
-   import TextInput from '$lib/formComponents/textInput.svelte';
+   import TextInput from '$lib/formComponents/TextInput.svelte';
    import type { EmailVerificationFormSchema } from "$lib/formSchemas/schemas";
    import FormProgress from "$lib/formComponents/FormSubmitWithProgress.svelte";
    import { invalidateAll } from "$app/navigation";
@@ -20,12 +20,10 @@
    let { form, errors, constraints, message, enhance, submitting, delayed, timeout } = superForm(data, {
       onSubmit(){
          emailVerification=false;
-         console.log('onSubmit')
       }, 
       onUpdated(event) {
          emailVerificationModalOpen = false;
          emailVerification = false;
-         console.log(emailVerification)
        },
    });
 </script>

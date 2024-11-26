@@ -1,6 +1,6 @@
 <script lang="ts">
    import { superForm } from "sveltekit-superforms";  
-   import TextInput from "$lib/formComponents/textInput.svelte";
+   import TextInput from "$lib/formComponents/TextInput.svelte";
 	import type { PageData } from "./$types";
    import { zxcvbn, zxcvbnOptions, type Score } from "@zxcvbn-ts/core";
 	import * as zxcvbnCommonPackage from "@zxcvbn-ts/language-common";
