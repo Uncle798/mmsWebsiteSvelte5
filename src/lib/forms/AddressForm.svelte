@@ -8,13 +8,16 @@
 	import FormProgress from '$lib/formComponents/FormSubmitWithProgress.svelte';
 	import FormMessage from '$lib/formComponents/FormMessage.svelte';
 
-   let {data, addressModalOpen=$bindable(false)}: {
+   let {data, addressModalOpen=$bindable(false), userId }: {
       data:SuperValidated<Infer<AddressFormSchema>>, 
       addressModalOpen:boolean,
+      userId: string
       } = $props();
    let { form, message, errors, constraints, enhance, delayed, timeout} = superForm(data, {
       onUpdate() {
-         addressModalOpen=false;
+         if(!$message){
+            addressModalOpen=false;
+         }
          invalidateAll();
       },
       delayMs: 500,
@@ -39,7 +42,7 @@
 
 <span class="h2">Update your address</span>
 <FormMessage message={$message} />
-<form action='/forms/addressForm' method='POST' use:enhance>
+<form action='/forms/addressForm?userId={userId}' method='POST' use:enhance>
     <TextInput
       bind:value={$form.address1}
       errors={$errors.address1}
