@@ -1,11 +1,11 @@
-import {  PrismaClient, User, PaymentType, Unit, ContactInfo, Lease } from '@prisma/client';
+import {  PrismaClient, User, PaymentType, Unit, ContactInfo, Lease, } from '@prisma/client';
 import { faker } from '@faker-js/faker';
 import dayjs  from 'dayjs';
 import { hash } from '@node-rs/argon2';
 import  unitData from './unitData'
 import pricingData  from './pricingData'
 import sizeDescription  from './sizeDescription'
-import { PartialContactInfo, PartialLease, PartialInvoice, PartialPaymentRecord, PartialUnit } from '../src/lib/server/partialTypes'
+import { PartialContactInfo, PartialLease, PartialInvoice, PartialPaymentRecord, PartialUnit,  PartialDiscount } from '../src/lib/server/partialTypes'
 const numUsers=unitData.length + 1500;
 const earliestStarting = new Date('2018-01-01');
 const hashedPass = await hash(String(process.env.USER_PASSWORD), {
@@ -48,6 +48,9 @@ async function deleteAll() {
    await prisma.lease.deleteMany().catch((err) =>{
       console.error(err);
    });
+   await prisma.discountCode.deleteMany().catch((err) => {
+      console.error(err);
+   })
    await prisma.unit.deleteMany().catch((err) =>{
       console.error(err);
    });
@@ -292,6 +295,16 @@ function makeInvoice(lease:Lease, month:Date){
    return invoice;
 }
 
+function makeDiscount(employee:User){
+   const discount:PartialDiscount ={
+      code: 'Test5Off',
+      notes: 'This is a test discount',
+      amountOff: 5,
+      userId: employee.id
+   }
+   return discount
+}
+
 async function  main (){
    const deleteStartTime = dayjs(new Date);
    await deleteAll();
@@ -382,6 +395,10 @@ async function  main (){
             leasedPrice: lease.price
          }
       })
+   });
+   const discount = makeDiscount(employees[0])
+   await prisma.discountCode.create({
+      data: discount
    })
    const leaseEndTime = dayjs(new Date);
    console.log(`🎫 ${leases.length} leases created in ${leaseEndTime.diff(unitEndTime, 'ms')} ms`);
@@ -398,7 +415,7 @@ async function  main (){
       data: invoices,
    })
    const invoiceEndTime = dayjs(new Date);
-   console.log(`💰 ${invoices.length} invoices created in ${invoiceEndTime.diff(leaseEndTime, 'ms')} ms`);
+   console.log(`💰 ${invoices.length} invoices created in ${invoiceEndTime.diff(leaseEndTime, 's')} sec`);
    const paymentRecords:PartialPaymentRecord[]=[];
    for await (const invoice of dbInvoices){
       const paymentDate = dayjs(invoice.invoiceCreated).add(1, 'months');
@@ -436,7 +453,7 @@ async function  main (){
    })                      
    const paymentEndTime = dayjs(new Date);
    const totalRecords = await countAll();
-   console.log(`🧾 ${paymentRecords.length} payment records created in ${paymentEndTime.diff(invoiceEndTime, 'ms')} ms`);
+   console.log(`🧾 ${paymentRecords.length} payment records created in ${paymentEndTime.diff(invoiceEndTime, 's')} sec`);
    console.log(`🖥️  ${totalRecords} database entries created in ${paymentEndTime.diff(deleteStartTime, 'second')} sec`);
 }
 

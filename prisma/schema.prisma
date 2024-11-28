@@ -9,25 +9,26 @@ datasource db {
 }
 
 model User {
-  id               String          @id @unique @default(cuid()) @map("id")
-  createdAt        DateTime        @default(now()) @map("created_at")
-  updatedAt        DateTime?       @updatedAt @map("updated_at")
-  email            String?         @unique
-  givenName        String?
-  familyName       String?
-  organizationName String?
-  emailVerified    Boolean?        @map("email_verified")
-  passwordHash     String?         @map("password_hash")
-  employee         Boolean         @default(false)
-  admin            Boolean         @default(false)
-  contactInfo      ContactInfo[]
-  customerInvoices Invoice[]
-  customerLeases   Lease[]         @relation("customer")
-  employeeLeases   Lease[]         @relation("employee")
-  paymentMade      PaymentRecord[] @relation("customer")
-  paymentReceived  PaymentRecord[] @relation("employee")
-  session          Session[]
-  verification     Verification[]
+  id                   String          @id @unique @default(cuid()) @map("id")
+  createdAt            DateTime        @default(now()) @map("created_at")
+  updatedAt            DateTime?       @updatedAt @map("updated_at")
+  email                String?         @unique
+  givenName            String?
+  familyName           String?
+  organizationName     String?
+  emailVerified        Boolean?        @map("email_verified")
+  passwordHash         String?         @map("password_hash")
+  employee             Boolean         @default(false)
+  admin                Boolean         @default(false)
+  contactInfo          ContactInfo[]
+  customerInvoices     Invoice[]
+  customerLeases       Lease[]         @relation("customer")
+  employeeLeases       Lease[]         @relation("employee")
+  paymentMade          PaymentRecord[] @relation("customer")
+  paymentReceived      PaymentRecord[] @relation("employee")
+  session              Session[]
+  verification         Verification[]
+  employeeDiscountCode DiscountCode[]
 
   @@unique([id, email])
   @@unique([email, givenName, familyName])
@@ -68,26 +69,44 @@ model Unit {
 }
 
 model Lease {
-  leaseId            String      @id @unique @default(cuid())
+  leaseId            String        @id @unique @default(cuid())
   customerId         String
   employeeId         String
   contactInfoId      String
   unitNum            String
   price              Int
-  leaseCreatedAt     DateTime    @default(now())
+  discount           Int?
+  discountId         String?
+  leaseCreatedAt     DateTime      @default(now())
   leaseReturnedAt    DateTime?
   leaseEffectiveDate DateTime
   leaseEnded         DateTime?
   dropboxURL         String?
-  anvilEID           String?     @unique
+  anvilEID           String?       @unique
   invoices           Invoice[]
-  contactInfo        ContactInfo @relation(fields: [contactInfoId], references: [contactId], onDelete: NoAction, onUpdate: NoAction)
-  customer           User        @relation("customer", fields: [customerId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  employee           User        @relation("employee", fields: [employeeId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  unit               Unit        @relation(fields: [unitNum], references: [num])
+  contactInfo        ContactInfo   @relation(fields: [contactInfoId], references: [contactId], onDelete: NoAction, onUpdate: NoAction)
+  customer           User          @relation("customer", fields: [customerId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  employee           User          @relation("employee", fields: [employeeId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  unit               Unit          @relation(fields: [unitNum], references: [num])
+  discountCode       DiscountCode? @relation(fields: [discount, discountId], references: [amountOff, discountId])
 
   @@unique([leaseId, unitNum, price])
   @@index([leaseId, leaseCreatedAt(sort: Desc)])
+}
+
+model DiscountCode {
+  discountId      String    @id @unique @default(cuid())
+  code            String    @unique
+  amountOff       Int
+  notes           String?
+  discountCreated DateTime  @default(now())
+  discountEnded   DateTime?
+  employee        User      @relation(fields: [userId], references: [id])
+  leases          Lease[]
+  userId          String
+
+  @@unique([discountId, amountOff])
+  @@map("discountCode")
 }
 
 model PaymentRecord {
@@ -139,12 +158,12 @@ model Session {
 }
 
 model Verification {
-  id         String   @id @default(cuid())
-  code       String
-  userId     String   @map("user_id")
-  email      String
-  expiresAt  DateTime @map("expires_at")
-  user       User     @relation(fields: [userId, email], references: [id, email])
+  id        String   @id @default(cuid())
+  code      String
+  userId    String   @map("user_id")
+  email     String
+  expiresAt DateTime @map("expires_at")
+  user      User     @relation(fields: [userId, email], references: [id, email])
 
   @@map("verification")
 }
