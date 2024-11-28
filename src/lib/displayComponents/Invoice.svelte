@@ -8,7 +8,8 @@
 </script>
 
 <div class="card p-4">
-   <span>${invoice.invoiceAmount}</span>
-   <span>Created: {dayjs(invoice.invoiceCreated).format('M/D/YYYY')}</span>
+   <p>${invoice.invoiceAmount}</p>
+   <p>Created: {dayjs(invoice.invoiceCreated).format('M/D/YYYY')}</p>
+   <p>{invoice.invoiceNotes}</p>
    
 </div>
