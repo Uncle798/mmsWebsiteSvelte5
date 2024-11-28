@@ -16,6 +16,5 @@ export const load = (async (event) => {
          leases: true,
       }
    });
-   console.log(discounts);
    return { discounts, newDiscountForm, discountEndForm };
 }) satisfies PageServerLoad;

@@ -9,9 +9,8 @@ import { unitPricingFormSchema } from '$lib/formSchemas/schemas';
 export const actions: Actions = {
    default: async (event) => {
       const formData = await event.request.formData();
-      console.log('formData', formData)
       const unitPricingForm = await superValidate(formData, zod(unitPricingFormSchema));
-      console.log('unitPricingForm: ', unitPricingForm);
+      
       if(!unitPricingForm.valid){
          return fail(400, {unitPricingForm});
       }
@@ -36,7 +35,7 @@ export const actions: Actions = {
          return message(unitPricingForm, 
             `No change in price for ${unitPricingForm.data.size.replace(/^0+/gm,'').replace(/x0/gm,'x')} units.` )
       }
-      const units = await prisma.unit.updateMany({
+      await prisma.unit.updateMany({
          where: {
             size: unitPricingForm.data.size,
          },
@@ -44,7 +43,6 @@ export const actions: Actions = {
             advertisedPrice: unitPricingForm.data.price
          }
       })
-      console.log(units)
       return { unitPricingForm }
    },
 };
