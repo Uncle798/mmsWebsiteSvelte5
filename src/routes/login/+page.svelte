@@ -35,6 +35,13 @@
                 type: 'error'
             })
         }
+        if(toastReason === 'employee'){
+            toast.create({
+                title: 'Unauthorized',
+                description: 'To access that page you must be an employee',
+                type: 'error'
+            })
+        }
     })
 </script>
 <Header title='Login' />
@@ -59,3 +66,4 @@
     />
     <FormProgress delayed={$delayed} timeout={$timeout}/>  
 </form>
+<a href="/register" class="btn">Register new account</a>
