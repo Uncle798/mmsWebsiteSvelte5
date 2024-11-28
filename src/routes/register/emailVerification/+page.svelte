@@ -4,7 +4,10 @@
 	import type { PageData } from "./$types";
     
     let {data, emailVerificationOpen=$bindable(false)}: {data:PageData, emailVerificationOpen:boolean} = $props();
-
+    let  redirectTo= $state(data.redirectTo);
+    if(!data.redirectTo){
+        redirectTo = 'home'
+    }
 </script>
 
     <Header title='Email Verification' />
@@ -12,7 +15,7 @@
         <EmailVerificationForm 
             data={data.emailVerificationForm} 
             emailVerificationModalOpen={emailVerificationOpen} 
-            redirect='home'
+            redirect={redirectTo}
             emailVerification={false}
         />
     {/if}

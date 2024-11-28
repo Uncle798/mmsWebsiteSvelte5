@@ -17,8 +17,8 @@ import { sendVerificationEmail } from "$lib/server/mailtrap";
 export const load:PageServerLoad = (async (event) =>{
 	const unitNum = event.url.searchParams.get('unitNum');
    const registerForm = await superValidate(zod(registerFormSchema))
-	
-   return { unitNum, registerForm }
+	const redirectTo = event.url.searchParams.get('redirectTo')
+   return { unitNum, registerForm, redirectTo }
 })
 
 

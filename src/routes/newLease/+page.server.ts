@@ -8,18 +8,18 @@ import { ratelimit } from "$lib/server/rateLimit";
 import { fail } from "@sveltejs/kit";
 
 export const load:PageServerLoad = (async (event) =>{
+   const unitNum = event.url.searchParams.get('unitNum');
+   if(!unitNum){
+      redirect(302, '/units/available');
+   }
    if(!event.locals.user){
-      redirect(302, '/login?redirectTo=newLease')
+      redirect(302, `/login?redirectTo=newLease&unitNum=${unitNum}`)
    }
    const leaseForm = await superValidate(zod(newLeaseSchema));
    const nameForm = await superValidate(zod(nameFormSchema));
    const addressForm = await superValidate(zod(addressFormSchema));
    const leaseDiscountForm = await superValidate(zod(leaseDiscountFormSchema));
    const discountId = event.url.searchParams.get('discountId');
-   const unitNum = event.url.searchParams.get('unitNum');
-   if(!unitNum){
-      redirect(302, '/units/available');
-   }
    const unit = await prisma.unit.findUnique({
       where: {
          num: unitNum,
@@ -27,6 +27,7 @@ export const load:PageServerLoad = (async (event) =>{
    }).catch((err) =>{
       console.error(err);
    });
+
    const address = await prisma.contactInfo.findFirst({
       where:{
          userId:event.locals.user.id
@@ -80,8 +81,10 @@ export const actions:Actions = {
 
       const currentLease = await prisma.lease.findFirst({
          where:{
-            unitNum: unit?.num,
-            leaseEnded: null,
+            AND:[
+               {unitNum: unit?.num},
+               {leaseEnded: null},
+            ]
          }
       }).catch((err) => {
          console.error(err);

@@ -27,7 +27,9 @@ export const load:PageServerLoad = (async (event) => {
         const code = await generateEmailVerificationRequest(event.locals.user.id, event.locals.user.email!);
         sendVerificationEmail(code, event.locals.user.email!);
     }
-    return { emailVerificationForm };
+    const redirectTo = event.url.searchParams.get('redirectTo');
+    const unitNum = event.url.searchParams.get('unitNum')
+    return { emailVerificationForm, redirectTo, unitNum };
 })
 
 export const actions: Actions ={
@@ -78,8 +80,12 @@ export const actions: Actions ={
             }
         })
         const redirectTo = event.url.searchParams.get('redirect');
+        const unitNum = event.url.searchParams.get('unitNum');
         if(redirectTo === 'home'){
             redirect(302, '/')
+        }
+        if(redirectTo){
+            redirect(302, `/${redirectTo}?unitNum=${unitNum}`)
         }
         return message(emailVerificationForm, 'Email verified');
     },

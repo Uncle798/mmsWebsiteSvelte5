@@ -8,7 +8,7 @@ export const load:PageServerLoad = (async (event) => {
    }
    const invoiceId = event.url.searchParams.get('invoiceId');
    if(!invoiceId){
-      fail(404,{message:'unable to find invoice'})
+      return {}
    }
    const invoice = await prisma.invoice.findUnique({
       where: {

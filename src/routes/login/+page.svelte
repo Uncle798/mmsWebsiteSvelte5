@@ -47,7 +47,7 @@
 <Header title='Login' />
 
 <FormMessage message={$message} />
-<form action="/login" method="POST" use:enhance>
+<form action="/login?redirectTo={data.redirectTo}&unitNum={data.unitNum}" method="POST" use:enhance>
     <EmailInput
         label='Email'
         name='email'
@@ -66,4 +66,4 @@
     />
     <FormProgress delayed={$delayed} timeout={$timeout}/>  
 </form>
-<a href="/register" class="btn">Register new account</a>
+<a href="/register?redirectTo={data.redirectTo}&unitNum={data.unitNum}" class="btn">Register new account</a>

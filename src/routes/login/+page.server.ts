@@ -11,12 +11,15 @@ import { sendVerificationEmail } from '$lib/server/mailtrap';
 
 export const load:PageServerLoad = (async (event) => {
     const loginForm = await superValidate(zod(loginSchema));
-    const toast = await event.url.searchParams.get('toast');
-    return { loginForm, toast };
+    const toast =  event.url.searchParams.get('toast');
+    const redirectTo = event.url.searchParams.get('redirectTo');
+    const unitNum = event.url.searchParams.get('unitNum');
+    return { loginForm, toast, redirectTo, unitNum };
 })
 
 export const actions:Actions = {
     default: async (event) =>{
+        
         const formData = await event.request.formData();
         const loginForm = await superValidate(formData, zod(loginSchema));
         if(!loginForm.valid){
@@ -24,7 +27,7 @@ export const actions:Actions = {
         }
         const { success, reset } = await ratelimit.login.limit(event.getClientAddress())
 		if(!success) {
-			const timeRemaining = Math.floor((reset - Date.now()) /1000);
+            const timeRemaining = Math.floor((reset - Date.now()) /1000);
 			return message(loginForm, `Please wait ${timeRemaining}s before trying again.`)
 		}
         const user = await prisma.user.findFirst({
@@ -50,10 +53,15 @@ export const actions:Actions = {
         const token = generateSessionToken();
         const session = await createSession(token, user.id);
         setSessionTokenCookie(event, token, session.expiresAt);
+        const redirectTo = event.url.searchParams.get('redirectTo');
+        const unitNum = event.url.searchParams.get('unitNum');
         if(!user.emailVerified){
             const code = await generateEmailVerificationRequest(user.id, user.email!);
             sendVerificationEmail(code, user.email!);
-            redirect(302, '/register/emailVerification')
+            redirect(302, `/register/emailVerification?redirectTo=${redirectTo}&unitNum=${unitNum}`)
+        }
+        if(redirectTo){
+            redirect(302, `/${redirectTo}?unitNum=${unitNum}`)
         }
         redirect(302,'/');
     }

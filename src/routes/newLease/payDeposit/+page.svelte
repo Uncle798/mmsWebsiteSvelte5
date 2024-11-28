@@ -52,7 +52,6 @@
                 return_url:`${PUBLIC_URL}/newLease/leaseSent?invoiceId=${data.invoice?.invoiceId}`
             }
         });
-        console.log(result)
         if(result.error){
             error = result.error;
             processing = false;
@@ -69,33 +68,21 @@
     {:else}
     {#if data.invoice}
         <Invoice invoice={data.invoice} />
+        <div class="p-4">
+            
+            <form onsubmit={submit}>
+                <Elements {stripe} clientSecret={clientSecret} bind:elements >
+                    <!-- {#if data.user?.email}
+                    <LinkAuthenticationElement defaultValues={{email:data.user.email}} />
+                    {/if} -->
+                    <PaymentElement />
+                    {#if processing}
+                    processing...
+                    {:else}
+                    <button class="btn" onclick={submit}>Pay deposit of ${data.invoice?.invoiceAmount}</button>
+                    {/if}
+                </Elements>
+            </form>
+        </div>
     {/if}
-    <form onsubmit={submit}>
-    <Elements {stripe} clientSecret={clientSecret} bind:elements >
-            {#if data.user?.email}
-                <LinkAuthenticationElement defaultValues={{email:data.user.email}} />
-            {/if}
-            <PaymentElement />
-            {#if data.address}
-                Please enter your billing address
-                <Address
-                    mode='billing'
-                    display={{name: 'split'}}
-                    defaultValues={{
-                        firstName: data.user?.givenName,
-                        lastName: data.user?.familyName,
-                        address: {
-                            line1: data.address.address1,
-                            line2: data.address.address2,
-                            city: data.address.city,
-                            state: data.address.state,
-                            postal_code: data.address.zip,
-                            country: data.address.country!
-                        }
-                    }}
-                />
-            {/if}
-            <button class="btn" onclick={submit}>Pay deposit of ${data.invoice?.invoiceAmount}</button>
-        </Elements>
-    </form>
 {/if}
