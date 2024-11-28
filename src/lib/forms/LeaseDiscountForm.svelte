@@ -19,14 +19,16 @@ import type { LeaseDiscountFormSchema } from "$lib/formSchemas/schemas";
 
 <FormMessage message={$message} />
 <form action='/forms/leaseDiscountForm' method="post" use:enhance>
-   <TextInput
+   <div class="card p-4">
+      <TextInput
       bind:value={$form.code}
       errors={$errors.code}
       constraints={$constraints.code}
       label="Discount Code:"
       name='code'
       placeholder='optional'
-   />
-   <input type="hidden" name="unitNum" value={unitNum} />
-   <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} />
+      />
+      <input type="hidden" name="unitNum" value={unitNum} />
+      <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} buttonText="Apply discount"/>
+   </div>
 </form>
