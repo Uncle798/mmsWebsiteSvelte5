@@ -9,7 +9,7 @@
    let { discount }:Props = $props();
 </script>
 
-<div class="card">
+<div class="card p-4">
    <p>Code: {discount.code}</p>
    <p>Amount Off: ${discount.amountOff}</p>
    <p>Notes: {discount.notes}</p>
