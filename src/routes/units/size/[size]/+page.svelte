@@ -8,6 +8,11 @@
 
    let { data }: { data: PageData } = $props();
    let unitPricingModalOpen = $state(false);
+   let currentOldPrice = $state();
+   function openModal(oldPrice: number){
+      currentOldPrice = oldPrice;
+      unitPricingModalOpen = true
+   }
 </script>
 <Header title='All {data.size} units' />
 <Modal
@@ -17,7 +22,7 @@
    backdropClasses=""
 >  
 {#snippet content()}
-   <UnitPricingForm data={data.unitPricingForm} bind:unitPricingFormModalOpen={unitPricingModalOpen} size={data.size}/>
+   <UnitPricingForm data={data.unitPricingForm} bind:unitPricingFormModalOpen={unitPricingModalOpen} size={data.size} oldPrice={currentOldPrice}/>
    <button class="btn" onclick={()=>unitPricingModalOpen = false}>Close</button>
 {/snippet}
 
@@ -28,7 +33,7 @@
    <div class="flex">
       <div>
       <UnitEmployee unit={unit}/>
-      <button class="btn " onclick={()=> unitPricingModalOpen=true}>Change all {data.size.replace(/^0+/gm,'').replace(/x0/gm,'x')} prices</button>
+      <button class="btn " onclick={()=> openModal(unit.advertisedPrice)}>Change all {data.size.replace(/^0+/gm,'').replace(/x0/gm,'x')} prices</button>
    </div>
       {#each lease as l}
       <LeaseEmployee lease={l} />
