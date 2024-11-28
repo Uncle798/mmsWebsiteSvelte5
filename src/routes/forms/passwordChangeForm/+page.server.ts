@@ -56,5 +56,16 @@ export const actions: Actions = {
             passwordHash: hashedPass
          }
       })
+      const { session } = event.locals
+      await prisma.session.deleteMany({
+         where: {
+            AND:[
+               { userId: event.locals.user.id},
+               { id: {
+                  not: session?.id
+               } }
+            ]
+         }
+      })
    }
 };
