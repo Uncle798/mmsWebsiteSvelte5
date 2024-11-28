@@ -76,3 +76,13 @@ export const partialUnit = Prisma.validator<Prisma.UnitDefaultArgs>()({
    }
 })
 export type PartialUnit = Prisma.UnitGetPayload<typeof partialUnit>
+
+export const partialDiscount = Prisma.validator<Prisma.DiscountCodeDefaultArgs>()({
+   select: {
+      code: true,
+      notes: true,
+      userId: true,
+      amountOff: true,
+   }
+})
+export type PartialDiscount = Prisma.DiscountCodeGetPayload<typeof partialDiscount>

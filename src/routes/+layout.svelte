@@ -24,7 +24,8 @@
 		{link: '/newLease', label: 'New lease'},
 		{link: '/units', label:'Units'},
 		{link: '/users', label:'Users'},
-		{link: '/users/customers', label: 'Customers'}
+		{link: '/users/customers', label: 'Customers'},
+		{link: '/discounts', label: 'Discounts'}
 	]
 	let menuOpen = $state(false);
 

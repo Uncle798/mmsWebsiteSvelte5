@@ -1,11 +1,11 @@
 import  {prisma} from "$lib/server/prisma";
 import type { Actions, PageServerLoad } from './$types';
 import {superValidate, message } from 'sveltekit-superforms';
-import { addressFormSchema, nameFormSchema, newLeaseSchema } from "$lib/formSchemas/schemas";
+import { addressFormSchema, leaseDiscountFormSchema, nameFormSchema, newLeaseSchema } from "$lib/formSchemas/schemas";
 import { zod } from 'sveltekit-superforms/adapters';
 import { redirect } from "@sveltejs/kit";
 import { ratelimit } from "$lib/server/rateLimit";
-import { fail } from "assert";
+import { fail } from "@sveltejs/kit";
 
 export const load:PageServerLoad = (async (event) =>{
    if(!event.locals.user){
@@ -14,6 +14,8 @@ export const load:PageServerLoad = (async (event) =>{
    const leaseForm = await superValidate(zod(newLeaseSchema));
    const nameForm = await superValidate(zod(nameFormSchema));
    const addressForm = await superValidate(zod(addressFormSchema));
+   const leaseDiscountForm = await superValidate(zod(leaseDiscountFormSchema));
+   const discountId = event.url.searchParams.get('discountId');
    const unitNum = event.url.searchParams.get('unitNum');
    if(!unitNum){
       redirect(302, '/units/available');
@@ -25,15 +27,22 @@ export const load:PageServerLoad = (async (event) =>{
    }).catch((err) =>{
       console.error(err);
    });
-   
    const address = await prisma.contactInfo.findFirst({
       where:{
          userId:event.locals.user.id
       }
    }).catch((err) =>{
       console.error(err);
-   })
-   return { leaseForm, address, addressForm, nameForm, unit }
+   });
+   if(discountId){
+      const discount = await prisma.discountCode.findUnique({
+         where: {
+            discountId
+         }
+      })
+      return { leaseForm, address, addressForm, nameForm, unit, leaseDiscountForm, discount }
+   }
+   return { leaseForm, address, addressForm, nameForm, unit, leaseDiscountForm, unitNum }
 })
 
 
@@ -65,6 +74,10 @@ export const actions:Actions = {
       }).catch((err) =>{
          console.error(err);
       })
+      if(!unit){
+         return fail(404, {message: 'Unit not found'})
+      }
+
       const currentLease = await prisma.lease.findFirst({
          where:{
             unitNum: unit?.num,
@@ -83,27 +96,36 @@ export const actions:Actions = {
          }
       })
       if(!address){
-         return fail('unable to find address')
+         return fail(400, {message: 'unable to find address'})
       }
       const employees = await prisma.user.findMany({
          where:{
             employee: true,
          }
       })
+      const discount = await prisma.discountCode.findFirst({
+         where: {
+            discountId: leaseForm.data.discountId
+         }
+      })
+      let price = unit.advertisedPrice;
+      if(discount){
+         price = unit.advertisedPrice - discount.amountOff
+      }
       const employee = employees[Math.floor(Math.random()*employees.length)];
       const lease = await prisma.lease.create({
          data:{
             customerId: customer!.id,
             employeeId: employee.id,
             unitNum: leaseForm.data.unitNum,
-            price:unit!.advertisedPrice,
+            price,
             contactInfoId:address?.contactId,
             leaseEffectiveDate: new Date(),
          }
       })
       const invoice = await prisma.invoice.create({
          data:{
-            invoiceAmount: lease.price,
+            invoiceAmount: unit.deposit,
             customerId: lease.customerId,
             leaseId: lease.leaseId,
             invoiceNotes:'Deposit for unit ' + lease.unitNum.replace(/^0+/gm,''), 

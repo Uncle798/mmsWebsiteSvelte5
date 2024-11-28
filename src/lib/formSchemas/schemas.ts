@@ -30,6 +30,7 @@ export type LeaseEndFormSchema = typeof leaseEndFormSchema;
 export const newLeaseSchema = z.object({
    unitNum: z.string().min(3).max(9),
    organization: z.boolean(),
+   discountId: z.string().min(23).max(30).optional(),
 })
 export type NewLeaseSchema = typeof newLeaseSchema;
 
@@ -104,6 +105,7 @@ export const addressFormSchema = z.object({
    phoneNum1: z.string().min(10).max(12).trim(),
    phoneNum1Country: z.string().min(2).max(2).trim(),
 });
+
 export type AddressFormSchema = typeof addressFormSchema;
 
 export const nameFormSchema = z.object({
@@ -148,3 +150,21 @@ export const userSearchFormSchema = z.object({
    search: z.string().min(1).max(255),
 });
 export type UserSearchFormSchema = typeof userSearchFormSchema;
+
+export const leaseDiscountFormSchema = z.object({
+   code: z.string().min(8).max(255).nullable(),
+   unitNum: z.string().min(3).max(8),
+})
+export type LeaseDiscountFormSchema = typeof leaseDiscountFormSchema;
+
+export const newDiscountFormSchema = z.object({
+   code: z.string().min(8).max(255),
+   amountOff: z.number().min(0),
+   notes: z.string().nullable()
+})
+export type NewDiscountFormSchema = typeof newDiscountFormSchema;
+
+export const discountEndFormSchema = z.object({
+   discountId: z.string().min(23).max(36)
+});
+export type DiscountEndFormSchema = typeof discountEndFormSchema;

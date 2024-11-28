@@ -10,6 +10,7 @@
 	import Checkbox from '$lib/formComponents/Checkbox.svelte';
 	import FormMessage from '$lib/formComponents/FormMessage.svelte';
 	import Header from '$lib/Header.svelte';
+	import LeaseDiscountForm from '$lib/forms/LeaseDiscountForm.svelte';
     
     let { data }: {data:PageData} = $props();
     let { form, message, errors, constraints, enhance, delayed, timeout } = superForm(data.leaseForm);
@@ -44,18 +45,25 @@
             Add address
         {/snippet}
         {#snippet content()}
-            <AddressForm data={data.addressForm} bind:addressModalOpen={addressModalOpen}/>
+            <AddressForm data={data.addressForm} bind:addressModalOpen={addressModalOpen} userId={data.user?.id}/>
             <button class="btn" onclick={()=>addressModalOpen=false}>Close</button>
         {/snippet}
     </Modal>
     {/if}
     {#if data.unit}
-        <UnitCustomer unit={data.unit} />
-        <input type="hidden" name="unitNum" value={data.unit.num}>
+    <UnitCustomer unit={data.unit} />
+    <input type="hidden" name="unitNum" value={data.unit.num}>
+    {#if data.discount}
+    Discount ${data.discount.amountOff}
+    Monthly Rent: ${data.unit.advertisedPrice! - data.discount.amountOff}
+    {/if}
     {/if}
     <div class="flex">
         {#if data.unit && data.address}
-            <FormProgress delayed={$delayed} timeout={$timeout} buttonText='The above is correct I would like to pay my deposit'/>
+        <FormProgress delayed={$delayed} timeout={$timeout} buttonText='The above is correct I would like to pay my deposit'/>
         {/if}
     </div>
 </form>
+{#if !data.discount}
+<LeaseDiscountForm data={data.leaseDiscountForm} unitNum={data.unitNum} />
+{/if}
