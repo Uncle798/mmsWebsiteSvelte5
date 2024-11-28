@@ -11,7 +11,7 @@
    let {data, addressModalOpen=$bindable(false), userId }: {
       data:SuperValidated<Infer<AddressFormSchema>>, 
       addressModalOpen:boolean,
-      userId: string
+      userId: string | undefined
       } = $props();
    let { form, message, errors, constraints, enhance, delayed, timeout} = superForm(data, {
       onUpdate() {

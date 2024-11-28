@@ -11,9 +11,10 @@
    interface Props {
       data: SuperValidated<Infer<UnitPricingFormSchema>>
       unitPricingFormModalOpen?: boolean
-      size: string
+      size: string,
+      oldPrice: number
    }
-   let { data, unitPricingFormModalOpen=$bindable(false), size} = $props();
+   let { data, unitPricingFormModalOpen=$bindable(false), size, oldPrice} = $props();
    let { form, message, errors, constraints, enhance, delayed, timeout} = superForm(data, {
       onUpdated(){
          unitPricingFormModalOpen=false;
@@ -25,11 +26,12 @@
 <FormMessage message={$message} />
 
 <form action="/forms/unitPricingForm" method="POST" use:enhance>
+   Change all {size.replace(/^0+/gm,'').replace(/x0/gm,'x')} units from ${oldPrice} to 
    <NumberInput
       bind:value={$form.price}
       errors={$errors.price}
       constraints={$constraints.price}
-      label='Price'
+      label='new price $'
       name='price'
    />
    <Switch

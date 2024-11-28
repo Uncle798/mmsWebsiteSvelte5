@@ -1,4 +1,4 @@
-import { message, superValidate } from 'sveltekit-superforms';
+import { fail, message, superValidate } from 'sveltekit-superforms';
 import { ratelimit } from "$lib/server/rateLimit";
 import type { PageServerLoad, Actions } from './$types';
 import { zod } from 'sveltekit-superforms/adapters';
@@ -23,6 +23,9 @@ export const actions: Actions = {
 			const timeRemaining = Math.floor((reset - Date.now()) /1000);
 			return message(nameForm, `Please wait ${timeRemaining}s before trying again.`)
 		}
+        if(!nameForm.valid){
+            fail(400, nameForm);
+        }
         await prisma.user.update({
             where:{
                 id: event.locals.user?.id

@@ -22,7 +22,8 @@ export const load:PageServerLoad = (async (event) => {
             userId: event.locals.user?.id
         }
     });
-    if(!verification || verification?.expiresAt.getTime() >= Date.now() ){
+    console.log('verification: ', verification);
+    if(!verification || verification?.expiresAt.getTime() <= Date.now() ){
         const code = await generateEmailVerificationRequest(event.locals.user.id, event.locals.user.email!);
         sendVerificationEmail(code, event.locals.user.email!);
     }

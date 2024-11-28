@@ -9,9 +9,9 @@
 </script>
 
 <div class="card p-4">
-   <span>Unit number: {lease.unitNum.replace(/^0+/gm, '')}</span>
-   <span>Lease effective date {dayjs(lease.leaseEffectiveDate).format('M/D/YYYY')}</span>
+   <p>Unit number: {lease.unitNum.replace(/^0+/gm, '')}</p>
+   <p>Lease effective date {dayjs(lease.leaseEffectiveDate).format('M/D/YYYY')}</p>
    {#if lease.leaseEnded}
-      <span>Lease end date: {dayjs(lease.leaseEnded).format('M/D/YYYY')}</span>
+      <p>Lease end date: {dayjs(lease.leaseEnded).format('M/D/YYYY')}</p>
    {/if}
 </div>
