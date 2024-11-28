@@ -11,7 +11,7 @@ export const POST: RequestHandler = async (event) => {
    const data = await event.request.json();
    console.log(data);
    if(data.token === ANVIL_WEBHOOK_TOKEN){
-      const decrypted = decryptRSA(key, data.data.weld.slug);
+      const decrypted = decryptRSA(key, data.data);
       console.log(decrypted);
       if(decrypted.etchPacket.completedAt){
          const lease = await prisma.lease.update({
