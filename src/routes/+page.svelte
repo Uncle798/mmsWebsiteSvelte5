@@ -15,3 +15,4 @@ import type { PageData } from "./$types";
    {:else}
    Welcome to the {PUBLIC_COMPANY_NAME} home page. 
 {/if}
+ <p>See what <a href="/units/available">units we have available</a></p>
