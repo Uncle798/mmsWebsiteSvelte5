@@ -24,6 +24,12 @@ export const POST: RequestHandler = async (event) => {
             case 'payment_intent.created': {
                const paymentIntent = stripeEvent.data.object;
                const handlePaymentIntent = async (intent:typeof paymentIntent)=> {
+                  const invoice = await prisma.invoice.findFirst({
+                     where: {
+                        invoiceId: intent.metadata.invoiceId
+                     }
+                  });
+
                   await prisma.paymentRecord.create({
                      data: {
                         invoiceId: intent.metadata.invoiceId,
@@ -33,6 +39,7 @@ export const POST: RequestHandler = async (event) => {
                         paymentId: intent.id,
                         unitNum: intent.metadata.unitNum,
                         payee: intent.metadata.customerId,
+                        paymentNotes: `Payment for invoice number: ${invoice?.invoiceNum}`
                      }
                   })
                }
