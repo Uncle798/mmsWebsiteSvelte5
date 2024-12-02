@@ -144,10 +144,10 @@ export const emailVerificationFormSchema = z.object({
 });
 export type EmailVerificationFormSchema = typeof emailVerificationFormSchema;
 
-export const userSearchFormSchema = z.object({
+export const searchFormSchema = z.object({
    search: z.string().min(1).max(255),
 });
-export type UserSearchFormSchema = typeof userSearchFormSchema;
+export type SearchFormSchema = typeof searchFormSchema;
 
 export const leaseDiscountFormSchema = z.object({
    code: z.string().min(8).max(255).nullable(),
@@ -166,3 +166,11 @@ export const discountEndFormSchema = z.object({
    discountId: z.string().min(23).max(30)
 });
 export type DiscountEndFormSchema = typeof discountEndFormSchema;
+
+export const newInvoiceFormSchema = z.object({
+   customerId: z.string().min(23).max(30),
+   invoiceNotes: z.string().nullable(),
+   employeeId: z.string().min(23).max(30),
+   invoiceAmount: z.number()
+})
+export type NewInvoiceFormSchema = typeof newInvoiceFormSchema;
