@@ -9,7 +9,7 @@
 	import { goto } from '$app/navigation';
 
    let { data }: { data: PageData } = $props();
-   let {form:searchForm, enhance} = superForm(data.userSearchForm, {
+   let {form:searchForm, enhance} = superForm(data.searchForm, {
       onSubmit(input) {
          input.cancel()
          const search = input.formData.get('search')?.toString();

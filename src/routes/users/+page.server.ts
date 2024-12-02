@@ -3,14 +3,14 @@ import {  superValidate } from 'sveltekit-superforms';
 import type { PageServerLoad, Actions } from './$types';
 import { zod } from 'sveltekit-superforms/adapters';
 import { employmentFormSchema } from '$lib/formSchemas/schemas';
-import { userSearchFormSchema } from '$lib/formSchemas/schemas';
+import { searchFormSchema } from '$lib/formSchemas/schemas';
 
 
 
 
 export const load = (async (event) => {
    const employmentChangeForm = await superValidate(zod(employmentFormSchema));
-   const userSearchForm = await superValidate(zod(userSearchFormSchema));
+   const searchForm = await superValidate(zod(searchFormSchema));
    const userCount = await prisma.user.count();
    const search = event.url.searchParams.get('search');
    if(search){
@@ -33,7 +33,7 @@ export const load = (async (event) => {
          }
          
       });
-      return { users, userCount,employmentChangeForm, search, userSearchForm };
+      return { users, userCount,employmentChangeForm, search, searchForm };
    }
    const users = await prisma.user.findMany({
       orderBy: [
@@ -41,7 +41,7 @@ export const load = (async (event) => {
          {givenName: 'asc'}
       ],
    });
-   return { users, userCount, employmentChangeForm, search, userSearchForm };
+   return { users, userCount, employmentChangeForm, search, searchForm };
 }) satisfies PageServerLoad;
 
 
@@ -49,7 +49,7 @@ export const load = (async (event) => {
 export const actions: Actions = {
    default: async (event) => {
       const formData = await event.request.formData();
-      const searchForm = await superValidate(formData, zod(userSearchFormSchema));
+      const searchForm = await superValidate(formData, zod(searchFormSchema));
       return {searchForm}
    }
 };
