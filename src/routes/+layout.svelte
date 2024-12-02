@@ -22,7 +22,11 @@
 		{link: '/units', label:'Units'},
 		{link: '/users', label:'Users'},
 		{link: '/users/customers', label: 'Customers'},
-		{link: '/discounts', label: 'Discounts'}
+		{link: '/discounts', label: 'Discounts'},
+		{link: '/paymentRecords', label: 'Payment Records'},
+		{link: '/paymentRecords/new', label:'New Payment Record'},
+		{link: '/invoices', label: 'Invoices'},
+		{link: '/invoices/new', label: 'New Invoice'}
 	]
 	let menuOpen = $state(false);
 
