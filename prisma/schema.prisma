@@ -21,7 +21,8 @@ model User {
   employee             Boolean         @default(false)
   admin                Boolean         @default(false)
   contactInfo          ContactInfo[]
-  customerInvoices     Invoice[]
+  customerInvoices     Invoice[]       @relation("customer")
+  employeeInvoices     Invoice[]       @relation("employee")
   customerLeases       Lease[]         @relation("customer")
   employeeLeases       Lease[]         @relation("employee")
   paymentMade          PaymentRecord[] @relation("customer")
@@ -134,13 +135,15 @@ model Invoice {
   invoiceId       String         @id @unique @default(cuid())
   invoiceNum      Int            @default(autoincrement())
   customerId      String?
+  employeeId      String?
   leaseId         String
   invoiceAmount   Int
   invoiceCreated  DateTime       @default(now())
   paymentRecordId String?
   invoicePaid     DateTime?
   invoiceNotes    String?
-  customer        User?          @relation(fields: [customerId], references: [id])
+  customer        User?          @relation("customer", fields: [customerId], references: [id])
+  employee        User?          @relation("employee", fields: [employeeId], references: [id])
   lease           Lease?         @relation(fields: [leaseId], references: [leaseId])
   paymentRecord   PaymentRecord? @relation(fields: [paymentRecordId, invoicePaid], references: [paymentId, paymentCompleted])
 
