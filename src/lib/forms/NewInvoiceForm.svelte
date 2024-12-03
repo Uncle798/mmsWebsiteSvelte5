@@ -1,6 +1,8 @@
 <script lang='ts'>
 	import FormMessage from "$lib/formComponents/FormMessage.svelte";
+	import FormSubmitWithProgress from "$lib/formComponents/FormSubmitWithProgress.svelte";
 	import NumberInput from "$lib/formComponents/NumberInput.svelte";
+	import TextInput from "$lib/formComponents/TextInput.svelte";
 import type { NewInvoiceFormSchema } from "$lib/formSchemas/schemas";
 	import type { PartialUser } from "$lib/server/partialTypes";
 	import type { SuperValidated, Infer } from "sveltekit-superforms";
@@ -27,9 +29,19 @@ import type { NewInvoiceFormSchema } from "$lib/formSchemas/schemas";
       label='Invoice amount: $'
       name='invoiceAmount'
    />
-   <select class="select" name='customerId' bind:value={$form.customerId}>
-      {#each customers as customer}
+   <label for="customerId">Customer: 
+      <select class="select" name='customerId' bind:value={$form.customerId}>
+         {#each customers as customer}
          <option value={customer.id}>{customer.givenName} {customer.familyName}</option>
-      {/each}
-   </select>
+         {/each}
+      </select>
+   </label>
+   <TextInput
+      bind:value={$form.invoiceNotes}
+      errors={$errors.invoiceNotes}
+      constraints={$constraints.invoiceNotes}
+      label="Invoice notes"
+      name='invoiceNotes'
+   />
+   <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} />
 </form>
