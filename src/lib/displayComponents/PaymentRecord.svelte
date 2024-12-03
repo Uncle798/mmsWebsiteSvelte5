@@ -10,6 +10,7 @@
 </script>
 
 <div class="card p-4">
+   <p>Payment Record Number: {paymentRecord.paymentNumber}</p>
    <p>${paymentRecord.paymentAmount}</p>
    <p>Payment completed { dayjs(paymentRecord.paymentCompleted).format('M/D/YYYY')}</p>
    {#if paymentRecord.paymentNotes}
