@@ -174,3 +174,8 @@ export const newInvoiceFormSchema = z.object({
    invoiceAmount: z.number()
 })
 export type NewInvoiceFormSchema = typeof newInvoiceFormSchema;
+
+export const magicLinkFormSchema = z.object({
+   email: z.string().min(5)
+});
+export type MagicLinkFormSchema  = typeof magicLinkFormSchema;
