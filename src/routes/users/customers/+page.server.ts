@@ -3,13 +3,13 @@ import type { Actions, PageServerLoad } from './$types';
 import { prisma } from '$lib/server/prisma';
 import { superValidate } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
-import { userSearchFormSchema } from '$lib/formSchemas/schemas';
+import { searchFormSchema } from '$lib/formSchemas/schemas';
 
 export const load = (async (event) => {
    if(!event.locals.user?.employee){
       redirect(302, '/login?toast=employee')
    }
-   const userSearchForm = await superValidate(zod(userSearchFormSchema))
+   const userSearchForm = await superValidate(zod(searchFormSchema))
    const customers = await prisma.user.findMany({
       where: {
          customerLeases: {
@@ -43,7 +43,7 @@ export const load = (async (event) => {
 export const actions: Actions = {
    default: async (event) => {
       const formData = await event.request.formData();
-      const searchForm = await superValidate(formData, zod(userSearchFormSchema));
+      const searchForm = await superValidate(formData, zod(searchFormSchema));
       return {searchForm}
    }
 };

@@ -19,7 +19,6 @@ export const load:PageServerLoad = (async (event) => {
 
 export const actions:Actions = {
     default: async (event) =>{
-        
         const formData = await event.request.formData();
         const loginForm = await superValidate(formData, zod(loginSchema));
         if(!loginForm.valid){
@@ -64,5 +63,5 @@ export const actions:Actions = {
             redirect(302, `/${redirectTo}?unitNum=${unitNum}`)
         }
         redirect(302,'/');
-    }
+    },
 }   
