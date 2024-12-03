@@ -111,8 +111,7 @@ model DiscountCode {
 }
 
 model PaymentRecord {
-  paymentId        String      @id @unique @default(cuid())
-  paymentNumber    Int         @default(autoincrement())
+  paymentNumber    Int         @id @unique @default(autoincrement())
   customerId       String
   unitNum          String?
   paymentAmount    Int
@@ -122,33 +121,26 @@ model PaymentRecord {
   paymentCompleted DateTime?
   paymentNotes     String?
   paymentType      PaymentType
-  invoiceId        String?
+  invoiceNum       Int? @unique
   invoice          Invoice?
   customer         User        @relation("customer", fields: [customerId], references: [id])
   receiver         User?       @relation("employee", fields: [receiverId], references: [id])
 
-  @@unique([paymentCompleted, paymentId])
-  @@index([paymentId, paymentCompleted(sort: Desc)])
 }
 
 model Invoice {
-  invoiceId       String         @id @unique @default(cuid())
-  invoiceNum      Int            @default(autoincrement())
-  customerId      String?
-  employeeId      String?
-  leaseId         String
-  invoiceAmount   Int
-  invoiceCreated  DateTime       @default(now())
-  paymentRecordId String?
-  invoicePaid     DateTime?
-  invoiceNotes    String?
-  customer        User?          @relation("customer", fields: [customerId], references: [id])
-  employee        User?          @relation("employee", fields: [employeeId], references: [id])
-  lease           Lease?         @relation(fields: [leaseId], references: [leaseId])
-  paymentRecord   PaymentRecord? @relation(fields: [paymentRecordId, invoicePaid], references: [paymentId, paymentCompleted])
-
-  @@unique([paymentRecordId, invoicePaid])
-  @@index([invoiceId, invoiceCreated(sort: Desc)])
+  invoiceNum       Int            @id @unique @default(autoincrement())
+  customerId       String?
+  employeeId       String?
+  leaseId          String?
+  invoiceAmount    Int
+  invoiceCreated   DateTime       @default(now())
+  paymentRecordNum Int?           @unique
+  invoiceNotes     String?
+  customer         User?          @relation("customer", fields: [customerId], references: [id])
+  employee         User?          @relation("employee", fields: [employeeId], references: [id])
+  lease            Lease?         @relation(fields: [leaseId], references: [leaseId])
+  paymentRecord    PaymentRecord? @relation(fields: [paymentRecordNum], references: [paymentNumber])
 }
 
 model Session {
@@ -174,6 +166,11 @@ model Verification {
 model PasswordReset {
   tokenHash String   @unique @map("token_hash")
   userId    String   @map("user_id")
+  expiresAt DateTime @map("expires_at")
+}
+model MagicLink {
+  tokenHash String   @unique @map("token_hash")
+  email String
   expiresAt DateTime @map("expires_at")
 }
 
