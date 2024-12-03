@@ -22,7 +22,7 @@ export async function createSession(token: string, userId:string):Promise<Sessio
    const session: Session = {
       id: sessionId,
       userId, 
-      expiresAt: new Date(Date.now() + dayOfMs * 30)
+      expiresAt: dayjs(Date.now()).add(30, 'days').toDate(),
    }
    await prisma.session.create({
       data:session
@@ -114,11 +114,6 @@ export function generateRandomRecoveryCode(): string {
 }
 
 export async function generateEmailVerificationRequest(userId:string, email: string): Promise<string> {
-   const user = await prisma.user.findFirst({
-      where: {
-         id: userId
-      }
-   })
    await prisma.verification.deleteMany({
       where: {
          userId: userId,
@@ -142,6 +137,41 @@ export async function generateEmailVerificationRequest(userId:string, email: str
    return code;
 }
 
+export async function generateMagicLink(email:string):Promise<string> {
+   const random:RandomReader = {
+      read(bytes) {
+         crypto.getRandomValues(bytes)
+      }
+   }
+   const code = generateRandomString(random, '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ', 25);
+   console.log('code: ', code)
+   const codeHash = encodeBase32LowerCaseNoPadding(sha256(new TextEncoder().encode(code))); 
+   console.log('codeHash: ', codeHash);
+   const magicLink = await prisma.magicLink.create({
+      data: {
+         email,
+         expiresAt: dayjs(Date.now()).add(5, 'minute').toDate(),
+         tokenHash: codeHash
+      }
+   })
+   console.log(magicLink)
+   return code;
+} 
+export async function verifyMagicLink(code:string):Promise<string> {
+   const codeHash = encodeBase32LowerCaseNoPadding(sha256(new TextEncoder().encode(code))); 
+   const magicLink = await prisma.magicLink.findFirst({
+      where: {
+         tokenHash: codeHash
+      }
+   });
+   if(!magicLink){
+      return 'not found'
+   }
+   if(dayjs(new Date()).diff(magicLink.expiresAt) >= 0){
+      return 'expired'
+   }
+   return magicLink.email
+}
 
 export type SessionValidationResult =
    | {session:Session; user:PartialUser | null}
