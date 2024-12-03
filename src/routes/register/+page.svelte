@@ -115,3 +115,4 @@
       <FormProgress delayed={$delayed} timeout={$timeout}/>
    </form>
 </div>
+<a href="/login/magicLink?redirectTo={data.redirectTo}&unitNum={data.unitNum}">Already have an account? Login here.</a>

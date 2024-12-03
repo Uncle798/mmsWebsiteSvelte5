@@ -13,7 +13,10 @@ export const load:PageServerLoad = (async (event) =>{
       redirect(302, '/units/available');
    }
    if(!event.locals.user){
-      redirect(302, `/login?redirectTo=newLease&unitNum=${unitNum}`)
+      redirect(302, `/register?redirectTo=newLease&unitNum=${unitNum}`)
+   }
+   if(!event.locals.user.emailVerified){
+      redirect(302, `/register/emailVerification??redirectTo=newLease&unitNum=${unitNum}`)
    }
    const leaseForm = await superValidate(zod(newLeaseSchema));
    const nameForm = await superValidate(zod(nameFormSchema));

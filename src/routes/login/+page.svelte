@@ -8,6 +8,7 @@
 	import PasswordInput from '$lib/formComponents/PasswordInput.svelte';
 	import FormMessage from '$lib/formComponents/FormMessage.svelte';
 	import Header from '$lib/Header.svelte';
+	import { redirect } from '@sveltejs/kit';
     
     export let data: PageData;
     let { form, message, errors, constraints, enhance, delayed, timeout } = superForm(data.loginForm);
@@ -64,6 +65,7 @@
         constraints={$constraints.password}
         placeholder='Passw0rd1234'
     />
-    <FormProgress delayed={$delayed} timeout={$timeout}/>  
+    <FormProgress delayed={$delayed} timeout={$timeout} buttonText='Login'/>  
 </form>
+<a href="/login/magicLink?redirectTo={data.redirectTo}?unitNum={data.unitNum}" class="btn">Magic Link Login</a>
 <a href="/register?redirectTo={data.redirectTo}&unitNum={data.unitNum}" class="btn">Register new account</a>
