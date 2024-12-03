@@ -7,6 +7,7 @@
    import User from '$lib/displayComponents/User.svelte';
    import type { PageData } from './$types';
 	import LeaseEndForm from '$lib/forms/LeaseEndForm.svelte';
+	import PaymentRecord from '$lib/displayComponents/PaymentRecord.svelte';
 
    let { data }: { data: PageData } = $props();
    let addressModalOpen = $state(false);
@@ -65,7 +66,13 @@
 {#if !data.invoices}
    ...loading invoices
 {:else if data.invoices}
-      {#each data.invoices as invoice}
-         <Invoice invoice={invoice} />
-      {/each}
+   {#each data.invoices as invoice}
+   {@const paymentRecord = data.payments.find((payment) => payment.invoiceNum === invoice.invoiceNum)}
+   <div class="flex">
+      <Invoice invoice={invoice} />
+      {#if paymentRecord}
+         <PaymentRecord paymentRecord={paymentRecord}/>
+      {/if}
+   </div>
+   {/each}
 {/if}
