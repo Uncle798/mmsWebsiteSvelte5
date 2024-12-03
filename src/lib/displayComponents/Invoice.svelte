@@ -8,8 +8,11 @@
 </script>
 
 <div class="card p-4">
+   <p><a href="/invoices/{invoice.invoiceNum}">Invoice Num: {invoice.invoiceNum}</a></p>
    <p>${invoice.invoiceAmount}</p>
    <p>Created: {dayjs(invoice.invoiceCreated).format('M/D/YYYY')}</p>
    <p>{invoice.invoiceNotes}</p>
-   
+   {#if invoice.paymentRecordNum}
+      <p><a href="/paymentRecords/{invoice.paymentRecordNum}">Payment record num: {invoice.paymentRecordNum}</a></p>
+   {/if}
 </div>
