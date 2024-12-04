@@ -12,8 +12,16 @@ export const load = (async () => {
         orderBy: {
             familyName: 'asc'
         }
+    });
+    const leases = await prisma.lease.findMany({
+        orderBy: {
+            leaseEnded: { 
+                sort: 'desc', 
+                nulls: 'first'
+            }
+        }
     })
-    return { newInvoiceForm, customers };
+    return { newInvoiceForm, customers, leases };
 }) satisfies PageServerLoad;
 
 export const actions: Actions = {
@@ -28,12 +36,13 @@ export const actions: Actions = {
             const timeRemaining = Math.floor((reset - Date.now()) / 1000);
             return message(newInvoiceForm, `Please wait ${timeRemaining}s before trying again.`)
         }
-        // await prisma.invoice.create({
-        //     data: {
-        //         invoiceAmount: newInvoiceForm.data.invoiceAmount,
-        //         customerId: newInvoiceForm.data.customerId,
-                
-        //     }
-        // })
+        await prisma.invoice.create({
+            data: {
+                invoiceAmount: newInvoiceForm.data.invoiceAmount,
+                customerId: newInvoiceForm.data.customerId,
+                invoiceNotes: newInvoiceForm.data.invoiceNotes,
+                leaseId: newInvoiceForm.data.leaseId,
+            }
+        })
     }
 };

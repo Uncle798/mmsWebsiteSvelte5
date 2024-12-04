@@ -171,7 +171,8 @@ export const newInvoiceFormSchema = z.object({
    customerId: z.string().min(23).max(30),
    invoiceNotes: z.string().nullable(),
    employeeId: z.string().min(23).max(30),
-   invoiceAmount: z.number()
+   invoiceAmount: z.number(),
+   leaseId: z.string().min(23).max(30).nullable(),
 })
 export type NewInvoiceFormSchema = typeof newInvoiceFormSchema;
 

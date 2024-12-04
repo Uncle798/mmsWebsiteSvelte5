@@ -5,4 +5,4 @@
     let { data }: { data: PageData } = $props();
 </script>
 
-<NewInvoiceForm data={data.newInvoiceForm} employeeId={data.user?.id} customers={data.customers}/>
+<NewInvoiceForm data={data.newInvoiceForm} employeeId={data.user?.id} customers={data.customers} leases={data.leases}/>
