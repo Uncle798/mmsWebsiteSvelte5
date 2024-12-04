@@ -9,7 +9,7 @@
       placeholder?:string | undefined;
       name: string | null | undefined;
    }
-   let { value = $bindable(), label, errors, constraints, placeholder, name, ...others }:Props = $props()
+   let { value = $bindable(), label, errors, constraints, placeholder, name,}:Props = $props()
 </script>
 
 <label class="label">
@@ -22,7 +22,6 @@
       aria-invalid={errors ? 'true' : undefined}
       placeholder={placeholder}
       {...constraints}
-      {...others}
    />
  </label>
  {#if errors}<span class="invalid">{errors}</span>{/if}
