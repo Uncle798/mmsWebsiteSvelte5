@@ -1,6 +1,6 @@
 // import adapter from '@sveltejs/adapter-auto';
-import adapter from '@sveltejs/adapter-node';
-// import adapter from '@sveltejs/adapter-vercel'
+// import adapter from '@sveltejs/adapter-node';
+import adapter from '@sveltejs/adapter-vercel'
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 
 /** @type {import('@sveltejs/kit').Config} */
@@ -14,9 +14,10 @@ const config = {
 		// If your environment is not supported, or you settled on a specific environment, switch out the adapter.
 		// See https://svelte.dev/docs/kit/adapters for more information about adapters.
 		adapter: adapter(),
-		csrf: {
-			checkOrigin: false
-		}
+		// for hosting on localhost via ngrok 
+		// csrf: {
+		// 	checkOrigin: false
+		// }
 	}
 };
 
