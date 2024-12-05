@@ -1,4 +1,4 @@
-import { PUBLIC_COMPANY_NAME, VERCEL_URL:PUBLIC_URL } from "$env/static/public";
+import { PUBLIC_COMPANY_NAME, VERCEL_URL as PUBLIC_URL } from "$env/static/public";
 import { MailtrapClient } from "mailtrap";
 
 const token = process.env.MAILTRAP_TOKEN!;
