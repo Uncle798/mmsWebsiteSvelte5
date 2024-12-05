@@ -137,6 +137,6 @@ export const actions:Actions = {
             invoiceNotes:'Deposit for unit ' + lease.unitNum.replace(/^0+/gm,''), 
          }
       })
-      redirect(302, '/newLease/payDeposit?invoiceId=' + invoice.invoiceId)
+      redirect(302, '/newLease/payDeposit?invoiceNum=' + invoice.invoiceNum)
    }
 }

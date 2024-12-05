@@ -6,13 +6,13 @@ export const load:PageServerLoad = (async (event) => {
    if(!event.locals.user){
       redirect(302, '/login?toast=unauthorized')
    }
-   const invoiceId = event.url.searchParams.get('invoiceId');
-   if(!invoiceId){
+   const invoiceNum = event.url.searchParams.get('invoiceNum');
+   if(!invoiceNum){
       return {}
    }
    const invoice = await prisma.invoice.findUnique({
       where: {
-         invoiceId:invoiceId!,
+         invoiceNum:parseInt(invoiceNum!, 10),
       }
    })
    if(!invoice){
