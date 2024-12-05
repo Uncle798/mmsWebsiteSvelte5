@@ -144,17 +144,14 @@ export async function generateMagicLink(email:string):Promise<string> {
       }
    }
    const code = generateRandomString(random, '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ', 25);
-   console.log('code: ', code)
    const codeHash = encodeBase32LowerCaseNoPadding(sha256(new TextEncoder().encode(code))); 
-   console.log('codeHash: ', codeHash);
-   const magicLink = await prisma.magicLink.create({
+   await prisma.magicLink.create({
       data: {
          email,
          expiresAt: dayjs(Date.now()).add(5, 'minute').toDate(),
          tokenHash: codeHash
       }
    })
-   console.log(magicLink)
    return code;
 } 
 export async function verifyMagicLink(code:string):Promise<string> {
