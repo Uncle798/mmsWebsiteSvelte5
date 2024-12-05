@@ -7,7 +7,7 @@
     import EmailVerification from '$lib/forms/EmailVerificationForm.svelte'
 	import Address from '$lib/displayComponents/Address.svelte';
 	import Header from '$lib/Header.svelte';
-	import { BadgeCheck, Check, Verified } from 'lucide-svelte';
+	import { BadgeCheck, } from 'lucide-svelte';
 	import PasswordForm from '$lib/forms/PasswordForm.svelte';
 	import LeaseCustomer from '$lib/displayComponents/LeaseCustomer.svelte';
 	import LeaseEndForm from '$lib/forms/LeaseEndForm.svelte';
@@ -148,7 +148,7 @@ backdropClasses="backdrop-blur-sm"
         {#each leases as lease}
             <LeaseCustomer lease={lease} />
             {#if !lease.leaseEnded}
-            <button class="btn preset-tonal" onclick={()=> setCurrentLeaseId(lease.leaseId)}>End Lease</button>
+            <button class="btn preset-tonal p-4" onclick={()=> setCurrentLeaseId(lease.leaseId)}>End Lease</button>
             {/if}
         {/each}
     {/if}

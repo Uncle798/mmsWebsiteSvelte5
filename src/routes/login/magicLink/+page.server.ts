@@ -41,6 +41,6 @@ export const actions:Actions ={
       } else {
          await sendMagicLinkEmail(magicLink, user.email!);
       }
-      return message(magicLinkForm, 'An email has been sent to log you in.')
+      return message(magicLinkForm, 'An email has been sent to log you in. Feel free to close this tab.')
    }
 }

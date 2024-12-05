@@ -26,7 +26,7 @@
         mounted = true;
     })
     async function createPaymentIntent() {
-        const response = await fetch('/api/stripe/paymentIntent?invoiceId=' + data.invoice?.invoiceId, {
+        const response = await fetch('/api/stripe/paymentIntent?invoiceNum=' + data.invoice?.invoiceNum, {
             method: 'POST',
             headers: {
                 'content-type': 'applications/json'
@@ -49,14 +49,14 @@
             elements,
             clientSecret,
             confirmParams:{
-                return_url:`${PUBLIC_URL}/newLease/leaseSent?invoiceId=${data.invoice?.invoiceId}`
+                return_url:`${PUBLIC_URL}/newLease/leaseSent?invoiceNum=${data.invoice?.invoiceNum}`
             }
         });
         if(result.error){
             error = result.error;
             processing = false;
         } else {
-            goto('/newLease/leaseSent?invoiceId=' + data.invoice?.invoiceId);
+            goto('/newLease/leaseSent?invoiceNum=' + data.invoice?.invoiceNum);
         }
 
     }

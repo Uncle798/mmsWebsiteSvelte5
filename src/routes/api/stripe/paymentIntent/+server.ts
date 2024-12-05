@@ -4,13 +4,13 @@ import type { RequestHandler } from '@sveltejs/kit';
 import { fail } from '@sveltejs/kit';
 
 export const POST:RequestHandler = async (event) => {
-   const invoiceId = event.url.searchParams.get('invoiceId');
-   if(!invoiceId){
+   const invoiceNum = event.url.searchParams.get('invoiceNum');
+   if(!invoiceNum){
       fail(404)
    }
    const invoice = await prisma.invoice.findUnique({
       where:{
-         invoiceId:invoiceId!,
+         invoiceNum:parseInt(invoiceNum!, 10),
       }
    })
    if(!invoice){
@@ -23,7 +23,7 @@ export const POST:RequestHandler = async (event) => {
          enabled: true,
       },
       metadata:{
-         invoiceId,
+         invoiceNum,
          customerId: invoice.customerId,
       },
       setup_future_usage: 'off_session'
