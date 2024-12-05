@@ -118,22 +118,23 @@ export const registerFormSchema = z.object({
    familyName: z.string().min(1).max(255).trim(),
    givenName: z.string().min(1).max(255).trim(),
    organizationName: z.string().min(1).max(255).trim().optional(),
-   email: z.string().min(5).max(255), 
-   password: z.string().min(6, 'Password must be at least 6 characters')
-      .max(255,'Password can\'t be longer than 255 characters'),
-   passwordConfirm: z.string().min(6, 'Password must be at least 6 characters')
-      .max(255,'Password can\'t be longer than 255 characters'),
-}).superRefine(({password, passwordConfirm}, context)=>{
-   if(passwordConfirm !== password){
+   email: z.string().min(5).max(255),
+   emailConfirm: z.string().min(5).max(255),
+   // password: z.string().min(6, 'Password must be at least 6 characters')
+   //    .max(255,'Password can\'t be longer than 255 characters'),
+   // passwordConfirm: z.string().min(6, 'Password must be at least 6 characters')
+   //    .max(255,'Password can\'t be longer than 255 characters'),
+}).superRefine(({email, emailConfirm}, context)=>{
+   if(emailConfirm !== email){
       context.addIssue({
          code: 'custom',
-         message: 'Password must match confirm password', 
-         path: ['password']
+         message: 'Email must match email confirm', 
+         path: ['email']
       })
       context.addIssue({
          code: 'custom',
-         message: 'Password must match confirm password', 
-         path: ['confirmPassword']
+         message: 'Email must match email confirm', 
+         path: ['emailConfirm']
       })
    }
 });
