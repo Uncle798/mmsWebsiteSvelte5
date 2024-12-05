@@ -84,7 +84,7 @@
       />
       <EmailInput
         label="Confirm email"
-        name="email"
+        name="emailConfirm"
         bind:value={$form.emailConfirm}
         errors={$errors.emailConfirm}
         constraints={$constraints.emailConfirm}
