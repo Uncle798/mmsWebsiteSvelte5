@@ -12,9 +12,12 @@ export const load = (async (event) => {
    if(result === 'expired'){
       redirect(302, '/login/magicLink?toast=linkExpired');
    }
-   const user = await prisma.user.findUnique({
+   const user = await prisma.user.update({
       where:{
          email: result
+      },
+      data: {
+         emailVerified: true
       }
    })
    if(!user){
