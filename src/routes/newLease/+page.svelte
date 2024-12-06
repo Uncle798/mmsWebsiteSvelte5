@@ -4,6 +4,8 @@
     import { Modal, } from '@skeletonlabs/skeleton-svelte';
     import FormProgress from '$lib/formComponents/FormSubmitWithProgress.svelte';
     import { superForm } from 'sveltekit-superforms';
+    import { onMount, getContext } from 'svelte';
+    import type { ToastContext } from '@skeletonlabs/skeleton-svelte';
     import type { PageData } from './$types';
 	import UnitCustomer from '$lib/displayComponents/UnitCustomer.svelte';
 	import User from '$lib/displayComponents/User.svelte';
@@ -15,6 +17,18 @@
     let { data }: {data:PageData} = $props();
     let { form, message, errors, constraints, enhance, delayed, timeout } = superForm(data.leaseForm);
     let addressModalOpen = $state(false);
+    export const toast:ToastContext = getContext('toast');
+    const toastReason = data.redirectTo
+    onMount(()=> {
+        if(toastReason === 'newLease'){
+            toast.create({
+                title: 'Thanks for logging in',
+                description: 'We appreciate your business',
+                type:'success'
+            })
+
+        }
+    })
 </script>
 <Header title='New lease'/>
 
