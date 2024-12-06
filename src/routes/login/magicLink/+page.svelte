@@ -24,22 +24,3 @@
     })
 </script>
 
-<Header title="Login" />
-<div>
-    <p class="h1">Please enter your email to login </p>
-</div>
-<div class="h3">
-    <FormMessage message={$message} />
-</div>
-
-<form method="post" use:enhance >
-    <EmailInput
-        bind:value={$form.email}
-        errors={$errors.email}
-        constraints={$constraints.email}
-        label='Registered email address: '
-        name='email'
-    />
-    <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} buttonText='Email me a link to login'/>
-</form>
-<a href="/register?redirectTo={data.redirectTo}&unitNum={data.unitNum}" class="btn">Register new account</a>
