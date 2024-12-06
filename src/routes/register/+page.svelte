@@ -5,6 +5,7 @@
    import TextInput from "$lib/formComponents/TextInput.svelte";
    import FormProgress from "$lib/formComponents/FormSubmitWithProgress.svelte";
 	import FormMessage from "$lib/formComponents/FormMessage.svelte";
+	import Header from "$lib/Header.svelte";
    interface Props {
 		data: PageData;
 	}
@@ -14,7 +15,7 @@
 	const { form, errors, constraints, message, enhance, delayed, timeout } = superForm(data.registerForm)
 
 </script>
-
+<Header title='Register a new account' />
 <div>
    <FormMessage message={$message} />
    <form method="POST" action="/register" use:enhance>
