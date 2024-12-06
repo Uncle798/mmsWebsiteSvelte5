@@ -6,6 +6,7 @@
 	import FormSubmitWithProgress from '$lib/formComponents/FormSubmitWithProgress.svelte';
 	import type { ToastContext } from '@skeletonlabs/skeleton-svelte';
 	import { getContext, onMount } from 'svelte';
+	import Header from '$lib/Header.svelte';
 
     let { data }: { data: PageData } = $props();
     let { form, message, errors, constraints, enhance, delayed, timeout } = superForm(data.magicLinkForm);
@@ -23,7 +24,13 @@
     })
 </script>
 
-<FormMessage message={$message} />
+<Header title="Login" />
+<div>
+    <p class="h1">Please enter your email to login </p>
+</div>
+<div class="h3">
+    <FormMessage message={$message} />
+</div>
 
 <form method="post" use:enhance >
     <EmailInput

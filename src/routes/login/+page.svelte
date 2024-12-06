@@ -1,19 +1,18 @@
 <script lang="ts">
     import EmailInput from '$lib/formComponents/EmailInput.svelte';
     import { getContext, onMount } from 'svelte';
-    import FormProgress from '$lib/formComponents/FormSubmitWithProgress.svelte';
+    import FormSubmitWithProgress from '$lib/formComponents/FormSubmitWithProgress.svelte';
     import type { ToastContext, } from '@skeletonlabs/skeleton-svelte'
 	import { superForm } from 'sveltekit-superforms';
     import type { PageData } from './$types';
-	import PasswordInput from '$lib/formComponents/PasswordInput.svelte';
 	import FormMessage from '$lib/formComponents/FormMessage.svelte';
 	import Header from '$lib/Header.svelte';
 	import { redirect } from '@sveltejs/kit';
     
     export let data: PageData;
-    let { form, message, errors, constraints, enhance, delayed, timeout } = superForm(data.loginForm);
+    let { form, message, errors, constraints, enhance, delayed, timeout } = superForm(data.magicLinkForm);
     export const toast:ToastContext = getContext('toast');
-    const toastReason = data.toast;
+    const toastReason = data.toastReason;
     onMount(() => {
         if(toastReason === 'userAlreadyExists'){
             toast.create({
@@ -43,29 +42,32 @@
                 type: 'error'
             })
         }
+        if(toastReason === 'linkExpired'){
+            toast.create({
+                title: 'The link has expired',
+                description: 'Links are only valid for 5 minutes, please enter your email address again',
+                type: 'error'
+            })
+
+        }
     })
 </script>
-<Header title='Login' />
+<Header title="Login" />
+<div>
+    <p class="h2">Please enter your email to login </p>
+</div>
+<div class="h3">
+    <FormMessage message={$message} />
+</div>
 
-<FormMessage message={$message} />
-<form action="/login?redirectTo={data.redirectTo}&unitNum={data.unitNum}" method="POST" use:enhance>
+<form method="post" use:enhance >
     <EmailInput
-        label='Email'
-        name='email'
         bind:value={$form.email}
         errors={$errors.email}
         constraints={$constraints.email}
-        placeholder='email@email.com'
+        label='Registered email address: '
+        name='email'
     />
-    <PasswordInput
-        label="Password"
-        name="password"
-        bind:value={$form.password}
-        errors={$errors.password}
-        constraints={$constraints.password}
-        placeholder='Passw0rd1234'
-    />
-    <FormProgress delayed={$delayed} timeout={$timeout} buttonText='Login'/>  
+    <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} buttonText='Email me a link to login'/>
 </form>
-<a href="/login/magicLink?redirectTo={data.redirectTo}?unitNum={data.unitNum}" class="btn">Magic Link Login</a>
 <a href="/register?redirectTo={data.redirectTo}&unitNum={data.unitNum}" class="btn">Register new account</a>
