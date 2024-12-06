@@ -23,6 +23,7 @@
    label='Given Name'
    name='givenName'
    placeholder='Smokey'
+   autocomplete='given-name'
    />
    
    <TextInput
@@ -32,6 +33,7 @@
    label='Family Name'
    name='familyName'
    placeholder='Bear'
+   autocomplete='family-name'
    />
    <TextInput
    bind:value={$form.organizationName}
@@ -40,6 +42,7 @@
    label='Organization name (optional)'
    name='organizationName'
    placeholder='The Forrest'
+   autocomplete='organization'
    />
    <FormProgress delayed={$delayed} timeout={$timeout}/>
 </form>

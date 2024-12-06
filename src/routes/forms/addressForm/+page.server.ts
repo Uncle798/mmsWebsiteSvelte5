@@ -5,6 +5,7 @@ import { zod } from 'sveltekit-superforms/adapters';
 import { addressFormSchema } from '$lib/formSchemas/schemas';
 import { prisma } from '$lib/server/prisma';
 import { fail, redirect } from '@sveltejs/kit';
+import { RADAR_SECRET_LIVE, RADAR_SECRET_TEST } from '$env/static/private';
 
 export const load:PageServerLoad = (async () => {
    const addressForm = await superValidate(zod(addressFormSchema));
@@ -49,13 +50,29 @@ export const actions: Actions = {
             }
          })
       }
-      const newAddress = {
-         userId,
-         ...addressForm.data
+      console.log('formData', addressForm.data)
+      const response = await fetch(`https://api.radar.io/v1/addresses/validate?city=${addressForm.data.city}&stateCode=${addressForm.data.state}&postalCode=${addressForm.data.zip}&addressLabel=${addressForm.data.address1}&unit=${addressForm.data.address2}&countryCode=${addressForm.data.country}`,
+         {
+            method: 'GET',
+            headers: {
+               Authorization: RADAR_SECRET_LIVE
+            }
+         }
+      )
+      const data= await response.json();
+      console.log('data', data)
+      if(data.result.verificationStatus === 'verified'){
+         const newAddress = {
+            userId,
+            ...addressForm.data
+         }
+         await prisma.contactInfo.create({
+            data: newAddress
+         })
       }
-      await prisma.contactInfo.create({
-         data: newAddress
-      })
+      if(data.result.verificationStatus === 'unverified'){
+         return message(addressForm, 'Unable to verify address, please contact the office');
+      }
       return message(addressForm, 'Address updated')
    }
 };

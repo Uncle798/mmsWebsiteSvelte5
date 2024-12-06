@@ -23,21 +23,6 @@
       delayMs: 500,
       timeoutMs: 8000,
    });
-   onMount(() => {
-   if (typeof window !== 'undefined') {
-      import('@mapbox/search-js-web').then(({ config, autofill }) => {
-         /* cspell:disable-next-line */
-         config.accessToken = 'pk.eyJ1IjoiZXJpY2JyYW5zb24iLCJhIjoiY20wYjh6b29yMDE4dDJqb2sxc3ZjZHgzMyJ9.3kAYNtGfsqEPi8a3Zlvlzg';
-         autofill({
-         options: {
-            country: 'us'
-         }
-         });
-      }).catch((error) => {
-         console.error('Error loading Mapbox Search JS:', error);
-      });
-   }
-   });
 </script>
 
 <span class="h2">Update your address</span>
@@ -50,6 +35,7 @@
       label='Line 1'
       name='address1'
       placeholder='1700 Mill Road'
+      autocomplete='address-line1'
     />
     <TextInput
       bind:value={$form.address2}
@@ -58,6 +44,7 @@
       name='address2'
       label='Line 2'
       placeholder='Unit 1'  
+      autocomplete='address-line2'
     />
     <div class="flex">
     <TextInput
@@ -67,6 +54,7 @@
         errors={$errors.city}
         constraints={$constraints.city}
         placeholder='Moscow'
+        autocomplete='address-level2'
     />
     <TextInput
         label='State'
@@ -75,6 +63,7 @@
         errors={$errors.state}
         constraints={$constraints.state}
         placeholder='ID'
+        autocomplete='address-level1'
     />
     <TextInput
         label='Zip Code'
@@ -83,10 +72,11 @@
         errors={$errors.zip}
         constraints={$constraints.zip}
         placeholder='83843'
+        autocomplete='postal-code'
     />
     </div>
     <label for="country">Country
-       <select class="select" name='country'>
+       <select class="select" name='country' autocomplete="country">
           {#each countries as country}
             {#if country['Alpha-2 code'] === 'US'}
                <option value={country['Alpha-2 code']} selected>{country.Country}</option>
