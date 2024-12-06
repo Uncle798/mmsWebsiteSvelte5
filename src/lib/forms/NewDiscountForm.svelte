@@ -22,7 +22,7 @@
       bind:value={$form.code}
       errors={$errors.code}
       constraints={$constraints.code}
-      label='Code (Case Sensitive)'
+      label='Code (Case Sensitive, must be at least 8 characters)'
       name='code'
       placeholder='NonProfit10'
    />

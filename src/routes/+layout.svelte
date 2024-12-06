@@ -58,7 +58,6 @@
 				<li><a class="btn" href="/accountSettings">Settings</a></li>
 				{:else}
 				<li><a class="btn" href="/login">Login</a></li>
-				<li><a class="btn" href="/login/magicLink">Magic Link login</a></li>
 			{/if}
 		</ul>
 	</article>

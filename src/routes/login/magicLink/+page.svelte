@@ -6,6 +6,7 @@
 	import FormSubmitWithProgress from '$lib/formComponents/FormSubmitWithProgress.svelte';
 	import type { ToastContext } from '@skeletonlabs/skeleton-svelte';
 	import { getContext, onMount } from 'svelte';
+	import Header from '$lib/Header.svelte';
 
     let { data }: { data: PageData } = $props();
     let { form, message, errors, constraints, enhance, delayed, timeout } = superForm(data.magicLinkForm);
@@ -23,16 +24,3 @@
     })
 </script>
 
-<FormMessage message={$message} />
-
-<form method="post" use:enhance >
-    <EmailInput
-        bind:value={$form.email}
-        errors={$errors.email}
-        constraints={$constraints.email}
-        label='Registered email address: '
-        name='email'
-    />
-    <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} buttonText='Email me a link to login'/>
-</form>
-<a href="/register?redirectTo={data.redirectTo}&unitNum={data.unitNum}" class="btn">Register new account</a>

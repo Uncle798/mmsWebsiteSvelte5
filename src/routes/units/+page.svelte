@@ -7,6 +7,7 @@
 	import LeaseEndForm from '$lib/forms/LeaseEndForm.svelte';
 	import UnitNotesForm from '$lib/forms/UnitNotesForm.svelte';
 	import UnitPricingForm from '$lib/forms/UnitPricingForm.svelte';
+	import Header from '$lib/Header.svelte';
 
     let { data }: { data: PageData } = $props();
     let { units, leases, customers,} = data;
@@ -27,6 +28,8 @@
         modalOpen = true;
     }
 </script>
+<Header title='All units' />
+
 <Modal
     bind:open={modalOpen}
     contentBase="card bg-surface-400-600 p-4 space-y-4 shadow-xl max-w-screen-sm"

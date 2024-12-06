@@ -8,7 +8,6 @@
 	import Address from '$lib/displayComponents/Address.svelte';
 	import Header from '$lib/Header.svelte';
 	import { BadgeCheck, } from 'lucide-svelte';
-	import PasswordForm from '$lib/forms/PasswordForm.svelte';
 	import LeaseCustomer from '$lib/displayComponents/LeaseCustomer.svelte';
 	import LeaseEndForm from '$lib/forms/LeaseEndForm.svelte';
     
@@ -18,7 +17,6 @@
     let emailModalOpen = $state(false);
     let emailVerification = $state(false);
     let emailVerificationModalOpen = $state(false);
-    let passwordChangeModalOpen = $state(false);
     let leaseEndModalOpen = $state(false);
     let currentLeaseId = $state('');
     function setCurrentLeaseId(leaseId:string){
@@ -47,19 +45,6 @@ backdropClasses="backdrop-blur-sm"
     {/snippet}
 </Modal>
 
-<Modal
-    bind:open={passwordChangeModalOpen}
-    triggerBase="btn preset-tonal"
-    contentBase="card bg-surface-400-600 p-4 space-y-4 shadow-xl max-w-screen-sm"
-    backdropClasses="backdrop-blur-sm"
->
-    {#snippet trigger()}
-        Change Password
-    {/snippet}
-    {#snippet content()}
-        <PasswordForm data={data.passwordChangeForm} bind:passwordModalOpen={passwordChangeModalOpen}/>
-    {/snippet}
-</Modal> 
 <span class="h4 flex">{data.user?.email}
     {#if data.user?.emailVerified}
     <div class="flex p-1">

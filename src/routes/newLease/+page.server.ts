@@ -13,7 +13,7 @@ export const load:PageServerLoad = (async (event) =>{
       redirect(302, '/units/available');
    }
    if(!event.locals.user){
-      redirect(302, `/register?redirectTo=newLease&unitNum=${unitNum}`)
+      redirect(302, `/login?redirectTo=newLease&unitNum=${unitNum}`)
    }
    if(!event.locals.user.emailVerified){
       redirect(302, `/register/emailVerification??redirectTo=newLease&unitNum=${unitNum}`)
@@ -23,6 +23,8 @@ export const load:PageServerLoad = (async (event) =>{
    const addressForm = await superValidate(zod(addressFormSchema));
    const leaseDiscountForm = await superValidate(zod(leaseDiscountFormSchema));
    const discountId = event.url.searchParams.get('discountId');
+   const redirectTo = event.url.searchParams.get('redirectTo');
+   
    const unit = await prisma.unit.findUnique({
       where: {
          num: unitNum,
@@ -44,9 +46,9 @@ export const load:PageServerLoad = (async (event) =>{
             discountId
          }
       })
-      return { leaseForm, address, addressForm, nameForm, unit, leaseDiscountForm, discount }
+      return { leaseForm, address, addressForm, nameForm, unit, leaseDiscountForm, redirectTo, discount }
    }
-   return { leaseForm, address, addressForm, nameForm, unit, leaseDiscountForm, unitNum }
+   return { leaseForm, address, addressForm, nameForm, unit, leaseDiscountForm, unitNum, redirectTo }
 })
 
 
@@ -59,7 +61,7 @@ export const actions:Actions = {
       if(!leaseForm.valid){
          message(leaseForm, 'no good')
       }
-      const { success, reset } = await ratelimit.register.limit(event.locals.user.id || event.getClientAddress())
+      const { success, reset } = await ratelimit.createLease.limit(event.locals.user.id);
 		if(!success) {
 			const timeRemaining = Math.floor((reset - Date.now()) /1000);
 			return message(leaseForm, `Please wait ${timeRemaining}s before trying again.`)

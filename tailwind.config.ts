@@ -20,7 +20,8 @@ export default {
 			themes: [ 
 				themes.catppuccin,
 				themes.mint,
-				themes.cerberus
+				themes.cerberus,
+				themes.pine,
 			]
 		})
 	]

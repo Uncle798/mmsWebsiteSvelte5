@@ -26,6 +26,7 @@
       constraints={$constraints.email}
       label='Email'
       name='email'
+
    />
    <EmailInput
       bind:value={$form.emailConfirm}

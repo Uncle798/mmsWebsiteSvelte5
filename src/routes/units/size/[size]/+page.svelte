@@ -14,7 +14,7 @@
       unitPricingModalOpen = true
    }
 </script>
-<Header title='All {data.size} units' />
+<Header title='All {data.size.replace(/^0+/gm,'').replace(/0x/gm,'x')} units' />
 <Modal
    bind:open={unitPricingModalOpen}
    triggerBase="btn preset-tonal"
