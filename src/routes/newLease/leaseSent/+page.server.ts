@@ -1,28 +1,36 @@
 import { prisma } from '$lib/server/prisma';
 import { anvilClient, getOrganizationalPacketVariables, getPersonalPacketVariables } from '$lib/server/anvil';
-import { redirect } from '@sveltejs/kit';
+import { fail, redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 
 export const load:PageServerLoad = (async (event) => {
    if(!event.locals.user){
       redirect(302, '/login?toast=unauthorized')
    }
-   const invoiceId = event.url.searchParams.get('invoiceId');
-   if(invoiceId){
-      const invoice = await prisma.invoice.update({
+   const invoiceNum = event.url.searchParams.get('invoiceNum');
+   if(invoiceNum){
+      const invoice = await prisma.invoice.findFirst({
          where: {
-            invoiceId,
-         },
-         data: {
-            invoicePaid: new Date,
+            invoiceNum:parseInt(invoiceNum, 10),
          }
       })
-      prisma.paymentRecord.create({
+      if(!invoice){
+         return fail(404, { message: "Invoice not found"});
+      }
+      const paymentRecord = await prisma.paymentRecord.create({
          data: {
             paymentAmount: invoice.invoiceAmount,
-            invoiceId: invoice.invoiceId,
+            invoiceNum: invoice.invoiceNum,
             customerId: invoice.customerId || '',
             paymentType: 'STRIPE'
+         }
+      })
+      await prisma.invoice.update({
+         where: {
+            invoiceNum: invoice.invoiceNum
+         },
+         data: {
+            paymentRecordNum: paymentRecord.paymentNumber
          }
       })
       const lease = await prisma.lease.findUnique({
