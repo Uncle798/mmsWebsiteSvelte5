@@ -5,12 +5,14 @@ import { zod } from 'sveltekit-superforms/adapters';
 import { searchFormSchema } from '$lib/formSchemas/schemas';
 import type { Actions } from '@sveltejs/kit';
 import dayjs from 'dayjs';
+import { redirect } from '@sveltejs/kit';
 
 export const load = (async (event) => {
+    if(!event.locals.user?.employee){
+        redirect(302, '/login?toast=employee');
+    }
+    const searchForm = await superValidate(zod(searchFormSchema));
     const paymentRecords = await prisma.paymentRecord.findMany({
-        include: {
-            customer: true
-        },
         orderBy: {
             paymentCompleted: 'desc'
         },
@@ -20,7 +22,18 @@ export const load = (async (event) => {
             }
         }, 
     });
-    return { paymentRecords, };
+    const customers = await prisma.user.findMany({
+        where: {
+            paymentMade: {
+                some: {
+                    paymentCompleted: {
+                        gte: dayjs(Date.now()).subtract(1, 'year').toDate(),
+                    }
+                }
+            }
+        }
+    })
+    return { paymentRecords, searchForm, customers };
 }) satisfies PageServerLoad;
 
 export const actions: Actions = {
