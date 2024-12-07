@@ -5,7 +5,7 @@ import { zod } from 'sveltekit-superforms/adapters';
 import { addressFormSchema } from '$lib/formSchemas/schemas';
 import { prisma } from '$lib/server/prisma';
 import { fail, redirect } from '@sveltejs/kit';
-import { RADAR_SECRET_LIVE, RADAR_SECRET_TEST } from '$env/static/private';
+import { RADAR_SECRET_LIVE } from '$env/static/private';
 
 export const load:PageServerLoad = (async () => {
    const addressForm = await superValidate(zod(addressFormSchema));

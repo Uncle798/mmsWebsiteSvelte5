@@ -9,7 +9,7 @@
 	import User from '$lib/displayComponents/User.svelte';
 
     let { data }: { data: PageData } = $props();
-    let { form, enhance } = superForm(data.paymentSearchForm,{
+    let { form, enhance } = superForm(data.searchForm,{
         onSubmit(input) {
             input.cancel();
             const search = input.formData.get('search')?.toString();
@@ -21,6 +21,7 @@
     let pageNum = $state(1);
     let size = $state(25);
     let slicedSource = $derived((s:PaymentRecord[]) => s.slice((pageNum -1) * size, pageNum*size));
+    
 </script>
 
 <Header title='Payment Records' />
@@ -33,10 +34,9 @@
         <button class="btn">Submit</button>
         <button class="btn" onclick={()=> goto('/users', {invalidateAll: true})}>Clear</button>
     </form>
-    {#each slicedSource(data.paymentRecords) as paymentRecord (paymentRecord.paymentId)}
-        {@const customer = data.customers.find((customer) => customer.id === paymentRecord.customerId)}
+    {#each slicedSource(data.paymentRecords) as paymentRecord (paymentRecord.paymentNumber)}
+        {@const customer = data.customers.find((customer) => { customer.id === paymentRecord.customerId}) }
         <div class="flex">
-
             <PaymentRecordComponent paymentRecord={paymentRecord} />
             {#if customer}
             <User user={customer} />

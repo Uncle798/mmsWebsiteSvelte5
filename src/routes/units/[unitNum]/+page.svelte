@@ -6,9 +6,10 @@
     let { data }: { data: PageData } = $props();
 </script>
 
-<Header title='Unit number: {data.unit.num}' />
 {#if !data.unit}
-   ...loading unit
+<Header title='loading...' />
+...loading unit
 {:else}
+   <Header title='Unit number: {data.unit.num}' />
    <UnitEmployee unit={data.unit}/>
 {/if}
