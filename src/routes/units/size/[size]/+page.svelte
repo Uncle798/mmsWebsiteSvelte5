@@ -5,6 +5,8 @@
 	import { Modal } from '@skeletonlabs/skeleton-svelte';
    import type { PageData } from './$types';
 	import UnitPricingForm from '$lib/forms/UnitPricingForm.svelte';
+	import User from '$lib/displayComponents/User.svelte';
+	import { blur, fade } from 'svelte/transition';
 
    let { data }: { data: PageData } = $props();
    let unitPricingModalOpen = $state(false);
@@ -13,6 +15,7 @@
       currentOldPrice = oldPrice;
       unitPricingModalOpen = true
    }
+   let sizeMenuOpen = $state(false)
 </script>
 <Header title='All {data.size.replace(/^0+/gm,'').replace(/0x/gm,'x')} units' />
 <Modal
@@ -28,15 +31,37 @@
 
 </Modal>
 
-{#each data.units as unit} 
+{#if data.sizes}
+   <button class='btn' onclick={()=>sizeMenuOpen = !sizeMenuOpen}>Select a size</button>
+{#if sizeMenuOpen}
+<div transition:blur={{duration:600}}>
+   <ul>
+      {#each data.sizes as size}
+      <li>
+         <a href="/units/size/{size}" class="btn">{size.replace(/^0+/gm, '').replace(/x0/gm,'x')}</a>
+      </li>
+      {/each}
+      <li><button class="btn" onclick={()=>sizeMenuOpen=false}>Close menu</button></li>
+   </ul>
+</div>
+{/if}
+{/if}
+
+{#each data.units as unit, index } 
    {@const {lease} = unit }
-   <div class="flex">
+   <div class="flex" transition:blur={{duration:600}}>
       <div>
-      <UnitEmployee unit={unit}/>
-      <button class="btn " onclick={()=> openModal(unit.advertisedPrice)}>Change all {data.size.replace(/^0+/gm,'').replace(/x0/gm,'x')} prices</button>
-   </div>
+         {#if index === 0}
+            <button class="btn " onclick={()=> openModal(unit.advertisedPrice)}>Change all {data.size.replace(/^0+/gm,'').replace(/x0/gm,'x')} prices</button>
+         {/if}
+         <UnitEmployee unit={unit}/>
+      </div>
       {#each lease as l}
-      <LeaseEmployee lease={l} />
+      {@const { customer } = l}
+         <LeaseEmployee lease={l} />
+         {#if customer }
+            <User user={customer} />
+         {/if}
       {/each}
    </div>
 {/each} 

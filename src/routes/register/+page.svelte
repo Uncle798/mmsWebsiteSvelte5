@@ -6,6 +6,7 @@
    import FormProgress from "$lib/formComponents/FormSubmitWithProgress.svelte";
 	import FormMessage from "$lib/formComponents/FormMessage.svelte";
 	import Header from "$lib/Header.svelte";
+	import { blur } from "svelte/transition";
    interface Props {
 		data: PageData;
 	}
@@ -16,7 +17,7 @@
 
 </script>
 <Header title='Register a new account' />
-<div>
+<div transition:blur={{duration:600}}>
    <FormMessage message={$message} />
    <form method="POST" action="/register" use:enhance>
       <TextInput

@@ -10,6 +10,7 @@
 	import { BadgeCheck, } from 'lucide-svelte';
 	import LeaseCustomer from '$lib/displayComponents/LeaseCustomer.svelte';
 	import LeaseEndForm from '$lib/forms/LeaseEndForm.svelte';
+	import { blur } from 'svelte/transition';
     
     let {data}:{ data: PageData} = $props();
     let addressModalOpen = $state(false);
@@ -25,6 +26,9 @@
     }
 </script>
 <Header title='Settings for {data.user?.givenName}' />
+
+<div transition:blur={{duration:600}}>
+
 
 <span class="h1">{data.user?.givenName} {data.user?.familyName}</span>
 {#if data.user?.organizationName}
@@ -138,3 +142,5 @@ backdropClasses="backdrop-blur-sm"
         {/each}
     {/if}
 {/await}
+
+</div>
