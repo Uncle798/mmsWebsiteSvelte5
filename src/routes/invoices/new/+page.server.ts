@@ -6,7 +6,10 @@ import { redirect } from '@sveltejs/kit';
 import { ratelimit } from '$lib/server/rateLimit';
 import { prisma } from '$lib/server/prisma';
 
-export const load = (async () => {
+export const load = (async (event) => {
+    if(!event.locals.user?.employee){
+        redirect(302, '/login?toast=employee')
+     }
     const newInvoiceForm = await superValidate(zod(newInvoiceFormSchema));
     const customers = await prisma.user.findMany({
         orderBy: {

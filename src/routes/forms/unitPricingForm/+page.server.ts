@@ -3,11 +3,14 @@ import { superValidate, message } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
 import { ratelimit } from '$lib/server/rateLimit';
 import { prisma } from '$lib/server/prisma';
-import { fail } from '@sveltejs/kit';
+import { fail, redirect } from '@sveltejs/kit';
 import { unitPricingFormSchema } from '$lib/formSchemas/schemas';
 
 export const actions: Actions = {
    default: async (event) => {
+      if(!event.locals.user?.employee){
+         redirect(302, '/login?toast=employee')
+      }
       const formData = await event.request.formData();
       const unitPricingForm = await superValidate(formData, zod(unitPricingFormSchema));
       
