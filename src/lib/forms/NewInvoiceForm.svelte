@@ -9,6 +9,7 @@
 	import type { Lease } from "@prisma/client";
 	import type { SuperValidated, Infer } from "sveltekit-superforms";
    import { superForm } from "sveltekit-superforms";
+   import { Combobox } from "@skeletonlabs/skeleton-svelte";
 
    interface Props {
       data: SuperValidated<Infer<NewInvoiceFormSchema>>;
@@ -18,8 +19,27 @@
    }
    let { data, employeeId, customers, leases }:Props = $props();
    let { form, errors, message, constraints, enhance, delayed, timeout} = superForm(data, {
+   });
+   let selectedCustomer = $state(['']);
+   let selectedLease = $state([''])
+   interface ComboBoxData {
+      label: string;
+      value: string;
+   }
+   const customerComboBoxData:ComboBoxData[] = [];
+   const leaseComboBoxData:ComboBoxData[] = []
+   customers.forEach((customer)=>{
+      const label = `${customer.givenName} ${customer.familyName}`;
+      const value = customer.id;
+      const datum = {
+         label,
+         value
+      }
+      customerComboBoxData.push(datum);
+      const customerLeases = leases.filter((lease) => { lease.customerId === customer.id});
+      console.log(customerLeases)
+   })
 
-});
 </script>
 
 <FormMessage message={$message} />
@@ -32,14 +52,20 @@
       label='Invoice amount: $'
       name='invoiceAmount'
    />
-   <label for="customerId">Customer: 
-      <select class="select" name='customerId' bind:value={$form.customerId}>
-         {#each customers as customer}
-         <option value={customer.id}>{customer.givenName} {customer.familyName}</option>
-         {/each}
-      </select>
-   </label>
-
+   <Combobox
+      data={customerComboBoxData}
+      bind:value={selectedCustomer}
+      label='Select Customer'
+      placeholder='Select...'
+   />
+   {#if leaseComboBoxData.length > 0 }
+      <Combobox
+         data={leaseComboBoxData}
+         bind:value={selectedLease}
+         label="Select a unit"
+         placeholder="Select..."
+      />
+   {/if}
    <TextInput
       bind:value={$form.invoiceNotes}
       errors={$errors.invoiceNotes}
