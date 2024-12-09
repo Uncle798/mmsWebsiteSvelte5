@@ -21,6 +21,9 @@ export const load = (async (event) => {
                 gte: dayjs(Date.now()).subtract(1, 'year').toDate()
             }
         }, 
+        include: {
+            customer: true
+        }
     });
     const customers = await prisma.user.findMany({
         where: {
@@ -31,6 +34,9 @@ export const load = (async (event) => {
                     }
                 }
             }
+        },
+        include: {
+            paymentMade: true
         }
     })
     return { paymentRecords, searchForm, customers };
