@@ -19,6 +19,11 @@
    }
    let { data, employeeId, customers, leases }:Props = $props();
    let { form, errors, message, constraints, enhance, delayed, timeout} = superForm(data, {
+      onSubmit() {
+         $form.customerId = selectedCustomer[0]
+         $form.leaseId = selectedLease[0]
+         console.log($form.customerId);
+      },
    });
    let selectedCustomer = $state(['']);
    let selectedLease = $state([''])
@@ -27,7 +32,17 @@
       value: string;
    }
    const customerComboBoxData:ComboBoxData[] = [];
-   const leaseComboBoxData:ComboBoxData[] = []
+   const leaseComboBoxData:ComboBoxData[] = $derived.by(() =>{
+      console.log('selectedCustomer[0]: ', selectedCustomer[0]);
+      const customerLeases = leases.filter((lease) => lease.customerId === selectedCustomer[0]);
+      const data:ComboBoxData[]=[]
+      customerLeases.forEach((lease) =>{
+         const label = lease.unitNum.replace(/^0+/gm,'');
+         const value = lease.leaseId;
+         data.push({label, value})
+      })
+      return data
+   })
    customers.forEach((customer)=>{
       const label = `${customer.givenName} ${customer.familyName}`;
       const value = customer.id;
@@ -36,9 +51,7 @@
          value
       }
       customerComboBoxData.push(datum);
-      const customerLeases = leases.filter((lease) => { lease.customerId === customer.id});
-      console.log(customerLeases)
-   })
+   });
 
 </script>
 
@@ -60,7 +73,7 @@
    />
    {#if leaseComboBoxData.length > 0 }
       <Combobox
-         data={leaseComboBoxData}
+         data={leaseComboBoxData.sort()}
          bind:value={selectedLease}
          label="Select a unit"
          placeholder="Select..."
