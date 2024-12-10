@@ -112,6 +112,7 @@ model DiscountCode {
 
 model PaymentRecord {
   paymentNumber    Int         @id @unique @default(autoincrement())
+  stripeId         String?     @unique
   customerId       String
   unitNum          String?
   paymentAmount    Int
@@ -121,11 +122,10 @@ model PaymentRecord {
   paymentCompleted DateTime?
   paymentNotes     String?
   paymentType      PaymentType
-  invoiceNum       Int? @unique
+  invoiceNum       Int?        @unique
   invoice          Invoice?
   customer         User        @relation("customer", fields: [customerId], references: [id])
   receiver         User?       @relation("employee", fields: [receiverId], references: [id])
-
 }
 
 model Invoice {
@@ -168,9 +168,10 @@ model PasswordReset {
   userId    String   @map("user_id")
   expiresAt DateTime @map("expires_at")
 }
+
 model MagicLink {
   tokenHash String   @unique @map("token_hash")
-  email String
+  email     String
   expiresAt DateTime @map("expires_at")
 }
 
