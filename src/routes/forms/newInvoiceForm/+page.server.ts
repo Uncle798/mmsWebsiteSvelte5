@@ -16,6 +16,7 @@ export const actions: Actions = {
          redirect(302, '/login?toast=employee');
      }
      const formData = await event.request.formData();
+     console.log(formData)
      const newInvoiceForm = await superValidate(formData, zod(newInvoiceFormSchema))
      const {success, reset} = await ratelimit.login.limit(event.locals.user.id);
      if(!success){

@@ -25,21 +25,8 @@ export const load = (async (event) => {
             customer: true
         }
     });
-    const customers = await prisma.user.findMany({
-        where: {
-            paymentMade: {
-                some: {
-                    paymentCompleted: {
-                        gte: dayjs(Date.now()).subtract(1, 'year').toDate(),
-                    }
-                }
-            }
-        },
-        include: {
-            paymentMade: true
-        }
-    })
-    return { paymentRecords, searchForm, customers };
+    console.log('paymentRecord: ', paymentRecords[0])
+    return { paymentRecords, searchForm, };
 }) satisfies PageServerLoad;
 
 export const actions: Actions = {
