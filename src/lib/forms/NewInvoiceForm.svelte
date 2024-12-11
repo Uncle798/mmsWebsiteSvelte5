@@ -4,25 +4,26 @@
 	import FormSubmitWithProgress from "$lib/formComponents/FormSubmitWithProgress.svelte";
 	import NumberInput from "$lib/formComponents/NumberInput.svelte";
 	import TextInput from "$lib/formComponents/TextInput.svelte";
-   import type { NewInvoiceFormSchema } from "$lib/formSchemas/schemas";
+   import type { NewInvoiceFormSchema, RegisterFormSchema } from "$lib/formSchemas/schemas";
 	import type { PartialUser } from "$lib/server/partialTypes";
 	import type { Lease } from "@prisma/client";
 	import type { SuperValidated, Infer } from "sveltekit-superforms";
    import { superForm } from "sveltekit-superforms";
-   import { Combobox } from "@skeletonlabs/skeleton-svelte";
+   import { Combobox, Modal } from "@skeletonlabs/skeleton-svelte";
+	import RegisterForm from "./RegisterForm.svelte";
 
    interface Props {
       data: SuperValidated<Infer<NewInvoiceFormSchema>>;
+      registerForm: SuperValidated<Infer<RegisterFormSchema>>;
       employeeId: string | undefined;
       customers: PartialUser[];
       leases: Lease[];
    }
-   let { data, employeeId, customers, leases }:Props = $props();
+   let { data, employeeId, customers, leases, registerForm }:Props = $props();
    let { form, errors, message, constraints, enhance, delayed, timeout} = superForm(data, {
-      onSubmit() {
-         $form.customerId = selectedCustomer[0]
-         $form.leaseId = selectedLease[0]
-         console.log($form.customerId);
+      onSubmit({formData}) {
+         formData.set('customerId', selectedCustomer[0])
+         formData.set('leaseId', selectedLease[0])
       },
    });
    let selectedCustomer = $state(['']);
@@ -33,7 +34,6 @@
    }
    const customerComboBoxData:ComboBoxData[] = [];
    const leaseComboBoxData:ComboBoxData[] = $derived.by(() =>{
-      console.log('selectedCustomer[0]: ', selectedCustomer[0]);
       const customerLeases = leases.filter((lease) => lease.customerId === selectedCustomer[0]);
       const data:ComboBoxData[]=[]
       customerLeases.forEach((lease) =>{
@@ -52,9 +52,22 @@
       }
       customerComboBoxData.push(datum);
    });
-
+   let registerFormOpen=$state(false)
 </script>
 
+<Modal
+   bind:open={registerFormOpen}
+   triggerBase="btn preset-tonal"
+   contentBase="card bg-surface-400-600 p-4 space-y-4 shadow-xl max-w-screen-sm"
+   backdropClasses="backdrop-blur-sm"
+>
+   {#snippet content()}
+   <RegisterForm data={registerForm} registerFormModalOpen={registerFormOpen} formType='employee'/>
+   <button class="btn" onclick={()=>registerFormOpen=false}>Cancel</button>
+   {/snippet}
+
+</Modal>
+ 
 <FormMessage message={$message} />
 
 <form action="/forms/newInvoiceForm" method="POST" use:enhance>
@@ -71,6 +84,7 @@
       label='Select Customer'
       placeholder='Select...'
    />
+   <button class="btn p-4" onclick={()=> registerFormOpen=true } type='button'>Create new customer</button>
    {#if leaseComboBoxData.length > 0 }
       <Combobox
          data={leaseComboBoxData.sort()}
