@@ -4,11 +4,14 @@ import type { PageServerLoad, Actions } from './$types';
 import { zod } from 'sveltekit-superforms/adapters';
 import { employmentFormSchema } from '$lib/formSchemas/schemas';
 import { searchFormSchema } from '$lib/formSchemas/schemas';
-
+import { redirect } from '@sveltejs/kit';
 
 
 
 export const load = (async (event) => {
+   if(!event.locals.user?.employee){
+      redirect(302, '/login?toast=employee')
+   }
    const employmentChangeForm = await superValidate(zod(employmentFormSchema));
    const searchForm = await superValidate(zod(searchFormSchema));
    const userCount = await prisma.user.count();
