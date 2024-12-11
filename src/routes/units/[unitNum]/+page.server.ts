@@ -15,6 +15,18 @@ export const load = (async (event) => {
    const unit = await prisma.unit.findUnique({
       where: {
          num: unitNum
+      }, 
+      include: {
+         lease: {
+            include: {
+               customer: true
+            },
+            orderBy: {
+               leaseEnded:{
+                  sort: 'desc',
+                  nulls: 'first',               }
+            }
+         }
       }
    });
    return { unit, };
