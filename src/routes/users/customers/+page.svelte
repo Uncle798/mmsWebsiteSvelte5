@@ -7,7 +7,7 @@
     import { goto } from '$app/navigation';
     import type { PartialUser } from '$lib/server/partialTypes';
     import { Pagination } from '@skeletonlabs/skeleton-svelte';
-	import { blur } from 'svelte/transition';
+	import { fade } from 'svelte/transition';
 
     let { data }: { data: PageData } = $props();
     const { customers } = data;
@@ -28,7 +28,7 @@
 {#if !data.customers}
     ...loading customers
 {:else}
-<div transition:blur={{duration:600}}>
+<div transition:fade={{duration:600}}>
 
    <form method="post" use:enhance>
       <input type="text" name="search" class="input" placeholder="Search by name" bind:value={$form.search}>

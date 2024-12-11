@@ -12,7 +12,7 @@
     import IconEllipsis from 'lucide-svelte/icons/ellipsis';
     import IconFirst from 'lucide-svelte/icons/chevrons-left';
     import IconLast from 'lucide-svelte/icons/chevron-right';
-	import { blur } from 'svelte/transition';
+	import { fade } from 'svelte/transition';
 
     let { data }: { data: PageData } = $props();
     let { form, enhance } = superForm(data.searchForm,{
@@ -35,7 +35,7 @@
 {#if !data.paymentRecords}
     ...loading payment records
 {:else}
-    <div transition:blur={{duration:600}}>
+    <div transition:fade={{duration:600}}>
     <form method="post" use:enhance>
         <input type="search" name="search" id="search" class="input" placeholder="Search by payment record number" bind:value={$form.search}>
         <button class="btn">Submit</button>

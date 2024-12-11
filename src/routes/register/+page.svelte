@@ -3,7 +3,7 @@
 	import type { PageData } from "./$types";
 
 	import Header from "$lib/Header.svelte";
-	import { blur } from "svelte/transition";
+	import { fade } from "svelte/transition";
 	import RegisterForm from "$lib/forms/RegisterForm.svelte";
    interface Props {
 		data: PageData;
@@ -15,7 +15,7 @@
 
 </script>
 <Header title='Register a new account' />
-<div transition:blur={{duration:600}}>
+<div transition:fade={{duration:600}}>
    <RegisterForm data={data.registerForm} formType='customer'/>
    <a href="/login/magicLink?redirectTo={data.redirectTo}&unitNum={data.unitNum}">Already have an account? Login here.</a>
 </div>

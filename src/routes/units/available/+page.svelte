@@ -1,12 +1,12 @@
 <script lang="ts">
     import Header from '$lib/Header.svelte';
-	import { blur } from 'svelte/transition';
+	import { fade } from 'svelte/transition';
 import type { PageData } from './$types';
     
     let { data }:{data:PageData} = $props();
 </script>
 <Header title='Available Units' />
-<div class="table-wrap" transition:blur={{duration:600}}>
+<div class="table-wrap" transition:fade={{duration:600}}>
     <table class="table">
         <caption>Available units.</caption>
         <thead>

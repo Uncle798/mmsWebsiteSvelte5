@@ -13,7 +13,7 @@
 	import FormMessage from '$lib/formComponents/FormMessage.svelte';
 	import Header from '$lib/Header.svelte';
 	import LeaseDiscountForm from '$lib/forms/LeaseDiscountForm.svelte';
-	import { blur, crossfade, fade } from 'svelte/transition';
+	import { fade, crossfade, blur } from 'svelte/transition';
     
     let { data }: {data:PageData} = $props();
     let { form, message, errors, constraints, enhance, delayed, timeout } = superForm(data.leaseForm);
@@ -32,7 +32,7 @@
     })
 </script>
 <Header title='New lease'/>
-<div transition:blur={{duration:600}}>
+<div transition:fade={{duration:600}}>
 
 
 {#if data.user}

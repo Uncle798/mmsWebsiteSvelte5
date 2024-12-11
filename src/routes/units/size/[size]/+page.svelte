@@ -6,7 +6,7 @@
    import type { PageData } from './$types';
 	import UnitPricingForm from '$lib/forms/UnitPricingForm.svelte';
 	import User from '$lib/displayComponents/User.svelte';
-	import { blur, fade } from 'svelte/transition';
+	import { fade, blur } from 'svelte/transition';
 
    let { data }: { data: PageData } = $props();
    let unitPricingModalOpen = $state(false);
@@ -34,7 +34,7 @@
 {#if data.sizes}
    <button class='btn' onclick={()=>sizeMenuOpen = !sizeMenuOpen}>Select a size</button>
 {#if sizeMenuOpen}
-<div transition:blur={{duration:600}}>
+<div transition:fade={{duration:600}}>
    <ul>
       {#each data.sizes as size}
       <li>
@@ -49,7 +49,7 @@
 
 {#each data.units as unit, index } 
    {@const {lease} = unit }
-   <div class="flex" transition:blur={{duration:600}}>
+   <div class="flex" transition:fade={{duration:600}}>
       <div>
          {#if index === 0}
             <button class="btn " onclick={()=> openModal(unit.advertisedPrice)}>Change all {data.size.replace(/^0+/gm,'').replace(/x0/gm,'x')} prices</button>

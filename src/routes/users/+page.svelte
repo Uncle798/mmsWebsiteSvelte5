@@ -7,7 +7,7 @@
    import type { PageData } from './$types';
 	import type { PartialUser } from '$lib/server/partialTypes';
 	import { goto } from '$app/navigation';
-   import { blur } from 'svelte/transition';
+   import { fade } from 'svelte/transition';
 
    let { data }: { data: PageData } = $props();
    let {form:searchForm, enhance} = superForm(data.searchForm, {
@@ -27,7 +27,7 @@
 {#if !data.users}
    ...loading users
 {:else }
-<div transition:blur={{duration:600}}>
+<div transition:fade={{duration:600}}>
 
    <form method="post" use:enhance>
       <input type="text" name="search" class="input" placeholder="Search by name" bind:value={$searchForm.search}>

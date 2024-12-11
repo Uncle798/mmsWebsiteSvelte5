@@ -8,7 +8,7 @@
 	import UnitNotesForm from '$lib/forms/UnitNotesForm.svelte';
 	import UnitPricingForm from '$lib/forms/UnitPricingForm.svelte';
 	import Header from '$lib/Header.svelte';
-    import { blur } from 'svelte/transition';
+    import { fade } from 'svelte/transition';
 
     let { data }: { data: PageData } = $props();
     let { units, leases, customers,} = data;
@@ -53,7 +53,7 @@
     {:else}
     {#each units as unit}
         {@const lease = leases?.find((lease) => lease.unitNum === unit.num)}
-        <div class="flex" transition:blur={{duration:600}}>
+        <div class="flex" transition:fade={{duration:600}}>
             <div>
                 <UnitEmployee unit={unit} />
                 <button class="btn" onclick={()=> openModal('unitPricing', '',unit.size, unit.advertisedPrice)}>Change all {unit.size.replace(/^0+/gm,'').replace(/x0/gm,'x')} pricing</button>

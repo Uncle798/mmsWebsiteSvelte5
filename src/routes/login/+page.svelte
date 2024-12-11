@@ -8,7 +8,7 @@
 	import FormMessage from '$lib/formComponents/FormMessage.svelte';
 	import Header from '$lib/Header.svelte';
 	import { redirect } from '@sveltejs/kit';
-	import { blur } from 'svelte/transition';
+	import { fade } from 'svelte/transition';
     
     export let data: PageData;
     let { form, message, errors, constraints, enhance, delayed, timeout } = superForm(data.magicLinkForm);
@@ -54,7 +54,7 @@
     })
 </script>
 <Header title="Login" />
-<div transition:blur={{duration:600}}>
+<div transition:fade={{duration:600}}>
     <p class="h2">Please enter your email to login </p>
     <div class="h3">
         <FormMessage message={$message} />
