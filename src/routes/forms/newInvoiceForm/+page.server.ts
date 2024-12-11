@@ -1,14 +1,11 @@
-import type { PageServerLoad, Actions } from './$types';
+import type { Actions } from './$types';
 import { redirect } from '@sveltejs/kit';
-import { superValidate, message } from 'sveltekit-superforms';
+import { superValidate, message,} from 'sveltekit-superforms';
 import { prisma } from '$lib/server/prisma';
 import { ratelimit } from '$lib/server/rateLimit';
 import { zod } from 'sveltekit-superforms/adapters';
 import { newInvoiceFormSchema } from '$lib/formSchemas/schemas';
 
-export const load = (async () => {
-    return {};
-}) satisfies PageServerLoad;
 
 export const actions: Actions = {
    default: async (event) => {
@@ -23,7 +20,10 @@ export const actions: Actions = {
          const timeRemaining = Math.floor((reset - Date.now()) / 1000);
          return message(newInvoiceForm, `Please wait ${timeRemaining}s before trying again.`)
      }
-     await prisma.invoice.create({
+     if(!newInvoiceForm.valid){
+        return message(newInvoiceForm, 'Unable to process')
+     }
+     const invoice = await prisma.invoice.create({
          data: {
              invoiceAmount: newInvoiceForm.data.invoiceAmount,
              customerId: newInvoiceForm.data.customerId,
@@ -31,5 +31,6 @@ export const actions: Actions = {
              leaseId: newInvoiceForm.data.leaseId,
          }
      })
+     redirect(302, `/invoices/${invoice.invoiceNum}`);
    }
 };
