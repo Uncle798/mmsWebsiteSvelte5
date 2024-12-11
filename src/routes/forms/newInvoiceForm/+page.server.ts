@@ -15,7 +15,7 @@ export const actions: Actions = {
      const formData = await event.request.formData();
      console.log(formData)
      const newInvoiceForm = await superValidate(formData, zod(newInvoiceFormSchema))
-     const {success, reset} = await ratelimit.login.limit(event.locals.user.id);
+     const {success, reset} = await ratelimit.employeeForm.limit(event.locals.user.id);
      if(!success){
          const timeRemaining = Math.floor((reset - Date.now()) / 1000);
          return message(newInvoiceForm, `Please wait ${timeRemaining}s before trying again.`)
