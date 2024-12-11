@@ -14,7 +14,7 @@ export const actions: Actions = {
       }
       const formData = await event.request.formData();
       const newDiscountForm = await superValidate(formData, zod(newDiscountFormSchema));
-      const { success, reset } = await ratelimit.register.limit( event.locals.user.id);
+      const { success, reset } = await ratelimit.employeeForm.limit( event.locals.user.id);
       if(!success){
          const timeRemaining = Math.floor((reset-Date.now()) / 1000);
          return message(newDiscountForm, `Please wait ${timeRemaining}s before trying again.`)

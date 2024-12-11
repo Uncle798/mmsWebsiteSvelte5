@@ -17,7 +17,7 @@ export const actions: Actions = {
       if(!unitPricingForm.valid){
          return fail(400, {unitPricingForm});
       }
-      const { success, reset } = await ratelimit.login.limit(event.locals.user?.id || event.getClientAddress())
+      const { success, reset } = await ratelimit.employeeForm.limit(event.locals.user?.id)
 		if(!success) {
          const timeRemaining = Math.floor((reset - Date.now()) /1000);
 			return message(unitPricingForm, `Please wait ${timeRemaining}s before trying again.`)

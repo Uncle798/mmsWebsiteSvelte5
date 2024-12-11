@@ -18,7 +18,7 @@ export const actions: Actions = {
       }
       const formData = await event.request.formData();
       const leaseEndForm = await superValidate(formData, zod(leaseEndFormSchema));
-      const { success, reset } = await ratelimit.register.limit(event.locals.user.id)
+      const { success, reset } = await ratelimit.employeeForm.limit(event.locals.user.id)
       if(!success) {
           const timeRemaining = Math.floor((reset - Date.now()) /1000);
           return message(leaseEndForm, `Please wait ${timeRemaining} seconds before trying again.`)

@@ -13,7 +13,7 @@ export const actions: Actions = {
       }
       const formData = await event.request.formData();
       const leaseDiscountForm = await superValidate(formData, zod(leaseDiscountFormSchema));
-      const { success, reset } = await ratelimit.register.limit(event.locals.user.id)
+      const { success, reset } = await ratelimit.customerForm.limit(event.locals.user.id)
       if(!success){
          const timeRemaining = Math.floor((reset - Date.now()) / 1000);
          return message(leaseDiscountForm, `Please wait ${timeRemaining} seconds before trying again`) 
