@@ -26,17 +26,17 @@ export const POST: RequestHandler = async (event) => {
                const handlePaymentIntent = async (intent:typeof paymentIntent)=> {
                   const invoice = await prisma.invoice.findFirst({
                      where: {
-                        invoiceId: intent.metadata.invoiceId
+                        invoiceNum: parseInt(intent.metadata.invoiceNum, 10),
                      }
                   });
 
                   await prisma.paymentRecord.create({
                      data: {
-                        invoiceId: intent.metadata.invoiceId,
+                        invoiceNum: parseInt(intent.metadata.invoiceNum, 10),
                         customerId: intent.metadata.customerId,
                         paymentAmount: intent.amount / 100,
                         paymentType: 'STRIPE',
-                        paymentId: intent.id,
+                        stripeId: intent.id,
                         unitNum: intent.metadata.unitNum,
                         payee: intent.metadata.customerId,
                         paymentNotes: `Payment for invoice number: ${invoice?.invoiceNum}`
@@ -51,7 +51,7 @@ export const POST: RequestHandler = async (event) => {
                const handlePaymentIntent = async (intent:typeof paymentIntent)=> {
                   await prisma.paymentRecord.update({
                      where: {
-                        paymentId: intent.id,
+                        stripeId: intent.id,
                      },
                      data: {
                         paymentCompleted: new Date,
