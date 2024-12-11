@@ -14,19 +14,24 @@
 		link: string;
 		label: string;
 	}
-	let links:Link[] =[
+	let customerLinks:Link[] =[
 		{link: '/', label: 'Home'},
 		{link: '/register', label: 'Register'},
 		{link: '/units/available', label:'Available Units'},
 		{link: '/newLease', label: 'New lease'},
+	]
+	let employeeLinks:Link[] = [
 		{link: '/units', label:'Units'},
-		{link: '/users', label:'Users'},
-		{link: '/users/customers', label: 'Customers'},
 		{link: '/discounts', label: 'Discounts'},
+		{link: '/users/customers', label: 'Customers'},
+		{link: '/invoices', label: 'Invoices'},
+		{link: '/invoices/new', label: 'New Invoice'},
 		{link: '/paymentRecords', label: 'Payment Records'},
 		{link: '/paymentRecords/new', label:'New Payment Record'},
-		{link: '/invoices', label: 'Invoices'},
-		{link: '/invoices/new', label: 'New Invoice'}
+	]
+	let adminLinks:Link[] = [
+		{link: '/users', label:'All Users'},
+
 	]
 	let menuOpen = $state(false);
 
@@ -48,17 +53,29 @@
 {#snippet content()}
 	<article>
 		<ul>
-			{#each links as link}
+			{#each customerLinks as link}
 				<li><a class="btn" href={link.link}>{link.label}</a></li>
 			{/each}
-			{#if data.user}
+			{#if data.user?.employee}
+				{#each employeeLinks as employeeLink}
+					<li><a class="btn" href={employeeLink.link}>{employeeLink.label}</a></li>
+				{/each}
+			{/if}
+			{#if data.user?.admin}
+				{#each adminLinks as adminLink}
+					<li><a href={adminLink.link} class="btn">{adminLink.label}</a></li>
+				{/each}
+			{/if}
+			<div class="card float-end">
+				{#if data.user}
 				<form action="/logout" method="post" use:enhance>
 					<li><button class="btn">Logout</button></li>
 				</form>
 				<li><a class="btn" href="/accountSettings">Settings</a></li>
 				{:else}
 				<li><a class="btn" href="/login">Login</a></li>
-			{/if}
+				{/if}
+			</div>
 		</ul>
 	</article>
 {/snippet}
