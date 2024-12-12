@@ -1,6 +1,9 @@
 import { prisma } from '$lib/server/prisma';
 import {redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
+import { superValidate } from 'sveltekit-superforms';
+import { zod } from 'sveltekit-superforms/adapters';
+import { newPaymentRecordFormSchema, registerFormSchema } from '$lib/formSchemas/schemas';
 
 export const load = (async (event) => {
    if(!event.locals.user?.employee){
@@ -35,5 +38,7 @@ export const load = (async (event) => {
          paymentRecordNum: null
       }
    })
-    return { customers, invoices };
+   const newPaymentRecordForm = await superValidate(zod(newPaymentRecordFormSchema));
+   const registerForm = await superValidate(zod(registerFormSchema));
+    return { customers, invoices, newPaymentRecordForm, registerForm };
 }) satisfies PageServerLoad;

@@ -172,7 +172,7 @@ export const newInvoiceFormSchema = z.object({
    customerId: z.string().min(23).max(30),
    invoiceNotes: z.string().nullable(),
    employeeId: z.string().min(23).max(30),
-   invoiceAmount: z.number(),
+   invoiceAmount: z.number().positive(),
    leaseId: z.string().min(23).max(30).nullable(),
 })
 export type NewInvoiceFormSchema = typeof newInvoiceFormSchema;
@@ -181,3 +181,15 @@ export const magicLinkFormSchema = z.object({
    email: z.string().min(5)
 });
 export type MagicLinkFormSchema  = typeof magicLinkFormSchema;
+
+export const newPaymentRecordFormSchema = z.object({
+   customerId: z.string().min(23).max(30),
+   employeeId: z.string().min(23).max(30),
+   invoiceNum: z.number().nullable(),
+   paymentAmount: z.number().positive(),
+   payee: z.string().nullable().optional(),
+   paymentCompleted: z.boolean(),
+   paymentNotes: z.string().nullable(),
+   paymentType: z.enum(['Cash', 'Check', 'Stripe'])
+})
+export type NewPaymentRecordFormSchema = typeof newPaymentRecordFormSchema;
