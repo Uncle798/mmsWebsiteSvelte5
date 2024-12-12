@@ -190,6 +190,7 @@ export const newPaymentRecordFormSchema = z.object({
    payee: z.string().nullable().optional(),
    paymentCompleted: z.boolean(),
    paymentNotes: z.string().nullable(),
-   paymentType: z.enum(['Cash', 'Check', 'Stripe'])
+   paymentType: z.enum(['CASH', 'CHECK', 'STRIPE']),
+   cashOrCheck: z.boolean()
 })
 export type NewPaymentRecordFormSchema = typeof newPaymentRecordFormSchema;

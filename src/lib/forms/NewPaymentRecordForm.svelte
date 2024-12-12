@@ -2,7 +2,7 @@
 import type { SuperValidated, Infer } from "sveltekit-superforms";
 import type { PartialUser } from "$lib/server/partialTypes";
 import type { Lease } from "@prisma/client";
-import type { NewPaymentRecordFormSchema} from "$lib/formSchemas/schemas";
+import type { NewInvoiceFormSchema, NewPaymentRecordFormSchema} from "$lib/formSchemas/schemas";
 import type { RegisterFormSchema } from "$lib/formSchemas/schemas";
 import { superForm } from "sveltekit-superforms";
 import { Combobox, Modal } from "@skeletonlabs/skeleton-svelte";
@@ -11,24 +11,30 @@ import FormMessage from "$lib/formComponents/FormMessage.svelte";
 import FormSubmitWithProgress from "$lib/formComponents/FormSubmitWithProgress.svelte";
 import NumberInput from "$lib/formComponents/NumberInput.svelte";
 import TextInput from "$lib/formComponents/TextInput.svelte";
+import { Progress, ProgressRing } from "@skeletonlabs/skeleton-svelte";
 import type { Invoice } from "@prisma/client";
+	import NewInvoiceForm from "./NewInvoiceForm.svelte";
+	import { onMount } from "svelte";
 
 interface Props {
       data: SuperValidated<Infer<NewPaymentRecordFormSchema>>;
-      registerForm: SuperValidated<Infer<RegisterFormSchema>>;
+      invoiceForm: SuperValidated<Infer<NewInvoiceFormSchema>>;
       employeeId: string | undefined;
       customers: PartialUser[];
       invoices: Invoice[];
+      leases: Lease[];
+      defaultCustomer?: string;
+      defaultInvoice?: string;
    }
-   let { data, employeeId, customers, invoices, registerForm }:Props = $props();
+   let { data, employeeId, customers, invoices,  invoiceForm, leases, defaultCustomer='', defaultInvoice='' }:Props = $props();
    let { form, errors, message, constraints, enhance, delayed, timeout} = superForm(data, {
       onSubmit({formData}) {
-         formData.set('customerId', selectedCustomer[0])
-         formData.set('leaseId', selectedInvoice[0])
+         formData.set('customerId', selectedCustomer[0]);
+         formData.set('invoiceNum', selectedInvoice[0]);
       },
    });
-   let selectedCustomer = $state(['']);
-   let selectedInvoice = $state([''])
+   let selectedCustomer = $state([defaultCustomer]);
+   let selectedInvoice = $state([defaultInvoice])
    interface ComboBoxData {
       label: string;
       value: string;
@@ -54,22 +60,38 @@ interface Props {
       }
       customerComboBoxData.push(datum);
    });
-   let registerFormOpen=$state(false);
-   let currentInvoiceValue=$state(0);
+   let invoiceFormOpen=$state(false);
+   let invoiceSelected=$state(false);
+   onMount(()=>{
+      if(defaultInvoice){
+         invoiceSelected = true
+         const invoice = invoices.find((invoice) => invoice.invoiceNum.toString() === defaultInvoice)
+            if(invoice){
+               $form.paymentAmount=invoice.invoiceAmount;
+               $form.paymentNotes=`Payment for invoice number: ${invoice.invoiceNum}`
+            }
+      }
+   })
 </script>
 
 <Modal
-   bind:open={registerFormOpen}
+   bind:open={invoiceFormOpen}
    triggerBase="btn preset-tonal"
    contentBase="card bg-surface-400-600 p-4 space-y-4 shadow-xl max-w-screen-sm"
    backdropClasses="backdrop-blur-sm"
 >
    {#snippet content()}
-   <RegisterForm data={registerForm} registerFormModalOpen={registerFormOpen} formType='employee'/>
-   <button class="btn" onclick={()=>registerFormOpen=false}>Cancel</button>
+      <NewInvoiceForm 
+         data={invoiceForm} 
+         customers={customers} 
+         employeeId={employeeId} 
+         leases={leases}
+         defaultCustomer={selectedCustomer[0]}
+      />
+      <button class="btn" onclick={()=>invoiceFormOpen=false}>Cancel</button>
    {/snippet}
-
 </Modal>
+
 
 <FormMessage message={$message} />
 
@@ -81,8 +103,8 @@ interface Props {
    placeholder='Select...'
    openOnClick={true}
    />
-   <button class="btn p-4" onclick={()=> registerFormOpen=true } type='button'>Create new customer</button>
    {#if invoiceComboBoxData.length > 0 }
+      <button class="btn" onclick={()=>invoiceFormOpen=true} type='button'>Create New Invoice</button>
       <Combobox
          data={invoiceComboBoxData.sort()}
          bind:value={selectedInvoice}
@@ -93,10 +115,13 @@ interface Props {
             const invoice = invoices.find((invoice) => invoice.invoiceNum.toString() === details.value[0])
             if(invoice){
                $form.paymentAmount=invoice.invoiceAmount;
+               $form.paymentNotes=`Payment for invoice number: ${invoice.invoiceNum}`
             }
-      }}
-         />
+            invoiceSelected = true
+         }}
+      />
    {/if}
+   {#if invoiceSelected}
       <NumberInput
          bind:value={$form.paymentAmount}
          errors={$errors.paymentAmount}
@@ -104,6 +129,28 @@ interface Props {
          label='Payment amount: $'
          name='paymentAmount'
       />
-   <input type="hidden" name='employeeId' value={employeeId} />
-   <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} />
+      <label for="paymentType">Payment type
+         <select name="paymentType" id="paymentType" class="select">
+            <option value='CASH'>Cash</option>
+            <option value="CHECK">Check</option>
+            <option value="STRIPE">Credit Card</option>
+         </select>
+      </label>
+      <input type="hidden" name='employeeId' value={employeeId} />
+      <TextInput
+         bind:value={$form.paymentNotes}
+         errors={$errors.paymentNotes}
+         constraints={$constraints.paymentNotes}
+         label='Payment Notes'
+         name='paymentNotes'
+      />
+      <TextInput
+         bind:value={$form.payee}
+         errors={$errors.payee}
+         constraints={$constraints.payee}
+         label='Payee (if different than customer)'
+         name='payee'
+      />
+      <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} />
+   {/if}
 </form>

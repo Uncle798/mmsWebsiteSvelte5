@@ -11,23 +11,24 @@
    import { superForm } from "sveltekit-superforms";
    import { Combobox, Modal } from "@skeletonlabs/skeleton-svelte";
 	import RegisterForm from "./RegisterForm.svelte";
+	import dayjs from "dayjs";
 
    interface Props {
       data: SuperValidated<Infer<NewInvoiceFormSchema>>;
-      registerForm: SuperValidated<Infer<RegisterFormSchema>>;
       employeeId: string | undefined;
       customers: PartialUser[];
       leases: Lease[];
+      defaultCustomer?: string;
    }
-   let { data, employeeId, customers, leases, registerForm }:Props = $props();
+   let { data, employeeId, customers, leases, defaultCustomer='' }:Props = $props();
    let { form, errors, message, constraints, enhance, delayed, timeout} = superForm(data, {
       onSubmit({formData}) {
          formData.set('customerId', selectedCustomer[0])
          formData.set('leaseId', selectedLease[0])
       },
    });
-   let selectedCustomer = $state(['']);
-   let selectedLease = $state([''])
+   let selectedCustomer = $state([defaultCustomer]);
+   let selectedLease = $state(['']);
    interface ComboBoxData {
       label: string;
       value: string;
@@ -52,47 +53,41 @@
       }
       customerComboBoxData.push(datum);
    });
-   let registerFormOpen=$state(false)
+   let leaseSelected = $state(false)
 </script>
 
-<Modal
-   bind:open={registerFormOpen}
-   triggerBase="btn preset-tonal"
-   contentBase="card bg-surface-400-600 p-4 space-y-4 shadow-xl max-w-screen-sm"
-   backdropClasses="backdrop-blur-sm"
->
-   {#snippet content()}
-   <RegisterForm data={registerForm} registerFormModalOpen={registerFormOpen} formType='employee'/>
-   <button class="btn" onclick={()=>registerFormOpen=false}>Cancel</button>
-   {/snippet}
 
-</Modal>
  
 <FormMessage message={$message} />
 
 <form action="/forms/newInvoiceForm" method="POST" use:enhance>
-   <NumberInput
-      bind:value={$form.invoiceAmount}
-      errors={$errors.invoiceAmount}
-      constraints={$constraints.invoiceAmount}
-      label='Invoice amount: $'
-      name='invoiceAmount'
-   />
+
    <Combobox
       data={customerComboBoxData}
       bind:value={selectedCustomer}
       label='Select Customer'
       placeholder='Select...'
+      openOnClick={true}
    />
-   <button class="btn p-4" onclick={()=> registerFormOpen=true } type='button'>Create new customer</button>
    {#if leaseComboBoxData.length > 0 }
       <Combobox
          data={leaseComboBoxData.sort()}
          bind:value={selectedLease}
          label="Select a unit"
          placeholder="Select..."
+         openOnClick={true}
+         onValueChange={(details) =>{
+            const lease = leases.find((lease) => lease.leaseId === details.value[0]);
+            if(lease){
+               $form.invoiceAmount=lease.price
+               const date = dayjs(new Date()).format('M/YYYY')
+               $form.invoiceNotes=`Rent for Unit Number ${lease.unitNum.replace(/^0+/gm,'')} for ${date}`
+            }
+            leaseSelected = true
+         }}
       />
    {/if}
+   {#if leaseSelected}
    <TextInput
       bind:value={$form.invoiceNotes}
       errors={$errors.invoiceNotes}
@@ -100,6 +95,14 @@
       label="Invoice notes"
       name='invoiceNotes'
    />
+   <NumberInput
+      bind:value={$form.invoiceAmount}
+      errors={$errors.invoiceAmount}
+      constraints={$constraints.invoiceAmount}
+      label='Invoice amount: $'
+      name='invoiceAmount'
+   />
    <input type="hidden" name='employeeId' value={employeeId}/>
    <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} buttonText='Create Invoice'/>
+   {/if}
 </form>

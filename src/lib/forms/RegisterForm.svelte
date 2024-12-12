@@ -10,7 +10,7 @@
    interface Props {
       data: SuperValidated<Infer<RegisterFormSchema>>
       registerFormModalOpen?: boolean
-      formType: string | undefined
+      formType: 'customer' | 'employee'
    }
    let { data, registerFormModalOpen, formType }:Props = $props();
    let { form, errors, constraints, message, enhance, delayed, timeout} = superForm(data, {
