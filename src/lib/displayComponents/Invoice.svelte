@@ -13,6 +13,8 @@
    <p>Created: {dayjs(invoice.invoiceCreated).format('M/D/YYYY')}</p>
    <p>{invoice.invoiceNotes}</p>
    {#if invoice.paymentRecordNum}
-      <p><a href="/paymentRecords/{invoice.paymentRecordNum}">Payment record num: {invoice.paymentRecordNum}</a></p>
+      <p><a href="/paymentRecords/{invoice.paymentRecordNum}" class="btn">Payment record num: {invoice.paymentRecordNum}</a></p>
+      {:else}
+      <p><a href="/paymentRecords/new?defaultCustomer={invoice.customerId}&defaultInvoice={invoice.invoiceNum}" class="btn">Make a payment record for this lease</a></p>
    {/if}
 </div>
