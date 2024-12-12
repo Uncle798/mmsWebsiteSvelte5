@@ -113,19 +113,19 @@ model DiscountCode {
 model PaymentRecord {
   paymentNumber    Int         @id @unique @default(autoincrement())
   stripeId         String?     @unique
+  invoiceNum       Int?        @unique
   customerId       String
   unitNum          String?
   paymentAmount    Int
-  receiverId       String?
+  employeeId       String?
   payee            String?
   paymentCreated   DateTime    @default(now())
   paymentCompleted DateTime?
   paymentNotes     String?
   paymentType      PaymentType
-  invoiceNum       Int?        @unique
   invoice          Invoice?
   customer         User        @relation("customer", fields: [customerId], references: [id])
-  receiver         User?       @relation("employee", fields: [receiverId], references: [id])
+  receiver         User?       @relation("employee", fields: [employeeId], references: [id])
 }
 
 model Invoice {
