@@ -11,7 +11,7 @@
    }
    let { value = $bindable(), label, errors, constraints, placeholder='email@email.com', name, ...others }:Props = $props()
 </script>
-
+<div class="p-4">
 <label>
    {#if label}<span class="label-text">{label}</span><br />{/if}
    <input
@@ -27,3 +27,4 @@
    />
  </label>
  {#if errors}<span class="invalid">{errors}</span>{/if}
+</div>
