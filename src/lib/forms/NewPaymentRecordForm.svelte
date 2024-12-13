@@ -64,9 +64,9 @@ interface Props {
    let invoiceSelected=$state(false);
    onMount(()=>{
       if(defaultInvoice){
-         invoiceSelected = true
          const invoice = invoices.find((invoice) => invoice.invoiceNum.toString() === defaultInvoice)
-            if(invoice){
+         if(invoice){
+               invoiceSelected = true
                $form.paymentAmount=invoice.invoiceAmount;
                $form.paymentNotes=`Payment for invoice number: ${invoice.invoiceNum}`
             }
@@ -96,33 +96,37 @@ interface Props {
 <FormMessage message={$message} />
 
 <form action="/forms/newPaymentRecordForm" method="POST" use:enhance>
-   <Combobox
-   data={customerComboBoxData}
-   bind:value={selectedCustomer}
-   label='Select Customer'
-   placeholder='Select...'
-   openOnClick={true}
-   />
-   {#if invoiceComboBoxData.length > 0 }
+   <div class="p-4">
+      <Combobox
+         data={customerComboBoxData}
+         bind:value={selectedCustomer}
+         label='Select Customer'
+         placeholder='Select...'
+         openOnClick={true}
+      />
+   </div>
+   <div class="p-4">
       {#if !invoiceSelected}
          <button class="btn" onclick={()=>invoiceFormOpen=true} type='button'>Create New Invoice</button>
       {/if}
-      <Combobox
-         data={invoiceComboBoxData.sort()}
-         bind:value={selectedInvoice}
-         label="Select an invoice"
-         placeholder="Select..."
-         openOnClick={true}
-         onValueChange={(details)=>{
-            const invoice = invoices.find((invoice) => invoice.invoiceNum.toString() === details.value[0])
-            if(invoice){
-               $form.paymentAmount=invoice.invoiceAmount;
-               $form.paymentNotes=`Payment for invoice number: ${invoice.invoiceNum}`
-            }
-            invoiceSelected = true
-         }}
-      />
-   {/if}
+      {#if invoiceComboBoxData.length > 0 }
+         <Combobox
+            data={invoiceComboBoxData.sort()}
+            bind:value={selectedInvoice}
+            label="Select an invoice"
+            placeholder="Select..."
+            openOnClick={true}
+            onValueChange={(details)=>{
+               const invoice = invoices.find((invoice) => invoice.invoiceNum.toString() === details.value[0])
+               if(invoice){
+                  $form.paymentAmount=invoice.invoiceAmount;
+                  $form.paymentNotes=`Payment for invoice number: ${invoice.invoiceNum}`
+               }
+               invoiceSelected = true
+            }}
+         />
+      {/if}
+   </div>
    {#if invoiceSelected}
       <NumberInput
          bind:value={$form.paymentAmount}
@@ -131,6 +135,7 @@ interface Props {
          label='Payment amount: $'
          name='paymentAmount'
       />
+      <div class="p-4">
       <label for="paymentType">Payment type
          <select name="paymentType" id="paymentType" class="select">
             <option value='CASH'>Cash</option>
@@ -138,6 +143,7 @@ interface Props {
             <option value="STRIPE">Credit Card</option>
          </select>
       </label>
+      </div>
       <input type="hidden" name='employeeId' value={employeeId} />
       <TextInput
          bind:value={$form.paymentNotes}
