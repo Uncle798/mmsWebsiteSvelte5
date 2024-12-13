@@ -65,7 +65,6 @@
     {#if data.paymentRecord}
       <PaymentRecord paymentRecord={data.paymentRecord} />
         <div class="p-4">
-            
             <form onsubmit={submit}>
                 <Elements {stripe} clientSecret={clientSecret} bind:elements >
                     <!-- {#if data.user?.email}
@@ -73,9 +72,9 @@
                     {/if} -->
                     <PaymentElement />
                     {#if processing}
-                    processing...
+                     processing...
                     {:else}
-                    <button class="btn" onclick={submit}>Pay ${data.paymentRecord?.paymentAmount}</button>
+                     <button class="btn" onclick={submit}>Charge ${data.paymentRecord?.paymentAmount}</button>
                     {/if}
                 </Elements>
             </form>
