@@ -9,6 +9,12 @@ export const load = (async (event) => {
     const unpaidInvoices = await prisma.invoice.findMany({
         where: {
             paymentRecord: null
+        }, 
+        include: {
+            customer: true
+        },
+        orderBy: {
+            invoiceCreated: 'asc'
         }
     })
     return { unpaidInvoices };
