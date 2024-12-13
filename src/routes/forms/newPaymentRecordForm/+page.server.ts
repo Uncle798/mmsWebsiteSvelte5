@@ -24,7 +24,7 @@ export const actions:Actions = {
       }
       const data = newPaymentRecordForm.data
       if(data.paymentType === 'CASH' || data.paymentType === 'CHECK'){
-         await prisma.paymentRecord.create({
+         const paymentRecord = await prisma.paymentRecord.create({
             data: {
                paymentAmount: data.paymentAmount,
                payee: data.payee,
@@ -36,19 +36,18 @@ export const actions:Actions = {
                paymentNotes: data.paymentNotes
             }  
          })
-      }
-      if(data.paymentType === 'STRIPE'){
-         await prisma.paymentRecord.create({
+         await prisma.invoice.update({
+            where: {
+               invoiceNum: paymentRecord.invoiceNum!
+            },
             data: {
-               paymentAmount: data.paymentAmount,
-               payee: data.payee,
-               customerId: data.customerId,
-               employeeId: data.employeeId,
-               invoiceNum: data.invoiceNum,
-               paymentType: data.paymentType,
-               paymentNotes: data.paymentNotes
-            }  
+               paymentRecordNum: paymentRecord.paymentNumber
+            }
          })
+         redirect(302, '/paymentRecords/' + paymentRecord.paymentNumber)
+      }
+      
+      if(data.paymentType === 'STRIPE'){
          redirect(302, '/paymentRecords/stripePayment?invoiceNum='+data.invoiceNum)
       }
       return { newPaymentRecordForm }
