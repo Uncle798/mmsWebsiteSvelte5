@@ -24,7 +24,5 @@
 
 <div transition:fade={{duration:600}}>
     <button class="btn" type="button" onclick={()=>registerFormModalOpen = true}>Create New Customer</button>
-    
     <NewInvoiceForm data={data.newInvoiceForm} employeeId={data.user?.id} customers={data.customers} leases={data.leases} />
-
 </div>

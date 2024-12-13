@@ -13,7 +13,6 @@ export const actions:Actions = {
          redirect(302, '/login?toast=employee');
       }
       const formData = await event.request.formData();
-      console.log(formData);
       const newPaymentRecordForm = await superValidate(formData, zod(newPaymentRecordFormSchema));
       const {success, reset} = await ratelimit.employeeForm.limit(event.locals.user.id);
       if(!success){
@@ -50,7 +49,7 @@ export const actions:Actions = {
                paymentNotes: data.paymentNotes
             }  
          })
-         redirect(302, '/paymentRecords/creditCard')
+         redirect(302, '/paymentRecords/stripePayment?invoiceNum='+data.invoiceNum)
       }
       return { newPaymentRecordForm }
    }
