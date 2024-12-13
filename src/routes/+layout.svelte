@@ -27,6 +27,7 @@
 		{link: '/invoices', label: 'Invoices'},
 		{link: '/invoices/new', label: 'New Invoice'},
 		{link: '/paymentRecords', label: 'Payment Records'},
+		{link: '/paymentRecords/incomplete', label:'Incomplete Payment Records'},
 		{link: '/paymentRecords/new', label:'New Payment Record'},
 	]
 	let adminLinks:Link[] = [
