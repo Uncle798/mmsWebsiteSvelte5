@@ -113,7 +113,7 @@ model DiscountCode {
 model PaymentRecord {
   paymentNumber    Int         @id @unique @default(autoincrement())
   stripeId         String?     @unique
-  invoiceNum       Int?        @unique
+  invoiceNum       Int?
   customerId       String
   unitNum          String?
   paymentAmount    Int
