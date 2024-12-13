@@ -30,7 +30,7 @@ export const POST: RequestHandler = async (event) => {
                      }
                   });
 
-                  await prisma.paymentRecord.create({
+                  const paymentRecord = await prisma.paymentRecord.create({
                      data: {
                         invoiceNum: parseInt(intent.metadata.invoiceNum, 10),
                         customerId: intent.metadata.customerId,
@@ -42,6 +42,7 @@ export const POST: RequestHandler = async (event) => {
                         paymentNotes: `Payment for invoice number: ${invoice?.invoiceNum}`
                      }
                   })
+                  console.log('stripe webhooks paymentRecord', paymentRecord)
                }
                handlePaymentIntent(paymentIntent);
                return new Response(JSON.stringify('ok'), {status: 200});
