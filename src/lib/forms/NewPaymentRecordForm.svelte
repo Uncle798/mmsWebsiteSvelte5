@@ -104,7 +104,9 @@ interface Props {
    openOnClick={true}
    />
    {#if invoiceComboBoxData.length > 0 }
-      <button class="btn" onclick={()=>invoiceFormOpen=true} type='button'>Create New Invoice</button>
+      {#if !invoiceSelected}
+         <button class="btn" onclick={()=>invoiceFormOpen=true} type='button'>Create New Invoice</button>
+      {/if}
       <Combobox
          data={invoiceComboBoxData.sort()}
          bind:value={selectedInvoice}
