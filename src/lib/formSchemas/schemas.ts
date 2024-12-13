@@ -194,3 +194,8 @@ export const newPaymentRecordFormSchema = z.object({
    cashOrCheck: z.boolean()
 })
 export type NewPaymentRecordFormSchema = typeof newPaymentRecordFormSchema;
+
+export const paymentRecordDeleteSchema = z.object({
+   paymentRecordNumber: z.number().positive()
+});
+export type PaymentRecordDeleteSchema = typeof paymentRecordDeleteSchema
