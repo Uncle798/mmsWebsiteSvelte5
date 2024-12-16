@@ -14,7 +14,7 @@ const pricingData = [
    { size: '12x24', price: 120 },
    { size: '12x32', price: 150 },
    { size: 'Outside', price: 25 },
-   { size: 'ours', price: 1 },
+   { size: 'ours', price: 0 },
  ];
 
  export default pricingData;
