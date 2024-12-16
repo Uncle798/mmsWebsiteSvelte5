@@ -27,12 +27,12 @@
         mounted = true;
     })
     async function createPaymentIntent() {
-        const response = await fetch('/api/stripe/paymentIntent?invoiceNum=' + data.invoice?.invoiceNum, {
+        const response = await fetch(`/api/stripe/paymentIntent?invoiceNum=${data.invoice?.invoiceNum}`, {
             method: 'POST',
             headers: {
                 'content-type': 'applications/json'
             },
-            body:JSON.stringify({ price:data.invoice?.invoiceAmount})
+            body:JSON.stringify({ price:data.invoice?.invoiceAmount, stripeId:data.stripeId, })
         });
         const clientSecret = await response.json();
         return clientSecret;

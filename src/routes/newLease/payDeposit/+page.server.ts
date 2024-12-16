@@ -24,8 +24,9 @@ export const load:PageServerLoad = (async (event) => {
          userId: invoice.customerId!
       }
    })
+   const stripeId = event.url.searchParams.get('stripeId');
    // console.log('payDeposit invoice.leaseId', invoice.leaseId);
    // const timeLeft = await qStash.getWaiters({eventId:invoice.leaseId!})
    // console.log('payDeposit timeLeft', timeLeft);
-   return { invoice, address, };
+   return { invoice, address, stripeId };
 })

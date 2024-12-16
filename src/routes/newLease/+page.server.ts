@@ -148,28 +148,52 @@ export const actions:Actions = {
       if(customer.organizationName){
          name= customer.organizationName;
       }
-      const stripeCustomer = stripe.customers.create({
-         name,
-         email: customer.email,
-         address: {
-            line1: address.address1,
-            line2: address.address2,
-            city: address.city,
-            state: address.state,
-            postal_code: address.postalCode,
-            country: address.country,
-         },
-         description: `Unit number ${unit.num} starting ${dayjs(lease.leaseCreatedAt).format('M/YYYY')}`,
-         metadata: {
-            customerId: customer.id
-         }
+      const existingStripeCustomer = await stripe.customers.search({
+         query: `email:'${customer.email}'`
       })
-      console.log('stripeCustomer', stripeCustomer);
+      let stripeId:string =  existingStripeCustomer.data[0].id;
+      if(existingStripeCustomer.data.length === 0){
+         const stripeCustomer = await stripe.customers.create({
+            name: name,
+            email: customer.email,
+            address: {
+               line1: address.address1,
+               line2: address.address2 ? address.address2 : undefined,
+               city: address.city,
+               state: address.state,
+               postal_code: address.postalCode,
+               country: address.country,
+            },
+            description: `Unit number ${unit.num.replace(/^0+/gm, '')} starting ${dayjs(lease.leaseCreatedAt).format('M/YYYY')}`,
+            metadata: {
+               customerId: customer.id
+            }
+         })
+         stripeId = stripeCustomer.id
+         console.log('stripeCustomer', stripeCustomer);
+      } else {
+         await stripe.customers.update(existingStripeCustomer.data[0].id, {
+            name: name,
+            address: {
+               line1: address.address1,
+               line2: address.address2 ? address.address2 : undefined,
+               city: address.city,
+               state: address.state,
+               postal_code: address.postalCode,
+               country: address.country,
+            },
+            description: `Unit number ${unit.num.replace(/^0+/gm, '')} starting ${dayjs(lease.leaseCreatedAt).format('M/YYYY')}`,
+            metadata: {
+               customerId: customer.id
+            }
+            
+         })
+      }
       // await qStash.trigger({
       //    url: `${PUBLIC_URL}/api/upstash/workflow`,
       //    body: { leaseId: lease.leaseId },
       //    workflowRunId: lease.leaseId
       // })
-      redirect(302, `/newLease/payDeposit?invoiceNum=${invoice.invoiceNum}`)
+      redirect(303, `/newLease/payDeposit?invoiceNum=${invoice.invoiceNum}&stripeId=${stripeId}`)
    }
 }

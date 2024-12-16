@@ -5,7 +5,8 @@ import { fail } from '@sveltejs/kit';
 
 export const POST:RequestHandler = async (event) => {
    const invoiceNum = event.url.searchParams.get('invoiceNum');
-   if(!invoiceNum){
+   const { stripeId } = await event.request.json();
+   if(!invoiceNum || !stripeId){
       fail(404)
    }
    const invoice = await prisma.invoice.findUnique({
@@ -26,7 +27,9 @@ export const POST:RequestHandler = async (event) => {
          invoiceNum,
          customerId: invoice.customerId,
       },
-      setup_future_usage: 'off_session'
+      setup_future_usage: 'off_session',
+      customer: stripeId!,
+      description: invoice.invoiceNotes!,
    })
    return new Response(JSON.stringify(paymentIntent.client_secret), {status:200});
 }
