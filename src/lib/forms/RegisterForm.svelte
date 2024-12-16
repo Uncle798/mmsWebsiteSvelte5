@@ -12,7 +12,7 @@
       registerFormModalOpen?: boolean
       formType: 'customer' | 'employee'
    }
-   let { data, registerFormModalOpen, formType }:Props = $props();
+   let { data, registerFormModalOpen = $bindable(), formType }:Props = $props();
    let { form, errors, constraints, message, enhance, delayed, timeout} = superForm(data, {
       onUpdated(){
          registerFormModalOpen=false;

@@ -79,7 +79,7 @@ export const actions: Actions ={
                 emailVerified: true
             }
         })
-        const redirectTo = event.url.searchParams.get('redirect');
+        const redirectTo = event.url.searchParams.get('redirectTo');
         const unitNum = event.url.searchParams.get('unitNum');
         if(redirectTo === 'home'){
             redirect(302, '/')
