@@ -1,19 +1,12 @@
 import {  PrismaClient, User, PaymentType, Unit, Address, Lease, } from '@prisma/client';
 import { faker } from '@faker-js/faker';
 import dayjs  from 'dayjs';
-import { hash } from '@node-rs/argon2';
 import  unitData from './unitData'
 import pricingData  from './pricingData'
 import sizeDescription  from './sizeDescription'
 import { PartialAddress, PartialLease, PartialInvoice, PartialPaymentRecord, PartialUnit,  PartialDiscount } from '../src/lib/server/partialTypes'
 const numUsers=unitData.length + 1500;
 const earliestStarting = new Date('2018-01-01');
-const hashedPass = await hash(String(process.env.USER_PASSWORD), {
-   memoryCost: 19456,
-   timeCost: 2,
-   outputLen: 32,
-   parallelism: 1
-})
 
 const prisma = new PrismaClient({
    log: [
@@ -32,7 +25,6 @@ const prisma = new PrismaClient({
 
 const userData = Array.from({length:numUsers}).map(()=>({
    email: '',
-   passwordHash: hashedPass,
    givenName: faker.person.firstName(),
    familyName: faker.person.lastName(),
    organizationName: '',
@@ -119,17 +111,10 @@ async function deleteAll() {
 
 async function createEmployees() {
    const employees: User[] = [];
-   const employeePass = await hash(process.env.EMPLOYEE_PASSWORD!, {
-      memoryCost: 19456,
-      timeCost: 2,
-      outputLen: 32,
-      parallelism: 1
-   })
    employees.push(await prisma.user.create({
       data:{
          email: 'email@email.email',
          emailVerified: true,
-         passwordHash: employeePass,
          givenName: 'Eric',
          familyName: 'Branson',
          Address:{
@@ -151,7 +136,6 @@ async function createEmployees() {
       await prisma.user.create({
          data:{
             email: String(process.env.GEORGE_EMAIL),
-            passwordHash: employeePass,
             emailVerified: true,
             givenName: 'George',
             familyName: 'Branson',
@@ -175,7 +159,6 @@ async function createEmployees() {
       await prisma.user.create({
          data:{
             email: String(process.env.EMPLOYEE_EMAIL),
-            passwordHash: employeePass,
             emailVerified: true,
             givenName: 'Walter',
             familyName: 'Branson',
