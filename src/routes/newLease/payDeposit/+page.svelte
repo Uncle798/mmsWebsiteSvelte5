@@ -9,6 +9,7 @@
     import type { PageData } from './$types';
 	import { goto } from '$app/navigation';
 	import Header from '$lib/Header.svelte';
+	import { fade } from 'svelte/transition';
 
 
     let { data }: { data: PageData } = $props();
@@ -64,7 +65,9 @@
 </script>
 <Header title='Pay your deposit'/>
 {#if !mounted}
-    ...loading
+    <div transition:fade={{duration:600}}>
+        ...loading
+    </div>
     {:else}
     {#if data.invoice}
         <Invoice invoice={data.invoice} />

@@ -6,10 +6,10 @@ import { zod } from 'sveltekit-superforms/adapters'
 import { unitNotesFormSchema, unitPricingFormSchema, leaseEndFormSchema } from "$lib/formSchemas/schemas";
 
 import type { PageServerLoad, Actions } from "./$types";
-import type { ContactInfo, Lease, Unit } from "@prisma/client";
+import type { address, Lease, Unit } from "@prisma/client";
 import type { PartialUser } from "$lib/server/partialTypes";
 
-export type UnitCustomer = Unit & PartialUser & Lease & ContactInfo;
+export type UnitCustomer = Unit & PartialUser & Lease & address;
 
 export const load:PageServerLoad = async (event) =>{ 
    if(!event.locals.user){
@@ -29,6 +29,10 @@ export const load:PageServerLoad = async (event) =>{
          where: {
             leaseEnded: null
          },
+         include: {
+            customer: true,
+            unit: true,
+         }
       });
       const customers = await prisma.user.findMany()
       const units = await prisma.unit.findMany({

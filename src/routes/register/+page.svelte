@@ -17,5 +17,5 @@
 <Header title='Register a new account' />
 <div transition:fade={{duration:600}}>
    <RegisterForm data={data.registerForm} formType='customer'/>
-   <a href="/login/magicLink?redirectTo={data.redirectTo}&unitNum={data.unitNum}">Already have an account? Login here.</a>
+   <a href="/login/magicLink?redirectTo={data.redirectTo}&unitNum={data.unitNum}" class="btn">Already have an account? Login here.</a>
 </div>

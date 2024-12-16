@@ -36,9 +36,10 @@
    />
    <Switch 
       bind:checked={available}
-      name='unavailable'
-      label='Unit is unavailable'
-   />
+      name='unavailable'  
+   >
+      Unit is unavailable
+   </Switch>
    <input type="hidden" name="unitNum" id="unitNum" value={unitNum} />
    <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} buttonText='Submit notes and unit availability'/>
 </form>

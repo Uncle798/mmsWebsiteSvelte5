@@ -1,6 +1,7 @@
 import { redirect, fail } from '@sveltejs/kit';
-import type { PageServerLoad, Actions } from './$types';
+import type { PageServerLoad } from './$types';
 import { prisma } from '$lib/server/prisma';
+import { qStash } from '$lib/server/qStash';
 
 export const load:PageServerLoad = (async (event) => {
    if(!event.locals.user){
@@ -8,7 +9,7 @@ export const load:PageServerLoad = (async (event) => {
    }
    const invoiceNum = event.url.searchParams.get('invoiceNum');
    if(!invoiceNum){
-      return {}
+      fail(404)
    }
    const invoice = await prisma.invoice.findUnique({
       where: {
@@ -18,16 +19,13 @@ export const load:PageServerLoad = (async (event) => {
    if(!invoice){
       return fail(404)
    }
-   const address = await prisma.contactInfo.findFirst({
+   const address = await prisma.address.findFirst({
       where: {
          userId: invoice.customerId!
       }
    })
-   return { invoice, address };
+   // console.log('payDeposit invoice.leaseId', invoice.leaseId);
+   // const timeLeft = await qStash.getWaiters({eventId:invoice.leaseId!})
+   // console.log('payDeposit timeLeft', timeLeft);
+   return { invoice, address, };
 })
-
-export const actions: Actions = {
-   default: async () =>{
-
-   }
-};
