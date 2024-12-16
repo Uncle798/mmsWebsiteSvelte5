@@ -17,7 +17,5 @@
    {:else}
       Payment not completed
    {/if}
-   {#if paymentRecord.paymentNotes}
-   <p><a href='/invoices/{paymentRecord.paymentNotes.replace(/[^$0-9]/gm, '')}'>{paymentRecord.paymentNotes}</a></p>
-   {/if}
+
 </div>
