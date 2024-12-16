@@ -4,6 +4,7 @@ import type { Error, files } from 'dropbox';
 import { decryptRSA } from '@anvilco/encryption';
 import { ANVIL_RSA_PRIVATE_KEY_BASE64, ANVIL_WEBHOOK_TOKEN } from '$env/static/private';
 import type { RequestHandler } from './$types';
+import { stripe } from '$lib/server/stripe';
 
 const key = Buffer.from(ANVIL_RSA_PRIVATE_KEY_BASE64, 'base64').toString('ascii');
 

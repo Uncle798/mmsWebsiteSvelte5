@@ -1,18 +1,15 @@
 <script lang="ts">
-import type { SuperValidated, Infer } from "sveltekit-superforms";
-import type { PartialUser } from "$lib/server/partialTypes";
-import type { Lease } from "@prisma/client";
-import type { NewInvoiceFormSchema, NewPaymentRecordFormSchema} from "$lib/formSchemas/schemas";
-import type { RegisterFormSchema } from "$lib/formSchemas/schemas";
-import { superForm } from "sveltekit-superforms";
-import { Combobox, Modal } from "@skeletonlabs/skeleton-svelte";
-import RegisterForm from "./RegisterForm.svelte";
-import FormMessage from "$lib/formComponents/FormMessage.svelte";
-import FormSubmitWithProgress from "$lib/formComponents/FormSubmitWithProgress.svelte";
-import NumberInput from "$lib/formComponents/NumberInput.svelte";
-import TextInput from "$lib/formComponents/TextInput.svelte";
-import { Progress, ProgressRing } from "@skeletonlabs/skeleton-svelte";
-import type { Invoice } from "@prisma/client";
+   import type { SuperValidated, Infer } from "sveltekit-superforms";
+   import type { PartialUser } from "$lib/server/partialTypes";
+   import type { Lease } from "@prisma/client";
+   import type { NewInvoiceFormSchema, NewPaymentRecordFormSchema} from "$lib/formSchemas/schemas";
+   import { superForm } from "sveltekit-superforms";
+   import { Combobox, Modal } from "@skeletonlabs/skeleton-svelte";
+   import FormMessage from "$lib/formComponents/FormMessage.svelte";
+   import FormSubmitWithProgress from "$lib/formComponents/FormSubmitWithProgress.svelte";
+   import NumberInput from "$lib/formComponents/NumberInput.svelte";
+   import TextInput from "$lib/formComponents/TextInput.svelte";
+   import type { Invoice } from "@prisma/client";
 	import NewInvoiceForm from "./NewInvoiceForm.svelte";
 	import { onMount } from "svelte";
 
