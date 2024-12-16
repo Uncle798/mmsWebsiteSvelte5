@@ -20,7 +20,8 @@ model User {
   passwordHash         String?         @map("password_hash")
   employee             Boolean         @default(false)
   admin                Boolean         @default(false)
-  Address              Address[]
+  stripeId             String?
+  address              Address[]
   customerInvoices     Invoice[]       @relation("customer")
   employeeInvoices     Invoice[]       @relation("employee")
   customerLeases       Lease[]         @relation("customer")
@@ -52,6 +53,7 @@ model Address {
   softDelete         Boolean @default(false)
   user               User    @relation(fields: [userId], references: [id], onUpdate: NoAction)
   leases             Lease[]
+
   @@map("address")
 }
 
