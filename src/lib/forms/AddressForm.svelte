@@ -67,16 +67,16 @@
     />
     <TextInput
         label='Zip Code'
-        name='zip'
-        bind:value={$form.zip}
-        errors={$errors.zip}
-        constraints={$constraints.zip}
+        name='postalCode'
+        bind:value={$form.postalCode}
+        errors={$errors.postalCode}
+        constraints={$constraints.postalCode}
         placeholder='83843'
         autocomplete='postal-code'
     />
     </div>
-    <label for="country">Country
-       <select class="select" name='country' autocomplete="country">
+    <label for="country" class="label mx-4">Country
+       <select class="select p-4 " name='country' autocomplete="country">
           {#each countries as country}
             {#if country['Alpha-2 code'] === 'US'}
                <option value={country['Alpha-2 code']} selected>{country.Country}</option>
