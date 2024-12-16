@@ -2,6 +2,7 @@ import { prisma } from '$lib/server/prisma';
 import { anvilClient, getOrganizationalPacketVariables, getPersonalPacketVariables } from '$lib/server/anvil';
 import { fail, redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
+import { qStash } from '$lib/server/qStash';
 
 export const load:PageServerLoad = (async (event) => {
    if(!event.locals.user){
@@ -50,7 +51,10 @@ export const load:PageServerLoad = (async (event) => {
       });
       const employee = await prisma.user.findFirst({
          where: {
-            admin:true
+            AND:[
+               {admin:true},
+               {familyName: 'Branson'}
+            ]
          }
       })
       if(lease?.anvilEID){
@@ -73,9 +77,8 @@ export const load:PageServerLoad = (async (event) => {
          console.error(data?.data['createEtchPacket'])
       } else {
          const packetDetails = data?.data['createEtchPacket']
-         console.log('Visit the new packet on your dashboard:', packetDetails.detailsURL)
          const anvilEID = packetDetails['eid']
-      await prisma.lease.update({
+         await prisma.lease.update({
             where: {
                leaseId: lease?.leaseId
             },
@@ -83,6 +86,7 @@ export const load:PageServerLoad = (async (event) => {
                anvilEID 
             }
          })
+         // await qStash.notify({eventId:`leaseId:${lease?.leaseId}`})
          return {packetDetails};
       }
    }

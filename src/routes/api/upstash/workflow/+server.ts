@@ -1,22 +1,50 @@
 import { serve } from '@upstash/workflow/svelte';
 import { env } from '$env/dynamic/private';
-import type { RequestHandler } from './$types';
-import { UPSTASH_WORKFLOW_URL } from '$env/static/private';
+import { prisma } from '$lib/server/prisma';
 
-export const { POST } = serve(
+type InitialPayload = {
+   leaseId: string
+}
+
+export const { POST } = serve<InitialPayload>(
    async (context) => {
-      
       const payload = context.requestPayload
-      console.log(`payload: ${payload}`);
-      await context.run("1st step", () => {
-         console.log('1st step ran' + payload)
-      })
-      await context.run("second-step", () => {
-         console.log("second step ran")
-       })
+      const {leaseId} = payload
+      if(leaseId){
+         await context.run("1st step", async () => {
+            const lease = await prisma.lease.findUnique({
+               where:{
+                  leaseId
+               }
+            })
+            await prisma.unit.update({
+               where: {
+                  num: lease?.unitNum
+               },
+               data: {
+                  unavailable: true
+               }
+            })
+         })
+         await context.waitForEvent('wait for lease sent or 15 min', `leaseId:${leaseId}`,15*60);
+         await context.run("second-step", async () => {
+            const lease = await prisma.lease.findUnique({
+               where: {
+                  leaseId
+               }
+            });
+            await prisma.unit.update({
+               where:{
+                  num: lease?.unitNum,
+               },
+               data: {
+                  unavailable: false
+               }
+            });
+         });
+      }
    },
    { 
       env,
-      verbose: true,
    }
 )
