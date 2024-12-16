@@ -20,7 +20,7 @@ export const load: PageServerLoad = async (event) => {
    if(dbUser === null){
       error(404, {message:'User not found'})
    }
-   const address = await prisma.contactInfo.findFirst({
+   const address = await prisma.address.findFirst({
       where: { 
          AND:[
             { userId: userId },

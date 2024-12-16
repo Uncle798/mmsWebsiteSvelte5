@@ -1,7 +1,7 @@
 <script lang="ts">
-	import type { ContactInfo } from "@prisma/client";
+	import type { Address } from "@prisma/client";
    interface Props {
-      address: ContactInfo;
+      address: Address;
    }
    let { address = $bindable() }:Props = $props()
 </script>
@@ -11,5 +11,5 @@
    {#if address.address2}
       <p>{address.address2}</p>
    {/if}
-   <p>{address.city}, {address.state}, {address.zip}</p>
+   <p>{address.city}, {address.state}, {address.postalCode}</p>
 </div>

@@ -50,7 +50,7 @@ const prisma = new PrismaClient({
          userId: user?.id
       }
    })
-   await prisma.contactInfo.deleteMany({
+   await prisma.address.deleteMany({
       where: {
          userId: user?.id
       }

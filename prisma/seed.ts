@@ -1,11 +1,11 @@
-import {  PrismaClient, User, PaymentType, Unit, ContactInfo, Lease, } from '@prisma/client';
+import {  PrismaClient, User, PaymentType, Unit, Address, Lease, } from '@prisma/client';
 import { faker } from '@faker-js/faker';
 import dayjs  from 'dayjs';
 import { hash } from '@node-rs/argon2';
 import  unitData from './unitData'
 import pricingData  from './pricingData'
 import sizeDescription  from './sizeDescription'
-import { PartialContactInfo, PartialLease, PartialInvoice, PartialPaymentRecord, PartialUnit,  PartialDiscount } from '../src/lib/server/partialTypes'
+import { PartialAddress, PartialLease, PartialInvoice, PartialPaymentRecord, PartialUnit,  PartialDiscount } from '../src/lib/server/partialTypes'
 const numUsers=unitData.length + 1500;
 const earliestStarting = new Date('2018-01-01');
 const hashedPass = await hash(String(process.env.USER_PASSWORD), {
@@ -54,7 +54,7 @@ async function deleteAll() {
    await prisma.unit.deleteMany().catch((err) =>{
       console.error(err);
    });
-   await prisma.contactInfo.deleteMany().catch((err) =>{
+   await prisma.address.deleteMany().catch((err) =>{
       console.error(err);
    });
    await prisma.passwordReset.deleteMany().catch((err) =>{
@@ -79,7 +79,7 @@ async function deleteAll() {
    count += await prisma.lease.count();
    count += await prisma.paymentRecord.count();
    count += await prisma.unit.count();
-   count += await prisma.contactInfo.count();
+   count += await prisma.address.count();
    count += await prisma.user.count();
    return count;
  }
@@ -132,12 +132,12 @@ async function createEmployees() {
          passwordHash: employeePass,
          givenName: 'Eric',
          familyName: 'Branson',
-         contactInfo:{
+         Address:{
             create:{
                address1: faker.location.streetAddress(), 
                city: faker.location.city(),
                state: faker.location.state({abbreviated: true}),
-               zip: faker.location.zipCode(),
+               postalCode: faker.location.zipCode(),
                phoneNum1: faker.phone.number().trim(),
                phoneNum1Country: '+1',
                country: 'US'
@@ -155,12 +155,12 @@ async function createEmployees() {
             emailVerified: true,
             givenName: 'George',
             familyName: 'Branson',
-            contactInfo:{
+            Address:{
                create:{
                   address1: faker.location.streetAddress(), 
                   city: faker.location.city(),
                   state: faker.location.state({abbreviated: true}),
-                  zip: faker.location.zipCode(),
+                  postalCode: faker.location.zipCode(),
                   country: 'US',
                   phoneNum1: faker.phone.number(),
                   phoneNum1Country: '+1',
@@ -179,12 +179,12 @@ async function createEmployees() {
             emailVerified: true,
             givenName: 'Walter',
             familyName: 'Branson',
-            contactInfo:{
+            Address:{
                create:{
                   address1: faker.location.streetAddress(), 
                   city: faker.location.city(),
                   state: faker.location.state({abbreviated: true}),
-                  zip: faker.location.zipCode(),
+                  postalCode: faker.location.zipCode(),
                   country: 'US',
                   phoneNum1: faker.phone.number(),
                   phoneNum1Country: '+1',
@@ -219,12 +219,12 @@ function arrayOfMonths(startDate:Date, endDate:Date){
    return dateArray;
 }
 
-async function createLease(unit: Unit, leaseStart, leaseEnd: Date | null, randEmployee: User, customer: User, contact:ContactInfo) {
+async function createLease(unit: Unit, leaseStart, leaseEnd: Date | null, randEmployee: User, customer: User, address:Address) {
    const leaseEnded:Date | null = leaseEnd;
    const lease:PartialLease = {
        customerId: customer.id,
        employeeId: randEmployee.id,
-       contactInfoId: contact.contactId,
+       addressId: address.addressId,
        unitNum: unit.num,
        price: unit.advertisedPrice,
        leaseEffectiveDate: new Date(leaseStart),
@@ -234,22 +234,22 @@ async function createLease(unit: Unit, leaseStart, leaseEnd: Date | null, randEm
    return lease;
  }
 
- function makeContactInfo(users:User[]){
-   const contactInfos:PartialContactInfo[]=[]
+ function makeAddresses(users:User[]){
+   const addresses:PartialAddress[]=[]
    users.forEach((user) =>{
-      const contactInfo:PartialContactInfo = {
+      const address:PartialAddress = {
          userId: user.id,
          address1: faker.location.streetAddress(), 
          city: faker.location.city(),
          state: faker.location.state({abbreviated: true}),
-         zip: faker.location.zipCode(),
+         postalCode: faker.location.zipCode(),
          country: faker.location.countryCode(),
          phoneNum1: faker.phone.number(),
          phoneNum1Country: '+1'
       }
-      contactInfos.push(contactInfo);
+      addresses.push(address);
    });
-   return contactInfos;
+   return addresses;
  }
 
  function makeUnit(unit:PartialUnit){
@@ -309,9 +309,9 @@ async function  main (){
    const users:User[] = await prisma.user.createManyAndReturn({
       data: userData
    });
-   const contactInfos = makeContactInfo(users);
-   const dbContacts = await prisma.contactInfo.createManyAndReturn({
-      data: contactInfos
+   const addresses = makeAddresses(users);
+   const dbContacts = await prisma.address.createManyAndReturn({
+      data: addresses
    })
       await createEmployees();
    const totalUsers = await prisma.user.count();
@@ -424,7 +424,7 @@ async function  main (){
             paymentType: paymentType,
             customerId: invoice!.customerId!,
             paymentAmount: invoice.invoiceAmount, 
-            receiverId: employee.id,
+            employeeId: employee.id,
             paymentCreated: paymentDate.toDate(),         
             paymentCompleted: paymentDate.toDate(), 
             invoiceNum: invoice.invoiceNum, 

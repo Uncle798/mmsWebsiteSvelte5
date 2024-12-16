@@ -20,7 +20,7 @@ model User {
   passwordHash         String?         @map("password_hash")
   employee             Boolean         @default(false)
   admin                Boolean         @default(false)
-  contactInfo          ContactInfo[]
+  Address              Address[]
   customerInvoices     Invoice[]       @relation("customer")
   employeeInvoices     Invoice[]       @relation("employee")
   customerLeases       Lease[]         @relation("customer")
@@ -37,14 +37,14 @@ model User {
   @@map("users")
 }
 
-model ContactInfo {
-  contactId          String  @id @unique @default(cuid())
+model Address {
+  addressId          String  @id @unique @default(cuid())
   userId             String
   address1           String
   address2           String?
   city               String
   state              String
-  zip                String
+  postalCode         String
   country            String
   phoneNum1          String
   phoneNum1Country   String
@@ -52,6 +52,7 @@ model ContactInfo {
   softDelete         Boolean @default(false)
   user               User    @relation(fields: [userId], references: [id], onUpdate: NoAction)
   leases             Lease[]
+  @@map("address")
 }
 
 model Unit {
@@ -73,7 +74,7 @@ model Lease {
   leaseId            String        @id @unique @default(cuid())
   customerId         String
   employeeId         String
-  contactInfoId      String
+  addressId          String
   unitNum            String
   price              Int
   discount           Int?
@@ -85,7 +86,7 @@ model Lease {
   dropboxURL         String?
   anvilEID           String?       @unique
   invoices           Invoice[]
-  contactInfo        ContactInfo   @relation(fields: [contactInfoId], references: [contactId], onDelete: NoAction, onUpdate: NoAction)
+  Address            Address       @relation(fields: [addressId], references: [addressId], onDelete: NoAction, onUpdate: NoAction)
   customer           User          @relation("customer", fields: [customerId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   employee           User          @relation("employee", fields: [employeeId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   unit               Unit          @relation(fields: [unitNum], references: [num])

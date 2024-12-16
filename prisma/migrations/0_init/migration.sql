@@ -19,7 +19,7 @@ CREATE TABLE "users" (
 );
 
 -- CreateTable
-CREATE TABLE "ContactInfo" (
+CREATE TABLE "address" (
     "contactId" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
     "address1" TEXT NOT NULL,
@@ -34,7 +34,7 @@ CREATE TABLE "ContactInfo" (
     "phoneNum2Validated" BOOLEAN DEFAULT false,
     "softDelete" BOOLEAN NOT NULL DEFAULT false,
 
-    CONSTRAINT "ContactInfo_pkey" PRIMARY KEY ("contactId")
+    CONSTRAINT "address_pkey" PRIMARY KEY ("contactId")
 );
 
 -- CreateTable
@@ -76,7 +76,7 @@ CREATE TABLE "Lease" (
     "leaseId" TEXT NOT NULL,
     "customerId" TEXT NOT NULL,
     "employeeId" TEXT NOT NULL,
-    "contactInfoId" TEXT NOT NULL,
+    "addressId" TEXT NOT NULL,
     "unitNum" TEXT NOT NULL,
     "price" INTEGER NOT NULL,
     "leaseCreatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -207,7 +207,7 @@ CREATE UNIQUE INDEX "Invoice_paymentRecordId_invoicePaid_key" ON "Invoice"("paym
 CREATE UNIQUE INDEX "PasswordReset_token_hash_key" ON "PasswordReset"("token_hash");
 
 -- AddForeignKey
-ALTER TABLE "ContactInfo" ADD CONSTRAINT "ContactInfo_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE NO ACTION;
+ALTER TABLE "address" ADD CONSTRAINT "address_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE NO ACTION;
 
 -- AddForeignKey
 ALTER TABLE "UnitPricing" ADD CONSTRAINT "UnitPricing_price_startDate_endDate_fkey" FOREIGN KEY ("price", "startDate", "endDate") REFERENCES "Pricing"("price", "startDate", "endDate") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -216,7 +216,7 @@ ALTER TABLE "UnitPricing" ADD CONSTRAINT "UnitPricing_price_startDate_endDate_fk
 ALTER TABLE "UnitPricing" ADD CONSTRAINT "UnitPricing_unitNum_fkey" FOREIGN KEY ("unitNum") REFERENCES "Unit"("num") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Lease" ADD CONSTRAINT "Lease_contactInfoId_fkey" FOREIGN KEY ("contactInfoId") REFERENCES "ContactInfo"("contactId") ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE "Lease" ADD CONSTRAINT "Lease_addressId_fkey" FOREIGN KEY ("addressId") REFERENCES "address"("contactId") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
 ALTER TABLE "Lease" ADD CONSTRAINT "Lease_customerId_fkey" FOREIGN KEY ("customerId") REFERENCES "users"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;

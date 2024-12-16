@@ -32,7 +32,7 @@ export const actions: Actions = {
       if( !event.locals.user.employee && userId !== event.locals.user.id){
          return fail(403, {message: 'Not your address to change'});
       }
-      let oldAddress = await prisma.contactInfo.findFirst({
+      let oldAddress = await prisma.address.findFirst({
          where: {
             AND: [
                {userId: userId},
@@ -41,17 +41,16 @@ export const actions: Actions = {
          }
       });
       if(oldAddress){
-         oldAddress = await prisma.contactInfo.update({
+         oldAddress = await prisma.address.update({
             where:{
-               contactId: oldAddress.contactId
+               addressId: oldAddress.addressId
             },
             data: {
                softDelete: true,
             }
          })
       }
-      console.log('formData', addressForm.data)
-      const response = await fetch(`https://api.radar.io/v1/addresses/validate?city=${addressForm.data.city}&stateCode=${addressForm.data.state}&postalCode=${addressForm.data.zip}&addressLabel=${addressForm.data.address1}&unit=${addressForm.data.address2}&countryCode=${addressForm.data.country}`,
+      const response = await fetch(`https://api.radar.io/v1/addresses/validate?city=${addressForm.data.city}&stateCode=${addressForm.data.state}&postalCode=${addressForm.data.postalCode}&addressLabel=${addressForm.data.address1}&unit=${addressForm.data.address2}&countryCode=${addressForm.data.country}`,
          {
             method: 'GET',
             headers: {
@@ -59,14 +58,14 @@ export const actions: Actions = {
             }
          }
       )
-      const data= await response.json();
+      const data = await response.json();
       console.log('data', data)
       if(data.result.verificationStatus === 'verified'){
          const newAddress = {
             userId,
             ...addressForm.data
          }
-         await prisma.contactInfo.create({
+         await prisma.address.create({
             data: newAddress
          })
       }

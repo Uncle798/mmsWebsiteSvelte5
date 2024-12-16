@@ -14,25 +14,25 @@ export const partialUser = Prisma.validator<Prisma.UserDefaultArgs>()({
 })
 export type PartialUser = Prisma.UserGetPayload<typeof partialUser>
 
-export const partialContactInfo = Prisma.validator<Prisma.ContactInfoDefaultArgs>()({
+export const partialAddress = Prisma.validator<Prisma.AddressDefaultArgs>()({
    select: {
       address1: true,
       city: true,
       state: true,
-      zip: true,
+      postalCode: true,
       country: true,
       phoneNum1: true, 
       phoneNum1Country: true,
       userId: true,
    }
 })
-export type PartialContactInfo = Prisma.ContactInfoGetPayload<typeof partialContactInfo>
+export type PartialAddress = Prisma.AddressGetPayload<typeof partialAddress>
 
 export const partialLease = Prisma.validator<Prisma.LeaseDefaultArgs>()({
    select: {
       customerId: true,
       employeeId: true,
-      contactInfoId: true,
+      addressId: true,
       unitNum: true,
       price: true,
       leaseEffectiveDate: true,
@@ -58,7 +58,7 @@ export const partialPaymentRecord = Prisma.validator<Prisma.PaymentRecordDefault
       paymentType: true,
       customerId: true,
       paymentAmount: true,
-      receiverId: true,
+      employeeId: true,
       paymentCreated: true,
       paymentCompleted: true,
       paymentNotes: true,

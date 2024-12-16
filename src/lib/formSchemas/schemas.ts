@@ -9,7 +9,8 @@ export type EmploymentFormSchema = typeof employmentFormSchema;
 
 export const unitPricingFormSchema = z.object({
    size: z.string().min(5).max(7).trim(),
-   price: z.number().int().min(0).max(10000),
+   price: z.number().int().positive(),
+   changeDeposit: z.boolean().nullable(),
    lowerPrice: z.boolean().nullable(),
 });
 export type UnitPricingFormSchema = typeof unitPricingFormSchema;
@@ -99,7 +100,7 @@ export const addressFormSchema = z.object({
    address2: z.string().min(2).max(255).trim().optional(),
    city: z.string(),
    state: z.string().min(2).max(255),
-   zip: z.string(),
+   postalCode: z.string().min(5).max(9),
    country: z.string().min(2).max(2),
    phoneNum1: z.string().min(10).max(12).trim(),
    phoneNum1Country: z.string().min(2).max(2).trim(),
