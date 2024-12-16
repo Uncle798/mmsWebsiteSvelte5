@@ -35,6 +35,13 @@
       name='price'
    />
    <Switch
+      bind:checked={$form.changeDeposit}
+      name='changeDeposit'
+   >
+      Change the deposit as well
+   </Switch>
+
+   <Switch
       bind:checked={$form.lowerPrice}
       name="lowerPrice"
       label='Lower Price'>

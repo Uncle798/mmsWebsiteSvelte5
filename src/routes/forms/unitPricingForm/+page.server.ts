@@ -38,12 +38,17 @@ export const actions: Actions = {
          return message(unitPricingForm, 
             `No change in price for ${unitPricingForm.data.size.replace(/^0+/gm,'').replace(/x0/gm,'x')} units.` )
       }
+      let deposit = unit.advertisedPrice;
+      if(unitPricingForm.data.changeDeposit){
+         deposit = unitPricingForm.data.price
+      }
       await prisma.unit.updateMany({
          where: {
             size: unitPricingForm.data.size,
          },
          data: {
-            advertisedPrice: unitPricingForm.data.price
+            advertisedPrice: unitPricingForm.data.price,
+            deposit,
          }
       })
       return { unitPricingForm }
