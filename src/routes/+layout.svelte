@@ -29,6 +29,7 @@
 		{link: '/paymentRecords', label: 'Payment Records'},
 		{link: '/paymentRecords/incomplete', label:'Incomplete Payment Records'},
 		{link: '/paymentRecords/new', label:'New Payment Record'},
+		{link: '/employeeNewLease', label:'Employee new lease'}
 	]
 	let adminLinks:Link[] = [
 		{link: '/users', label:'All Users'},
