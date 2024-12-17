@@ -2,7 +2,7 @@ import { prisma } from '$lib/server/prisma';
 import type { Unit } from '@prisma/client';
 import type { PageServerLoad } from './$types';
 
-export const load:PageServerLoad = (async () => {
+export const load:PageServerLoad = (async (event) => {
    const leases = await prisma.lease.findMany({
       where: {
          leaseEnded: null
@@ -23,5 +23,6 @@ export const load:PageServerLoad = (async () => {
          availableUnits.push(unit);
       }
    })
-   return { availableUnits }; 
+   const userId = event.url.searchParams.get('userId')
+   return { availableUnits, userId }; 
 }) 

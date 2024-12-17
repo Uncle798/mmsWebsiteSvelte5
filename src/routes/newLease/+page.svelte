@@ -40,6 +40,7 @@
 {/if}
 <FormMessage message={$message} />
 <form method="post" use:enhance>
+    <input type='hidden' name=customerId value={data.user?.id} />
     {#if data.user?.organizationName}
         <Checkbox
             bind:value={$form.organization}

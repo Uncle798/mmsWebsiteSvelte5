@@ -61,6 +61,7 @@ export const actions: Actions = {
       }
       const formData = await event.request.formData();
       const registerForm = await superValidate(formData, zod(registerFormSchema));
+		const redirectTo = event.url.searchParams.get('redirectTo');
       if(!registerForm.valid){
          message(registerForm, 'Unable to process');
       }
@@ -77,7 +78,7 @@ export const actions: Actions = {
       if(userAlreadyExists){
          return message(registerForm, 'User Already exists');
       }
-      await prisma.user.create({
+      const user = await prisma.user.create({
 			data:{ 
 				email: registerForm.data.email, 
 				givenName: registerForm.data.givenName,
@@ -85,6 +86,9 @@ export const actions: Actions = {
 				organizationName: registerForm.data.organizationName,
 			}
 		});
+		if(redirectTo){
+			redirect(303, `/${redirectTo}?userId=${user.id}`)
+		}
       return { registerForm }
    }
 };

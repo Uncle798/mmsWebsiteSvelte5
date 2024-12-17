@@ -11,8 +11,9 @@
       data: SuperValidated<Infer<RegisterFormSchema>>
       registerFormModalOpen?: boolean
       formType: 'customer' | 'employee'
+      redirectTo?:string
    }
-   let { data, registerFormModalOpen = $bindable(), formType }:Props = $props();
+   let { data, registerFormModalOpen = $bindable(), formType, redirectTo }:Props = $props();
    let { form, errors, constraints, message, enhance, delayed, timeout} = superForm(data, {
       onUpdated(){
          registerFormModalOpen=false;
@@ -22,7 +23,8 @@
 </script>
 
 <FormMessage message={$message} />
-   <form method="POST" action="/forms/registerForm?/{formType}" use:enhance>
+
+<form method="POST" action="/forms/registerForm?/{formType}&redirectTo={redirectTo}" use:enhance>
       <TextInput
          label='Given name'
          name='givenName'

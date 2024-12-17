@@ -32,6 +32,7 @@ export const newLeaseSchema = z.object({
    unitNum: z.string().min(3).max(9),
    organization: z.boolean(),
    discountId: z.string().min(23).max(30).optional(),
+   customerId: z.string().min(23).max(30),
 })
 export type NewLeaseSchema = typeof newLeaseSchema;
 

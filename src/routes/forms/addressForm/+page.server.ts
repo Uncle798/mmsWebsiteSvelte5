@@ -50,7 +50,6 @@ export const actions: Actions = {
             }
          })
       }
-      console.log(addressForm.data)
       const response = await fetch(`https://api.radar.io/v1/addresses/validate?city=${addressForm.data.city}&stateCode=${addressForm.data.state}&postalCode=${addressForm.data.postalCode}&addressLabel=${addressForm.data.address1}&unit=${addressForm.data.address2}&countryCode=${addressForm.data.country}`,
          {
             method: 'GET',
@@ -60,7 +59,6 @@ export const actions: Actions = {
          }
       )
       const data = await response.json();
-      console.log('data', data)
       if(data.result.verificationStatus === 'verified'){
          const newAddress = {
             userId,
