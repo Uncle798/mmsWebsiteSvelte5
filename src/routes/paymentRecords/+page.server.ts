@@ -25,7 +25,6 @@ export const load = (async (event) => {
             customer: true
         }
     });
-    console.log('paymentRecord: ', paymentRecords[0])
     return { paymentRecords, searchForm, };
 }) satisfies PageServerLoad;
 

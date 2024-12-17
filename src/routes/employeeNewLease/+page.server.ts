@@ -88,7 +88,6 @@ export const actions: Actions = {
          redirect(302, '/login?toast=employee')
       }
       const leaseForm = await superValidate(event.request, zod(newLeaseSchema));
-      console.log(leaseForm.data)
       if(!leaseForm.valid){
          message(leaseForm, 'Not valid');
       }
@@ -97,7 +96,6 @@ export const actions: Actions = {
 			const timeRemaining = Math.floor((reset - Date.now()) /1000);
 			return message(leaseForm, `Please wait ${timeRemaining}s before trying again.`)
 		}
-      console.log()
       const customer = await prisma.user.findUnique({
          where: {
             id: leaseForm.data.customerId
@@ -106,7 +104,6 @@ export const actions: Actions = {
       if(!customer){
          fail(404, leaseForm);
       }
-      console.log(customer)
       const unit = await prisma.unit.findUnique({
          where: {
             num: leaseForm.data.unitNum
@@ -179,7 +176,6 @@ export const actions: Actions = {
       const existingStripeCustomer = await stripe.customers.search({
          query: `email:'${customer!.email}'`
       })
-      console.log(existingStripeCustomer.data[0])
       let stripeId:string | null =  null;
       if(existingStripeCustomer.data[0]){
          stripeId = existingStripeCustomer.data[0].id
@@ -202,7 +198,6 @@ export const actions: Actions = {
             }
          })
          stripeId = stripeCustomer.id
-         console.log('stripeCustomer', stripeCustomer);
       } else {
          await stripe.customers.update(existingStripeCustomer.data[0].id, {
             name: name,
@@ -228,7 +223,6 @@ export const actions: Actions = {
       }
       const formData = await event.request.formData();
       const unitNum = event.url.searchParams.get('unitNum')
-      console.log(formData.get('customerId'))
       redirect(303, `/employeeNewLease?userId=${formData.get('customerId')}&unitNum=${unitNum}`)
    }
 };

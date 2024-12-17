@@ -50,7 +50,6 @@
         openOnClick={true}
         onValueChange={(details) => {
           selectedCustomer = details.value
-          console.log(selectedCustomer)
         }}
       />
       <input type="hidden" name="customerId" value={selectedCustomer}>

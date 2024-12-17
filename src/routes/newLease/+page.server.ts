@@ -170,7 +170,6 @@ export const actions:Actions = {
             }
          })
          stripeId = stripeCustomer.id
-         console.log('stripeCustomer', stripeCustomer);
       } else {
          await stripe.customers.update(existingStripeCustomer.data[0].id, {
             name: name,
