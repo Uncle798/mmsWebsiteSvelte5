@@ -2,6 +2,7 @@ import { STRIPE_SIGNING_SECRET } from '$env/static/private';
 import { stripe } from '$lib/server/stripe';
 import { prisma } from '$lib/server/prisma';
 import type { RequestHandler } from './$types'; 
+import type { Invoice } from '@prisma/client';
 
 
 export const POST: RequestHandler = async (event) => {
@@ -23,23 +24,47 @@ export const POST: RequestHandler = async (event) => {
          switch (stripeEvent?.type) {
             case 'payment_intent.created': {
                const paymentIntent = stripeEvent.data.object;
+               console.log('paymentIntent ', paymentIntent)
                const handlePaymentIntent = async (intent:typeof paymentIntent)=> {
-                  const invoice = await prisma.invoice.findFirst({
+                  let invoice:Invoice | null = null
+                  const customer = await prisma.user.findFirst({
                      where: {
-                        invoiceNum: parseInt(intent.metadata.invoiceNum, 10),
+                        stripeId: intent.customer!.toString()
                      }
-                  });
-
-                  await prisma.paymentRecord.create({
+                  })
+                  if(intent.metadata.invoiceNum){
+                     invoice = await prisma.invoice.findFirst({
+                        where: {
+                           invoiceNum: parseInt(intent.metadata.invoiceNum, 10),
+                        }
+                     });
+                  } else {
+                     invoice = await prisma.invoice.create({
+                        data: {
+                           invoiceAmount: intent.amount,
+                           customerId: customer?.id,
+                           invoiceNotes: intent.description,
+                        }
+                     })
+                  }
+                  const paymentRecord = await prisma.paymentRecord.create({
                      data: {
-                        invoiceNum: parseInt(intent.metadata.invoiceNum, 10),
-                        customerId: intent.metadata.customerId,
+                        invoiceNum: invoice!.invoiceNum,
+                        customerId: customer!.id,
                         paymentAmount: intent.amount / 100,
                         paymentType: 'STRIPE',
                         stripeId: intent.id,
                         unitNum: intent.metadata.unitNum,
-                        payee: intent.metadata.customerId,
+                        payee: `${customer?.givenName} ${customer?.familyName}`,
                         paymentNotes: `Payment for invoice number: ${invoice?.invoiceNum}`
+                     }
+                  })
+                  await prisma.invoice.update({
+                     where: {
+                        invoiceNum: invoice?.invoiceNum
+                     },
+                     data: {
+                        paymentRecordNum: paymentRecord.paymentNumber
                      }
                   })
                }

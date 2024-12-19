@@ -28,8 +28,14 @@ export const load = (async (event) => {
    setSessionTokenCookie(event, token, session.expiresAt);
    const redirectTo = event.url.searchParams.get('redirectTo');
    const unitNum = event.url.searchParams.get('unitNum');
-   if(redirectTo){
+   if(redirectTo === 'home'){
+      redirect(303, '/')
+   }
+   if(redirectTo === 'newLease'){
       return redirect(302, `/${redirectTo}?unitNum=${unitNum}`)
+   }
+   if(redirectTo === 'invoicePay'){
+      redirect(303, '/invoices/pay')
    }
    redirect(302, '/units/available');
 }) satisfies PageServerLoad;

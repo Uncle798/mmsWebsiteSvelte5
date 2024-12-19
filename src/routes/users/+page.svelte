@@ -1,6 +1,5 @@
 <script lang="ts">
    import { Pagination } from '@skeletonlabs/skeleton-svelte';
-   import User from '$lib/displayComponents/User.svelte';
 	import EmploymentChangeForm from '$lib/forms/EmploymentChangeForm.svelte';
 	import Header from '$lib/Header.svelte';
 	import { superForm, } from 'sveltekit-superforms';
@@ -8,6 +7,7 @@
 	import type { PartialUser } from '$lib/server/partialTypes';
 	import { goto } from '$app/navigation';
    import { fade } from 'svelte/transition';
+	import UserAdmin from '$lib/displayComponents/UserAdmin.svelte';
 
    let { data }: { data: PageData } = $props();
    let {form:searchForm, enhance} = superForm(data.searchForm, {
@@ -36,7 +36,7 @@
    </form>
    {#each slicedSource(data.users) as user (user.id)}
    <div class="flex">
-      <User user={user} />
+      <UserAdmin user={user} />
       <EmploymentChangeForm 
       data={data.employmentChangeForm} 
       employeeChecked={user.employee} 

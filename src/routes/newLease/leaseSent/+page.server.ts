@@ -18,6 +18,7 @@ export const load:PageServerLoad = (async (event) => {
       if(!invoice){
          return fail(404, { message: "Invoice not found"});
       }
+
       const paymentRecord = await prisma.paymentRecord.create({
          data: {
             paymentAmount: invoice.invoiceAmount,
@@ -86,7 +87,7 @@ export const load:PageServerLoad = (async (event) => {
                anvilEID 
             }
          })
-         // await qStash.notify({eventId:`leaseId:${lease?.leaseId}`})
+         await qStash.notify({eventId:lease!.leaseId})
          return {packetDetails};
       }
    }

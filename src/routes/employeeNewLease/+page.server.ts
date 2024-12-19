@@ -9,6 +9,8 @@ import type { Address, DiscountCode } from '@prisma/client';
 import { ratelimit } from '$lib/server/rateLimit';
 import { stripe } from "$lib/server/stripe";
 import dayjs from "dayjs";
+import { qStash } from '$lib/server/qStash';
+import { PUBLIC_URL } from '$env/static/public';
 
 export const load = (async (event) => {
    const unitNum = event.url.searchParams.get('unitNum');
@@ -197,6 +199,7 @@ export const actions: Actions = {
                customerId: customer!.id
             }
          })
+         console.log('stripeCustomer: ', stripeCustomer)
          stripeId = stripeCustomer.id
       } else {
          await stripe.customers.update(existingStripeCustomer.data[0].id, {
@@ -215,7 +218,21 @@ export const actions: Actions = {
             }
          })
       }
-      redirect(303, `/newLease/payDeposit?invoiceNum=${invoice.invoiceNum}&stripeId=${stripeId}`)
+      console.log('stripeId: ', stripeId)
+      await prisma.user.update({
+         where: {
+            id: customer!.id
+         },
+         data: {
+            stripeId
+         }
+      })
+      await qStash.trigger({
+         url: `${PUBLIC_URL}/api/upstash/workflow`,
+         body:  lease.leaseId,
+         workflowRunId: lease.leaseId
+      })
+      redirect(303, `/makePayment?invoiceNum=${invoice.invoiceNum}&stripeId=${stripeId}`)
    },
    selectCustomer: async (event ) => {
       if(!event.locals.user?.employee){

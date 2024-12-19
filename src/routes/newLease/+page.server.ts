@@ -170,8 +170,16 @@ export const actions:Actions = {
             }
          })
          stripeId = stripeCustomer.id
+         prisma.user.update({
+            where: {
+               id: customer.id
+            },
+            data: {
+               stripeId
+            }
+         })
       } else {
-         await stripe.customers.update(existingStripeCustomer.data[0].id, {
+         const stripeCustomer = await stripe.customers.update(existingStripeCustomer.data[0].id, {
             name: name,
             address: {
                line1: address.address1,
@@ -185,14 +193,22 @@ export const actions:Actions = {
             metadata: {
                customerId: customer.id
             }
-            
-         })
+         });
+         stripeId = stripeCustomer.id
       }
-      // await qStash.trigger({
-      //    url: `${PUBLIC_URL}/api/upstash/workflow`,
-      //    body: { leaseId: lease.leaseId },
-      //    workflowRunId: lease.leaseId
-      // })
-      redirect(303, `/newLease/payDeposit?invoiceNum=${invoice.invoiceNum}&stripeId=${stripeId}`)
+      prisma.user.update({
+         where: {
+            id: customer.id
+         },
+         data: {
+            stripeId
+         }
+      })
+      qStash.trigger({
+         url: `${PUBLIC_URL}/api/upstash/workflow`,
+         body:  lease.leaseId,
+         workflowRunId: lease.leaseId
+      })
+      redirect(303, `/makePayment?invoiceNum=${invoice.invoiceNum}&stripeId=${stripeId}`)
    }
 }

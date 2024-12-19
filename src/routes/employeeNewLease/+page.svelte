@@ -51,9 +51,10 @@
         onValueChange={(details) => {
           selectedCustomer = details.value
         }}
+        classes='z-10'
       />
       <input type="hidden" name="customerId" value={selectedCustomer}>
-      <button class="btn">Choose Customer</button>    
+      <button class="btn z-0">Choose Customer</button>    
     </form>
   </div>
 {:else}

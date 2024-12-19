@@ -13,13 +13,13 @@ async function main() {
    });
    const prices = await stripe.prices.list();
    if(prices.data.length === 0){
-      pricingData.forEach((price) => {
+      pricingData.forEach(async (price) => {
          if(price.size !== 'ours') {
-            stripe.prices.create({
+            const stripPrice = await stripe.prices.create({
                currency: 'usd',
                unit_amount: price.price * 100,
                product_data:{
-                  name: `Monthly rent ${price.size.replace(/^0/gm, '').replace(/x0/gm, 'x')}`,
+                  name: `Monthly rent ${price.size.replace(/^0+/gm, '').replace(/x0/gm, 'x')}`,
                   metadata: {
                      size: price.size
                   }
@@ -28,6 +28,7 @@ async function main() {
                   interval: 'month'
                }
             })
+            console.log('stripe price: ', stripPrice)
          }
       })
    }
