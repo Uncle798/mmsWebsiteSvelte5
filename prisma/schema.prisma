@@ -140,6 +140,7 @@ model Invoice {
   invoiceCreated   DateTime       @default(now())
   paymentRecordNum Int?           @unique
   invoiceNotes     String?
+  stripeId         String?        @unique
   customer         User?          @relation("customer", fields: [customerId], references: [id])
   employee         User?          @relation("employee", fields: [employeeId], references: [id])
   lease            Lease?         @relation(fields: [leaseId], references: [leaseId])
