@@ -16,12 +16,12 @@
 	}
 	let customerLinks:Link[] =[
 		{link: '/', label: 'Home'},
-		{link: '/register', label: 'Register'},
 		{link: '/units/available', label:'Available Units'},
 		{link: '/newLease', label: 'New lease'},
 	]
 	let employeeLinks:Link[] = [
 		{link: '/units', label:'Units'},
+		{link: '/units/unavailable', label: 'Unavailable units'},
 		{link: '/discounts', label: 'Discounts'},
 		{link: '/users/customers', label: 'Customers'},
 		{link: '/invoices', label: 'Invoices'},
@@ -30,7 +30,7 @@
 		{link: '/paymentRecords/incomplete', label:'Incomplete Payment Records'},
 		{link: '/paymentRecords/new', label:'New Payment Record'},
 		{link: '/employeeNewLease', label:'Employee new lease'},
-		{link: '/employeeNewCustomer', label:'Employee new customer'}
+		{link: '/employeeNewCustomer', label:'Employee new customer'},
 	]
 	let adminLinks:Link[] = [
 		{link: '/users', label:'All Users'},

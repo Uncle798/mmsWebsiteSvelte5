@@ -5,7 +5,9 @@ import { fail } from '@sveltejs/kit';
 
 export const POST:RequestHandler = async (event) => {
    const invoiceNum = event.url.searchParams.get('invoiceNum');
-   const { stripeId } = await event.request.json();
+   const body = await event.request.json();
+   console.log('paymentIntent event:', body)
+   const { stripeId } = body;
    if(!invoiceNum || !stripeId){
       fail(404)
    }
