@@ -28,3 +28,4 @@ pnpm-lock.yaml
 >>>>>>> origin/main
 prisma/migrations/0_init/migration.sql
 log.txt
+app2.log
