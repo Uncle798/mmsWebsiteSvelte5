@@ -20,4 +20,5 @@
    {:else}
    <p>Not leased currently </p>
    {/if}
+   <p>lease EID: {lease.anvilEID}</p>
 </div>
