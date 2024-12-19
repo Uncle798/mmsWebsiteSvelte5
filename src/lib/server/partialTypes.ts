@@ -9,7 +9,8 @@ export const partialUser = Prisma.validator<Prisma.UserDefaultArgs>()({
       id: true,
       employee: true,
       admin: true,
-      emailVerified: true
+      emailVerified: true,
+      stripeId: true,
    }
 })
 export type PartialUser = Prisma.UserGetPayload<typeof partialUser>
