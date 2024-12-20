@@ -10,7 +10,7 @@ export const load:PageServerLoad = (async (event) => {
    }
    const invoiceNum = event.url.searchParams.get('invoiceNum');
    if(invoiceNum){
-      const invoice = await prisma.invoice.findFirst({
+      const invoice = await prisma.invoice.findUnique({
          where: {
             invoiceNum:parseInt(invoiceNum, 10),
          }
@@ -37,12 +37,12 @@ export const load:PageServerLoad = (async (event) => {
       })
       const lease = await prisma.lease.findUnique({
          where: {
-            leaseId: invoice?.leaseId || '',
+            leaseId: invoice!.leaseId!,
          }
       })
       const customer = await prisma.user.findUnique({
          where:{
-            id: invoice?.customerId || undefined,
+            id: invoice!.customerId!,
          }
       })
       const unit = await prisma.unit.findUnique({
