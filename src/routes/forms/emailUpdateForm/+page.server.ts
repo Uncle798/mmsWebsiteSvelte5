@@ -17,8 +17,7 @@ export const actions: Actions = {
         if(!event.locals.user){
             redirect(302, '/login?toast=unauthorized')
         }
-        const formData = await event.request.formData();
-        const emailForm = await superValidate(formData, zod(emailFormSchema));
+        const emailForm = await superValidate(event.request, zod(emailFormSchema));
         const { success, reset } = await ratelimit.customerForm.limit(event.getClientAddress())
           if(!success) {
               const timeRemaining = Math.floor((reset - Date.now()) /1000);
@@ -26,6 +25,14 @@ export const actions: Actions = {
           }
         if(!emailForm.valid){
             return message(emailForm, 'not valid');
+        }
+        const emailAlreadyInUse = await prisma.user.findUnique({
+            where: {
+                email: emailForm.data.email
+            }
+        })
+        if(emailAlreadyInUse){
+            message(emailForm, "Email already in use");
         }
         const user = await prisma.user.update({
             where: {
