@@ -46,6 +46,11 @@ export const POST: RequestHandler = async (event) => {
                            invoiceNotes: intent.description,
                         }
                      })
+                     await stripe.paymentIntents.update(paymentIntent.id, {
+                        metadata: {
+                           invoiceNum: invoice.invoiceNum
+                        }
+                     })
                   }
                   const paymentRecord = await prisma.paymentRecord.create({
                      data: {
@@ -65,6 +70,11 @@ export const POST: RequestHandler = async (event) => {
                      },
                      data: {
                         paymentRecordNum: paymentRecord.paymentNumber
+                     }
+                  })
+                  await stripe.paymentIntents.update(intent.id, {
+                     metadata: {
+                        paymentNum: paymentRecord.paymentNumber
                      }
                   })
                }
