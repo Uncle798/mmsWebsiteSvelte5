@@ -47,11 +47,11 @@
         bind:value={selectedCustomer}
         label='Select a customer'
         placeholder='Select...'
+        positionerZIndex='z-10'
         openOnClick={true}
         onValueChange={(details) => {
           selectedCustomer = details.value
         }}
-        classes='z-10'
       />
       <input type="hidden" name="customerId" value={selectedCustomer}>
       <button class="btn z-0">Choose Customer</button>    

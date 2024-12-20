@@ -15,8 +15,7 @@ export const POST: RequestHandler = async (event) => {
       const object = JSON.parse(decrypted);
       const { etchPacket, signers } = object;
       if(signers[0].completedAt && object.status === 'completed' && object.routingOrder === 1){
-         console.log('signers[0]', signers[0])
-         const lease = await prisma.lease.update({
+         await prisma.lease.update({
             where: {
                anvilEID: etchPacket.eid
             },
@@ -24,7 +23,6 @@ export const POST: RequestHandler = async (event) => {
                leaseReturnedAt: signers[0].completedAt
             }
          })
-         console.log('signing 1 complete lease', lease)
       }
       if(object.downloadZipURL){
          // const url:string = object.downloadZipURL;
@@ -45,14 +43,12 @@ export const POST: RequestHandler = async (event) => {
                if(!lease){
                   fail(404)
                }
-               console.log('anvil API lease: ', lease)
                const customer = await prisma.user.findUnique({
                   where: {
                      id: lease!.customerId
                   }
                })
-               console.log(lease?.leaseReturnedAt);
-               const date = dayjs(lease?.leaseReturnedAt).format('M/YYYY')
+               const date = dayjs(lease?.leaseReturnedAt).format('M/D/YYYY')
                const invoice = await prisma.invoice.create({
                   data: {
                      customerId: lease?.customerId,
@@ -70,18 +66,15 @@ export const POST: RequestHandler = async (event) => {
                   },
                   days_until_due: 7,
                })
-               console.log('stripeInvoice: ', stripeInvoice);
-               const invoiceLine = await stripe.invoiceItems.create({
+               await stripe.invoiceItems.create({
                   customer: customer!.stripeId!,
                   amount: lease?.price ? lease.price*100 : undefined,
                   description: invoice.invoiceNotes ? invoice.invoiceNotes : undefined,
                   invoice: stripeInvoice.id,
                })
-               console.log('invoiceLine: ', invoiceLine)
-               const finalInvoice = await stripe.invoices.finalizeInvoice(stripeInvoice.id, {
+               await stripe.invoices.finalizeInvoice(stripeInvoice.id, {
                   auto_advance: true,
                })
-               console.log('finalInvoice: ', finalInvoice)
             }
             createInvoice();
          }

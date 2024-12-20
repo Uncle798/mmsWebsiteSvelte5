@@ -25,6 +25,7 @@ export const { POST } = serve<InitialPayload>(
                   unavailable: true
                }
             })
+            console.log('upstash 1st step')
          })
          await context.waitForEvent('wait for lease sent or 15 min', leaseId, 15*60);
          await context.run("second-step", async () => {
@@ -41,6 +42,7 @@ export const { POST } = serve<InitialPayload>(
                   unavailable: false
                }
             });
+            console.log('upstash 2nd step')
          });
       }
    },
