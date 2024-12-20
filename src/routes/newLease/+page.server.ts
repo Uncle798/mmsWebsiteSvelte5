@@ -10,6 +10,7 @@ import { qStash } from "$lib/server/qStash";
 import { PUBLIC_URL } from "$env/static/public";
 import { stripe } from "$lib/server/stripe";
 import dayjs from "dayjs";
+import { MY_EMAIL } from "$env/static/private";
 
 export const load:PageServerLoad = (async (event) =>{
    const unitNum = event.url.searchParams.get('unitNum');
@@ -155,7 +156,8 @@ export const actions:Actions = {
       if(existingStripeCustomer.data.length === 0){
          const stripeCustomer = await stripe.customers.create({
             name: name,
-            email: customer.email,
+            email: MY_EMAIL,  // test mode
+            // email: customer.email ? customer.email : undefined, // prod mode
             address: {
                line1: address.address1,
                line2: address.address2 ? address.address2 : undefined,
@@ -206,7 +208,7 @@ export const actions:Actions = {
       })
       qStash.trigger({
          url: `${PUBLIC_URL}/api/upstash/workflow`,
-         body:  lease.leaseId,
+         body:  { leaseId:lease.leaseId },
          workflowRunId: lease.leaseId
       })
       redirect(303, `/makePayment?invoiceNum=${invoice.invoiceNum}&stripeId=${stripeId}`)

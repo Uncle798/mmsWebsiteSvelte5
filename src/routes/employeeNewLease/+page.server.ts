@@ -11,6 +11,7 @@ import { stripe } from "$lib/server/stripe";
 import dayjs from "dayjs";
 import { qStash } from '$lib/server/qStash';
 import { PUBLIC_URL } from '$env/static/public';
+import { MY_EMAIL } from '$env/static/private';
 
 export const load = (async (event) => {
    const unitNum = event.url.searchParams.get('unitNum');
@@ -173,7 +174,7 @@ export const actions: Actions = {
       })
       let name:string = `${customer!.givenName} ${customer!.familyName}`
       if(customer!.organizationName){
-         name= customer!.organizationName;
+         name=customer!.organizationName;
       }
       const existingStripeCustomer = await stripe.customers.search({
          query: `email:'${customer!.email}'`
@@ -184,8 +185,9 @@ export const actions: Actions = {
       }
       if(existingStripeCustomer.data.length === 0){
          const stripeCustomer = await stripe.customers.create({
-            name: name,
-            email: customer!.email,
+            name: name ? name : undefined,
+            email: MY_EMAIL, // test mode
+            // email: customer!.email ? customer?.email : undefined, // prod mode
             address: {
                line1: address!.address1,
                line2: address!.address2 ? address!.address2 : undefined,
@@ -199,7 +201,6 @@ export const actions: Actions = {
                customerId: customer!.id
             }
          })
-         console.log('stripeCustomer: ', stripeCustomer)
          stripeId = stripeCustomer.id
       } else {
          await stripe.customers.update(existingStripeCustomer.data[0].id, {
@@ -229,7 +230,7 @@ export const actions: Actions = {
       })
       await qStash.trigger({
          url: `${PUBLIC_URL}/api/upstash/workflow`,
-         body:  lease.leaseId,
+         body:  {leaseId:lease.leaseId},
          workflowRunId: lease.leaseId
       })
       redirect(303, `/makePayment?invoiceNum=${invoice.invoiceNum}&stripeId=${stripeId}`)
