@@ -165,10 +165,10 @@ export const newDiscountFormSchema = z.object({
 });
 export type NewDiscountFormSchema = typeof newDiscountFormSchema;
 
-export const discountEndFormSchema = z.object({
+export const cuidIdFormSchema = z.object({
    discountId: z.string().min(23).max(30)
 });
-export type DiscountEndFormSchema = typeof discountEndFormSchema;
+export type CuidIdFormSchema = typeof cuidIdFormSchema;
 
 export const newInvoiceFormSchema = z.object({
    customerId: z.string().min(23).max(30),
