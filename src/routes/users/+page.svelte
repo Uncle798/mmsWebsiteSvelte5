@@ -29,7 +29,7 @@
 {:else }
 <div transition:fade={{duration:600}}>
 
-   <form method="post" use:enhance>
+   <form method="post" action="/users?/search"  use:enhance>
       <input type="text" name="search" class="input" placeholder="Search by name" bind:value={$searchForm.search}>
       <button class="btn">Submit</button>
       <button class="btn" onclick={()=> goto('/users', {invalidateAll: true})}>Clear</button>
