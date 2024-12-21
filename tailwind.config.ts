@@ -22,6 +22,7 @@ export default {
 				themes.mint,
 				themes.cerberus,
 				themes.pine,
+				themes.concord
 			]
 		})
 	]
