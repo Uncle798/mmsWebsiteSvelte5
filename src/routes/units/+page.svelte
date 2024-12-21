@@ -1,6 +1,6 @@
 <script lang="ts">
     import LeaseEmployee from '$lib/displayComponents/LeaseEmployee.svelte';
-    import { Modal } from '@skeletonlabs/skeleton-svelte';
+    import { Modal, Pagination } from '@skeletonlabs/skeleton-svelte';
     import UnitEmployee from '$lib/displayComponents/UnitEmployee.svelte';
 	import User from '$lib/displayComponents/User.svelte';
     import type { PageData } from './$types';
@@ -8,7 +8,9 @@
 	import UnitNotesForm from '$lib/forms/UnitNotesForm.svelte';
 	import UnitPricingForm from '$lib/forms/UnitPricingForm.svelte';
 	import Header from '$lib/Header.svelte';
+    
     import { fade } from 'svelte/transition';
+	import type { Unit } from '@prisma/client';
 
     let { data }: { data: PageData } = $props();
     let { units, leases, customers,} = data;
@@ -28,6 +30,9 @@
         globalModalType=modalType;
         modalOpen = true;
     }
+    let pageNum = $state(1);
+    let size = $state(25);
+    let slicedUnits = $derived((units:Unit[]) => units.slice((pageNum-1)*size, pageNum*size));
 </script>
 <Header title='All units' />
 
@@ -51,7 +56,7 @@
 {#if !units}
     ...loading units
     {:else}
-    {#each units as unit}
+    {#each slicedUnits(units) as unit}
         {@const lease = leases?.find((lease) => lease.unitNum === unit.num)}
         <div class="flex" transition:fade={{duration:600}}>
             <div>
@@ -73,4 +78,13 @@
             {/if}
         </div>
     {/each}
+    <footer class="flex justify-between">
+        <select name="size" id="size" class="select" bind:value={size}>
+           {#each [5,10,25,50] as v}
+           <option value={v}>Show {v} units per page</option>
+           {/each}
+           <option value={units.length}>Show all {units.length} units</option>
+        </select>
+        <Pagination data={units} bind:page={pageNum} bind:pageSize={size} alternative/>
+     </footer>
 {/if}
