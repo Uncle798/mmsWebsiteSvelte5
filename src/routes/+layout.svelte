@@ -43,7 +43,7 @@
 <Modal
 	bind:open={menuOpen}
 	triggerBase="btn preset-tonal"
-	contentBase="bg-surface-100-900 p-2 space-y-2 shadow-xl w-[275px] h-screen"
+	contentBase="bg-surface-100-900 p-2 space-y-2 shadow-xl w-[325px] h-screen"
 	positionerJustify="justify-start"
 	positionerAlign=""
 	positionerPadding=""
@@ -69,7 +69,7 @@
 					<li><a href={adminLink.link} class="btn">{adminLink.label}</a></li>
 				{/each}
 			{/if}
-			<div class="card float-end">
+			<div class="card absolute bottom-0 p-4 mb-4">
 				{#if data.user}
 				<form action="/logout" method="post" use:enhance>
 					<li><button class="btn">Logout</button></li>
