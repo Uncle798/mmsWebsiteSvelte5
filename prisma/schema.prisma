@@ -21,6 +21,7 @@ model User {
   employee             Boolean         @default(false)
   admin                Boolean         @default(false)
   stripeId             String?
+  archive              Boolean         @default(false)
   address              Address[]
   customerInvoices     Invoice[]       @relation("customer")
   employeeInvoices     Invoice[]       @relation("employee")
