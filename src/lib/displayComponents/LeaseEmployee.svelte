@@ -21,4 +21,5 @@
    <p>Not leased currently </p>
    {/if}
    <p>lease EID: {lease.anvilEID}</p>
+   <p>leaseID <a href='/autopay?leaseId={lease.leaseId}'>{lease.leaseId}</a></p>
 </div>
