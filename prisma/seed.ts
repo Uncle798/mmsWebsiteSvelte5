@@ -111,27 +111,7 @@ async function deleteAll() {
 
 async function createEmployees() {
    const employees: User[] = [];
-   employees.push(await prisma.user.create({
-      data:{
-         email: 'email@email.email',
-         emailVerified: true,
-         givenName: 'Eric',
-         familyName: 'Branson',
-         Address:{
-            create:{
-               address1: faker.location.streetAddress(), 
-               city: faker.location.city(),
-               state: faker.location.state({abbreviated: true}),
-               postalCode: faker.location.zipCode(),
-               phoneNum1: faker.phone.number().trim(),
-               phoneNum1Country: '+1',
-               country: 'US'
-            }
-         },
-         employee: true,
-         admin: true
-      }
-   }))
+   
    employees.push(
       await prisma.user.create({
          data:{
@@ -139,7 +119,7 @@ async function createEmployees() {
             emailVerified: true,
             givenName: 'George',
             familyName: 'Branson',
-            Address:{
+            address:{
                create:{
                   address1: faker.location.streetAddress(), 
                   city: faker.location.city(),
@@ -162,7 +142,7 @@ async function createEmployees() {
             emailVerified: true,
             givenName: 'Walter',
             familyName: 'Branson',
-            Address:{
+            address:{
                create:{
                   address1: faker.location.streetAddress(), 
                   city: faker.location.city(),
