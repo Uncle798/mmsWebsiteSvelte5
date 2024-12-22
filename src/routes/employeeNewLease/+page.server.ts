@@ -219,7 +219,6 @@ export const actions: Actions = {
             }
          })
       }
-      console.log('stripeId: ', stripeId)
       await prisma.user.update({
          where: {
             id: customer!.id
@@ -228,11 +227,12 @@ export const actions: Actions = {
             stripeId
          }
       })
-      await qStash.trigger({
+      const workflow = await qStash.trigger({
          url: `${PUBLIC_URL}/api/upstash/workflow`,
          body:  {leaseId:lease.leaseId},
          workflowRunId: lease.leaseId
       })
+      console.log('employeeNewLease workflow: ', workflow)
       redirect(303, `/makePayment?invoiceNum=${invoice.invoiceNum}&stripeId=${stripeId}`)
    },
    selectCustomer: async (event ) => {

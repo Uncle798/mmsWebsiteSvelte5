@@ -1,7 +1,6 @@
 import { stripe } from '$lib/server/stripe';
 import { prisma } from '$lib/server/prisma';
 import type { RequestHandler } from '@sveltejs/kit';
-import { fail } from '@sveltejs/kit';
 
 export const POST:RequestHandler = async (event) => {
    const invoiceNum = event.url.searchParams.get('invoiceNum');
@@ -9,7 +8,7 @@ export const POST:RequestHandler = async (event) => {
    console.log('paymentIntent event:', body)
    const { stripeId } = body;
    if(!invoiceNum || !stripeId){
-      fail(404)
+      return new Response(JSON.stringify('Info not provided'), { status:400 });
    }
    const invoice = await prisma.invoice.findUnique({
       where:{

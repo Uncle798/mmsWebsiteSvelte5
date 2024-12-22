@@ -80,6 +80,7 @@ export const actions: Actions ={
         })
         const redirectTo = event.url.searchParams.get('redirectTo');
         const unitNum = event.url.searchParams.get('unitNum');
+        console.log(redirectTo)
         if(redirectTo === 'home'){
             redirect(302, '/')
         }
