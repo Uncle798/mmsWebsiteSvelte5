@@ -56,7 +56,7 @@ export const actions: Actions = {
       const searchForm = await superValidate(formData, zod(searchFormSchema));
       return {searchForm}
    },
-   delete: async (event) => {
+   archive: async (event) => {
       if(!event.locals.user?.admin){
          redirect(302, '/login?toast=admin')
       }
@@ -69,6 +69,13 @@ export const actions: Actions = {
          const timeRemaining = Math.floor((reset - Date.now()) /1000);
          return message(userDeleteForm, `Please wait ${timeRemaining} seconds before trying again.`)
       }
-      
+      await prisma.user.update({
+         where:{
+            id: userDeleteForm.data.discountId,
+         },
+         data:{
+            archive: true,
+         }
+      })
    }
 };
