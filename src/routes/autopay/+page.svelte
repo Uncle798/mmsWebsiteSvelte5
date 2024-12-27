@@ -11,7 +11,6 @@
     let mounted = $state(false);
     let wrapper:string | HTMLElement = $state('');
     let checkoutElement;
-    let elements = getContext('stripe');
     onMount(async () => {
         stripe = await loadStripe(PUBLIC_STRIPE_TEST);
         clientSecret = await createCheckout();
