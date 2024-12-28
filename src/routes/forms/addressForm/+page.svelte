@@ -64,7 +64,7 @@
     async function submit() {
         const values = await addressElement?.getValue();
         console.log(values)
-        formData.set('givenName', values?.value.lastName);
+        formData.set('givenName', values?.value.lastName!);
     }
 </script>
     <div bind:this={wrapper}></div>

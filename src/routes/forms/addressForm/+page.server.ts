@@ -54,19 +54,20 @@ export const actions: Actions = {
       //    {
       //       method: 'GET',
       //       headers: {
-      //          Authorization: RADAR_SECRET_LIVE
+      //          Authorization: RADAR_SECRET_TEST
       //       }
       //    }
       // )
       // const data = await response.json();
+      // console.log(data)
       // if(data.result.verificationStatus === 'verified'){
-      //    const newAddress = {
-      //       userId,
-      //       ...addressForm.data
-      //    }
-      //    await prisma.address.create({
-      //       data: newAddress
-      //    })
+         const newAddress = {
+            userId,
+            ...addressForm.data
+         }
+         await prisma.address.create({
+            data: newAddress
+         })
       // }
       // if(data.result.verificationStatus === 'unverified'){
       //    return message(addressForm, 'Unable to verify address, please contact the office');
