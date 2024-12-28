@@ -55,5 +55,14 @@ export const POST: RequestHandler = async (event) => {
       ],
       
    })
+   const updatedLease = await prisma.lease.update({
+      where: {
+         leaseId: lease.leaseId
+      },
+      data: {
+         stripeSubscriptionId: session.subscription?.toString(),
+      }
+   })
+   console.log(updatedLease);
    return new Response(JSON.stringify(session.client_secret), { status: 200 });
 };
