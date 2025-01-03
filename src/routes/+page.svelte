@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { page } from "$app/stores";
 	import { PUBLIC_COMPANY_NAME } from "$env/static/public";
    import Header from "$lib/Header.svelte";
 import type { PageData } from "./$types";
