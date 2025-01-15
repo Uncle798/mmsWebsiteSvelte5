@@ -200,4 +200,12 @@ export type NewPaymentRecordFormSchema = typeof newPaymentRecordFormSchema;
 export const paymentRecordDeleteSchema = z.object({
    paymentRecordNumber: z.number().positive()
 });
-export type PaymentRecordDeleteSchema = typeof paymentRecordDeleteSchema
+export type PaymentRecordDeleteSchema = typeof paymentRecordDeleteSchema;
+
+export const refundFormSchema = z.object({
+   paymentRecordNumber: z.number().positive(),
+   amount: z.number().positive(),
+   notes: z.string().nullable(),
+   refundType: z.enum(['Stripe', 'Cash', 'Check']), 
+})
+export type RefundFormSchema = typeof refundFormSchema;
