@@ -1,6 +1,5 @@
 generator client {
-  provider        = "prisma-client-js"
-  previewFeatures = ["omitApi"]
+  provider = "prisma-client-js"
 }
 
 datasource db {
@@ -9,7 +8,7 @@ datasource db {
 }
 
 model User {
-  id                   String          @id @unique @default(cuid()) @map("id")
+  id                   String          @id @unique @default(cuid(2)) @map("id")
   createdAt            DateTime        @default(now()) @map("created_at")
   updatedAt            DateTime?       @updatedAt @map("updated_at")
   email                String?         @unique
@@ -29,6 +28,8 @@ model User {
   employeeLeases       Lease[]         @relation("employee")
   paymentMade          PaymentRecord[] @relation("customer")
   paymentReceived      PaymentRecord[] @relation("employee")
+  refundReceived       RefundRecord[]  @relation("customer")
+  refundMade           RefundRecord[]  @relation("employee")
   session              Session[]
   verification         Verification[]
   employeeDiscountCode DiscountCode[]
@@ -40,7 +41,7 @@ model User {
 }
 
 model Address {
-  addressId          String  @id @unique @default(cuid())
+  addressId          String  @id @unique @default(cuid(2))
   userId             String
   address1           String
   address2           String?
@@ -74,7 +75,7 @@ model Unit {
 }
 
 model Lease {
-  leaseId              String        @id @unique @default(cuid())
+  leaseId              String        @id @unique @default(cuid(2))
   customerId           String
   employeeId           String
   addressId            String
@@ -101,7 +102,7 @@ model Lease {
 }
 
 model DiscountCode {
-  discountId      String    @id @unique @default(cuid())
+  discountId      String    @id @unique @default(cuid(2))
   code            String    @unique
   amountOff       Int
   notes           String?
@@ -116,21 +117,25 @@ model DiscountCode {
 }
 
 model PaymentRecord {
-  paymentNumber    Int         @id @unique @default(autoincrement())
-  stripeId         String?     @unique
+  paymentNumber    Int           @id @unique @default(autoincrement())
+  stripeId         String?       @unique
   invoiceNum       Int?
   customerId       String
   unitNum          String?
   paymentAmount    Int
   employeeId       String?
   payee            String?
-  paymentCreated   DateTime    @default(now())
+  paymentCreated   DateTime      @default(now())
   paymentCompleted DateTime?
   paymentNotes     String?
+  deposit          Boolean       @default(false)
+  refunded         Boolean       @default(false)
+  refundNumber     Int?
   paymentType      PaymentType
   invoice          Invoice?
-  customer         User        @relation("customer", fields: [customerId], references: [id])
-  receiver         User?       @relation("employee", fields: [employeeId], references: [id])
+  customer         User          @relation("customer", fields: [customerId], references: [id])
+  receiver         User?         @relation("employee", fields: [employeeId], references: [id])
+  RefundRecord     RefundRecord? @relation(fields: [refundNumber], references: [refundNumber])
 }
 
 model Invoice {
@@ -143,10 +148,26 @@ model Invoice {
   paymentRecordNum Int?           @unique
   invoiceNotes     String?
   stripeId         String?        @unique
+  deposit          Boolean        @default(false)
   customer         User?          @relation("customer", fields: [customerId], references: [id])
   employee         User?          @relation("employee", fields: [employeeId], references: [id])
   lease            Lease?         @relation(fields: [leaseId], references: [leaseId])
   paymentRecord    PaymentRecord? @relation(fields: [paymentRecordNum], references: [paymentNumber])
+}
+
+model RefundRecord {
+  refundNumber     Int             @id @unique @default(autoincrement())
+  stripeId         String?         @unique
+  customerId       String
+  refundAmount     Int
+  employeeId       String?
+  refundNotes      String?
+  refundCreated    DateTime        @default(now())
+  paymentRecordNum Int
+  refundType       PaymentType
+  paymentRecord    PaymentRecord[]
+  customer         User            @relation("customer", fields: [customerId], references: [id])
+  employee         User?           @relation("employee", fields: [employeeId], references: [id])
 }
 
 model Session {
@@ -159,7 +180,7 @@ model Session {
 }
 
 model Verification {
-  id        String   @id @default(cuid())
+  id        String   @id @default(cuid(2))
   code      String
   userId    String   @map("user_id")
   email     String

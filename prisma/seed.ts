@@ -1,4 +1,4 @@
-import {  PrismaClient, User, PaymentType, Unit, Address, Lease, } from '@prisma/client';
+import {  PrismaClient, User, PaymentType, Unit, Address, Lease, PaymentRecord, } from '@prisma/client';
 import { faker } from '@faker-js/faker';
 import dayjs  from 'dayjs';
 import  unitData from './unitData'
@@ -31,6 +31,9 @@ const userData = Array.from({length:numUsers}).map(()=>({
 }));
 
 async function deleteAll() {
+   await prisma.refundRecord.deleteMany().catch((err) =>{
+      console.error(err);
+   });
    await prisma.paymentRecord.deleteMany().catch((err) =>{
       console.error(err);
    });
@@ -66,6 +69,7 @@ async function deleteAll() {
  
  async function countAll() {
    let count = 0;
+   count += await prisma.refundRecord.count();
    count += await prisma.paymentRecord.count();
    count += await prisma.invoice.count();
    count += await prisma.lease.count();
@@ -242,15 +246,39 @@ async function createLease(unit: Unit, leaseStart, leaseEnd: Date | null, randEm
  }
 
 
-function makeInvoice(lease:Lease, month:Date){
+function makeInvoice(lease:Lease, month:Date, deposit:boolean){
    const invoice:PartialInvoice = {
       customerId: lease.customerId,
       leaseId: lease.leaseId,
       invoiceAmount: lease.price,
       invoiceCreated: month,
       invoiceNotes: `Rent for unit ${lease.unitNum.replace(/^0+/gm,'')} for ${dayjs(month).format('MMMM YYYY')}`,
+      deposit,
    };
    return invoice;
+}
+
+async function makeRefund(paymentRecord:PaymentRecord){
+   const refund = await prisma.refundRecord.create({
+      data:{
+         customerId: paymentRecord.customerId,
+         employeeId: paymentRecord.employeeId,
+         refundAmount: paymentRecord.paymentAmount,
+         paymentRecordNum: paymentRecord.paymentNumber,
+         refundType: paymentRecord.paymentType,
+         refundNotes: `Refund of payment record number ${paymentRecord.paymentNumber}`
+      }
+   })
+   await prisma.paymentRecord.update({
+      where: {
+         paymentNumber: paymentRecord.paymentNumber
+      }, 
+      data: {
+         refunded: true,
+         refundNumber: refund.refundNumber
+      }
+   })
+   return refund
 }
 
 function makeDiscount(employee:User){
@@ -363,10 +391,16 @@ async function  main (){
    const invoices: PartialInvoice[] = [];
    for await (const lease of dbLeases){
       const leaseEndDate:Date | null = lease.leaseEnded ?? new Date;
-      const months:Date[] = arrayOfMonths(lease.leaseEffectiveDate, leaseEndDate); 
+      const months:Date[] = arrayOfMonths(lease.leaseEffectiveDate, leaseEndDate);
+      let i = 0;
       for await (const month of months) {
-         const invoice = makeInvoice(lease, month)
+         let deposit = true;
+         if(i !== 0){
+            deposit = false
+         }
+         const invoice = makeInvoice(lease, month, deposit)
          invoices.push(invoice)
+         i++;
       }
    }
    const dbInvoices = await prisma.invoice.createManyAndReturn({
@@ -391,7 +425,8 @@ async function  main (){
             paymentCreated: paymentDate.toDate(),         
             paymentCompleted: paymentDate.toDate(), 
             invoiceNum: invoice.invoiceNum, 
-            paymentNotes: `Payment for invoice ${invoice.invoiceNum}`
+            paymentNotes: `Payment for invoice ${invoice.invoiceNum}`,
+            deposit: invoice.deposit
          }      
       paymentRecords.push(record);
    }                              
@@ -407,6 +442,9 @@ async function  main (){
             paymentRecordNum: record.paymentNumber,
          }
       });
+      if(record.deposit){
+         makeRefund(record)
+      }
    })                     
    const paymentEndTime = dayjs(new Date);
    const totalRecords = await countAll();
