@@ -14,6 +14,6 @@
    {#if lease.leaseEnded}
       <p>Lease end date: {dayjs(lease.leaseEnded).format('M/D/YYYY')}</p>
       {:else}
-      <p><a href="/autopay?leaseId={lease.leaseId}">Sign up for autopay through Stripe</a></p>
+      <p><a href="/autopay?leaseId={lease.leaseId}">Sign up for auto-pay through Stripe</a></p>
    {/if}
 </div>

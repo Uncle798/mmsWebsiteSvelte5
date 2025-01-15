@@ -15,11 +15,7 @@
       {:else}
       <p>Current Customer</p>
    {/if}
-   {#if lease.price}
    <p>Lease price ${lease.price}</p>
-   {:else}
-   <p>Not leased currently </p>
-   {/if}
    <p>lease EID: {lease.anvilEID}</p>
-   <p>leaseID <a href='/autopay?leaseId={lease.leaseId}'>{lease.leaseId}</a></p>
+   <p>leaseID: {lease.leaseId}</p>
 </div>
