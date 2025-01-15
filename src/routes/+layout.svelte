@@ -22,6 +22,7 @@
 	let employeeLinks:Link[] = [
 		{link: '/units', label:'Units'},
 		{link: '/units/unavailable', label: 'Unavailable units'},
+		{link: '/units/recentlyMovedOut', label: 'Recently moved out Units'},
 		{link: '/discounts', label: 'Discounts'},
 		{link: '/users/customers', label: 'Customers'},
 		{link: '/invoices', label: 'Invoices'},
@@ -49,6 +50,9 @@
 	positionerPadding=""
 	transitionsPositionerIn={{ x: -480, duration: 200 }}
 	transitionsPositionerOut={{ x: -480, duration: 200 }}
+	onclick={()=>{
+		menuOpen=false;
+	}} 
 >
 {#snippet trigger()}
 	<Menu />	
