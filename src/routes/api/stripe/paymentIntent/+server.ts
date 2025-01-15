@@ -5,7 +5,6 @@ import type { RequestHandler } from '@sveltejs/kit';
 export const POST:RequestHandler = async (event) => {
    const invoiceNum = event.url.searchParams.get('invoiceNum');
    const body = await event.request.json();
-   console.log('paymentIntent event:', body)
    const { stripeId } = body;
    if(!invoiceNum || !stripeId){
       return new Response(JSON.stringify('Info not provided'), { status:400 });

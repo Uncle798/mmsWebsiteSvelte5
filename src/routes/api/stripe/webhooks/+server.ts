@@ -24,7 +24,6 @@ export const POST: RequestHandler = async (event) => {
          switch (stripeEvent?.type) {
             case 'payment_intent.created': {
                const paymentIntent = stripeEvent.data.object;
-               console.log('paymentIntent ', paymentIntent)
                const handlePaymentIntent = async (intent:typeof paymentIntent)=> {
                   let invoice:Invoice | null = null
                   const customerId = intent.metadata.customerId
@@ -57,7 +56,8 @@ export const POST: RequestHandler = async (event) => {
                         paymentType: 'STRIPE',
                         stripeId: intent.id,
                         unitNum: intent.metadata.unitNum,
-                        paymentNotes: `Payment for invoice number: ${invoice?.invoiceNum}`
+                        paymentNotes: `Payment for invoice number: ${invoice?.invoiceNum}`,
+                        deposit: invoice?.deposit,
                      }
                   })
                   await prisma.invoice.update({
@@ -94,7 +94,23 @@ export const POST: RequestHandler = async (event) => {
                return new Response(JSON.stringify('ok'), {status: 200});
 
             }
+            case 'charge.succeeded': {
+               const charge = stripeEvent.data.object;
+               console.log('stripe webhooks charge succeeded', charge)
+               return new Response(JSON.stringify('ok'), {status: 200})
+            }
+            case 'refund.failed':{
+               const refund = stripeEvent.data.object;
+               console.log('stripe webhooks refund failed', refund)
+               return new Response(JSON.stringify('ok'), {status: 200}); 
+            }
+            case 'refund.created': {
+               const refund = stripeEvent.data.object;
+               console.log('stripe webhooks refund created', refund)
+               return new Response(JSON.stringify('ok'), {status: 200}); 
+            }
             default:
+               console.log('stripe webhooks event type: ', stripeEvent?.type)
                break;
          }
       }

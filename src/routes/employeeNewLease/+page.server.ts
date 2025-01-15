@@ -1,3 +1,4 @@
+
 import { redirect } from '@sveltejs/kit';
 import { fail, message, superValidate} from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
@@ -105,7 +106,7 @@ export const actions: Actions = {
          }
       })
       if(!customer){
-         fail(404, leaseForm);
+         return fail(404, {leaseForm});
       }
       const unit = await prisma.unit.findUnique({
          where: {
@@ -113,7 +114,7 @@ export const actions: Actions = {
          }
       })
       if(!unit){
-         fail(404, leaseForm)
+         return fail(404, {leaseForm})
       }
       const currentLease = await prisma.lease.findFirst({
          where:{
@@ -131,11 +132,11 @@ export const actions: Actions = {
       const address = await prisma.address.findFirst({
          where: {
             softDelete: false,
-            userId: event.locals.user?.id
+            userId: customer.id
          }
       })
       if(!address){
-         fail(400, {message: 'unable to find address'})
+         return fail(400, {leaseForm ,message: 'unable to find address'})
       }
       const employee = await prisma.user.findUnique({
          where:{

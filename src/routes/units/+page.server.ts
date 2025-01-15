@@ -6,10 +6,10 @@ import { zod } from 'sveltekit-superforms/adapters'
 import { unitNotesFormSchema, unitPricingFormSchema, leaseEndFormSchema } from "$lib/formSchemas/schemas";
 
 import type { PageServerLoad, Actions } from "./$types";
-import type { address, Lease, Unit } from "@prisma/client";
+import type { Address, Lease, Unit } from "@prisma/client";
 import type { PartialUser } from "$lib/server/partialTypes";
 
-export type UnitCustomer = Unit & PartialUser & Lease & address;
+export type UnitCustomer = Unit & PartialUser & Lease & Address;
 
 export const load:PageServerLoad = async (event) =>{ 
    if(!event.locals.user){
@@ -70,7 +70,6 @@ export const load:PageServerLoad = async (event) =>{
 }
 
 export const actions:Actions = {
-
    unitNotesForm: async (event) => {
       const formData = await event.request.formData();
       const unitNotesForm = await superValidate(formData, zod(unitNotesFormSchema));

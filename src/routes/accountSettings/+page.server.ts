@@ -47,6 +47,7 @@ export const load:PageServerLoad = (async (event) => {
       addressPromise, 
       leasesPromise, 
       invoicesPromise, 
-      paymentsPromise };
+      paymentsPromise 
+   };
 })
 
