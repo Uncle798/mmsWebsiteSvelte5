@@ -20,8 +20,11 @@
     let error = null;
     let processing = $state(false);
     let mounted = $state(false);
-
+    let currentTime = $state(new Date());
     onMount(async () =>{
+        const interval = setInterval(() =>{
+            currentTime = new Date();
+        }, 1000)
         stripe = await loadStripe(PUBLIC_STRIPE_TEST);
         clientSecret = await createPaymentIntent();
         mounted = true;
@@ -61,6 +64,8 @@
     
 </script>
 <Header title='Pay your deposit'/>
+Current time = {currentTime}
+
 {#if !mounted}
     <div transition:fade={{duration:600}}>
         ...loading
