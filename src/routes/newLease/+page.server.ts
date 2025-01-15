@@ -142,7 +142,8 @@ export const actions:Actions = {
             invoiceAmount: unit.deposit,
             customerId: lease.customerId,
             leaseId: lease.leaseId,
-            invoiceNotes:'Deposit for unit ' + lease.unitNum.replace(/^0+/gm,''), 
+            invoiceNotes:'Deposit for unit ' + lease.unitNum.replace(/^0+/gm,''),
+            deposit: true,  
          }
       })
       let name:string = `${customer.givenName} ${customer.familyName}`

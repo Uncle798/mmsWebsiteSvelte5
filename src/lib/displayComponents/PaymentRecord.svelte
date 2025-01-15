@@ -17,5 +17,10 @@
    {:else}
       Payment not completed
    {/if}
-
+   {#if paymentRecord.deposit}
+      Deposit
+   {/if}
+   {#if paymentRecord.refunded}
+      <p></p>
+   {/if}
 </div>
