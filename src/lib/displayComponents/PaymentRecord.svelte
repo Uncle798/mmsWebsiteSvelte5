@@ -17,10 +17,15 @@
    {:else}
       Payment not completed
    {/if}
+   {#if paymentRecord.invoiceNum}
+      <p>Payment notes: <a href="/invoices/{paymentRecord.invoiceNum}">{paymentRecord.paymentNotes}</a></p>
+      {:else}
+      <p>Payment notes: {paymentRecord.paymentNotes}</p>
+   {/if}
    {#if paymentRecord.deposit}
       Deposit
    {/if}
    {#if paymentRecord.refunded}
-      <p></p>
+      <p>Refunded</p>
    {/if}
 </div>
