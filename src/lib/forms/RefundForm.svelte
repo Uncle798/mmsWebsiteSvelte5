@@ -7,6 +7,7 @@
    import { Tipex } from '@friendofsvelte/tipex'
 	import NumberInput from "$lib/formComponents/NumberInput.svelte";
 	import { onMount } from "svelte";
+	import TextArea from "$lib/formComponents/TextArea.svelte";
    interface Props {
       data: SuperValidated<Infer<RefundFormSchema>>;
       refundFormModalOpen: boolean;
@@ -38,8 +39,12 @@
 <FormMessage message={$message} />
 
 <form action="/forms/refundForm" method="post" use:enhance>
-   <Tipex body={notes} floating controls
-      class='input'
+   <TextArea 
+      bind:value={$form.notes}
+      errors={$errors.notes}
+      constraints={$constraints.notes}
+      label='Refund Notes'
+      name='notes'
    />
    <NumberInput
       bind:value={$form.amount}
@@ -48,7 +53,7 @@
       label='Refund amount'
       name='amount'
    />
-   <select name="refundType" id="" bind:value={$form.refundType}>
+   <select name="refundType" bind:value={$form.refundType}>
       {#each ['Stripe', 'Cash', 'Check'] as type}
          <option value={type}>{type}</option>
       {/each}
