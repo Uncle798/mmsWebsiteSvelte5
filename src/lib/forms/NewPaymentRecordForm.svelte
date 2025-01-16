@@ -73,7 +73,6 @@ interface Props {
 
 <Modal
    bind:open={invoiceFormOpen}
-   triggerBase="btn preset-tonal"
    contentBase="card bg-surface-400-600 p-4 space-y-4 shadow-xl max-w-screen-sm"
    backdropClasses="backdrop-blur-sm"
 >
