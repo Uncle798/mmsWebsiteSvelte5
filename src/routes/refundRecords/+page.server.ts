@@ -7,6 +7,12 @@ export const load = (async (event) => {
       redirect(302, '/login?toast=employee')
    }
    const refunds = await prisma.refundRecord.findMany({
+      orderBy: {
+         refundCompleted: {
+            sort: 'desc',
+            nulls: 'first'
+         }
+      }
    })
    return { refunds };
 }) satisfies PageServerLoad;
