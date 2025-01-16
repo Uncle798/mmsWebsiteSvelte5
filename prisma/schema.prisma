@@ -163,6 +163,7 @@ model RefundRecord {
   employeeId       String?
   refundNotes      String?
   refundCreated    DateTime        @default(now())
+  refundCompleted  DateTime?
   paymentRecordNum Int
   refundType       PaymentType
   paymentRecord    PaymentRecord[]
