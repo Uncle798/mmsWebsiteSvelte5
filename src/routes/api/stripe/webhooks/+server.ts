@@ -109,6 +109,19 @@ export const POST: RequestHandler = async (event) => {
                console.log('stripe webhooks refund created', refund)
                return new Response(JSON.stringify('ok'), {status: 200}); 
             }
+            case 'refund.updated': {
+               const refund = stripeEvent.data.object;
+               prisma.refundRecord.update({
+                  where: {
+                     stripeId: refund.id
+                  },
+                  data: {
+                     refundAmount: refund.amount,
+                     
+                  }
+               })
+               return new Response(JSON.stringify('ok'), {status: 200}); 
+            }
             default:
                console.log('stripe webhooks event type: ', stripeEvent?.type)
                break;
