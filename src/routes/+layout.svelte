@@ -30,6 +30,8 @@
 		{link: '/paymentRecords', label: 'Payment Records'},
 		{link: '/paymentRecords/incomplete', label:'Incomplete Payment Records'},
 		{link: '/paymentRecords/new', label:'New Payment Record'},
+		{link: '/refundRecords', label:'Refund Records'},
+		{link: '/refundRecords/new', label:'New Refund'},
 		{link: '/employeeNewLease', label:'Employee new lease'},
 		{link: '/employeeNewCustomer', label:'Employee new customer'},
 	]
