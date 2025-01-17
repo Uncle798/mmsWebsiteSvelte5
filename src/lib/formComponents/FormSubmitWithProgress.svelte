@@ -7,12 +7,12 @@
    }
    let { delayed = $bindable(), timeout=$bindable(), buttonText=$bindable('Submit') }:Props = $props();
 </script>
-<div class="flex">
+<div class="flex mt-2">
    <button class="btn">{buttonText}</button>
    {#if delayed && !timeout}
-   <ProgressRing value={null} size="size-8" strokeWidth="6px" meterStroke="stroke-secondary-600-400" trackStroke="stroke-secondary-50-950" />
+      <ProgressRing value={null} size="size-8" strokeWidth="6px" meterStroke="stroke-secondary-600-400" trackStroke="stroke-secondary-50-950" />
    {/if}
    {#if timeout}
-   <Progress value={null} width="size-8" classes='mt-1'/>
+      <Progress value={null} width="size-8" classes='mt-1'/>
    {/if}
 </div>
