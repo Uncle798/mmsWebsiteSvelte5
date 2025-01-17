@@ -53,7 +53,7 @@
       label='Refund amount'
       name='amount'
    />
-   <select name="refundType" bind:value={$form.refundType}>
+   <select name="refundType" bind:value={$form.refundType} class="select">
       {#each ['Stripe', 'Cash', 'Check'] as type}
          <option value={type}>{type}</option>
       {/each}
