@@ -4,7 +4,7 @@
    import type { Lease } from "@prisma/client";
    import type { NewInvoiceFormSchema, NewPaymentRecordFormSchema} from "$lib/formSchemas/schemas";
    import { superForm } from "sveltekit-superforms";
-   import { Combobox, Modal } from "@skeletonlabs/skeleton-svelte";
+   import { Combobox, Modal, Switch } from "@skeletonlabs/skeleton-svelte";
    import FormMessage from "$lib/formComponents/FormMessage.svelte";
    import FormSubmitWithProgress from "$lib/formComponents/FormSubmitWithProgress.svelte";
    import NumberInput from "$lib/formComponents/NumberInput.svelte";
@@ -13,7 +13,7 @@
 	import NewInvoiceForm from "./NewInvoiceForm.svelte";
 	import { onMount } from "svelte";
 
-interface Props {
+   interface Props {
       data: SuperValidated<Infer<NewPaymentRecordFormSchema>>;
       invoiceForm: SuperValidated<Infer<NewInvoiceFormSchema>>;
       employeeId: string | undefined;
@@ -66,6 +66,7 @@ interface Props {
                invoiceSelected = true
                $form.paymentAmount=invoice.invoiceAmount;
                $form.paymentNotes=`Payment for invoice number: ${invoice.invoiceNum}`
+               $form.deposit=invoice.deposit;
             }
       }
    })
@@ -97,7 +98,7 @@ interface Props {
          data={customerComboBoxData}
          bind:value={selectedCustomer}
          label='Select Customer'
-         placeholder='Select...'
+         placeholder='Select customer...'
          openOnClick={true}
       />
    </div>
@@ -148,6 +149,11 @@ interface Props {
          label='Payment Notes'
          name='paymentNotes'
       />
+      <div class="card p-4">
+         <label for="deposit">Deposit
+            <Switch bind:checked={$form.deposit} name='deposit'/>
+         </label>
+      </div>
       <TextInput
          bind:value={$form.payee}
          errors={$errors.payee}

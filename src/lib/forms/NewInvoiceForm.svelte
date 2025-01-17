@@ -9,8 +9,7 @@
 	import type { Lease } from "@prisma/client";
 	import type { SuperValidated, Infer } from "sveltekit-superforms";
    import { superForm } from "sveltekit-superforms";
-   import { Combobox, Modal } from "@skeletonlabs/skeleton-svelte";
-	import RegisterForm from "./RegisterForm.svelte";
+   import { Combobox, Modal, Switch } from "@skeletonlabs/skeleton-svelte";
 	import dayjs from "dayjs";
 
    interface Props {
@@ -68,6 +67,7 @@
       label='Select Customer'
       placeholder='Select...'
       openOnClick={true}
+      classes=''
    />
    {#if leaseComboBoxData.length > 0 }
       <Combobox
@@ -102,6 +102,11 @@
       label='Invoice amount: $'
       name='invoiceAmount'
    />
+   <div class="card m-4">
+      <label for="depost">Deposit
+         <Switch name='deposit' bind:checked={$form.deposit} label='Deposit'/>
+      </label>
+   </div>
    <input type="hidden" name='employeeId' value={employeeId}/>
    <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} buttonText='Create Invoice'/>
    {/if}
