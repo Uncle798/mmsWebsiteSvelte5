@@ -17,4 +17,7 @@
       {:else}
       <p><a href="/paymentRecords/new?defaultCustomer={invoice.customerId}&defaultInvoice={invoice.invoiceNum}" class="btn">Make a payment record for this lease</a></p>
    {/if}
+   {#if invoice.deposit}
+      Deposit
+   {/if}
 </div>
