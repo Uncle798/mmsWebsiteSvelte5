@@ -1,5 +1,8 @@
 <script lang="ts">
+	import Invoice from '$lib/displayComponents/Invoice.svelte';
    import PaymentRecord from '$lib/displayComponents/PaymentRecord.svelte';
+	import RefundRecordDisplay from '$lib/displayComponents/RefundRecordDisplay.svelte';
+	import User from '$lib/displayComponents/User.svelte';
 	import Header from '$lib/Header.svelte';
    import type { PageData } from './$types';
 
@@ -8,5 +11,17 @@
 
 {#if data.paymentRecord }
    <Header title='Payment Record Num: {data.paymentRecord}' />
-   <PaymentRecord paymentRecord={data.paymentRecord} />
+   <div class=flex>
+      <PaymentRecord paymentRecord={data.paymentRecord} />
+
+      {#if data.customer}
+         <User user={data.customer} />
+      {/if}
+      {#if data.invoice}
+         <Invoice invoice={data.invoice} />
+      {/if}
+      {#if data.refundRecord}
+         <RefundRecordDisplay refundRecord={data.refundRecord} />
+      {/if}
+   </div>
 {/if}
