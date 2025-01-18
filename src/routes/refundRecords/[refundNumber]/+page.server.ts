@@ -12,8 +12,18 @@ export const load = (async (event) => {
          refundNumber: parseInt(refundRecordNum, 10)
       },
       include: {
-         customer: true
+         customer: true,
       },
    })
-   return { refundRecord, };
+   const paymentRecord = await prisma.paymentRecord.findUnique({
+      where: {
+         paymentNumber: refundRecord?.paymentRecordNum
+      }
+   })
+   const invoice = await prisma.invoice.findUnique({
+      where: {
+         invoiceNum: paymentRecord?.invoiceNum ? paymentRecord.invoiceNum : undefined
+      }
+   })
+   return { refundRecord, paymentRecord, invoice };
 }) satisfies PageServerLoad;
