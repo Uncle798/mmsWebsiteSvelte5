@@ -12,6 +12,9 @@ export const load = (async (event) => {
             sort: 'desc',
             nulls: 'first'
          }
+      },
+      include: {
+         customer: true,
       }
    })
    return { refunds };
