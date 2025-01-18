@@ -33,7 +33,8 @@ export const actions:Actions = {
                invoiceNum: data.invoiceNum,
                paymentCompleted: new Date(),
                paymentType: data.paymentType,
-               paymentNotes: data.paymentNotes
+               paymentNotes: data.paymentNotes,
+               deposit: newPaymentRecordForm.data.deposit
             }  
          })
          await prisma.invoice.update({

@@ -176,6 +176,7 @@ export const newInvoiceFormSchema = z.object({
    employeeId: z.string().min(23).max(30),
    invoiceAmount: z.number().positive(),
    leaseId: z.string().min(23).max(30).nullable(),
+   deposit: z.boolean()
 })
 export type NewInvoiceFormSchema = typeof newInvoiceFormSchema;
 
@@ -193,7 +194,8 @@ export const newPaymentRecordFormSchema = z.object({
    paymentCompleted: z.boolean(),
    paymentNotes: z.string().nullable(),
    paymentType: z.enum(['CASH', 'CHECK', 'STRIPE']),
-   cashOrCheck: z.boolean()
+   cashOrCheck: z.boolean(),
+   deposit: z.boolean() 
 })
 export type NewPaymentRecordFormSchema = typeof newPaymentRecordFormSchema;
 
