@@ -17,6 +17,7 @@
    {:else}
       Payment not completed
    {/if}
+   <p>Payment type: {paymentRecord.paymentType.replace(/\w\S*/g, text => text.charAt(0).toUpperCase() + text.substring(1).toLowerCase())}</p>
    {#if paymentRecord.invoiceNum}
       <p>Payment notes: <a href="/invoices/{paymentRecord.invoiceNum}">{paymentRecord.paymentNotes}</a></p>
       {:else}
