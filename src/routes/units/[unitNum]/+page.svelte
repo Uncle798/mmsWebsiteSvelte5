@@ -8,10 +8,21 @@
 	import UnitNotesForm from '$lib/forms/UnitNotesForm.svelte';
 	import UnitPricingForm from '$lib/forms/UnitPricingForm.svelte';
 	import LeaseEndForm from '$lib/forms/LeaseEndForm.svelte';
-
+	import { Modal } from '@skeletonlabs/skeleton-svelte';
+    let modalOpen = $state(false);
+    let currentLeaseId = $state('')
     let { data }: { data: PageData } = $props();
 </script>
 
+<Modal
+    bind:open={modalOpen}
+    contentBase="card bg-surface-400-600 p-4 space-y-4 shadow-xl max-w-screen-sm"
+    backdropClasses="backdrop-blur-sm"
+>
+{#snippet content()}
+    <LeaseEndForm data={data.leaseEndForm} leaseId={currentLeaseId} />
+{/snippet}
+</Modal>
 {#if !data.unit}
 <Header title='loading...' />
 ...loading unit
@@ -21,17 +32,18 @@
     <div transition:fade={{duration:600}}>
         <UnitEmployee unit={data.unit}/>
         <UnitNotesForm data={data.unitNotesForm} unit={data.unit} />
-        <UnitPricingForm data={data.unitPricingForm} size={data.unit.size} oldPrice={data.unit.advertisedPrice} />
+        <UnitPricingForm data={data.unitPricingForm} size={data.unit.size} oldPrice={data.unit.advertisedPrice} unitPricingFormModalOpen={modalOpen} />
         {#each lease as l}
             {@const {customer} = l}
                 <div class="flex">
                     {#if !l.leaseEnded}                        
                         <LeaseEmployee lease={l} />
-                        <LeaseEndForm data={data.leaseEndForm} leaseId={l.leaseId} />
+                        <button class="btn" onclick={()=>{modalOpen=true; currentLeaseId=l.leaseId}}>End lease</button>
+                        <User user={customer} />
+                    {:else}
+                        <LeaseEmployee lease={l} />
                         <User user={customer} />
                     {/if}
-                    <LeaseEmployee lease={l} />
-                    <User user={customer} />
                 </div>
         {/each}
     </div>
