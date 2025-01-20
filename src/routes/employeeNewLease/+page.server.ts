@@ -171,6 +171,7 @@ export const actions: Actions = {
             customerId: lease.customerId,
             leaseId: lease.leaseId,
             invoiceNotes:'Deposit for unit ' + lease.unitNum.replace(/^0+/gm,''), 
+            deposit: true
          }
       })
       let name:string = `${customer!.givenName} ${customer!.familyName}`
