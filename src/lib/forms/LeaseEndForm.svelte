@@ -8,7 +8,7 @@
       data: SuperValidated<Infer<LeaseEndFormSchema>>;
       leaseId: string;
       customer?: boolean;
-      leaseEndModalOpen: boolean
+      leaseEndModalOpen?: boolean
    }
 
    let {data, leaseEndModalOpen=$bindable(false), leaseId, customer}:Props = $props()
