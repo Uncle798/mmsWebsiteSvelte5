@@ -64,10 +64,11 @@ export const actions: Actions = {
                     refundNumber: refundRecord.refundNumber
                 }
             })
+            redirect(302, `/refundRecords/${refundRecord.refundNumber}`)
         }
         if(paymentRecord.paymentType === 'CASH' || paymentRecord.paymentType === 'CHECK'){
             
-            await prisma.refundRecord.create({
+            const refundRecord = await prisma.refundRecord.create({
                 data: {
                     customerId: paymentRecord.customerId,
                     paymentRecordNum: paymentRecord.paymentNumber,
@@ -77,6 +78,7 @@ export const actions: Actions = {
                     refundNotes: refundForm.data.notes
                 }
             })
+            redirect(302, `/refundRecord/${refundRecord.refundNumber}`)
         }
     }
 };

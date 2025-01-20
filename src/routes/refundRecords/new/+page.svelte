@@ -8,6 +8,7 @@
 	import FormSubmitWithProgress from '$lib/formComponents/FormSubmitWithProgress.svelte';
 	import PaymentRecord from '$lib/displayComponents/PaymentRecord.svelte';
 	import FormMessage from '$lib/formComponents/FormMessage.svelte';
+	import { goto } from '$app/navigation';
     let { data }: { data: PageData } = $props();
     let selectedPayment = $state(['']);
     let paymentNumber = $state(0)
@@ -48,7 +49,8 @@
             placeholder="Select deposit to refund"
             openOnClick={false}
             onValueChange={(details) =>{
-                paymentNumber = parseInt(details.value[0], 10)
+                paymentNumber = parseInt(details.value[0], 10);
+                goto(`/refundRecords/new?paymentNum=${paymentNumber}`)
                 console.log(paymentNumber);
             }}
             classes='m-4'

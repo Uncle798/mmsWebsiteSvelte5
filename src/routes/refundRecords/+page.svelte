@@ -25,7 +25,7 @@
 <footer class="flex justify-between">
    <select name="size" id="size" class="select" bind:value={size}>
       {#each [5,10,25,50] as v}
-      <option value={v}>Show {v} refund records per page</option>
+         <option value={v}>Show {v} refund records per page</option>
       {/each}
       <option value={refunds.length}>Show all {refunds.length} Refund records</option>
    </select>
