@@ -356,7 +356,7 @@ async function  main (){
          leaseEnd = leaseStart.add(lengthOfLease, 'months');
          customer = users.pop();
          contact = dbContacts.find((c) => c.userId === customer?.id);
-         leaseStart = dayjs(earliestStarting);
+         leaseStart = dayjs(leaseEnd.add(Math.floor(Math.random()*3)));
       }
    }
    for (const lease of leases){
