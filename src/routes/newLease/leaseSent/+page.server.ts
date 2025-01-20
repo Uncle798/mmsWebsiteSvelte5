@@ -46,6 +46,9 @@ export const load:PageServerLoad = (async (event) => {
             id: invoice!.customerId!,
          }
       })
+      if(lease?.anvilEID){
+         return { customer, }
+      }
       const unit = await prisma.unit.findUnique({
          where:{
             num: lease?.unitNum,
@@ -59,9 +62,6 @@ export const load:PageServerLoad = (async (event) => {
             ]
          }
       })
-      if(lease?.anvilEID){
-         return {}
-      }
       let variables ={};
       if(customer?.organizationName){
          variables = getOrganizationalPacketVariables( customer!, lease!, unit!, employee! );
@@ -89,7 +89,7 @@ export const load:PageServerLoad = (async (event) => {
             }
          })
          await qStash.notify({eventId:lease!.leaseId})
-         return {packetDetails};
+         return { packetDetails, customer };
       }
    }
  });

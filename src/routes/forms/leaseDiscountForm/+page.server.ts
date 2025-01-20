@@ -11,6 +11,7 @@ export const actions: Actions = {
       if(!event.locals.user){
          redirect(302, '/login?toast=unauthorized')
       }
+      const userId = event.url.searchParams.get('userId')
       const formData = await event.request.formData();
       const leaseDiscountForm = await superValidate(formData, zod(leaseDiscountFormSchema));
       const { success, reset } = await ratelimit.customerForm.limit(event.locals.user.id)
@@ -27,6 +28,9 @@ export const actions: Actions = {
             code: leaseDiscountForm.data.code!
          }
       })
+      if(discount && event.locals.user.employee){
+         redirect(302, `/employeeNewLease?discountId=${discount.discountId}&unitNum=${unitNum}&userId=${userId}`)
+      }
       if(discount){
          redirect(302, `/newLease?discountId=${discount?.discountId}&unitNum=${unitNum}`);
       }

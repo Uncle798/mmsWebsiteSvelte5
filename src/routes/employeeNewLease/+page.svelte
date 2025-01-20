@@ -109,7 +109,7 @@
   </form>
   {#if !data.discount}
     <div transition:fade={{duration:600}}>
-        <LeaseDiscountForm data={data.leaseDiscountForm} unitNum={data.unit?.num} />
+        <LeaseDiscountForm data={data.leaseDiscountForm} unitNum={data.unit?.num} customerId={data.customer.id}/>
     </div>
   {/if}
   {/if}
