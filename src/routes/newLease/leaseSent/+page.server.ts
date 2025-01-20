@@ -24,7 +24,8 @@ export const load:PageServerLoad = (async (event) => {
             paymentAmount: invoice.invoiceAmount,
             invoiceNum: invoice.invoiceNum,
             customerId: invoice.customerId || '',
-            paymentType: 'STRIPE'
+            paymentType: 'STRIPE',
+            paymentNotes: `Payment for invoice number: ${invoice.invoiceNum},\n${invoice.invoiceNotes}`
          }
       })
       await prisma.invoice.update({

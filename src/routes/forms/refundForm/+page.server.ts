@@ -44,7 +44,7 @@ export const actions: Actions = {
                 payment_intent: paymentRecord.stripeId!,
                 amount: refundForm.data.amount,
             })
-            await prisma.refundRecord.create({
+            const refundRecord = await prisma.refundRecord.create({
                 data: {
                     stripeId: refund.id,
                     refundAmount: refund.amount,
@@ -60,11 +60,13 @@ export const actions: Actions = {
                     paymentNumber: paymentRecord.paymentNumber
                 },
                 data: {
-                    refunded: true
+                    refunded: true,
+                    refundNumber: refundRecord.refundNumber
                 }
             })
         }
         if(paymentRecord.paymentType === 'CASH' || paymentRecord.paymentType === 'CHECK'){
+            
             await prisma.refundRecord.create({
                 data: {
                     customerId: paymentRecord.customerId,

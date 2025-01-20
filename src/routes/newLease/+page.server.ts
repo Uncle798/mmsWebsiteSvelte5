@@ -137,6 +137,14 @@ export const actions:Actions = {
             leaseEffectiveDate: new Date(),
          }
       })
+      await prisma.unit.update({
+         where: {
+            num: unit.num
+         },
+         data: {
+            leasedPrice: price
+         }
+      })
       const invoice = await prisma.invoice.create({
          data:{
             invoiceAmount: unit.deposit,

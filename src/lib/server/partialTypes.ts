@@ -88,3 +88,4 @@ export const partialDiscount = Prisma.validator<Prisma.DiscountCodeDefaultArgs>(
    }
 })
 export type PartialDiscount = Prisma.DiscountCodeGetPayload<typeof partialDiscount>
+

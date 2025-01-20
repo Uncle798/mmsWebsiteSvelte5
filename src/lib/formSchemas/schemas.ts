@@ -10,8 +10,8 @@ export type EmploymentFormSchema = typeof employmentFormSchema;
 export const unitPricingFormSchema = z.object({
    size: z.string().min(5).max(7).trim(),
    price: z.number().int().positive(),
-   changeDeposit: z.boolean().nullable(),
-   lowerPrice: z.boolean().nullable(),
+   changeDeposit: z.boolean(),
+   lowerPrice: z.boolean(),
 });
 export type UnitPricingFormSchema = typeof unitPricingFormSchema;
 
@@ -208,6 +208,6 @@ export const refundFormSchema = z.object({
    paymentRecordNumber: z.number().positive(),
    amount: z.number().positive(),
    notes: z.string().nullable(),
-   refundType: z.enum(['Stripe', 'Cash', 'Check']), 
+   refundType: z.enum(['CASH', 'CHECK', 'STRIPE']), 
 })
 export type RefundFormSchema = typeof refundFormSchema;

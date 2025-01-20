@@ -1,9 +1,13 @@
 <script lang="ts">
-    import PaymentRecord from '$lib/displayComponents/PaymentRecord.svelte';
 	import { Combobox } from '@skeletonlabs/skeleton-svelte';
     import type { PageData } from './$types';
 	import NewRefundForm from '$lib/forms/NewRefundForm.svelte';
     import { superForm } from 'sveltekit-superforms';
+	import { onMount } from 'svelte';
+	import TextInput from '$lib/formComponents/TextInput.svelte';
+	import FormSubmitWithProgress from '$lib/formComponents/FormSubmitWithProgress.svelte';
+	import PaymentRecord from '$lib/displayComponents/PaymentRecord.svelte';
+	import FormMessage from '$lib/formComponents/FormMessage.svelte';
     let { data }: { data: PageData } = $props();
     let selectedPayment = $state(['']);
     let paymentNumber = $state(0)
@@ -17,25 +21,53 @@
         const value = paymentRecord.paymentNumber.toString();
         paymentRecordComboboxData.push({label, value})
     })
+    onMount(()=>{
+        console.log(paymentRecordComboboxData)
+        if(data.paymentRecord){
+            paymentNumber = data.paymentRecord.paymentNumber
+        }
+    })
     let { form, errors, message, constraints, enhance, delayed, timeout} = superForm(data.searchForm, {
-      onSubmit({formData}) {
+        onSubmit({formData}) {
 
-      },
-   });
+        },
+    });
 </script>
 
-{#if data.deposits}    
-<form method="POST" use:enhance>
-    <Combobox 
-        data={paymentRecordComboboxData}
-        bind:value={selectedPayment}
-        placeholder="Select deposit to refund"
-        openOnClick={true}
-        onValueChange={(details) =>{
-            paymentNumber = parseInt(details.value[0], 10)
-        }}
-    />
-</form>
+<FormMessage message={$message} />
+
+{#if data.paymentRecord}
+    <PaymentRecord paymentRecord={data.paymentRecord} />
 {/if}
 
-<NewRefundForm data={data.refundForm} paymentRecordNumber={paymentNumber}/>
+{#if data.deposits}  
+    {#if  data.deposits.length > 0 }        
+        <Combobox 
+            data={paymentRecordComboboxData}
+            bind:value={selectedPayment}
+            placeholder="Select deposit to refund"
+            openOnClick={false}
+            onValueChange={(details) =>{
+                paymentNumber = parseInt(details.value[0], 10)
+                console.log(paymentNumber);
+            }}
+            classes='m-4'
+        />
+    {/if}
+{/if}
+{#if !data.paymentRecord}    
+<form action="/refundRecords/new" method="POST" use:enhance>
+    <TextInput
+        bind:value={$form.search}
+        errors={$errors.search}
+        constraints={$constraints.search}
+        placeholder='Enter a payment record number...'
+        name='search'
+        label='Payment Record number search'
+    />
+    <FormSubmitWithProgress delayed={$delayed} timeout={$timeout}/>
+</form>
+{/if}
+{#if data.paymentRecord}
+<NewRefundForm data={data.refundForm} paymentRecord={data.paymentRecord}/>
+{/if}

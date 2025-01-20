@@ -14,7 +14,7 @@ export const load:PageServerLoad = (async (event) => {
       }, 
       where: {
          unavailable: false
-      }
+      },
    })
    const availableUnits:Unit[] = [];
    units.forEach((unit) => {

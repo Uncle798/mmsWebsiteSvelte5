@@ -3,7 +3,7 @@
 	import Header from '$lib/Header.svelte';
     import { Modal } from '@skeletonlabs/skeleton-svelte'
     import type { PageData } from './$types';
-	import RefundForm from '$lib/forms/RefundForm.svelte';
+	import RefundForm from '$lib/forms/NewRefundForm.svelte';
     import { Tipex } from '@friendofsvelte/tipex';
     interface Props {
         data: PageData;

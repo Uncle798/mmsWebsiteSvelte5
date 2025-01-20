@@ -2,6 +2,9 @@
 import { fail, redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { prisma } from '$lib/server/prisma';
+import { superValidate } from 'sveltekit-superforms';
+import { zod } from 'sveltekit-superforms/adapters';
+import { leaseEndFormSchema, unitNotesFormSchema, unitPricingFormSchema } from '$lib/formSchemas/schemas';
 
 
 export const load = (async (event) => {
@@ -29,5 +32,8 @@ export const load = (async (event) => {
          }
       }
    });
-   return { unit, };
+   const unitNotesForm = await superValidate(zod(unitNotesFormSchema));
+   const unitPricingForm = await superValidate(zod(unitPricingFormSchema));
+   const leaseEndForm = await superValidate(zod(leaseEndFormSchema));
+   return { unit, unitNotesForm, unitPricingForm, leaseEndForm };
 }) satisfies PageServerLoad;

@@ -1,7 +1,7 @@
 import type { PageServerLoad, Actions } from './$types';
 import { redirect } from '@sveltejs/kit';
 import { prisma } from '$lib/server/prisma'
-import { fail, message, superValidate } from 'sveltekit-superforms';
+import { message, superValidate } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
 import { refundFormSchema } from '$lib/formSchemas/schemas';
 import { z } from 'zod';
@@ -18,16 +18,26 @@ export const load = (async (event) => {
    const refundForm = await superValidate(zod(refundFormSchema));
    const searchForm = await superValidate(zod(formSchema));
    const paymentNum = event.url.searchParams.get('paymentNum');
+   console.log(paymentNum)
    if(paymentNum){
       const paymentRecord = await prisma.paymentRecord.findUnique({
          where:{
             paymentNumber: parseInt(paymentNum, 10)
          }
       })
-      if(!paymentNum){
-         return fail(404, searchForm);
+      if(!paymentRecord){
+         const deposits = await prisma.paymentRecord.findMany({
+            where: {
+               AND:[
+                  { refunded: false },
+                  { deposit: true }
+               ]
+            }
+         })
+         console.log(deposits.length);
+         return { searchForm, refundForm, deposits};
       }
-      return { paymentRecord, refundForm, searchForm}
+      return { paymentRecord, refundForm, searchForm }
    }
    const deposits = await prisma.paymentRecord.findMany({
       where: {
@@ -44,7 +54,7 @@ export const load = (async (event) => {
          paymentCreated: 'desc'
       }
    });
-
+   console.log(deposits)
    return { deposits, refundForm, searchForm };
 }) satisfies PageServerLoad;
 
@@ -57,16 +67,16 @@ export const actions: Actions = {
       }
       const formData = await event.request.formData();
       console.log('refundRecords/new formData: ', formData);
-      const form = await superValidate(formData, zod(formSchema));
+      const searchForm = await superValidate(formData, zod(formSchema));
       const { success, reset } = await ratelimit.employeeForm.limit(event.locals.user.id);
       if(!success){
          const timeRemaining = Math.floor((reset - Date.now()) / 1000);
-         return message(form, `Please wait ${timeRemaining} seconds before trying again`);
+         return message(searchForm, `Please wait ${timeRemaining} seconds before trying again`);
       }
-      if(!form.valid){
-         return message(form, 'Unable to process');
+      if(!searchForm.valid){
+         return message(searchForm, 'Unable to process');
       }
-      const paymentNum = form.data.search
+      const paymentNum = searchForm.data.search
       redirect(302,`/refundRecords/new?paymentNum=${paymentNum}`)
    }
 };

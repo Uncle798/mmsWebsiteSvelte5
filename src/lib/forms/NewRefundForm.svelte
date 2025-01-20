@@ -4,27 +4,22 @@
    import { superForm } from "sveltekit-superforms";
 	import FormMessage from "$lib/formComponents/FormMessage.svelte";
 	import FormSubmitWithProgress from "$lib/formComponents/FormSubmitWithProgress.svelte";
-   import { Tipex } from '@friendofsvelte/tipex'
 	import NumberInput from "$lib/formComponents/NumberInput.svelte";
 	import { onMount } from "svelte";
 	import TextArea from "$lib/formComponents/TextArea.svelte";
+	import type { PaymentRecord } from "@prisma/client";
    interface Props {
       data: SuperValidated<Infer<RefundFormSchema>>;
-      refundFormModalOpen: boolean;
-      notes: string;
-      amount: number;
-      paymentRecordNumber: number;
+      refundFormModalOpen?: boolean;
+      paymentRecord:PaymentRecord;
    }
    let {
       data,
       refundFormModalOpen = $bindable(false),
-      notes = $bindable('Note'),
-      amount = $bindable(0),
-      paymentRecordNumber = $bindable(0)
-   } = $props();
+      paymentRecord
+   }:Props = $props();
    let { form, errors, message, constraints, enhance, delayed, timeout} = superForm(data, {
       onSubmit(input) {
-         input.formData.set('notes', notes)
       },
       
       onUpdate(){
@@ -32,7 +27,8 @@
       }
    });
    onMount(()=>{
-      $form.amount = amount;
+      $form.amount = paymentRecord.paymentAmount;
+      $form.notes = `Refund of payment record number: ${paymentRecord.paymentNumber}`
    })
 </script>
 
@@ -53,11 +49,11 @@
       label='Refund amount'
       name='amount'
    />
-   <select name="refundType" bind:value={$form.refundType} class="select">
+   <select name="refundType" bind:value={$form.refundType} class="select m-4">
       {#each ['Stripe', 'Cash', 'Check'] as type}
-         <option value={type}>{type}</option>
+         <option value={type.toUpperCase()} selected={type.toUpperCase() === paymentRecord.paymentType}>{type}</option>
       {/each}
    </select>
-   <input type="hidden" name="paymentRecordNumber" value={paymentRecordNumber}>
+   <input type="hidden" name="paymentRecordNumber" value={paymentRecord.paymentNumber}>
    <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} buttonText="Submit Refund"/>
 </form>

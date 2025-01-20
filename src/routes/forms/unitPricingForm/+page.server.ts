@@ -30,11 +30,11 @@ export const actions: Actions = {
       if(!unit){
          return message(unitPricingForm, 'Size of unit not found')
       }
-      if(unitPricingForm.data.price < unit?.advertisedPrice && unitPricingForm.data.lowerPrice === null){
+      if(unitPricingForm.data.price < unit?.advertisedPrice && unitPricingForm.data.lowerPrice === false){
          return message(unitPricingForm, `Please select Lower Price to lower the price of all\
                ${unitPricingForm.data.size.replace(/^0+/gm,'').replace(/x0/gm,'x')} units.` )
       }
-      if(unitPricingForm.data.price === unit?.advertisedPrice && unitPricingForm.data.lowerPrice === null){
+      if(unitPricingForm.data.price === unit?.advertisedPrice && unitPricingForm.data.lowerPrice === false){
          return message(unitPricingForm, 
             `No change in price for ${unitPricingForm.data.size.replace(/^0+/gm,'').replace(/x0/gm,'x')} units.` )
       }
