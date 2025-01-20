@@ -48,6 +48,7 @@ export const POST: RequestHandler = async (event) => {
                         }
                      })
                   }
+                  console.log('stripe webhooks invoice: ', invoice?.invoiceNum)
                   const paymentRecord = await prisma.paymentRecord.create({
                      data: {
                         invoiceNum: invoice!.invoiceNum,
@@ -80,7 +81,7 @@ export const POST: RequestHandler = async (event) => {
             case 'payment_intent.succeeded':{
                const paymentIntent = stripeEvent.data.object;
                const handlePaymentIntent = async (intent:typeof paymentIntent)=> {
-                  await prisma.paymentRecord.update({
+                  const paymentRecord = await prisma.paymentRecord.update({
                      where: {
                         stripeId: intent.id,
                      },
@@ -89,25 +90,27 @@ export const POST: RequestHandler = async (event) => {
                         paymentAmount: intent.amount_received / 100,
                      }
                   })
+                  console.log('payment_intent.succeeded ' + paymentRecord.paymentCompleted)
                }
                handlePaymentIntent(paymentIntent);
                return new Response(JSON.stringify('ok'), {status: 200});
 
             }
             case 'charge.succeeded': {
-               const charge = stripeEvent.data.object;
-               console.log('stripe webhooks charge succeeded', charge)
-               const handleCharge = async (c: typeof charge) =>{
-                  await prisma.paymentRecord.update({
-                     where: {
-                        stripeId: c.payment_intent?.toString()
-                     },
-                     data:{
-                        paymentCompleted: new Date(),
-                     }
-                  })
+               // const charge = stripeEvent.data.object;
+               // console.log('stripe webhooks charge succeeded', charge)
+               // const handleCharge = async (c: typeof charge) =>{
+               //    await prisma.paymentRecord.update({
+               //       where: {
+               //          stripeId: c.payment_intent?.toString()
+               //       },
+               //       data:{
+               //          paymentCompleted: new Date(),
+               //       }
+               //    })
 
-               }
+               // }
+               // handleCharge(charge);
                return new Response(JSON.stringify('ok'), {status: 200})
             }
             case 'refund.failed':{
