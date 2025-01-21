@@ -165,6 +165,12 @@ export const actions: Actions = {
             leaseEffectiveDate: new Date(),
          }
       })
+      const workflow = await qStash.trigger({
+         url: `${PUBLIC_URL}/api/upstash/workflow`,
+         body:  {leaseId:lease.leaseId},
+         workflowRunId: lease.leaseId
+      })
+      console.log('employeeNewLease workflow: ', workflow)
       const invoice = await prisma.invoice.create({
          data:{
             invoiceAmount: unit!.deposit,
@@ -174,6 +180,10 @@ export const actions: Actions = {
             deposit: true
          }
       })
+      console.log('employeeNewLease formData: ', leaseForm.data)
+      if(leaseForm.data.paymentType === 'CASH' || leaseForm.data.paymentType === 'CHECK') {
+         redirect(302, `/invoices/${invoice.invoiceNum}?leaseId=${lease.leaseId}`);
+      }
       let name:string = `${customer!.givenName} ${customer!.familyName}`
       if(customer!.organizationName){
          name=customer!.organizationName;
@@ -229,12 +239,7 @@ export const actions: Actions = {
             stripeId
          }
       })
-      const workflow = await qStash.trigger({
-         url: `${PUBLIC_URL}/api/upstash/workflow`,
-         body:  {leaseId:lease.leaseId},
-         workflowRunId: lease.leaseId
-      })
-      console.log('employeeNewLease workflow: ', workflow)
+
       redirect(303, `/makePayment?invoiceNum=${invoice.invoiceNum}&stripeId=${stripeId}`)
    },
    selectCustomer: async (event ) => {

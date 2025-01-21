@@ -13,6 +13,8 @@
   import Checkbox from '$lib/formComponents/Checkbox.svelte';
   import LeaseDiscountForm from '$lib/forms/LeaseDiscountForm.svelte';
 	import { unitNotesFormSchema } from '$lib/formSchemas/schemas';
+	import RadioButton from '$lib/formComponents/RadioButton.svelte';
+	import { Radio } from 'lucide-svelte';
   let { data }: { data: PageData } = $props();
   let addressModalOpen = $state(false)
   let { form, errors, message, constraints, enhance, delayed, timeout} = superForm(data.leaseForm, {
@@ -102,9 +104,34 @@
         {/if}
     {/if}
     <div class="flex">
-        {#if data.unit && data.address}
-        <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} buttonText='The above is correct charge ${data.unit.deposit} deposit'/>
-        {/if}
+      {#if data.unit && data.address}
+      <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} buttonText='The above is correct charge ${data.unit.deposit} deposit'/>
+      <RadioButton
+        value='STRIPE'
+        errors={$errors.paymentType}
+        constraints={$constraints.paymentType}
+        groupName='paymentType'
+        id='STRIPE'
+        label="Stripe"
+        />
+      
+      <RadioButton
+        value='CASH'
+        errors={$errors.paymentType}
+        constraints={$constraints.paymentType}
+        groupName='paymentType'
+        id='CASH'
+        label='Cash'
+      />
+      <RadioButton
+        value='CHECK'
+        errors={$errors.paymentType}
+        constraints={$constraints.paymentType}
+        groupName="paymentType"
+        id='CHECK'
+        label='Check'
+      />
+      {/if}
     </div>
   </form>
   {#if !data.discount}

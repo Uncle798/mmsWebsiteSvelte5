@@ -33,6 +33,7 @@ export const newLeaseSchema = z.object({
    organization: z.boolean(),
    discountId: z.string().min(23).max(30).optional(),
    customerId: z.string().min(23).max(30),
+   paymentType: z.enum(['CASH', 'CHECK', 'STRIPE']).optional()
 })
 export type NewLeaseSchema = typeof newLeaseSchema;
 
