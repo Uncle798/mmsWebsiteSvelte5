@@ -13,40 +13,48 @@
     import IconFirst from 'lucide-svelte/icons/chevrons-left';
     import IconLast from 'lucide-svelte/icons/chevron-right';
 	import { fade } from 'svelte/transition';
+	import { onMount } from 'svelte';
+	import FormMessage from '$lib/formComponents/FormMessage.svelte';
 
     let { data }: { data: PageData } = $props();
-    let { form, enhance } = superForm(data.searchForm,{
+    let { form, enhance, message } = superForm(data.searchForm,{
+        onChange(event){
+            const inputText = event.get('search')
+            if(inputText){
+                search=inputText!;
+            }
+        },
         onSubmit(input) {
             input.cancel();
-            const search = input.formData.get('search')?.toString();
+            const inputText = input.formData.get('search')?.toString();
             if(search){
-                goto(`/paymentRecords?search=${search}`)
+                search=inputText!;
             }
         },
     });
     let pageNum = $state(1);
     let size = $state(25);
+    let search = $state('')
     let slicedSource = $derived((s:PaymentRecord[]) => s.slice((pageNum -1) * size, pageNum*size));
-    
+    let searchResult = $derived((paymentRecords:PaymentRecord[]) => paymentRecords.filter((paymentRecord) => paymentRecord.paymentNumber.toString().includes(search) ))
+
 </script>
 
 <Header title='Payment Records' />
 
-{#if !data.paymentRecords}
-    ...loading payment records
-{:else}
-    <div transition:fade={{duration:600}}>
+<div transition:fade={{duration:600}}>
+    <FormMessage message={$message} />
     <form method="post" use:enhance>
         <input type="search" name="search" id="search" class="input" placeholder="Search by payment record number" bind:value={$form.search}>
         <button class="btn">Submit</button>
-        <button class="btn" onclick={()=> goto('/users', {invalidateAll: true})}>Clear</button>
+        <button class="btn" onclick={()=> goto('/paymentRecords', {invalidateAll: true})}>Clear</button>
     </form>
     {#each slicedSource(data.paymentRecords) as paymentRecord}
         {@const { customer } = paymentRecord }
         <div class="flex">
             <PaymentRecordComponent paymentRecord={paymentRecord} />
             {#if customer}
-            <User user={customer} />
+                <User user={customer} />
             {/if}
         </div>
     {/each}
@@ -66,4 +74,3 @@
         </Pagination>
     </footer>
 </div>
-{/if}
