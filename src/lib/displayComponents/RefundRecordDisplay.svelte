@@ -16,7 +16,7 @@
       {:else}
       <p>Refund not completed</p>
    {/if}
-   <p>Refund type: {refundRecord.refundType}</p>
+   <p>Refund type: {refundRecord.refundType.replace(/\w\S*/g, text => text.charAt(0).toUpperCase() + text.substring(1).toLowerCase())}</p>
    {#if refundRecord.paymentRecordNum}
       <p>Refund notes: <a href="/paymentRecords/{refundRecord.paymentRecordNum}">{refundRecord.refundNotes}</a></p>
    {:else}
