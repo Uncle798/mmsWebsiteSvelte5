@@ -10,18 +10,20 @@
 	import UserAdmin from '$lib/displayComponents/UserAdmin.svelte';
 
    let { data }: { data: PageData } = $props();
+   let search = $state('')
    let {form:searchForm, enhance} = superForm(data.searchForm, {
       onSubmit(input) {
          input.cancel()
-         const search = input.formData.get('search')?.toString();
-         if(search){
-            goto(`/users?search=${search}`)
+         const inputText = input.formData.get('search')?.toString();
+         if(input){
+            search = inputText!
          }
       },
    });
    let pageNum = $state(1);
    let size = $state(25);
    let slicedSource = $derived((s:PartialUser[]) => s.slice((pageNum-1)*size, pageNum*size));
+   let filteredList = $derived((f:PartialUser[]) => f.filter(user => user.familyName?.toLowerCase().includes(search.toLowerCase())))
 </script>
 <Header title='All users' />
 {#if !data.users}
@@ -34,7 +36,7 @@
       <button class="btn">Submit</button>
       <button class="btn" onclick={()=> goto('/users', {invalidateAll: true})}>Clear</button>
    </form>
-   {#each slicedSource(data.users) as user (user.id)}
+   {#each filteredList(slicedSource(data.users)) as user (user.id)}
    <div class="flex">
       <UserAdmin user={user} />
       <EmploymentChangeForm 
