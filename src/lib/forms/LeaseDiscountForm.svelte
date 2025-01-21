@@ -20,7 +20,7 @@
 
 <FormMessage message={$message} />
 <form action='/forms/leaseDiscountForm?userId={customerId}' method="post" use:enhance>
-   <div class="card m-4">
+   <div class="card">
       <TextInput
       bind:value={$form.code}
       errors={$errors.code}
