@@ -150,9 +150,9 @@
          name='paymentNotes'
       />
       <div class="card p-4">
-         <label for="deposit">Deposit
-            <Switch bind:checked={$form.deposit} name='deposit'/>
-         </label>
+         <Switch bind:checked={$form.deposit} name='deposit'>
+            Deposit
+         </Switch>
       </div>
       <TextInput
          bind:value={$form.payee}
