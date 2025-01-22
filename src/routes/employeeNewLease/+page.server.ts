@@ -182,7 +182,17 @@ export const actions: Actions = {
       })
       console.log('employeeNewLease formData: ', leaseForm.data)
       if(leaseForm.data.paymentType === 'CASH' || leaseForm.data.paymentType === 'CHECK') {
-         redirect(302, `/invoices/${invoice.invoiceNum}?leaseId=${lease.leaseId}`);
+         const paymentRecord = await prisma.paymentRecord.create({
+            data: {
+               invoiceNum: invoice.invoiceNum,
+               paymentType: leaseForm.data.paymentType,
+               paymentAmount: invoice.invoiceAmount,
+               customerId: invoice.customerId!,
+               paymentNotes: 'Payment for invoice ' + invoice.invoiceNum + ', ' + invoice.invoiceNotes,
+               deposit: invoice.deposit 
+            }
+         })
+         redirect(302, `/employeeNewLease/leaseSent?paymentNumber=${paymentRecord.paymentNumber}`);
       }
       let name:string = `${customer!.givenName} ${customer!.familyName}`
       if(customer!.organizationName){
