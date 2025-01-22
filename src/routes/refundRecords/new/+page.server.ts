@@ -18,7 +18,6 @@ export const load = (async (event) => {
    const refundForm = await superValidate(zod(refundFormSchema));
    const searchForm = await superValidate(zod(formSchema));
    const paymentNum = event.url.searchParams.get('paymentNum');
-   console.log(paymentNum)
    if(paymentNum){
       const paymentRecord = await prisma.paymentRecord.findUnique({
          where:{
@@ -54,7 +53,6 @@ export const load = (async (event) => {
          paymentCreated: 'desc'
       }
    });
-   console.log(deposits)
    return { deposits, refundForm, searchForm };
 }) satisfies PageServerLoad;
 
