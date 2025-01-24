@@ -26,12 +26,16 @@
 		{link: '/discounts', label: 'Discounts'},
 		{link: '/users/customers', label: 'Customers'},
 		{link: '/invoices', label: 'Invoices'},
+		{link: '/invoices/unpaid', label: 'Unpaid invoices'},
+		{link: '/invoices/year', label: 'Invoices by year'},
 		{link: '/invoices/new', label: 'New Invoice'},
 		{link: '/paymentRecords', label: 'Payment Records'},
 		{link: '/paymentRecords/incomplete', label:'Incomplete Payment Records'},
+		{link: '/paymentRecords/year', label: 'Payment Records by year'},
 		{link: '/paymentRecords/new', label:'New Payment Record'},
 		{link: '/refundRecords', label:'Refund Records'},
 		{link: '/refundRecords/new', label:'New Refund'},
+		{link: '/refundRecords/year', label: 'Refunds by year'},
 		{link: '/employeeNewLease', label:'Employee new lease'},
 		{link: '/employeeNewCustomer', label:'Employee new customer'},
 	]
@@ -57,7 +61,7 @@
 	}} 
 >
 {#snippet trigger()}
-	<Menu />	
+	<Menu class='mx-2' />	
 {/snippet}
 {#snippet content()}
 	<article>
