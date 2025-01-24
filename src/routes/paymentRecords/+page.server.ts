@@ -1,10 +1,11 @@
 import { prisma } from '$lib/server/prisma';
-import { message, superValidate } from 'sveltekit-superforms';
+import { superValidate } from 'sveltekit-superforms';
 import type { PageServerLoad } from './$types';
 import { zod } from 'sveltekit-superforms/adapters';
 import { searchFormSchema } from '$lib/formSchemas/schemas';
 import type { Actions } from '@sveltejs/kit';
 import { redirect } from '@sveltejs/kit';
+import { arrayOfYears } from '$lib/server/utils';
 
 export const load = (async (event) => {
     if(!event.locals.user?.employee){
@@ -12,6 +13,12 @@ export const load = (async (event) => {
     }
     const searchForm = await superValidate(zod(searchFormSchema));
     const paymentCount = await prisma.paymentRecord.count();
+    const firstPayment = await prisma.paymentRecord.findFirst({
+        orderBy: {
+            paymentCreated: 'asc'
+        }
+    })
+    const years = arrayOfYears(firstPayment?.paymentCreated.getFullYear())
     const paymentRecords = prisma.paymentRecord.findMany({
         orderBy: {
             paymentNumber: 'desc'
@@ -20,7 +27,7 @@ export const load = (async (event) => {
             customer: true
         }
     });
-    return { paymentRecords, searchForm, paymentCount, };
+    return { paymentRecords, searchForm, paymentCount, years };
 }) satisfies PageServerLoad;
 
 export const actions: Actions = {
