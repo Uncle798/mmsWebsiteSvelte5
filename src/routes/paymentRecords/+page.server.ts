@@ -4,7 +4,6 @@ import type { PageServerLoad } from './$types';
 import { zod } from 'sveltekit-superforms/adapters';
 import { searchFormSchema } from '$lib/formSchemas/schemas';
 import type { Actions } from '@sveltejs/kit';
-import dayjs from 'dayjs';
 import { redirect } from '@sveltejs/kit';
 
 export const load = (async (event) => {
@@ -12,34 +11,16 @@ export const load = (async (event) => {
         redirect(302, '/login?toast=employee');
     }
     const searchForm = await superValidate(zod(searchFormSchema));
-    const search = event.url.searchParams.get('search');
-    const leaseId = event.url.searchParams.get('leaseId');
-    const paymentRecords = await prisma.paymentRecord.findMany({
+    const paymentCount = await prisma.paymentRecord.count();
+    const paymentRecords = prisma.paymentRecord.findMany({
         orderBy: {
-            paymentNumber: 'asc'
+            paymentNumber: 'desc'
         },
-        // where: {
-        //     paymentCreated: {
-        //         gte: dayjs(Date.now()).subtract(1, 'year').toDate()
-        //     }
-        // }, 
         include: {
             customer: true
         }
     });
-    if(search){
-        const paymentRecord = await prisma.paymentRecord.findUnique({
-            where: {
-                paymentNumber: parseInt(search, 10),
-            }
-        })
-        if(!paymentRecord){
-            message(searchForm, 'Record not found');
-            return { paymentRecords, searchForm }
-        }
-        redirect(302, `/paymentRecords/${paymentRecord?.paymentNumber}`)
-    }
-    return { paymentRecords, searchForm, leaseId, };
+    return { paymentRecords, searchForm, paymentCount, };
 }) satisfies PageServerLoad;
 
 export const actions: Actions = {
