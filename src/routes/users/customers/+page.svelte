@@ -22,12 +22,14 @@
    });
    let pageNum = $state(1);
    let size = $state(25);
+   let search = $state('');
    let slicedSource = $derived((s:PartialUser[]) => s.slice((pageNum-1)*size, pageNum*size));
+   let searchedSource = $derived((customers:PartialUser[]) => customers.filter((customer) => customer.familyName?.includes(search)))
 </script>
 <Header title='Current Customers'/>
-{#if !data.customers}
-    ...loading customers
-{:else}
+{#await data.customers}
+    ...loading {data.customerCount} customers
+{:then customers}
 <div transition:fade={{duration:600}}>
 
    <form method="post" use:enhance>
@@ -35,23 +37,23 @@
       <button class="btn">Submit</button>
       <button class="btn" onclick={()=> goto('/users/customers', {invalidateAll: true})}>Clear</button>
    </form>
-   {#each slicedSource(data.customers) as customer}
+   {#each slicedSource(searchedSource(customers)) as customer}
    {@const leases = data.leases.filter((lease) => lease.customerId === customer.id)}
-   <div class="flex card">
-      <User user={customer} />
-      {#each leases as lease}
-      <LeaseEmployee lease={lease} />
-      {/each}
-   </div>
+      <div class="flex card">
+         <User user={customer} />
+         {#each leases as lease}
+            <LeaseEmployee lease={lease} />
+         {/each}
+      </div>
    {/each}
    <footer class="flex justify-between">
       <select name="size" id="size" class="select" bind:value={size}>
          {#each [5,10,25,50] as v}
          <option value={v}>Show {v} customers per page</option>
          {/each}
-         <option value={data.customers.length}>Show all {data.customers.length} customers</option>
+         <option value={searchedSource(customers).length}>Show all {customers.length} customers</option>
       </select>
-      <Pagination data={data.customers} bind:page={pageNum} bind:pageSize={size} alternative/>
+      <Pagination data={searchedSource(customers)} bind:page={pageNum} bind:pageSize={size} alternative/>
    </footer>
 </div>
-{/if}
+{/await}

@@ -10,7 +10,16 @@ export const load = (async (event) => {
       redirect(302, '/login?toast=employee')
    }
    const userSearchForm = await superValidate(zod(searchFormSchema))
-   const customers = await prisma.user.findMany({
+   const customerCount = await prisma.user.count({
+      where: {
+         customerLeases: {
+            some: {
+               leaseEnded: null
+            }
+         }
+      }
+   })
+   const customers = prisma.user.findMany({
       where: {
          customerLeases: {
             some: {
@@ -37,7 +46,7 @@ export const load = (async (event) => {
          unitNum: 'asc'
       }
    })
-   return { customers, leases, userSearchForm };
+   return { customers, leases, userSearchForm, customerCount };
 }) satisfies PageServerLoad;
 
 export const actions: Actions = {
