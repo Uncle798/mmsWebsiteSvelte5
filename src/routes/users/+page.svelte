@@ -12,12 +12,8 @@
    let { data }: { data: PageData } = $props();
    let search = $state('')
    let {form:searchForm, enhance} = superForm(data.searchForm, {
-      onSubmit(input) {
-         input.cancel()
-         const inputText = input.formData.get('search')?.toString();
-         if(input){
-            search = inputText!
-         }
+      onChange(event) {
+         search = event.get('search')
       },
    });
    let pageNum = $state(1);
@@ -26,17 +22,18 @@
    let filteredList = $derived((f:PartialUser[]) => f.filter(user => user.familyName?.toLowerCase().includes(search.toLowerCase())))
 </script>
 <Header title='All users' />
-{#if !data.users}
+{#await data.users}
    ...loading users
-{:else }
+{:then users }
 <div transition:fade={{duration:600}}>
-
-   <form method="post" action="/users?/search"  use:enhance>
-      <input type="text" name="search" class="input" placeholder="Search by name" bind:value={$searchForm.search}>
-      <button class="btn">Submit</button>
-      <button class="btn" onclick={()=> goto('/users', {invalidateAll: true})}>Clear</button>
-   </form>
-   {#each filteredList(slicedSource(data.users)) as user (user.id)}
+   <div class="m-4 card">
+      <form method="post"  use:enhance>
+         <input type="text" name="search" class="input" placeholder="Search by family name" bind:value={$searchForm.search}>
+         <button class="btn">Submit</button>
+         <button class="btn" onclick={()=> {search=''; $searchForm.search = ''}}>Clear</button>
+      </form>
+   </div>
+      {#each slicedSource(filteredList(users)) as user (user.id)}
    <div class="flex">
       <UserAdmin user={user} />
       <EmploymentChangeForm 
@@ -52,9 +49,9 @@
          {#each [5,10,25,50] as v}
          <option value={v}>Show {v} users per page</option>
          {/each}
-         <option value={data.users.length}>Show all {data.users.length} users</option>
+         <option value={filteredList(users).length}>Show all {filteredList(users).length} users</option>
       </select>
-      <Pagination data={data.users} bind:page={pageNum} bind:pageSize={size} alternative/>
+      <Pagination data={filteredList(users)} bind:page={pageNum} bind:pageSize={size} alternative/>
    </footer>
 </div>
-{/if}
+{/await}

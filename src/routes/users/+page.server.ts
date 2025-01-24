@@ -16,36 +16,13 @@ export const load = (async (event) => {
    const employmentChangeForm = await superValidate(zod(employmentFormSchema));
    const searchForm = await superValidate(zod(searchFormSchema));
    const userCount = await prisma.user.count();
-   const search = event.url.searchParams.get('search');
-   if(search){
-      const users = await prisma.user.findMany({
-         orderBy: [
-            {familyName: 'asc'},
-            {givenName: 'asc'}
-         ],
-         where: {
-            OR:[
-               {givenName: {
-                  contains: search,
-                  mode: 'insensitive'
-               }},
-               {familyName: {
-                  contains: search,
-                  mode: 'insensitive'
-               }}
-            ]
-         }
-         
-      });
-      return { users, userCount,employmentChangeForm, search, searchForm };
-   }
-   const users = await prisma.user.findMany({
+   const users = prisma.user.findMany({
       orderBy: [
          {familyName: 'asc'},
          {givenName: 'asc'}
       ],
    });
-   return { users, userCount, employmentChangeForm, search, searchForm };
+   return { users, userCount, employmentChangeForm, searchForm };
 }) satisfies PageServerLoad;
 
 
