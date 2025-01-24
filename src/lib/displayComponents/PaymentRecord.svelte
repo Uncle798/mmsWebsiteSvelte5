@@ -12,6 +12,7 @@
 <div class="card p-4">
    <p>Payment Record Number: <a href="/paymentRecords/{paymentRecord.paymentNumber}">{paymentRecord.paymentNumber}</a></p>
    <p>${paymentRecord.paymentAmount}</p>
+   <p>Payment created: {dayjs(paymentRecord.paymentCreated).format('M/D/YYYY')}</p>
    {#if paymentRecord.paymentCompleted}
    <p>Payment completed { dayjs(paymentRecord.paymentCompleted).format('M/D/YYYY')}</p>
    {:else}
