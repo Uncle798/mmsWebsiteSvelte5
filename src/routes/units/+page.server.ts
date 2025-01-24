@@ -3,7 +3,7 @@ import { redirect, fail } from "@sveltejs/kit";
 import { superValidate, message } from 'sveltekit-superforms'
 import { ratelimit } from "$lib/server/rateLimit";
 import { zod } from 'sveltekit-superforms/adapters'
-import { unitNotesFormSchema, unitPricingFormSchema, leaseEndFormSchema } from "$lib/formSchemas/schemas";
+import { unitNotesFormSchema, unitPricingFormSchema, leaseEndFormSchema, searchFormSchema } from "$lib/formSchemas/schemas";
 
 import type { PageServerLoad, Actions } from "./$types";
 import type { Address, Lease, Unit } from "@prisma/client";
@@ -22,6 +22,7 @@ export const load:PageServerLoad = async (event) =>{
       const unitPricingForm = await superValidate(zod(unitPricingFormSchema), {id: 'pricingFrom'});
       const unitNotesForm = await superValidate(zod(unitNotesFormSchema), {id: 'unitNotesForm'});
       const leaseEndForm = await superValidate(zod(leaseEndFormSchema));
+      const searchForm = await superValidate(zod(searchFormSchema));
       const leases = await prisma.lease.findMany({
          orderBy: {
             unitNum: 'asc'
@@ -64,7 +65,8 @@ export const load:PageServerLoad = async (event) =>{
          sizesPrices,
          unitNotesForm,
          unitPricingForm,
-         leaseEndForm
+         leaseEndForm,
+         searchForm,
       }
    }
 }

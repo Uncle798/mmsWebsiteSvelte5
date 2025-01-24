@@ -8,6 +8,7 @@
 	import UnitNotesForm from '$lib/forms/UnitNotesForm.svelte';
 	import UnitPricingForm from '$lib/forms/UnitPricingForm.svelte';
 	import Header from '$lib/Header.svelte';
+    import {superForm } from 'sveltekit-superforms'
     
     import { fade } from 'svelte/transition';
 	import type { Unit } from '@prisma/client';
@@ -19,6 +20,7 @@
     let globalModalType = $state('');
     let currentSize = $state('');
     let currentOldPrice = $state();
+    let unitSearch = $state('');
     function openModal(modalType:string, leaseId?:string, size?:string, oldPrice?:number) {
         if(leaseId){
             currentLeaseId=leaseId;
@@ -30,9 +32,18 @@
         globalModalType=modalType;
         modalOpen = true;
     }
+    let { form, enhance, message } = superForm(data.searchForm,{
+        onChange(event){
+            const inputText = event.get('search')
+            if(inputText){
+                unitSearch=inputText!;
+            }
+        },
+    });
     let pageNum = $state(1);
     let size = $state(25);
     let slicedUnits = $derived((units:Unit[]) => units.slice((pageNum-1)*size, pageNum*size));
+    let filteredUnits = $derived((units:Unit[]) => units.filter((unit) => unit.num.toString().includes(unitSearch)))
 </script>
 <Header title='All units' />
 
@@ -47,7 +58,7 @@
             <LeaseEndForm data={data.leaseEndForm} leaseId={currentLeaseId} customer={false} bind:leaseEndModalOpen={modalOpen}/>
         {/if}
         {:else if globalModalType === 'unitPricing'}
-            <UnitPricingForm data={data.unitPricingForm} bind:unitPricingFormModalOpen={modalOpen} size={currentSize} oldPrice={currentOldPrice} />
+            <UnitPricingForm data={data.unitPricingForm!} bind:unitPricingFormModalOpen={modalOpen} size={currentSize} oldPrice={currentOldPrice} />
         {/if}
         <button class="btn" onclick={()=>modalOpen = false}>Cancel</button>
     {/snippet}
@@ -56,7 +67,12 @@
 {#if !units}
     ...loading units
     {:else}
-    {#each slicedUnits(units) as unit}
+    <div>
+        <input type="search" name="search" id="search" bind:value={$form.search} class="input" placeholder="Search by unit number..."/>
+        <button type="button" class="btn" onclick={()=>{ unitSearch=''; $form.search = ''}}>Clear</button>
+    </div>
+    
+    {#each slicedUnits(filteredUnits(units)) as unit (unit.num)}
         {@const lease = leases?.find((lease) => lease.unitNum === unit.num)}
         <div class="flex" transition:fade={{duration:600}}>
             <div>
@@ -64,7 +80,7 @@
                 <button class="btn" onclick={()=> openModal('unitPricing', '',unit.size, unit.advertisedPrice)}>Change all {unit.size.replace(/^0+/gm,'').replace(/x0/gm,'x')} pricing</button>
             </div>
             {#if data.unitNotesForm}
-                <UnitNotesForm data={data.unitNotesForm} unitNum={unit.num} available={unit.unavailable}/>
+                <UnitNotesForm data={data.unitNotesForm} unit={unit}/>
             {/if}
             {#if lease}
                 {@const customer = customers?.find((customer) => customer.id === lease.customerId)}
