@@ -1,6 +1,6 @@
 <script lang="ts">
     import { PUBLIC_COMPANY_NAME, PUBLIC_STRIPE_TEST, PUBLIC_URL } from '$env/static/public';
-    import Invoice from '$lib/displayComponents/Invoice.svelte';
+    import InvoiceEmployee from '$lib/displayComponents/InvoiceEmployee.svelte';
     import { Elements, PaymentElement, LinkAuthenticationElement, Address, } from 'svelte-stripe';
     import { onMount } from 'svelte';
     import { loadStripe } from '@stripe/stripe-js'
@@ -72,7 +72,7 @@ Current time = {currentTime}
     </div>
     {:else}
     {#if data.invoice}
-        <Invoice invoice={data.invoice} />
+        <InvoiceEmployee invoice={data.invoice} />
         <div class="p-4">
             
             <form onsubmit={submit}>

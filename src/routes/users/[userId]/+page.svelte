@@ -1,6 +1,6 @@
 <script lang="ts">
    import Address from '$lib/displayComponents/Address.svelte';
-	import Invoice from '$lib/displayComponents/Invoice.svelte';
+	import InvoiceEmployee from '$lib/displayComponents/InvoiceEmployee.svelte';
 	import LeaseEmployee from '$lib/displayComponents/LeaseEmployee.svelte';
    import AddressForm from '$lib/forms/AddressForm.svelte';
    import { Modal } from '@skeletonlabs/skeleton-svelte';
@@ -69,7 +69,7 @@
    {#each data.invoices as invoice}
    {@const paymentRecord = data.payments.find((payment) => payment.invoiceNum === invoice.invoiceNum)}
    <div class="flex">
-      <Invoice invoice={invoice} />
+      <InvoiceEmployee invoice={invoice} />
       {#if paymentRecord}
          <PaymentRecord paymentRecord={paymentRecord}/>
       {/if}

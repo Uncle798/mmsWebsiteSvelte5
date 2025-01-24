@@ -1,5 +1,5 @@
 <script lang="ts">
-    import Invoice from '$lib/displayComponents/Invoice.svelte';
+    import InvoiceEmployee from '$lib/displayComponents/InvoiceEmployee.svelte';
     import User from '$lib/displayComponents/User.svelte';
     import type { PageData } from './$types';
 
@@ -7,7 +7,7 @@
 </script>
 {#if data.invoice}
 {@const {customer} = data.invoice}
-    <Invoice invoice={data.invoice} />
+    <InvoiceEmployee invoice={data.invoice} />
     {#if customer}
         <User user={customer} />
     {/if}
