@@ -266,7 +266,8 @@ async function makeRefund(paymentRecord:PaymentRecord){
          refundAmount: paymentRecord.paymentAmount,
          paymentRecordNum: paymentRecord.paymentNumber,
          refundType: paymentRecord.paymentType,
-         refundNotes: `Refund of payment record number ${paymentRecord.paymentNumber}`,
+         refundNotes: `Refund of payment record number ${paymentRecord.paymentNumber}\n${paymentRecord.paymentNotes}`,
+         refundCreated: dayjs(paymentRecord.paymentCreated).add(3, 'months').toDate(),
          refundCompleted: dayjs(paymentRecord.paymentCreated).add(3, 'months').toDate(),
       }
    })
@@ -426,7 +427,7 @@ async function  main (){
             paymentCreated: paymentDate.toDate(),         
             paymentCompleted: paymentDate.toDate(), 
             invoiceNum: invoice.invoiceNum, 
-            paymentNotes: `Payment for invoice ${invoice.invoiceNum}`,
+            paymentNotes: `Payment for invoice ${invoice.invoiceNum}\n ${invoice.invoiceNotes}`,
             deposit: invoice.deposit
          }      
       paymentRecords.push(record);
