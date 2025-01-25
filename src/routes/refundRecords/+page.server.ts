@@ -4,6 +4,7 @@ import type { PageServerLoad } from './$types';
 import { superValidate } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
 import { searchFormSchema } from '$lib/formSchemas/schemas';
+import { arrayOfYears } from '$lib/server/utils';
 
 export const load = (async (event) => {
    if(!event.locals.user?.employee){
@@ -22,6 +23,13 @@ export const load = (async (event) => {
          customer: true,
       }
    })
-   return { refunds, searchForm, refundCount };
+   const customers = prisma.user.findMany();
+   const firstRefund = await prisma.refundRecord.findFirst({
+      orderBy: {
+         refundCreated: 'asc'
+      }
+   })
+   const years = arrayOfYears(firstRefund?.refundCreated.getFullYear())
+   return { refunds, searchForm, refundCount, customers, years };
 }) satisfies PageServerLoad;
 
