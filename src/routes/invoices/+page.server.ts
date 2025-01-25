@@ -27,5 +27,6 @@ export const load = (async (event) => {
             invoiceCreated: 'asc'
         }
     })
-    return { invoices, invoiceCount, searchForm, years };
+    const customers = prisma.user.findMany()
+    return { invoices, invoiceCount, searchForm, years, customers };
 }) satisfies PageServerLoad;
