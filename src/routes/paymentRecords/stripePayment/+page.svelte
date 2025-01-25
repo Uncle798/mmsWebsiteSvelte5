@@ -4,7 +4,7 @@
 	import { onMount } from 'svelte';
 	import { PUBLIC_STRIPE_TEST, PUBLIC_URL } from '$env/static/public';
    import Header from '$lib/Header.svelte';
-   import Invoice from '$lib/displayComponents/Invoice.svelte';
+   import InvoiceEmployee from '$lib/displayComponents/InvoiceEmployee.svelte';
    import { Elements, PaymentElement } from 'svelte-stripe';
 	import { goto } from '$app/navigation';
 	import PaymentRecord from '$lib/displayComponents/PaymentRecord.svelte';
