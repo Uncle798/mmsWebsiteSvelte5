@@ -1,9 +1,9 @@
 <script lang="ts">
-	import Invoice from '$lib/displayComponents/Invoice.svelte';
+	import InvoiceEmployee from '$lib/displayComponents/InvoiceEmployee.svelte';
 	import PaymentRecord from '$lib/displayComponents/PaymentRecord.svelte';
     import RefundRecordDisplay from '$lib/displayComponents/RefundRecordDisplay.svelte';
 	import User from '$lib/displayComponents/User.svelte';
-import type { PageData } from './$types';
+    import type { PageData } from './$types';
 
     let { data }: { data: PageData } = $props();
 </script>
@@ -18,7 +18,7 @@ import type { PageData } from './$types';
             <PaymentRecord paymentRecord={data.paymentRecord} />
         {/if}
         {#if data.invoice}
-            <Invoice invoice={data.invoice} />
+            <InvoiceEmployee invoice={data.invoice} />
         {/if}
     </div>
 {/if}

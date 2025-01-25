@@ -6,8 +6,9 @@
 	import Header from '$lib/Header.svelte';
     import { goto } from '$app/navigation';
     import type { PartialUser } from '$lib/server/partialTypes';
-    import { Pagination } from '@skeletonlabs/skeleton-svelte';
+    import Pagination from '$lib/displayComponents/Pagination.svelte';
 	import { fade } from 'svelte/transition';
+	import Search from '$lib/forms/Search.svelte';
 
     let { data }: { data: PageData } = $props();
     const { customers } = data;
@@ -30,30 +31,17 @@
 {#await data.customers}
     ...loading {data.customerCount} customers
 {:then customers}
-<div transition:fade={{duration:600}}>
-
-   <form method="post" use:enhance>
-      <input type="text" name="search" class="input" placeholder="Search by name" bind:value={$form.search}>
-      <button class="btn">Submit</button>
-      <button class="btn" onclick={()=> goto('/users/customers', {invalidateAll: true})}>Clear</button>
-   </form>
-   {#each slicedSource(searchedSource(customers)) as customer}
-   {@const leases = data.leases.filter((lease) => lease.customerId === customer.id)}
-      <div class="flex card">
-         <User user={customer} />
-         {#each leases as lease}
-            <LeaseEmployee lease={lease} />
-         {/each}
-      </div>
-   {/each}
-   <footer class="flex justify-between">
-      <select name="size" id="size" class="select" bind:value={size}>
-         {#each [5,10,25,50] as v}
-         <option value={v}>Show {v} customers per page</option>
-         {/each}
-         <option value={searchedSource(customers).length}>Show all {customers.length} customers</option>
-      </select>
-      <Pagination data={searchedSource(customers)} bind:page={pageNum} bind:pageSize={size} alternative/>
-   </footer>
-</div>
+   <div transition:fade={{duration:600}}>
+      <Search search={search} searchType='customer' data={data.userSearchForm}/>
+      {#each slicedSource(searchedSource(customers)) as customer}
+      {@const leases = data.leases.filter((lease) => lease.customerId === customer.id)}
+         <div class="flex card">
+            <User user={customer} />
+            {#each leases as lease}
+               <LeaseEmployee lease={lease} />
+            {/each}
+         </div>
+      {/each}()
+      <Pagination bind:pageNum={pageNum} bind:size={size} label='users' array={searchedSource(customers)}/>
+   </div>
 {/await}
