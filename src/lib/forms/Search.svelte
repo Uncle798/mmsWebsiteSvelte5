@@ -18,7 +18,7 @@
 <form method="POST" use:enhance>
    <div class="m-4">
        <label class="label-text">Search by {searchType}
-           <input type="search" name="search" id="search" class="input" placeholder="Search by {searchType} ...">
+           <input type="search" name="search" id="search" class="input" placeholder="Search by {searchType} ..." bind:value={search}>
            <button class="btn" type="button" onclick={()=> {$form.search = ''; search='' }}>Clear</button>
        </label>
    </div>
