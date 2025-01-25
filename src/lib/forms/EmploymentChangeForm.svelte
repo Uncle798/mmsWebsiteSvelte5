@@ -12,7 +12,11 @@
       userId: string
    }
    let { data,  employeeChecked=$bindable(false), adminChecked=$bindable(false), userId}:Props = $props();
-   let { form, message, errors, constraints, enhance, delayed, timeout} = superForm(data);
+   let { form, message, errors, constraints, enhance, delayed, timeout, } = superForm(data, {
+      warnings:{
+         duplicateId: false
+      }
+   });
 </script>
 <div class="card p-4">
    <FormMessage message={$message} />
