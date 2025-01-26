@@ -1,6 +1,6 @@
 <script lang="ts">
    import Header from '$lib/Header.svelte';
-   import PaymentRecord from '$lib/displayComponents/PaymentRecord.svelte';
+   import PaymentRecordEmployee from '$lib/displayComponents/PaymentRecordEmployee.svelte';
    import { Modal } from '@skeletonlabs/skeleton-svelte';
    import type { PageData } from './$types';
 	import { superForm } from 'sveltekit-superforms';
@@ -39,7 +39,7 @@
 <div transition:fade={{duration:500}}>
    {#each data.paymentRecords as paymentRecord}
       <div class="card p-4">
-         <PaymentRecord paymentRecord={paymentRecord} />
+         <PaymentRecordEmployee paymentRecord={paymentRecord} />
          <p><a href="/paymentRecords/new?defaultCustomer={paymentRecord.customerId}&defaultInvoice={paymentRecord.invoiceNum}" class="btn">Take a payment for payment record {paymentRecord.paymentNumber}</a></p>
          <button class="btn" onclick={()=>{ modalOpen=true; currentPaymentRecordNum=paymentRecord.paymentNumber}}>Delete payment record number {paymentRecord.paymentNumber}</button>
       </div>

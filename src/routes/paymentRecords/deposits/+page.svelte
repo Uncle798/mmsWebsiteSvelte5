@@ -1,10 +1,9 @@
 <script lang="ts">
-    import PaymentRecord from '$lib/displayComponents/PaymentRecord.svelte';
+    import PaymentRecordEmployee from '$lib/displayComponents/PaymentRecordEmployee.svelte';
 	import Header from '$lib/Header.svelte';
     import { Modal } from '@skeletonlabs/skeleton-svelte'
     import type { PageData } from './$types';
 	import RefundForm from '$lib/forms/NewRefundForm.svelte';
-    import { Tipex } from '@friendofsvelte/tipex';
     interface Props {
         data: PageData;
     }
@@ -23,7 +22,7 @@
    backdropClasses=""
 >  
 {#snippet content()}
-   <RefundForm data={data.refundForm} notes={body} amount={refundAmount} {paymentRecordNumber}/>
+   <RefundForm data={data.refundForm} paymentRecord={data.paymentRecord}/>
    <button class="btn" onclick={()=>refundModalOpen = false}>Close</button>
 {/snippet}
 
@@ -32,7 +31,7 @@
     No deposits
 {/if}
 {#each data.deposits as deposit}
-    <PaymentRecord paymentRecord={deposit}/>
+    <PaymentRecordEmployee paymentRecord={deposit}/>
     <button class="btn" 
         onclick={()=>{
             refundModalOpen=true; 
