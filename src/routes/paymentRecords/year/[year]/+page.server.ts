@@ -5,6 +5,9 @@ import { zod } from 'sveltekit-superforms/adapters';
 import { searchFormSchema } from '$lib/formSchemas/schemas';
 import { redirect } from '@sveltejs/kit';
 import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc'
+
+dayjs.extend(utc)
 
 export const load = (async (event) => {
     if(!event.locals.user?.employee){
@@ -12,13 +15,13 @@ export const load = (async (event) => {
     }
     const searchForm = await superValidate(zod(searchFormSchema));
     const year = event.params.year;
-    const start = dayjs(`${year}-01-01 00:00`).toDate();
-    const end = dayjs(`${year}-12-31 23:59`).toDate();
+    const startDate = dayjs.utc(year).startOf('year').toDate();
+    const endDate = dayjs.utc(year).endOf('year').toDate();
     const paymentRecordCount = await prisma.paymentRecord.count({
       where: {
          AND:[
-           { paymentCompleted: {gt: start} },
-           { paymentCompleted: {lt: end} }
+           { paymentCompleted: {gt: startDate} },
+           { paymentCompleted: {lt: endDate} }
          ]  
       }
     });
@@ -28,8 +31,8 @@ export const load = (async (event) => {
          },
          where: {
              AND:[
-               { paymentCompleted: {gt: start} },
-               { paymentCompleted: {lt: end} }
+               { paymentCompleted: {gt: startDate} },
+               { paymentCompleted: {lt: endDate} }
              ]  
          },
          include: {
