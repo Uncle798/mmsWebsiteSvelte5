@@ -75,10 +75,11 @@ export const actions: Actions = {
                     refundType: refundForm.data.refundType,
                     employeeId: event.locals.user.id!,
                     refundAmount: refundForm.data.amount,
-                    refundNotes: refundForm.data.notes
+                    refundNotes: refundForm.data.notes,
+                    refundCompleted: new Date()
                 }
             })
-            redirect(302, `/refundRecord/${refundRecord.refundNumber}`)
+            redirect(302, `/refundRecords/${refundRecord.refundNumber}`)
         }
     }
 };
