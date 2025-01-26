@@ -1,3 +1,4 @@
+import dayjs from "dayjs";
 
 export function arrayOfYears(earliestYear:number | undefined){
    if(earliestYear === undefined){
@@ -11,6 +12,11 @@ export function arrayOfYears(earliestYear:number | undefined){
    return years;
 }
 
-export function arrayOfMonthNames(){
-   return ['January','February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+export function arrayOfMonths(startMonth:Date, endMonth:Date){
+   const arrayOfMonths:Date[]=[];
+   const numberOfMonths = dayjs(endMonth).diff(startMonth, 'month');
+   for(let i=0; i<=numberOfMonths; i++){
+      arrayOfMonths.push(dayjs(startMonth).add(i, 'month').toDate())
+   }
+   return arrayOfMonths
 }
