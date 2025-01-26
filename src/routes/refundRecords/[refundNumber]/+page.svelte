@@ -1,6 +1,6 @@
 <script lang="ts">
 	import InvoiceEmployee from '$lib/displayComponents/InvoiceEmployee.svelte';
-	import PaymentRecord from '$lib/displayComponents/PaymentRecord.svelte';
+	import PaymentRecordEmployee from '$lib/displayComponents/PaymentRecordEmployee.svelte';
     import RefundRecordDisplay from '$lib/displayComponents/RefundRecordDisplay.svelte';
 	import User from '$lib/displayComponents/User.svelte';
     import type { PageData } from './$types';
@@ -15,7 +15,7 @@
             <User user={customer} />
         {/if}
         {#if data.paymentRecord}
-            <PaymentRecord paymentRecord={data.paymentRecord} />
+            <PaymentRecordEmployee paymentRecord={data.paymentRecord} />
         {/if}
         {#if data.invoice}
             <InvoiceEmployee invoice={data.invoice} />

@@ -1,6 +1,6 @@
 <script lang="ts">
    import LeaseEmployee from '$lib/displayComponents/LeaseEmployee.svelte';
-	import PaymentRecord from '$lib/displayComponents/PaymentRecord.svelte';
+	import PaymentRecordEmployee from '$lib/displayComponents/PaymentRecordEmployee.svelte';
    import Header from '$lib/Header.svelte';
    import type { PageData } from './$types';
 
@@ -14,6 +14,6 @@
    {@const paymentRecord = data.paymentRecords.find((paymentRecord) => paymentRecord.invoiceNum === invoice?.invoiceNum)}
    <LeaseEmployee lease={lease} />
    {#if paymentRecord}
-      <PaymentRecord paymentRecord={paymentRecord}/>
+      <PaymentRecordEmployee paymentRecord={paymentRecord}/>
    {/if}
 {/each}

@@ -6,7 +6,7 @@
 	import { onMount } from 'svelte';
 	import TextInput from '$lib/formComponents/TextInput.svelte';
 	import FormSubmitWithProgress from '$lib/formComponents/FormSubmitWithProgress.svelte';
-	import PaymentRecord from '$lib/displayComponents/PaymentRecord.svelte';
+	import PaymentRecord from '$lib/displayComponents/PaymentRecordEmployee.svelte';
 	import FormMessage from '$lib/formComponents/FormMessage.svelte';
 	import { goto } from '$app/navigation';
     let { data }: { data: PageData } = $props();

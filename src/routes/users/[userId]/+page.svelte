@@ -7,7 +7,7 @@
    import User from '$lib/displayComponents/User.svelte';
    import type { PageData } from './$types';
 	import LeaseEndForm from '$lib/forms/LeaseEndForm.svelte';
-	import PaymentRecord from '$lib/displayComponents/PaymentRecord.svelte';
+	import PaymentRecordEmployee from '$lib/displayComponents/PaymentRecordEmployee.svelte';
 
    let { data }: { data: PageData } = $props();
    let addressModalOpen = $state(false);
@@ -71,7 +71,7 @@
    <div class="flex">
       <InvoiceEmployee invoice={invoice} />
       {#if paymentRecord}
-         <PaymentRecord paymentRecord={paymentRecord}/>
+         <PaymentRecordEmployee paymentRecord={paymentRecord}/>
       {/if}
    </div>
    {/each}

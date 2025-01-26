@@ -7,7 +7,7 @@
    import InvoiceEmployee from '$lib/displayComponents/InvoiceEmployee.svelte';
    import { Elements, PaymentElement } from 'svelte-stripe';
 	import { goto } from '$app/navigation';
-	import PaymentRecord from '$lib/displayComponents/PaymentRecord.svelte';
+	import PaymentRecord from '$lib/displayComponents/PaymentRecordEmployee.svelte';
 
     let { data }: { data: PageData } = $props();
     let stripe:Stripe | null = $state(null);
