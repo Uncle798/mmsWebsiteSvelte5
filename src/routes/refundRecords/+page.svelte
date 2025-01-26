@@ -10,21 +10,6 @@
 	import Search from '$lib/forms/Search.svelte';
 
    let { data }: { data: PageData } = $props();
-   let { form, errors, constraints, enhance, message } = superForm(data.searchForm,{
-        onChange(event){
-            const inputText = event.get('search')
-            if(inputText){
-                search=inputText!;
-            }
-        },
-        onSubmit(input) {
-            input.cancel();
-            const inputText = input.formData.get('search')?.toString();
-            if(search){
-                search=inputText!;
-            }
-        },
-    });
    let pageNum = $state(1);
    let size = $state(25);
    let search = $state('')
