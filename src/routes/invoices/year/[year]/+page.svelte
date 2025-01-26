@@ -4,6 +4,7 @@
 	import Placeholder from '$lib/displayComponents/Placeholder.svelte';
 	import User from '$lib/displayComponents/User.svelte';
 	import Search from '$lib/forms/Search.svelte';
+	import dayjs from 'dayjs';
     import type { PageData } from './$types';
     import type { Invoice } from '@prisma/client';
 
@@ -18,7 +19,7 @@
 {#await data.invoices}
     Loading {data.invoiceCount} invoices or select month:
         {#each data.months as month}
-            <a href="/invoices/year/month/{month}" class="btn">{month}</a>
+            <a href="/invoices/year/{dayjs(month).format('YYYY')}/month/{month.getMonth()+1}" class="btn">{dayjs(month).format('MMMM')}</a>
         {/each}
     <Placeholder />
 {:then invoices}
