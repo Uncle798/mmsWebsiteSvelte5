@@ -3,14 +3,14 @@ import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { superValidate } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
-import { refundFormSchema } from '$lib/formSchemas/schemas';
-
+import { refundFormSchema, searchFormSchema } from '$lib/formSchemas/schemas';
 export const load = (async (event) => {
    if(!event.locals.user?.employee){
       redirect(302, '/login?toast=employee')
    }
    const refundForm = await superValidate(zod(refundFormSchema));
-   const deposits = await prisma.paymentRecord.findMany({
+   const searchForm = await superValidate(zod(searchFormSchema));
+   const deposits = prisma.paymentRecord.findMany({
       where: {
          AND: [
             { 
@@ -25,5 +25,6 @@ export const load = (async (event) => {
          paymentCreated: 'desc'
       }
    })
-   return { deposits, refundForm };
+   
+   return { deposits, refundForm, searchForm,  };
 }) satisfies PageServerLoad;
