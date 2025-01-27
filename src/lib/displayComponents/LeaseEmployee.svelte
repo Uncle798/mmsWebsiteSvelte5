@@ -17,5 +17,5 @@
    {/if}
    <p>Lease price ${lease.price}</p>
    <p>lease EID: {lease.anvilEID}</p>
-   <p>leaseID: {lease.leaseId}</p>
+   <p>leaseID: <a href="/leases/{lease.leaseId}">{lease.leaseId}</a></p>
 </div>
