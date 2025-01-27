@@ -6,6 +6,7 @@ import { searchFormSchema } from '$lib/formSchemas/schemas';
 import { redirect } from '@sveltejs/kit';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc'
+import { arrayOfMonths } from '$lib/server/utils';
 
 dayjs.extend(utc)
 
@@ -40,5 +41,6 @@ export const load = (async (event) => {
          }
     });
     const customers = prisma.user.findMany()
-    return { paymentRecords, searchForm, paymentRecordCount, customers };
+    const months = arrayOfMonths(startDate, endDate);
+    return { paymentRecords, searchForm, paymentRecordCount, customers, months };
 }) satisfies PageServerLoad;
