@@ -2,10 +2,12 @@ import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { superValidate } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
-import { searchFormSchema } from '$lib/formSchemas/schemas';
+import { dateSearchFormSchema, searchFormSchema } from '$lib/formSchemas/schemas';
 import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc'
 import { prisma } from '$lib/server/prisma';
-import { arrayOfMonthNames } from '$lib/server/utils';
+import { arrayOfMonths } from '$lib/server/utils';
+dayjs.extend(utc)
 
 export const load = (async (event) => {
    if(!event.locals.user?.employee){
@@ -13,8 +15,9 @@ export const load = (async (event) => {
    }
    const year = event.params.year
    const searchForm = await superValidate(zod(searchFormSchema));
-   const startDate = dayjs(`${year}-01-01 00:00`).toDate();
-   const endDate = dayjs(`${year}-12-31 23:59`).toDate();
+   const dateSearchForm = await superValidate(zod(dateSearchFormSchema));
+   const startDate = dayjs.utc(year).startOf('year').toDate();
+   const endDate = dayjs.utc(year).endOf('year').toDate();
    const refunds = prisma.refundRecord.findMany({
       where: {
          AND:[
@@ -32,6 +35,6 @@ export const load = (async (event) => {
       }
    })
    const customers = prisma.user.findMany();
-   const months = arrayOfMonthNames()
-   return { refunds, refundCount, customers, months, searchForm };
+   const months = arrayOfMonths(startDate, endDate)
+   return { refunds, refundCount, customers, months, searchForm, dateSearchForm };
 }) satisfies PageServerLoad;
