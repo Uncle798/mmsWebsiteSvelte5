@@ -23,7 +23,7 @@ export const load:PageServerLoad = async (event) =>{
       const unitNotesForm = await superValidate(zod(unitNotesFormSchema), {id: 'unitNotesForm'});
       const leaseEndForm = await superValidate(zod(leaseEndFormSchema));
       const searchForm = await superValidate(zod(searchFormSchema));
-      const leases = await prisma.lease.findMany({
+      const leases =  prisma.lease.findMany({
          orderBy: {
             unitNum: 'asc'
          },
@@ -35,7 +35,7 @@ export const load:PageServerLoad = async (event) =>{
             unit: true,
          }
       });
-      const customers = await prisma.user.findMany()
+      const customers = prisma.user.findMany()
       const units = await prisma.unit.findMany({
          orderBy: {
             num: 'asc'
