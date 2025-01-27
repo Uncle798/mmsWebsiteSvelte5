@@ -23,7 +23,9 @@ export default {
 				themes.cerberus,
 				themes.pine,
 				themes.concord,
-				themes.modern
+				themes.modern,
+				themes.vintage,
+				themes.hamlindigo
 			]
 		})
 	]
