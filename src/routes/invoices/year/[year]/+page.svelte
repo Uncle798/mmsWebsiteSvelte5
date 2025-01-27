@@ -12,12 +12,13 @@
     let pageNum = $state(1);
     let size = $state(25);
     let search = $state('');
+    const numberFormatter = new Intl.NumberFormat('en-US')
     let slicedInvoices = $derived((invoices:Invoice[]) => invoices.slice((pageNum-1)*size, pageNum*size));
     let searchedInvoices = $derived((invoices:Invoice[]) => invoices.filter((invoice) => invoice.invoiceNum.toString().includes(search)))
 </script>
 
 {#await data.invoices}
-    Loading {data.invoiceCount} invoices or select month:
+    Loading {numberFormatter.format(data.invoiceCount)} invoices or select month:
         {#each data.months as month}
             <a href="/invoices/year/{dayjs(month).format('YYYY')}/month/{month.getMonth()+1}" class="btn">{dayjs(month).format('MMMM')}</a>
         {/each}

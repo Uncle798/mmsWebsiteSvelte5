@@ -12,13 +12,14 @@
    let { data }: { data: PageData } = $props();
    let pageNum = $state(1);
    let size = $state(25);
-   let search = $state('')
+   let search = $state('');
+   const numberFormatter = new Intl.NumberFormat('en-US');
    let slicedRefunds = $derived((refunds:RefundRecord[]) => refunds.slice((pageNum-1)*size, pageNum*size))
    let searchRefunds = $derived((refunds:RefundRecord[]) => refunds.filter((refund) => refund.refundNumber.toString().includes(search)))
 </script>
 <Header title='Refunds' />
 {#await data.refunds}
-   loading {data.refundCount} refunds {#if data.years}
+   loading {numberFormatter.format(data.refundCount)} refunds {#if data.years}
    or select year: 
    {#each data.years as year}
        <a href="/refundRecords/year/{year}" class="btn">{year.toString()},</a>

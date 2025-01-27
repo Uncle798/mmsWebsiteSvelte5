@@ -13,14 +13,15 @@
     let { data }: { data: PageData } = $props();
     let pageNum = $state(1);
     let size = $state(25);
-    let search = $state('')
+    let search = $state('');
+    const numberFormatter = new Intl.NumberFormat('en-US');
     let slicedSource = $derived((paymentRecords:PaymentRecord[]) => paymentRecords.slice((pageNum -1) * size, pageNum*size));
     let searchedPaymentRecords = $derived((paymentRecords:PaymentRecord[]) => paymentRecords.filter((paymentRecord) => paymentRecord.paymentNumber.toString().includes(search) ))
 </script>
 
 <Header title='Payment Records' />
 {#await data.paymentRecords}
-    loading {data.paymentCount} payment records
+    loading {numberFormatter.format(data.paymentCount)} payment records
     {#if data.years}
         Select year: 
         {#each data.years as year}

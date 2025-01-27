@@ -15,12 +15,13 @@
     let pageNum = $state(1);
     let size = $state(25);
     let search = $state('');
+    const numberFormatter = new Intl.NumberFormat('en-US')
     let slicedInvoices = $derived((invoices:Invoice[]) => invoices.slice((pageNum-1)*size, pageNum*size));
     let searchedInvoices = $derived((invoices:Invoice[]) => invoices.filter((invoice) => invoice.invoiceNum.toString().includes(search)))
 </script>
 <Header title='All invoices' />
 {#await data.invoices}
-    Loading {data.invoiceCount} invoices, 
+    Loading {numberFormatter.format(data.invoiceCount)} invoices, 
     {#if data.years}
         or select year: 
         {#each data.years as year}

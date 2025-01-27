@@ -14,13 +14,14 @@
    let pageNum = $state(1);
    let size = $state(25);
    let search = $state('');
+   const numberFormatter = new Intl.NumberFormat('en-US')
    let slicedSource = $derived((invoices:Invoice[]) => invoices.slice((pageNum-1)*size, pageNum*size));
    let searchedInvoices = $derived((invoices:Invoice[]) => invoices.filter((invoice) => invoice.invoiceNum.toString().includes(search)))
 </script>
 <Header title='Unpaid invoices' />
 
 {#await data.invoices}
-   Loading {data.invoiceCount} invoices 
+   Loading {numberFormatter.format(data.invoiceCount)} invoices 
 {:then invoices} 
 <form method="POST" use:enhance>
    <div>

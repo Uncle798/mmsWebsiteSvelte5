@@ -16,7 +16,7 @@
     let refundModalOpen=$state(false); 
     let pageNum = $state(1);
     let size = $state(25);
-    let search = $state('')
+    let search = $state('');
     let slicedSource = $derived((paymentRecords:PaymentRecord[]) => paymentRecords.slice((pageNum -1) * size, pageNum*size));
     let searchedPaymentRecords = $derived((paymentRecords:PaymentRecord[]) => paymentRecords.filter((paymentRecord) => paymentRecord.paymentNumber.toString().includes(search) )) 
     let paymentRecord=$state<PaymentRecord>({} as PaymentRecord);
