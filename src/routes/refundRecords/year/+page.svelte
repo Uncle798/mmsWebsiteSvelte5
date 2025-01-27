@@ -5,5 +5,5 @@
 </script>
 Select year: 
 {#each data.years as year}
-  <a href="/paymentRecords/year/{year}" class="btn">{year}</a>
+  <a href="/refundRecords/year/{year}" class="btn">{year}</a>
 {/each}
