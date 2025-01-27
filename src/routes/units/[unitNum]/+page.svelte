@@ -51,7 +51,6 @@
                         {#if customer}
                             <User user={customer} />
                         {/if}
-
                     {/if}
                 </div>
         {/each}
