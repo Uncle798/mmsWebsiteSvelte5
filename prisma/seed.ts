@@ -5,6 +5,7 @@ import  unitData from './unitData'
 import pricingData  from './pricingData'
 import sizeDescription  from './sizeDescription'
 import { PartialAddress, PartialLease, PartialInvoice, PartialPaymentRecord, PartialUnit,  PartialDiscount } from '../src/lib/server/partialTypes'
+
 const numUsers=unitData.length + 1500;
 const earliestStarting = new Date('2018-01-01');
 
@@ -186,7 +187,7 @@ function arrayOfMonths(startDate:Date, endDate:Date){
    return dateArray;
 }
 
-async function createLease(unit: Unit, leaseStart, leaseEnd: Date | null, randEmployee: User, customer: User, address:Address) {
+async function createLease(unit: Unit, leaseStart:Date, leaseEnd: Date | null, randEmployee: User, customer: User, address:Address) {
    const leaseEnded:Date | null = leaseEnd;
    const lease:PartialLease = {
        customerId: customer.id,
@@ -194,8 +195,8 @@ async function createLease(unit: Unit, leaseStart, leaseEnd: Date | null, randEm
        addressId: address.addressId,
        unitNum: unit.num,
        price: unit.advertisedPrice,
-       leaseEffectiveDate: new Date(leaseStart),
-       leaseReturnedAt: new Date(leaseStart),
+       leaseEffectiveDate: leaseStart,
+       leaseReturnedAt: leaseStart,
        leaseEnded,
    };
    return lease;
@@ -321,48 +322,44 @@ async function  main (){
    const unitEndTime = dayjs(new Date);
    console.log(`🚪 ${units.length} units created in ${unitEndTime.diff(userEndTime, 'ms')} ms`);
    const leases:PartialLease[]=[];
-   let leaseStart = dayjs(earliestStarting);
-   const today = dayjs();
-   let numMonthsLeft = today.diff(leaseStart, 'months');
    const employees = await prisma.user.findMany({
       where:{
          employee: true
       }
    })
-   let lengthOfLease = Math.floor(Math.random()*numMonthsLeft);
    for await (const unit of units) {
+      let leaseStart = dayjs(earliestStarting);
+      const today = dayjs();
+      let numMonthsLeft = today.diff(leaseStart, 'months');
+      let lengthOfLease = Math.floor(Math.random()*numMonthsLeft);
       const randEmployee = employees[Math.floor(Math.random()*employees.length)];
       let leaseEnd = leaseStart.add(lengthOfLease, 'months');
       let customer = users.pop();
-      numMonthsLeft = today.diff(leaseStart);
+      numMonthsLeft = today.diff(leaseStart, 'months');
       if(!customer){
          break
       }
       let contact = dbContacts.find((c) => c.userId === customer!.id);
-      while (numMonthsLeft > 3) {
-         const lease = await createLease(unit, 
-            leaseStart.toDate(), 
-            leaseEnd.toDate(), 
-            randEmployee, 
-            customer!,
-            contact!,
-         );
+      while(numMonthsLeft > 3 ){
+         const lease = await createLease(unit, leaseStart.toDate(), leaseEnd.toDate(), randEmployee, customer!, contact!);
          leases.push(lease);
-         leaseStart = leaseEnd.add(1,'months');
+         customer = users.pop();
+         if(!customer){
+            break;
+         }
+         contact = dbContacts.find((c) => c.userId === customer?.id);
+         leaseStart = leaseEnd.add(2,'months');
          numMonthsLeft = today.diff(leaseStart, 'months');
-         lengthOfLease = Math.floor(Math.random()*numMonthsLeft);
-         if(lengthOfLease > 78){
-            lengthOfLease = 1
+         lengthOfLease = Math.floor(Math.random() * numMonthsLeft);
+         if(lengthOfLease < 3) {
+            lengthOfLease = 3;
          }
          leaseEnd = leaseStart.add(lengthOfLease, 'months');
-         customer = users.pop();
-         contact = dbContacts.find((c) => c.userId === customer?.id);
-         leaseStart = dayjs(leaseEnd.add(Math.floor(Math.random()*3)));
-      }
+      } 
    }
    for (const lease of leases){
       const leaseEnd = dayjs(lease.leaseEnded);
-      if(today.diff(leaseEnd, 'months') <3){
+      if(dayjs().diff(leaseEnd, 'months') < 4 || dayjs(leaseEnd).diff(new Date()) > 0 ){
          lease.leaseEnded = null;
       }
    }
@@ -413,7 +410,7 @@ async function  main (){
    const paymentRecords:PartialPaymentRecord[]=[];
    for await (const invoice of dbInvoices){
       const paymentDate = dayjs(invoice.invoiceCreated).add(1, 'months');
-      if(dayjs(today).diff(paymentDate, 'days') < 30) {
+      if(dayjs().diff(paymentDate, 'days') < 30) {
          continue;
       }
       const employee = employees[Math.floor(Math.random()*employees.length)];
