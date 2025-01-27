@@ -9,9 +9,11 @@
 	import UnitPricingForm from '$lib/forms/UnitPricingForm.svelte';
 	import LeaseEndForm from '$lib/forms/LeaseEndForm.svelte';
 	import { Modal } from '@skeletonlabs/skeleton-svelte';
+
     let modalOpen = $state(false);
     let currentLeaseId = $state('')
     let { data }: { data: PageData } = $props();
+    const formattedCurrency = new Intl.NumberFormat('en-US', {style: 'currency', currency: 'USD'})
 </script>
 
 <Modal
@@ -27,22 +29,29 @@
 <Header title='loading...' />
 ...loading unit
 {:else}
-    {@const { lease } = data.unit}
     <Header title='Unit number: {data.unit.num}' />
     <div transition:fade={{duration:600}}>
-        <UnitEmployee unit={data.unit}/>
+        <div class="flex">
+            <UnitEmployee unit={data.unit}/>
+            Total revenue from this unit: {formattedCurrency.format(data.totalRevenue)}
+        </div>
         <UnitNotesForm data={data.unitNotesForm} unit={data.unit} />
         <UnitPricingForm data={data.unitPricingForm} size={data.unit.size} oldPrice={data.unit.advertisedPrice} unitPricingFormModalOpen={modalOpen} />
-        {#each lease as l}
-            {@const {customer} = l}
+        {#each data.leases as lease}
+            {@const { customer } = lease}
                 <div class="flex">
-                    {#if !l.leaseEnded}                        
-                        <LeaseEmployee lease={l} />
-                        <button class="btn" onclick={()=>{modalOpen=true; currentLeaseId=l.leaseId}}>End lease</button>
-                        <User user={customer} />
-                    {:else}
-                        <LeaseEmployee lease={l} />
-                        <User user={customer} />
+                    {#if !lease.leaseEnded}                        
+                        <LeaseEmployee lease={lease} />
+                        <button class="btn" onclick={()=>{modalOpen=true; currentLeaseId=lease.leaseId}}>End lease</button>
+                        {#if customer}
+                            <User user={customer} />
+                        {/if}
+                        {:else}
+                        <LeaseEmployee lease={lease} />
+                        {#if customer}
+                            <User user={customer} />
+                        {/if}
+
                     {/if}
                 </div>
         {/each}
