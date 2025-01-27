@@ -65,7 +65,7 @@
          if(invoice){
                invoiceSelected = true
                $form.paymentAmount=invoice.invoiceAmount;
-               $form.paymentNotes=`Payment for invoice number: ${invoice.invoiceNum}`
+               $form.paymentNotes=`Payment for invoice number: ${invoice.invoiceNum} ${invoice.invoiceNotes}`
                $form.deposit=invoice.deposit;
             }
       }
@@ -117,7 +117,7 @@
                const invoice = invoices.find((invoice) => invoice.invoiceNum.toString() === details.value[0])
                if(invoice){
                   $form.paymentAmount=invoice.invoiceAmount;
-                  $form.paymentNotes=`Payment for invoice number: ${invoice.invoiceNum}`
+                  $form.paymentNotes=`Payment for invoice number: ${invoice.invoiceNum}, ${invoice.invoiceNotes}`
                }
                invoiceSelected = true
             }}
