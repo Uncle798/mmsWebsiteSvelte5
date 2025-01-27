@@ -212,3 +212,9 @@ export const refundFormSchema = z.object({
    refundType: z.enum(['CASH', 'CHECK', 'STRIPE']), 
 })
 export type RefundFormSchema = typeof refundFormSchema;
+
+export const dateSearchFormSchema = z.object({
+   startDate: z.date().optional(),
+   endDate: z.date().optional()
+});
+export type DateSearchFormSchema = typeof dateSearchFormSchema;
