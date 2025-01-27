@@ -10,7 +10,7 @@ export const load = (async (event) => {
       return fail(404, {message:'token not found'})
    }
    if(result === 'expired'){
-      redirect(302, '/login/magicLink?toast=linkExpired');
+      redirect(302, '/login?toast=linkExpired');
    }
    const user = await prisma.user.update({
       where:{
@@ -23,19 +23,26 @@ export const load = (async (event) => {
    if(!user){
       return fail(500)
    }
-   const token = await generateSessionToken();
+   const token =  generateSessionToken();
    const session = await createSession(token, user.id!);
    setSessionTokenCookie(event, token, session.expiresAt);
    const redirectTo = event.url.searchParams.get('redirectTo');
    const unitNum = event.url.searchParams.get('unitNum');
-   if(redirectTo === 'home'){
-      redirect(303, '/')
+   switch (redirectTo) {
+      case 'home':
+         redirect(303, '/');
+         break;
+      case 'newLease':
+         redirect(302, `/newLease?unitNum=${unitNum}`)
+         break;
+      case 'units':
+         if(unitNum){
+            redirect(302, `/units/${unitNum}`)
+         }
+         redirect(302, '/units')
+         break;
+      default:
+         redirect(302, '/units/available');
+         break;
    }
-   if(redirectTo === 'newLease'){
-      return redirect(302, `/${redirectTo}?unitNum=${unitNum}`)
-   }
-   if(redirectTo === 'invoicePay'){
-      redirect(303, '/invoices/pay')
-   }
-   redirect(302, '/units/available');
 }) satisfies PageServerLoad;
