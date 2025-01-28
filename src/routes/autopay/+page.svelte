@@ -4,6 +4,7 @@
 	import { createEventDispatcher, getContext, mount, onMount } from 'svelte';
 	import { loadStripe } from '@stripe/stripe-js';
 	import { PUBLIC_STRIPE_TEST } from '$env/static/public';
+	import Header from '$lib/Header.svelte';
 
     let { data }: { data: PageData } = $props();
     let stripe:Stripe | null = $state(null);
@@ -32,6 +33,7 @@
         return clientSecret;
     }
 </script>
+<Header title="Sign up for auto pay" />
 {#if !mounted}
     ...loading
     {:else}
