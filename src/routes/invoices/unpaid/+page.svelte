@@ -4,7 +4,9 @@
 	import { superForm } from 'sveltekit-superforms';
    import type { PageData } from './$types';
 	import type { Invoice } from '@prisma/client';
-   import { Pagination } from '@skeletonlabs/skeleton-svelte';
+   import Pagination from '$lib/displayComponents/Pagination.svelte';
+	import Search from '$lib/forms/Search.svelte';
+	import Revenue from '$lib/displayComponents/Revenue.svelte';
    let { data }: { data: PageData } = $props();
    let { form, enhance } = superForm(data.searchForm, {
       onChange(event) {
@@ -14,33 +16,27 @@
    let pageNum = $state(1);
    let size = $state(25);
    let search = $state('');
+   const currencyFormatter = new Intl.NumberFormat('en-US', {style:'currency', currency:'USD'});
    const numberFormatter = new Intl.NumberFormat('en-US')
    let slicedSource = $derived((invoices:Invoice[]) => invoices.slice((pageNum-1)*size, pageNum*size));
    let searchedInvoices = $derived((invoices:Invoice[]) => invoices.filter((invoice) => invoice.invoiceNum.toString().includes(search)))
+   const totalInvoiced = $derived((invoices:Invoice[]) => {
+      let totalInvoiced = 0;
+      invoices.forEach((invoice) => {
+         totalInvoiced += invoice.invoiceAmount
+      });
+      return totalInvoiced;
+   })
 </script>
 <Header title='Unpaid invoices' />
 
 {#await data.invoices}
    Loading {numberFormatter.format(data.invoiceCount)} invoices 
 {:then invoices} 
-<form method="POST" use:enhance>
-   <div>
-       <label class="label-text">Search by invoice number
-           <input type="search" name="search" id="search" class="input" placeholder="Search by invoice number...">
-           <button class="btn" type="button" onclick={()=> {$form.search = ''; search='' }}>Clear</button>
-       </label>
-   </div>
-</form>
+   <Revenue label='Total invoiced without payment record' amount={totalInvoiced(searchedInvoices(invoices))} />
+   <Search data={data.searchForm} bind:search={search} searchType='invoice number' />
    {#each slicedSource(searchedInvoices(invoices)) as invoice }
       <InvoiceEmployee invoice={invoice} />
    {/each}
-   <footer class="flex justify-between">
-      <select name="size" id="size" class="select" bind:value={size}>
-          {#each [5,10,25,50] as v}
-          <option value={v}>Show {v} units per page</option>
-          {/each}
-          <option value={searchedInvoices(invoices).length}>Show all {searchedInvoices(invoices).length} units</option>
-      </select>
-      <Pagination data={searchedInvoices(invoices)} bind:page={pageNum} bind:pageSize={size} alternative/>
-  </footer>
+   <Pagination bind:pageNum={pageNum} bind:size={size} label='invoices' array={searchedInvoices(invoices)}/>
 {/await}
