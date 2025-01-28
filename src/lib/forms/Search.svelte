@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { SearchFormSchema } from "$lib/formSchemas/schemas";
+	import { onMount } from "svelte";
 	import { superForm, type Infer, type SuperValidated } from "sveltekit-superforms";
 
    interface Props {
@@ -11,6 +12,7 @@
    let { form, enhance } = superForm(data, {
       onChange(event){
          search = event.get('search')
+         console.log(search)
       }
    })
 </script>
