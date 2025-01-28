@@ -248,12 +248,18 @@ async function createLease(unit: Unit, leaseStart:Date, leaseEnd: Date | null, r
 
 
 function makeInvoice(lease:Lease, month:Date, deposit:boolean){
+   let invoiceNotes:string ='';
+   if(deposit){
+      invoiceNotes = `Deposit for unit ${lease.unitNum.replace(/^0+/gm,'')}`
+   } else {
+      invoiceNotes = `Rent for unit ${lease.unitNum.replace(/^0+/gm,'')} for ${dayjs(month).format('MMMM YYYY')}`
+   }
    const invoice:PartialInvoice = {
       customerId: lease.customerId,
       leaseId: lease.leaseId,
       invoiceAmount: lease.price,
       invoiceCreated: month,
-      invoiceNotes: `Rent for unit ${lease.unitNum.replace(/^0+/gm,'')} for ${dayjs(month).format('MMMM YYYY')}`,
+      invoiceNotes,
       deposit,
    };
    return invoice;
@@ -268,7 +274,7 @@ async function makeRefund(paymentRecord:PaymentRecord){
          refundAmount: paymentRecord.paymentAmount,
          paymentRecordNum: paymentRecord.paymentNumber,
          refundType: paymentRecord.paymentType,
-         refundNotes: `Refund of payment record number ${paymentRecord.paymentNumber}\n${paymentRecord.paymentNotes}`,
+         refundNotes: `Refund of payment record number ${paymentRecord.paymentNumber}.\n${paymentRecord.paymentNotes}`,
          refundCreated: dayjs(paymentRecord.paymentCreated).add(1, 'months').toDate(),
          refundCompleted: dayjs(paymentRecord.paymentCreated).add(1, 'months').toDate(),
       }
