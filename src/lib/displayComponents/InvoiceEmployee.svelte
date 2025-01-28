@@ -5,11 +5,12 @@
       invoice:Invoice;
    }
    let { invoice }:Props = $props();
+   const currencyFormatter = new Intl.NumberFormat('en-US', {style:'currency', currency:'USD'});
 </script>
 
 <div class="card p-4">
    <p><a href="/invoices/{invoice.invoiceNum}">Invoice Num: {invoice.invoiceNum}</a></p>
-   <p>${invoice.invoiceAmount}</p>
+   <p>invoice amount: {currencyFormatter.format(invoice.invoiceAmount)}</p>
    <p>Created: {dayjs(invoice.invoiceCreated).format('M/D/YYYY')}</p>
    <p>Lease ID:<a href="/leases/{invoice.leaseId}">{invoice.leaseId}</a></p>
    <p>{invoice.invoiceNotes}</p>

@@ -10,7 +10,7 @@
 
 <div class="card p-4">
    <p>Unit number: {lease.unitNum.replace(/^0+/gm, '')}</p>
-   <p>Lease effective date {dayjs(lease.leaseEffectiveDate).format('M/D/YYYY')}</p>
+   <p>Lease effective date: {dayjs(lease.leaseEffectiveDate).format('M/D/YYYY')}</p>
    {#if lease.leaseEnded}
       <p>Lease end date: {dayjs(lease.leaseEnded).format('M/D/YYYY')}</p>
       {:else}

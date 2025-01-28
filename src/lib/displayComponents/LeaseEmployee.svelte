@@ -4,7 +4,8 @@
    interface Props {
       lease: Lease;
    }
-   let { lease }:Props = $props()
+   let { lease }:Props = $props();
+   const currencyFormatter = new Intl.NumberFormat('en-US', {style:'currency', currency:'USD'});
 </script>
 
 <div class="card p-4">
@@ -15,7 +16,7 @@
       {:else}
       <p>Current Customer</p>
    {/if}
-   <p>Lease price ${lease.price}</p>
+   <p>Lease price: {currencyFormatter.format(lease.price)}</p>
    <p>lease EID: {lease.anvilEID}</p>
    <p>leaseID: <a href="/leases/{lease.leaseId}">{lease.leaseId}</a></p>
 </div>

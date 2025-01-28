@@ -6,11 +6,12 @@
       refundRecord: RefundRecord;
    }
    let { refundRecord }:Props = $props();
+   const currencyFormatter = new Intl.NumberFormat('en-US', {style:'currency', currency:'USD'});
 </script>
 
 <div class="card p-4">
    <p>Refund record number: <a href="/refundRecords/{refundRecord.refundNumber}">{refundRecord.refundNumber}</a></p>
-   <p>${refundRecord.refundAmount}</p>
+   <p>Refund amount: {currencyFormatter.format(refundRecord.refundAmount)}</p>
    {#if refundRecord.refundCompleted}
       <p>Refund completed: {dayjs(refundRecord.refundCompleted).format('M/D/YYYY')}</p>
       {:else}
