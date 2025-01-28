@@ -24,7 +24,18 @@ export const load = (async (event) => {
       orderBy: {
          paymentCreated: 'desc'
       }
+   });
+   const depositCount = await prisma.paymentRecord.count({
+      where: {
+         AND: [
+            { 
+               deposit: true
+            },
+            {
+               refunded: false
+            }
+         ]
+      },
    })
-   
-   return { deposits, refundForm, searchForm,  };
+   return { deposits, refundForm, searchForm, depositCount, };
 }) satisfies PageServerLoad;
