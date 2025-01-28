@@ -24,6 +24,9 @@ export const load = (async (event) => {
             { refundCreated: {gt: startDate } },
             { refundCompleted: {lt: endDate } },
          ]
+      },
+      orderBy: {
+         refundCreated: 'asc'
       }
    })
    const refundCount = await prisma.refundRecord.count({
