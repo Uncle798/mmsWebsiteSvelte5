@@ -1,20 +1,37 @@
 <script lang="ts">
    import Address from '$lib/displayComponents/Address.svelte';
 	import InvoiceEmployee from '$lib/displayComponents/InvoiceEmployee.svelte';
-	import LeaseEmployee from '$lib/displayComponents/LeaseEmployee.svelte';
-   import AddressForm from '$lib/forms/AddressForm.svelte';
-   import { Modal } from '@skeletonlabs/skeleton-svelte';
-   import User from '$lib/displayComponents/User.svelte';
-   import type { PageData } from './$types';
+    import LeaseEmployee from '$lib/displayComponents/LeaseEmployee.svelte';
+    import AddressForm from '$lib/forms/AddressForm.svelte';
+    import { Modal } from '@skeletonlabs/skeleton-svelte';
+    import User from '$lib/displayComponents/User.svelte';
+    import type { PageData } from './$types';
 	import LeaseEndForm from '$lib/forms/LeaseEndForm.svelte';
 	import PaymentRecordEmployee from '$lib/displayComponents/PaymentRecordEmployee.svelte';
+	import Header from '$lib/Header.svelte';
+    import type { PaymentRecord } from '@prisma/client';
+    let { data }: { data: PageData } = $props();
+    let addressModalOpen = $state(false);
+    let leaseEndModalOpen = $state(false);
+    let search = $state('')
+    let pageNum = $state(1);
+    let size = $state(25);
 
-   let { data }: { data: PageData } = $props();
-   let addressModalOpen = $state(false);
-   let leaseEndModalOpen = $state(false)
+    let slicedSource = $derived((paymentRecords:PaymentRecord[]) => paymentRecords.slice((pageNum -1) * size, pageNum*size));
+    let searchedPayments = $derived((paymentRecords:PaymentRecord[]) => paymentRecords.filter((paymentRecord) => paymentRecord.paymentNumber.toString().includes(search) ))
+    let totalRevenue = $derived((paymentRecords:PaymentRecord[]) => {
+        let totalRevenue = 0;
+        paymentRecords.forEach((paymentRecord) => {
+            if(paymentRecord.paymentCompleted){
+                totalRevenue += paymentRecord.paymentAmount
+            }
+        })
+        return totalRevenue;
+    })
 </script>
 
 {#if data.dbUser}
+   <Header title='{data.dbUser.givenName} {data.dbUser.familyName}' />
    <User user={data.dbUser}/>
 {:else}
 ...loading user
@@ -38,12 +55,11 @@
 {:else}
    ...loading address
 {/if}
-
-
-{#if !data.leases}
+<div class="card m-2">
+{#await data.leases}
    ...loading leases
-{:else if data.leases}
-      {#each data.leases as lease}
+{:then leases}
+      {#each leases as lease}
          <LeaseEmployee lease={lease} />
          {#if !lease?.leaseEnded}
             <Modal
@@ -61,18 +77,30 @@
             </Modal>
          {/if}
       {/each}
-{/if}
-
-{#if !data.invoices}
-   ...loading invoices
-{:else if data.invoices}
-   {#each data.invoices as invoice}
-   {@const paymentRecord = data.payments.find((payment) => payment.invoiceNum === invoice.invoiceNum)}
-   <div class="flex">
-      <InvoiceEmployee invoice={invoice} />
-      {#if paymentRecord}
-         <PaymentRecordEmployee paymentRecord={paymentRecord}/>
-      {/if}
-   </div>
-   {/each}
-{/if}
+{/await}
+</div>
+<div>
+{#await data.invoices}
+    <div class='col-span-1'>
+        ...loading invoices
+    </div>
+{:then invoices}
+   {#await data.paymentRecords}
+      ...loading payment records
+   {:then paymentRecords} 
+      {#await data.refunds}
+         ...loading refunds
+      {:then refunds} 
+         {#each invoices as invoice}
+         {@const paymentRecord = paymentRecords.find((payment) => payment.invoiceNum === invoice.invoiceNum)}
+         <div class="flex columns-3">
+            <InvoiceEmployee invoice={invoice} />
+            {#if paymentRecord}
+               <PaymentRecordEmployee paymentRecord={paymentRecord}/>
+            {/if}
+         </div>
+         {/each}
+      {/await}
+   {/await}
+{/await}    
+</div>
