@@ -10,13 +10,13 @@ export const load = (async (event) => {
    const registerForm = await superValidate(zod(registerFormSchema));
    const leaseForm = await superValidate(zod(newLeaseSchema))
    const userId = event.url.searchParams.get('userId');
-   let user:PartialUser | null = null;
+   let customer:PartialUser | null = null;
    if(userId){
-      user = await prisma.user.findUnique({
+      customer = await prisma.user.findUnique({
          where: {
             id: userId
          }
       })
    }
-   return { registerForm, user, leaseForm };
+   return { registerForm, customer, leaseForm };
 }) satisfies PageServerLoad;
