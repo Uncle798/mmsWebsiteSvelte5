@@ -1,21 +1,29 @@
 <script lang="ts">
 	import DateInput from "$lib/formComponents/DateInput.svelte";
 	import type { DateSearchFormSchema } from "$lib/formSchemas/schemas";
+	import dayjs from "dayjs";
+	import { onMount } from "svelte";
 	import { superForm, type Infer, type SuperValidated } from "sveltekit-superforms";
 
 
    interface Props {
       data: SuperValidated<Infer<DateSearchFormSchema>>;
       startDate: Date | undefined;
-      endDate: Date | undefined;
+      endDate: Date | undefined ;
+      minDate: Date | undefined;
+      maxDate: Date | undefined;
    }
-   let { data, startDate=$bindable(), endDate=$bindable() }:Props = $props();
+   let { data, startDate=$bindable(), endDate=$bindable(), minDate, maxDate }:Props = $props();
 
    let { form, message, enhance, constraints, errors } = superForm(data, {
       onChange(event) {
-         startDate = event.get('startDate')
-         endDate = event.get('endDate')
+         startDate = dayjs(event.get('startDate')).toDate();
+         endDate = dayjs(event.get('endDate')).toDate()
       },
+   })
+   onMount(() => {
+      $form.startDate = startDate;
+      $form.endDate = endDate;
    })
 </script>
 
@@ -28,6 +36,8 @@
             constraints={$constraints.startDate}
             label='Start date'
             name='startDate'
+            min={minDate}
+            max={maxDate}
          />
          <button class="btn" type="button" onclick={()=>{ $form.startDate=undefined; startDate=undefined}}>Clear start date</button>
       </div>
@@ -38,6 +48,8 @@
             constraints={$constraints.endDate}
             label='End date'
             name='endDate'
+            min={minDate}
+            max={maxDate}
          />
          <button class="btn" type="button" onclick={()=>{ $form.endDate=undefined; endDate=undefined}}>Clear end date</button>
       </div>
