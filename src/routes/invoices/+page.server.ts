@@ -3,7 +3,7 @@ import { superValidate } from 'sveltekit-superforms';
 import type { PageServerLoad } from './$types';
 import { redirect } from '@sveltejs/kit';
 import { zod } from 'sveltekit-superforms/adapters';
-import { searchFormSchema } from '$lib/formSchemas/schemas';
+import { dateSearchFormSchema, searchFormSchema } from '$lib/formSchemas/schemas';
 import { arrayOfYears } from '$lib/server/utils';
 
 export const load = (async (event) => {
@@ -11,6 +11,7 @@ export const load = (async (event) => {
         redirect(302, '/login?toast=employee')
      }
     const searchForm = await superValidate(zod(searchFormSchema));
+    const dateSearchForm = await superValidate(zod(dateSearchFormSchema));
     const invoiceCount = await prisma.invoice.count();
     const firstInvoice = await prisma.invoice.findFirst({
         orderBy: {
@@ -28,5 +29,5 @@ export const load = (async (event) => {
         }
     })
     const customers = prisma.user.findMany()
-    return { invoices, invoiceCount, searchForm, years, customers };
+    return { invoices, invoiceCount, searchForm, years, customers, dateSearchForm };
 }) satisfies PageServerLoad;
