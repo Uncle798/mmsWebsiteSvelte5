@@ -9,6 +9,7 @@
 	import DateSearch from '$lib/forms/DateSearch.svelte';
 	import { onMount } from 'svelte';
 	import Pagination from '$lib/displayComponents/Pagination.svelte';
+	import Revenue from '$lib/displayComponents/Revenue.svelte';
     dayjs.extend(utc)
     let { data }: { data: PageData } = $props();
     let size = $state(25)
@@ -29,7 +30,7 @@
         console.log('wrapper maxDate', maxDate)
     })
     const numberFormatter = new Intl.NumberFormat('en-US');
-    const currencyFormatter = new Intl.NumberFormat('en-US', {style:'currency', currency:'USD'})
+    const currencyFormatter = new Intl.NumberFormat('en-US', {style:'currency', currency:'USD'});
     let slicedRefunds = $derived((refunds:RefundRecord[]) => refunds.slice((pageNum-1)*size, pageNum*size))
     let searchRefunds = $derived((refunds:RefundRecord[]) => refunds.filter((refund) => refund.refundNumber.toString().includes(search)))
     let dateSearchRefunds = $derived((refunds:RefundRecord[]) => refunds.filter((refund) => {
@@ -56,9 +57,7 @@
     {#await data.customers}
     Loading customers
     {:then customers} 
-        <div>
-            Total refunds: {currencyFormatter.format((totalRevenue(searchRefunds(dateSearchRefunds(refunds)))))}
-        </div>
+        <Revenue amount={totalRevenue(searchRefunds(dateSearchRefunds(refunds)))} label='Amount refunded'/>
         <Search data={data.searchForm} bind:search={search} searchType='refund record' />
         <DateSearch data={data.dateSearchForm} bind:startDate={startDate} bind:endDate={endDate} minDate={minDate} maxDate={maxDate} />
         {#each slicedRefunds(searchRefunds(dateSearchRefunds(refunds))) as refund}
