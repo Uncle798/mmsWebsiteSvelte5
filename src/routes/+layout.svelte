@@ -62,7 +62,7 @@
 	}} 
 >
 {#snippet trigger()}
-	<Menu class='mx-2' />	
+		<Menu class='mx-2' />	
 {/snippet}
 {#snippet content()}
 	<article>
