@@ -19,12 +19,13 @@
 </script>
 <Header title='Refunds' />
 {#await data.refunds}
-   loading {numberFormatter.format(data.refundCount)} refunds {#if data.years}
-   or select year: 
-   {#each data.years as year}
-       <a href="/refundRecords/year/{year}" class="btn">{year.toString()},</a>
-   {/each}
-{/if}
+   loading {numberFormatter.format(data.refundCount)} refunds 
+   {#if data.years}
+      or select year: 
+      {#each data.years as year}
+         <a href="/refundRecords/year/{year}" class="btn">{year.toString()},</a>
+      {/each}
+   {/if}
    <Placeholder />
 {:then refunds}
    {#await data.customers}
@@ -33,12 +34,12 @@
       <Search bind:search={search} searchType='Refund records' data={data.searchForm}/>
       {#each slicedRefunds(searchRefunds(refunds)) as refund (refund.refundNumber)}
       {@const customer = customers.find((customer) => customer.id === refund.customerId)}
-      <div class="flex">
-         <RefundRecordDisplay refundRecord={refund} />
-         {#if customer}
-            <User user={customer} />
-         {/if}
-      </div>
+         <div class="flex">
+            <RefundRecordDisplay refundRecord={refund} />
+            {#if customer}
+               <User user={customer} />
+            {/if}
+         </div>
       {/each}
       <Pagination bind:size={size} bind:pageNum={pageNum} label='refund records' array={searchRefunds(refunds)}/> 
    {/await}
