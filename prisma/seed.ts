@@ -259,6 +259,7 @@ function makeInvoice(lease:Lease, month:Date, deposit:boolean){
    return invoice;
 }
 
+
 async function makeRefund(paymentRecord:PaymentRecord){
    const refund = await prisma.refundRecord.create({
       data:{
@@ -268,8 +269,8 @@ async function makeRefund(paymentRecord:PaymentRecord){
          paymentRecordNum: paymentRecord.paymentNumber,
          refundType: paymentRecord.paymentType,
          refundNotes: `Refund of payment record number ${paymentRecord.paymentNumber}\n${paymentRecord.paymentNotes}`,
-         refundCreated: dayjs(paymentRecord.paymentCreated).add(3, 'months').toDate(),
-         refundCompleted: dayjs(paymentRecord.paymentCreated).add(3, 'months').toDate(),
+         refundCreated: dayjs(paymentRecord.paymentCreated).add(1, 'months').toDate(),
+         refundCompleted: dayjs(paymentRecord.paymentCreated).add(1, 'months').toDate(),
       }
    })
    await prisma.paymentRecord.update({
@@ -442,7 +443,11 @@ async function  main (){
          }
       });
       if(record.deposit){
-         makeRefund(record)
+         const invoice = dbInvoices.find((invoice) => invoice.invoiceNum === record.invoiceNum);
+         const lease = dbLeases.find((lease) => lease.leaseId === invoice?.leaseId);
+         if(lease?.leaseEnded){
+             await makeRefund(record)
+         }
       }
    })                     
    const paymentEndTime = dayjs(new Date);
