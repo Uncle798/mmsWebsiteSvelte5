@@ -10,6 +10,7 @@
 	import Placeholder from '$lib/displayComponents/Placeholder.svelte';
     import dayjs from 'dayjs';
 	import DateSearch from '$lib/forms/DateSearch.svelte';
+	import Revenue from '$lib/displayComponents/Revenue.svelte';
     let { data }: { data: PageData } = $props();
     let pageNum = $state(1);
     let size = $state(25);
@@ -27,7 +28,6 @@
         maxDate = endDate;
     })
     const numberFormatter = new Intl.NumberFormat('en-US');
-    const currencyFormatter = new Intl.NumberFormat('en-US', {style:'currency', currency:'USD'});
     let slicedSource = $derived((paymentRecords:PaymentRecord[]) => paymentRecords.slice((pageNum -1) * size, pageNum*size));
     let searchedPayments = $derived((paymentRecords:PaymentRecord[]) => paymentRecords.filter((paymentRecord) => paymentRecord.paymentNumber.toString().includes(search) ))
     let dateSearchPayments = $derived((paymentRecords:PaymentRecord[]) => paymentRecords.filter((paymentRecord) => {
@@ -62,9 +62,7 @@
         loading customers
     {:then customers} 
           <div transition:fade={{duration:600}}>
-            <div>
-                Total revenue: {currencyFormatter.format(totalRevenue(searchedPayments(dateSearchPayments(paymentRecords))))}
-            </div>
+            <Revenue label="Total revenue" amount={totalRevenue(searchedPayments(dateSearchPayments(paymentRecords)))} />
             <div class="flex">
                 <Search bind:search={search} searchType='payment record number' data={data.searchForm}/>      
                 <DateSearch bind:startDate={startDate} bind:endDate={endDate} {minDate} {maxDate} data={data.dateSearchForm}/>
