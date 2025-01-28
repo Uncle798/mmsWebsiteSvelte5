@@ -3,14 +3,12 @@
 	import User from '$lib/displayComponents/User.svelte';
 	import Search from '$lib/forms/Search.svelte';
     import dayjs from 'dayjs';
-    import utc from 'dayjs/plugin/utc'
     import type { PageData } from './$types';
     import type { RefundRecord } from '@prisma/client'
 	import DateSearch from '$lib/forms/DateSearch.svelte';
-	import { onMount } from 'svelte';
 	import Pagination from '$lib/displayComponents/Pagination.svelte';
 	import Revenue from '$lib/displayComponents/Revenue.svelte';
-    dayjs.extend(utc)
+    
     let { data }: { data: PageData } = $props();
     let size = $state(25)
     let pageNum = $state(1)
@@ -24,13 +22,10 @@
         res(refunds)
         startDate = dayjs(refunds[0].refundCreated).startOf('year').toDate()
         minDate = dayjs(refunds[0].refundCreated).startOf('year').toDate()
-        console.log('wrapper minDate ', minDate)
         maxDate = dayjs(refunds[refunds.length-1].refundCreated).endOf('year').toDate()
         endDate = dayjs(refunds[refunds.length-1].refundCreated).endOf('year').toDate()
-        console.log('wrapper maxDate', maxDate)
     })
     const numberFormatter = new Intl.NumberFormat('en-US');
-    const currencyFormatter = new Intl.NumberFormat('en-US', {style:'currency', currency:'USD'});
     let slicedRefunds = $derived((refunds:RefundRecord[]) => refunds.slice((pageNum-1)*size, pageNum*size))
     let searchRefunds = $derived((refunds:RefundRecord[]) => refunds.filter((refund) => refund.refundNumber.toString().includes(search)))
     let dateSearchRefunds = $derived((refunds:RefundRecord[]) => refunds.filter((refund) => {
