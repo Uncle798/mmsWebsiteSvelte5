@@ -2,6 +2,7 @@
     import type { PageData } from './$types';
 	import type { PaymentRecord } from '@prisma/client';
 	import Header from '$lib/Header.svelte';
+    import Revenue from '$lib/displayComponents/Revenue.svelte';
 	import PaymentRecordEmployee from '$lib/displayComponents/PaymentRecordEmployee.svelte';
 	import Pagination from '$lib/displayComponents/Pagination.svelte';
 	import User from '$lib/displayComponents/User.svelte';
@@ -47,21 +48,21 @@
     })
 </script>
 
-<Header title='Payment Records' />
 {#await wrapper}
+    <Header title='Payment Records' />
     loading {numberFormatter.format(data.paymentRecordCount)} payment records or select month: 
     {#each data.months as month}
-        <a href="/paymentRecords/year/{dayjs(month).format('YYYY')}/month/{month.getMonth()+1}" class="btn">{dayjs(month).format('MMMM')}</a>
+    <a href="/paymentRecords/year/{dayjs(month).format('YYYY')}/month/{month.getMonth()+1}" class="btn">{dayjs(month).format('MMMM')}</a>
     {/each}
     <Placeholder />
-{:then paymentRecords} 
+    {:then paymentRecords} 
     {#await data.customers}
+        <Header title='Payment Records' />
         loading customers
     {:then customers} 
-          <div transition:fade={{duration:600}}>
-            <div>
-                Total revenue: {currencyFormatter.format(totalRevenue(searchedPayments(dateSearchPayments(paymentRecords))))}
-            </div>
+        <Header title='{paymentRecords[paymentRecords.length-1].paymentCreated.getFullYear().toString()} Payment Records' />
+        <div transition:fade={{duration:600}}>
+            <Revenue label="Total revenue" amount={totalRevenue(searchedPayments(dateSearchPayments(paymentRecords)))} />
             <div class="flex">
                 <Search bind:search={search} searchType='payment record number' data={data.searchForm}/>      
                 <DateSearch bind:startDate={startDate} bind:endDate={endDate} {minDate} {maxDate} data={data.dateSearchForm}/>

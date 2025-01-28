@@ -47,23 +47,25 @@
         return totalRevenue
     })
 </script>
-<Header title='All invoices' />
 {#await wrapper}
+    <Header title='Loading invoices' />
     Loading {numberFormatter.format(data.invoiceCount)} invoices
     {#if data.months}
-        or select month: 
-        {#each data.months as month}
-            <a href="/invoices/year/{month.getFullYear()}/month/{month.getMonth()}" class="btn">{dayjs(month).format('MMMM')}</a>
-        {/each}
+    or select month: 
+    {#each data.months as month}
+    <a href="/invoices/year/{month.getFullYear()}/month/{month.getMonth()}" class="btn">{dayjs(month).format('MMMM')}</a>
+    {/each}
     {/if}
-        
-
+    
+    
     <Placeholder />
-{:then invoices}
+    {:then invoices}
     {#await data.customers}
-        loading customers
-        <Placeholder />
+    <Header title='Loading customers' />
+    loading customers
+    <Placeholder />
     {:then customers}
+        <Header title='{invoices[invoices.length-1].invoiceCreated.getFullYear().toString()} Invoices' />
         <Revenue label="Total invoiced (not including deposits)" amount={totalRevenue(searchedInvoices(dateSearchedInvoices(invoices)))} />
         <div class="flex">
             <Search data={data.searchForm} bind:search={search} searchType='invoice number'/>

@@ -43,7 +43,7 @@
         return totalRevenue
     })
 </script>
-<Header title='Refunds' />
+<Header title='All Refunds' />
 {#await wrapper}
    loading {numberFormatter.format(data.refundCount)} refunds 
    {#if data.years}

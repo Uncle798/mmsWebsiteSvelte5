@@ -1,6 +1,7 @@
 <script lang="ts">
     import NewInvoiceForm from '$lib/forms/NewInvoiceForm.svelte';
 	import RegisterForm from '$lib/forms/RegisterForm.svelte';
+	import Header from '$lib/Header.svelte';
     import type { PageData } from './$types';
     import { Modal } from '@skeletonlabs/skeleton-svelte';
     import { blur, fade } from 'svelte/transition';
@@ -20,7 +21,7 @@
         <button class="btn" onclick={()=>registerFormModalOpen=false}>Cancel</button>
     {/snippet}
 </Modal>
-
+<Header title="New Invoice" />
 <div transition:fade={{duration:600}}>
     <button class="btn" type="button" onclick={()=>registerFormModalOpen = true}>Create New Customer</button>
     <NewInvoiceForm data={data.newInvoiceForm} employeeId={data.user?.id} customers={data.customers} leases={data.leases} />

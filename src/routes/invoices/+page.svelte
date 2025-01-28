@@ -47,29 +47,24 @@
         return totalRevenue
     })
 </script>
-<Header title='All invoices' />
 {#await wrapper}
+    <Header title='Loading invoices' />
     Loading {numberFormatter.format(data.invoiceCount)} invoices, 
     {#if data.years}
-        or select year: 
-        {#each data.years as year}
-            <a href="/invoices/year/{year}" class="btn">{year.toString()},</a>
-        {/each}
+    or select year: 
+    {#each data.years as year}
+    <a href="/invoices/year/{year}" class="btn">{year.toString()},</a>
+    {/each}
     {/if}
     or:
-        <a href="/invoices/unpaid" class="btn">Unpaid invoices</a>
-
+    <a href="/invoices/unpaid" class="btn">Unpaid invoices</a>
+    
     <Placeholder />
 {:then invoices}
     {#await data.customers}
-        <Search data={data.searchForm} bind:search={search} searchType='invoice number' />
-        {#each  slicedInvoices(searchedInvoices(invoices)) as invoice}    
-            <div class="flex" transition:fade={{duration:600}}>
-                <InvoiceEmployee invoice={invoice} />
-            </div>
-        {/each}
-        <Pagination bind:pageNum={pageNum} bind:size={size} array={searchedInvoices(invoices)} label='invoices'/>
+        <Header title='Loading customers' />
     {:then customers}
+        <Header title='All invoices' />
         <Revenue label="Total invoiced (not including deposits)" amount={totalRevenue(searchedInvoices(dateSearchedInvoices(invoices)))} />
         <div class="flex">
             <Search data={data.searchForm} bind:search={search} searchType='invoice number'/>

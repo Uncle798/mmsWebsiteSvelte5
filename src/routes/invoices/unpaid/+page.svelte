@@ -28,8 +28,8 @@
       return totalInvoiced;
    })
 </script>
-<Header title='Unpaid invoices' />
 
+<Header title='Unpaid invoices' />
 {#await data.invoices}
    Loading {numberFormatter.format(data.invoiceCount)} invoices 
 {:then invoices} 

@@ -8,6 +8,7 @@
 	import DateSearch from '$lib/forms/DateSearch.svelte';
 	import Pagination from '$lib/displayComponents/Pagination.svelte';
 	import Revenue from '$lib/displayComponents/Revenue.svelte';
+	import Header from '$lib/Header.svelte';
     
     let { data }: { data: PageData } = $props();
     let size = $state(25)
@@ -43,7 +44,9 @@
         return totalRevenue
     })
 </script>
+
 {#await wrapper}
+    <Header title='Refund Records' />
     Loading {numberFormatter.format(data.refundCount)} refund records or select month:
     {#each data.months as month}
         <a href="/refundRecords/year/{dayjs(month).format('YYYY')}/month/{month.getMonth()+1}" class="btn">{dayjs(month).format('MMMM')}</a>
@@ -52,6 +55,7 @@
     {#await data.customers}
     Loading customers
     {:then customers} 
+        <Header title="{refunds[refunds.length-1].refundCreated.getFullYear().toString()} refund records" />
         <Revenue amount={totalRevenue(searchRefunds(dateSearchRefunds(refunds)))} label='Amount refunded'/>
         <Search data={data.searchForm} bind:search={search} searchType='refund record' />
         <DateSearch data={data.dateSearchForm} bind:startDate={startDate} bind:endDate={endDate} minDate={minDate} maxDate={maxDate} />
