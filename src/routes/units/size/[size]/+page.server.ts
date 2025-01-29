@@ -4,6 +4,7 @@ import type { PageServerLoad } from './$types';
 import { zod } from 'sveltekit-superforms/adapters';
 import { unitPricingFormSchema } from '$lib/formSchemas/schemas';
 import { redirect } from '@sveltejs/kit';
+import type { Invoice, User } from '@prisma/client';
 
 export const load = (async (event) => {
    if(!event.locals.user?.employee){
@@ -19,15 +20,34 @@ export const load = (async (event) => {
       orderBy: {
          num: 'asc'
       },
-      include: {
-         lease:{
-            where: {
-               leaseEnded: null
-            },
-            include: {
-               customer: true,
-            }
+   });
+   const leases = await prisma.lease.findMany({
+      where: {
+         unit: {
+            size: '04x06'
          }
+      }
+   })
+   const invoices:Invoice[] = [];
+   const customers:User[] = [];
+   leases.forEach(async (lease) =>{
+      const dbInvoices = await prisma.invoice.findMany({
+         where:{
+            leaseId: lease.leaseId
+         }
+      });
+      dbInvoices.forEach((invoice) =>{
+         if(!invoice.deposit){
+            invoices.push(invoice)
+         }
+      })
+      const customer = await prisma.user.findUnique({
+         where: {
+            id: lease.customerId
+         }
+      })
+      if(customer){
+         customers.push(customer)
       }
    })
    const allUnits = await prisma.unit.findMany({
@@ -48,5 +68,5 @@ export const load = (async (event) => {
          sizes.push(unitSize);
       }
    })
-   return { units, size, unitPricingForm, sizes };
+   return { units, size, unitPricingForm, sizes, leases, invoices, customers };
 }) satisfies PageServerLoad;

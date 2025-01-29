@@ -23,6 +23,7 @@
 		{link: '/units', label:'Units'},
 		{link: '/units/unavailable', label: 'Unavailable units'},
 		{link: '/units/recentlyMovedOut', label: 'Recently moved out Units'},
+		{link: '/units/size', label: 'Units by size'},
 		{link: '/discounts', label: 'Discounts'},
 		{link: '/users/customers', label: 'Customers'},
 		{link: '/invoices', label: 'Invoices'},
