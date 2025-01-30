@@ -9,6 +9,8 @@
 	import { fade, blur } from 'svelte/transition';
    import type { Invoice } from '@prisma/client';
 	import Revenue from '$lib/displayComponents/Revenue.svelte';
+	import HorizontalDivider from '$lib/displayComponents/HorizontalDivider.svelte';
+	import VerticalDivider from '$lib/displayComponents/VerticalDivider.svelte';
    let { data }: { data: PageData } = $props();
    const currencyFormatter = new Intl.NumberFormat('en-US', {style: 'currency', currency: 'USD'})
    let unitPricingModalOpen = $state(false);
@@ -54,6 +56,7 @@
 {@const leases = data.leases.filter((lease) => lease.unitNum === unit.num) }
    <div class="flex">
       <UnitEmployee {unit} />
+      <VerticalDivider heightClass='h-30'/>
       {#each leases as lease}
          {#if !lease.leaseEnded}
             <LeaseEmployee {lease} />
@@ -64,7 +67,5 @@
          {/if}
       {/each}
    </div>
-   <div class="w-full space-y-4">
-      <hr class="hr">
-   </div>
+   <HorizontalDivider />
 {/each}
