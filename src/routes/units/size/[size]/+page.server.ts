@@ -4,8 +4,8 @@ import type { PageServerLoad } from './$types';
 import { zod } from 'sveltekit-superforms/adapters';
 import { unitPricingFormSchema } from '$lib/formSchemas/schemas';
 import { redirect } from '@sveltejs/kit';
-import type { Invoice, User } from '@prisma/client';
-
+import pricingData from '$lib/server/pricingData';
+import type { Lease, Invoice, User } from '@prisma/client';
 export const load = (async (event) => {
    if(!event.locals.user?.employee){
       redirect(302, '/login?toast=employee')
@@ -21,52 +21,46 @@ export const load = (async (event) => {
          num: 'asc'
       },
    });
-   const leases = await prisma.lease.findMany({
-      where: {
-         unit: {
-            size: '04x06'
-         }
-      }
-   })
-   const invoices:Invoice[] = [];
+   const leases:Lease[] =[];
+   const invoices:Invoice[]=[];
    const customers:User[] = [];
-   leases.forEach(async (lease) =>{
-      const dbInvoices = await prisma.invoice.findMany({
-         where:{
-            leaseId: lease.leaseId
-         }
-      });
-      dbInvoices.forEach((invoice) =>{
-         if(!invoice.deposit){
-            invoices.push(invoice)
-         }
-      })
-      const customer = await prisma.user.findUnique({
+   for await (const unit of units) {
+      const unitLeases = await prisma.lease.findMany({
          where: {
-            id: lease.customerId
+            unitNum: unit.num
          }
       })
-      if(customer){
-         customers.push(customer)
-      }
-   })
-   const allUnits = await prisma.unit.findMany({
-      orderBy:{
-         size: 'asc'
-      },
-      where:{
-         size: {
-            not: 'ours'
+      unitLeases.forEach(async (lease) =>{
+         leases.push(lease);
+         const unitInvoices = await prisma.invoice.findMany({
+            where: {
+               leaseId: lease.leaseId
+            }
+         })
+         unitInvoices.forEach((invoice) =>{
+            if(!invoice.deposit){
+               invoices.push(invoice)
+            }
+         })
+         const customer = await prisma.user.findUnique({
+            where: {
+               id: lease.customerId,
+            }
+         })
+         if(customer){
+            customers.push(customer)
          }
-      }
-   });
-   const sizes:string[] = [];
-   allUnits.forEach((unit) =>{
-      const unitSize = unit.size;
-      const sizeSize = sizes.find((size) => size === unitSize);
-      if(!sizeSize){
-         sizes.push(unitSize);
-      }
+      })
+   }
+   console.log('invoices ', invoices)
+   let totalInvoiced = 0;
+   invoices.forEach((invoice) =>{
+      totalInvoiced += invoice.invoiceAmount
    })
-   return { units, size, unitPricingForm, sizes, leases, invoices, customers };
+   const sizes:string[] = [];
+   pricingData.forEach((datum) =>{
+      sizes.push(datum.size)
+   })
+
+   return { units, sizes, unitPricingForm, size, leases, totalInvoiced, customers };
 }) satisfies PageServerLoad;
