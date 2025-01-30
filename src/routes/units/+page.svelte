@@ -69,8 +69,8 @@
     {#each slicedUnits(filteredUnits(units)) as unit (unit.num)}
         {@const lease = leases?.find((lease) => lease.unitNum === unit.num)}
         <div class="flex" transition:fade={{duration:600}}>
-            <div>
-                <UnitEmployee unit={unit} />
+            <div class="grid grid-cols-1">
+                <UnitEmployee {unit} />
                 <button class="btn" onclick={()=> openModal('unitPricing', unit.advertisedPrice, '', unit.size)}>Change all {unit.size.replace(/^0+/gm,'').replace(/x0/gm,'x')} pricing</button>
             </div>
             {#if data.unitNotesForm}
