@@ -9,6 +9,9 @@
 	import UnitPricingForm from '$lib/forms/UnitPricingForm.svelte';
 	import LeaseEndForm from '$lib/forms/LeaseEndForm.svelte';
 	import { Modal } from '@skeletonlabs/skeleton-svelte';
+	import HorizontalDivider from '$lib/displayComponents/HorizontalDivider.svelte';
+	import Revenue from '$lib/displayComponents/Revenue.svelte';
+	import VerticalDivider from '$lib/displayComponents/VerticalDivider.svelte';
 
     let modalOpen = $state(false);
     let currentLeaseId = $state('')
@@ -16,6 +19,10 @@
     const formattedCurrency = new Intl.NumberFormat('en-US', {style: 'currency', currency: 'USD'})
 </script>
 
+{#await data.unit}
+<Header title='loading...' />
+...loading unit
+{:then unit}
 <Modal
     bind:open={modalOpen}
     contentBase="card bg-surface-400-600 p-4 space-y-4 shadow-xl max-w-screen-sm"
@@ -25,34 +32,37 @@
     <LeaseEndForm data={data.leaseEndForm} leaseId={currentLeaseId} />
 {/snippet}
 </Modal>
-{#if !data.unit}
-<Header title='loading...' />
-...loading unit
-{:else}
-    <Header title='Unit number: {data.unit.num}' />
+    {#if unit}
+    <Header title='Unit number: {unit.num}' />
     <div transition:fade={{duration:600}}>
-        <div class="flex">
-            <UnitEmployee unit={data.unit}/>
-            Total revenue from this unit: {formattedCurrency.format(data.totalRevenue)}
-        </div>
-        <UnitNotesForm data={data.unitNotesForm} unit={data.unit} />
-        <UnitPricingForm data={data.unitPricingForm} size={data.unit.size} oldPrice={data.unit.advertisedPrice} unitPricingFormModalOpen={modalOpen} />
+        <UnitEmployee unit={unit}/>
+        <Revenue label='Total revenue from this unit' amount={data.totalRevenue} />
+        <UnitNotesForm data={data.unitNotesForm} unit={unit} />
+        <HorizontalDivider />
+        <UnitPricingForm data={data.unitPricingForm} size={unit.size} oldPrice={unit.advertisedPrice} unitPricingFormModalOpen={modalOpen} />
+        <HorizontalDivider />
         {#each data.leases as lease}
             {@const { customer } = lease}
                 <div class="flex">
-                    {#if !lease.leaseEnded}                        
-                        <LeaseEmployee lease={lease} />
-                        <button class="btn" onclick={()=>{modalOpen=true; currentLeaseId=lease.leaseId}}>End lease</button>
+                    {#if !lease.leaseEnded}
+                        <div class="flex">
+                            <LeaseEmployee lease={lease} />
+                            <button class="btn" onclick={()=>{modalOpen=true; currentLeaseId=lease.leaseId}}>End lease</button>
+                        </div> 
+                        <VerticalDivider heightClass='h-30' />                      
                         {#if customer}
                             <User user={customer} />
                         {/if}
                         {:else}
-                        <LeaseEmployee lease={lease} />
+                            <LeaseEmployee lease={lease} />
+                            <VerticalDivider heightClass='h-30' />
                         {#if customer}
                             <User user={customer} />
                         {/if}
                     {/if}
                 </div>
+                <HorizontalDivider />
         {/each}
     </div>
-{/if}
+    {/if}
+{/await}
