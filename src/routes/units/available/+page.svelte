@@ -1,11 +1,15 @@
 <script lang="ts">
     import Header from '$lib/Header.svelte';
 	import { fade } from 'svelte/transition';
-import type { PageData } from './$types';
-    
+    import type { PageData } from './$types';
+	import Revenue from '$lib/displayComponents/Revenue.svelte';
     let { data }:{data:PageData} = $props();
+
 </script>
 <Header title='Available Units' />
+{#if data.lostRevenue}
+    <Revenue amount={data.lostRevenue} label='Available stock per month' />
+{/if}
 <div class="table-wrap" transition:fade={{duration:600}}>
     <table class="table">
         <caption>Available units.</caption>
