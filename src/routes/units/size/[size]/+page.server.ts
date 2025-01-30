@@ -3,7 +3,7 @@ import { superValidate } from 'sveltekit-superforms';
 import type { PageServerLoad } from './$types';
 import { zod } from 'sveltekit-superforms/adapters';
 import { unitPricingFormSchema } from '$lib/formSchemas/schemas';
-import { redirect } from '@sveltejs/kit';
+import { fail, redirect } from '@sveltejs/kit';
 import pricingData from '$lib/server/pricingData';
 import type { Lease, Invoice, User } from '@prisma/client';
 export const load = (async (event) => {
@@ -21,6 +21,9 @@ export const load = (async (event) => {
          num: 'asc'
       },
    });
+   if(!units){
+      fail(404)
+   }
    const leases:Lease[] =[];
    const invoices:Invoice[]=[];
    const customers:User[] = [];
