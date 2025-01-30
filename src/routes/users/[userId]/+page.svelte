@@ -11,13 +11,16 @@
    import Header from '$lib/Header.svelte';
    import type { Invoice, PaymentRecord } from '@prisma/client';
 	import RefundRecordDisplay from '$lib/displayComponents/RefundRecordDisplay.svelte';
+	import Pagination from '$lib/displayComponents/Pagination.svelte';
+	import HorizontalDivider from '$lib/displayComponents/HorizontalDivider.svelte';
+	import VerticalDivider from '$lib/displayComponents/VerticalDivider.svelte';
    let { data }: { data: PageData } = $props();
    let addressModalOpen = $state(false);
    let leaseEndModalOpen = $state(false);
    let search = $state('')
    let pageNum = $state(1);
-   let size = $state(25);
-   const currencyFormatter = new Intl.NumberFormat('en-US', {style:'currency', currency:'USD'})
+   let size = $state(5);
+   const currencyFormatter = new Intl.NumberFormat('en-US', {style:'currency', currency:'USD'});
    let slicedSource = $derived((paymentRecords:PaymentRecord[]) => paymentRecords.slice((pageNum -1) * size, pageNum*size));
    let searchedPayments = $derived((paymentRecords:PaymentRecord[]) => paymentRecords.filter((paymentRecord) => paymentRecord.paymentNumber.toString().includes(search) ))
    let totalPayments = $derived((paymentRecords:PaymentRecord[]) => {
@@ -121,21 +124,28 @@
          <div>
             <span>Total invoiced: {currencyFormatter.format(totalInvoices(invoices))}</span>
             <span>Total payed: {currencyFormatter.format(totalPayments(paymentRecords))}</span>
-            <span>Outstanding balance: {currencyFormatter.format(difference)}</span>
+            <span class="">Outstanding balance: {currencyFormatter.format(difference)}</span>
          </div>
+         <HorizontalDivider />
          {#each invoices as invoice}
          {@const paymentRecord = paymentRecords.find((payment) => payment.invoiceNum === invoice.invoiceNum)}
          {@const refund = refunds.find((refund) => refund.paymentRecordNum === paymentRecord?.paymentNumber)}
             <div class="flex columns-3">
                <InvoiceEmployee invoice={invoice} />
                {#if paymentRecord}
+                  <div class="grid h-50 grid-cols-[1fr_auto_auto_auto_auto_1fr] items-center gap-4">
+                     <span class="vr border-t-2"></span>
+                  </div>
                   <PaymentRecordEmployee paymentRecord={paymentRecord}/>
-               {/if}
-               {#if refund}
+                  {/if}
+                  {#if refund}
+                  <VerticalDivider heightClass='h-50' />
                   <RefundRecordDisplay refundRecord={refund} />
                {/if}
             </div>
+            <HorizontalDivider />
          {/each}
+         <Pagination bind:pageNum={pageNum} bind:size={size} label='invoices' array={invoices} />
       {/await}
    {/await}
 {/await}    
