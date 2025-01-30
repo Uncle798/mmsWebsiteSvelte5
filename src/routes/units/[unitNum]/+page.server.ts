@@ -26,7 +26,10 @@ export const load = (async (event) => {
          unitNum: unit?.num
       },
       orderBy: {
-         leaseCreatedAt: 'desc'
+         leaseEnded: {
+            sort: 'asc',
+            nulls: 'first'
+         }
       },
       include: {
          customer: true
