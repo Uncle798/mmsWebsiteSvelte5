@@ -27,18 +27,11 @@ export const load = (async (event) => {
             }
          }
       },
-      include: {
-         customerLeases: {
-            orderBy: {
-               unitNum: 'asc'
-            }
-         },  
-      },
       orderBy: {
          familyName: 'asc'
       }
    });
-   const leases = await prisma.lease.findMany({
+   const leases = prisma.lease.findMany({
       where: {
          leaseEnded: null,
       },
@@ -46,6 +39,7 @@ export const load = (async (event) => {
          unitNum: 'asc'
       }
    })
+   
    return { customers, leases, userSearchForm, customerCount };
 }) satisfies PageServerLoad;
 
