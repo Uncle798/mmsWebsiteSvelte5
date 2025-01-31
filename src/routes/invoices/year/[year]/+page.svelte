@@ -11,6 +11,8 @@
 	import DateSearch from '$lib/forms/DateSearch.svelte';
 	import dayjs from 'dayjs';
 	import Revenue from '$lib/displayComponents/Revenue.svelte';
+    import HorizontalDivider from '$lib/displayComponents/HorizontalDivider.svelte';
+    import VerticalDivider from '$lib/displayComponents/VerticalDivider.svelte';
 
     let { data }: { data: PageData } = $props();
     let pageNum = $state(1);
@@ -67,18 +69,22 @@
     {:then customers}
         <Header title='{invoices[invoices.length-1].invoiceCreated.getFullYear().toString()} Invoices' />
         <Revenue label="Total invoiced (not including deposits)" amount={totalRevenue(searchedInvoices(dateSearchedInvoices(invoices)))} />
+        <HorizontalDivider />
         <div class="flex">
             <Search data={data.searchForm} bind:search={search} searchType='invoice number'/>
             <DateSearch data={data.dateSearchForm} bind:startDate={startDate} bind:endDate={endDate} {minDate} {maxDate} />
         </div>
+        <HorizontalDivider />
         {#each  slicedInvoices(searchedInvoices(invoices)) as invoice}  
             {@const customer = customers.find((customer) => customer.id === invoice.customerId)}  
             <div class="flex" transition:fade={{duration:600}}>
                 <InvoiceEmployee invoice={invoice} />
+                <VerticalDivider heightClass='h-30' />
                 {#if customer}
                     <User user={customer} />
                 {/if}
             </div>
+            <HorizontalDivider />
         {/each}
         <Pagination bind:pageNum={pageNum} bind:size={size} array={searchedInvoices(invoices)} label='invoices' />
     {/await}

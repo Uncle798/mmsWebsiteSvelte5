@@ -10,6 +10,7 @@
 	import UserAdmin from '$lib/displayComponents/UserAdmin.svelte';
 	import Search from '$lib/forms/Search.svelte';
 	import User from '$lib/displayComponents/User.svelte';
+	import HorizontalDivider from '$lib/displayComponents/HorizontalDivider.svelte';
 
    let { data }: { data: PageData } = $props();
    let search = $state('')
@@ -40,6 +41,7 @@
                userId={user.id}
             />
          </div>
+         <HorizontalDivider />
       {/each}
       <Pagination bind:size={size} bind:pageNum={pageNum} array={searchedUsers(users)} label='users'/>
 </div>

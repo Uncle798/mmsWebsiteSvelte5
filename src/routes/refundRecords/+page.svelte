@@ -10,6 +10,8 @@
 	import Revenue from '$lib/displayComponents/Revenue.svelte';
    import Header from '$lib/Header.svelte'; 
    import Placeholder from '$lib/displayComponents/Placeholder.svelte';
+	import HorizontalDivider from '$lib/displayComponents/HorizontalDivider.svelte';
+	import VerticalDivider from '$lib/displayComponents/VerticalDivider.svelte';
     let { data }: { data: PageData } = $props();
     let size = $state(25)
     let pageNum = $state(1)
@@ -58,18 +60,22 @@
       loading customers
    {:then customers} 
       <Revenue label='Total refunds' amount={totalRevenue(searchRefunds(dateSearchRefunds(refunds)))}/>
+      <HorizontalDivider />
       <div class="flex">
          <Search bind:search={search} searchType='Refund records' data={data.searchForm}/>
          <DateSearch bind:endDate={endDate} bind:startDate={startDate} data={data.dateSearchForm} {minDate} {maxDate}/>
       </div>
+      <HorizontalDivider />
       {#each slicedRefunds(searchRefunds(dateSearchRefunds(refunds))) as refund (refund.refundNumber)}
       {@const customer = customers.find((customer) => customer.id === refund.customerId)}
          <div class="flex">
             <RefundRecordDisplay refundRecord={refund} />
+            <VerticalDivider heightClass='h-30' />
             {#if customer}
                <User user={customer} />
             {/if}
          </div>
+         <HorizontalDivider />
       {/each}
       <Pagination bind:size={size} bind:pageNum={pageNum} label='refund records' array={searchRefunds(dateSearchRefunds(refunds))}/> 
    {/await}
