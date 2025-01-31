@@ -130,7 +130,7 @@
          {#each invoices as invoice}
          {@const paymentRecord = paymentRecords.find((payment) => payment.invoiceNum === invoice.invoiceNum)}
          {@const refund = refunds.find((refund) => refund.paymentRecordNum === paymentRecord?.paymentNumber)}
-            <div class="flex columns-3">
+            <div class="flex">
                <InvoiceEmployee invoice={invoice} />
                {#if paymentRecord}
                   <div class="grid h-50 grid-cols-[1fr_auto_auto_auto_auto_1fr] items-center gap-4">
