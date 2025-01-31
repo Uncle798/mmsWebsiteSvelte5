@@ -24,6 +24,6 @@ export const load = (async (event) => {
             paymentCreated: 'asc'
         },
     });
-    const customers = prisma.user.findMany()
+    const customers = prisma.user.findMany();
     return { paymentRecords, searchForm, paymentRecordCount, years, customers, dateSearchForm };
 }) satisfies PageServerLoad;
