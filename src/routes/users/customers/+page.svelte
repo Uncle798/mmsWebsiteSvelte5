@@ -9,6 +9,10 @@
     import Pagination from '$lib/displayComponents/Pagination.svelte';
 	import { fade } from 'svelte/transition';
 	import Search from '$lib/forms/Search.svelte';
+	import HorizontalDivider from '$lib/displayComponents/HorizontalDivider.svelte';
+	import VerticalDivider from '$lib/displayComponents/VerticalDivider.svelte';
+	import Revenue from '$lib/displayComponents/Revenue.svelte';
+	import type { Lease } from '@prisma/client';
 
     let { data }: { data: PageData } = $props();
     const { customers } = data;
@@ -26,22 +30,37 @@
    let search = $state('');
    let slicedSource = $derived((s:PartialUser[]) => s.slice((pageNum-1)*size, pageNum*size));
    let searchedSource = $derived((customers:PartialUser[]) => customers.filter((customer) => customer.familyName?.includes(search)))
+   const totalLeased = $derived((leases:Lease[]) => {
+      let totalLeased = 0;
+      leases.forEach((lease) => {
+         totalLeased += lease.price
+      });
+      return totalLeased
+   })
 </script>
 <Header title='Current Customers'/>
 {#await data.customers}
     ...loading {data.customerCount} customers
 {:then customers}
-   <div transition:fade={{duration:600}}>
-      <Search search={search} searchType='customer' data={data.userSearchForm}/>
-      {#each slicedSource(searchedSource(customers)) as customer}
-      {@const leases = data.leases.filter((lease) => lease.customerId === customer.id)}
-         <div class="flex card">
-            <User user={customer} />
-            {#each leases as lease}
+   {#await data.leases}
+      loading leases...
+   {:then leases} 
+      <div transition:fade={{duration:600}}>
+         <Search search={search} searchType='customer name' data={data.userSearchForm}/>
+         <HorizontalDivider />
+         <Revenue label='Current monthly invoiced' amount={totalLeased(leases)} />
+         {#each slicedSource(searchedSource(customers)) as customer}
+         {@const lease = leases.find((lease) => lease.customerId === customer.id)}
+            <div class="flex row-auto">
+               <User user={customer} />
+               <VerticalDivider heightClass='h-30'/>
+               {#if lease}
                <LeaseEmployee lease={lease} />
-            {/each}
-         </div>
-      {/each}()
-      <Pagination bind:pageNum={pageNum} bind:size={size} label='users' array={searchedSource(customers)}/>
-   </div>
+               {/if}
+            </div>
+            <HorizontalDivider />
+         {/each}
+         <Pagination bind:pageNum={pageNum} bind:size={size} label='users' array={searchedSource(customers)}/>
+      </div>
+   {/await}
 {/await}
