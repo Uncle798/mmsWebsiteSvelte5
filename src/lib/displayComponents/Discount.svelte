@@ -9,7 +9,7 @@
    let { discount }:Props = $props();
 </script>
 
-<div class="card p-4">
+<div class="m-4 w-1/3 flex-none">
    <p>Code: {discount.code}</p>
    <p>Amount Off: {currencyFormatter.format(discount.amountOff)}</p>
    <p>Notes: {discount.notes}</p>

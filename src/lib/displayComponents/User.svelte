@@ -7,7 +7,7 @@
    let { user }:Props = $props()
 </script>
 
-<div class="card p-4">
+<div class="m-4 w-1/3 flex-none">
    <p ><a href="/users/{user.id}">{user.givenName} {user.familyName}</a></p>
    {#if user.organizationName}
       <p >{user.organizationName}</p>

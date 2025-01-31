@@ -6,7 +6,7 @@
    let { address = $bindable() }:Props = $props()
 </script>
 
-<div class="card p-4">
+<div class="m-4">
    <p>{address.address1}</p>
    {#if address.address2}
       <p>{address.address2}</p>
