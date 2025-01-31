@@ -1,3 +1,3 @@
-<div class="w-full space-y-4">
-   <hr class="hr">
-</div>
+   <div class="w-full">
+      <hr class="hr">
+   </div>
