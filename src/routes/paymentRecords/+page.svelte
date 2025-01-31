@@ -11,6 +11,8 @@
     import dayjs from 'dayjs';
 	import DateSearch from '$lib/forms/DateSearch.svelte';
 	import Revenue from '$lib/displayComponents/Revenue.svelte';
+	import HorizontalDivider from '$lib/displayComponents/HorizontalDivider.svelte';
+	import VerticalDivider from '$lib/displayComponents/VerticalDivider.svelte';
     let { data }: { data: PageData } = $props();
     let pageNum = $state(1);
     let size = $state(25);
@@ -22,10 +24,12 @@
     let wrapper = new Promise<PaymentRecord[]>(async res => {
         const paymentRecords = await data.paymentRecords
         res(paymentRecords)
-        startDate = dayjs(paymentRecords[0].paymentCreated).startOf('year').toDate();
-        minDate = startDate;
-        endDate = dayjs(paymentRecords[paymentRecords.length-1].paymentCreated).endOf('year').toDate();
-        maxDate = endDate;
+        if(paymentRecords[0]){
+            startDate = dayjs(paymentRecords[0].paymentCreated).startOf('year').toDate();
+            minDate = startDate;
+            endDate = dayjs(paymentRecords[paymentRecords.length-1].paymentCreated).endOf('year').toDate();
+            maxDate = endDate;
+        }
     })
     const numberFormatter = new Intl.NumberFormat('en-US');
     let slicedSource = $derived((paymentRecords:PaymentRecord[]) => paymentRecords.slice((pageNum -1) * size, pageNum*size));
@@ -37,12 +41,15 @@
         return paymentRecord.paymentCreated >= startDate && paymentRecord.paymentCreated <= endDate;
     }))
     let totalRevenue = $derived((paymentRecords:PaymentRecord[]) => {
+        console.log('paymentRecords[0]', paymentRecords[0])
         let totalRevenue = 0;
-        paymentRecords.forEach((paymentRecord) => {
-            if(paymentRecord.paymentCompleted && !paymentRecord.refunded){
-                totalRevenue += paymentRecord.paymentAmount
-            }
-        })
+        if(paymentRecords[0]){
+            paymentRecords.forEach((paymentRecord) => {
+                if(paymentRecord.paymentCompleted && !paymentRecord.refunded){
+                    totalRevenue += paymentRecord.paymentAmount
+                }
+            })
+        }
         return totalRevenue;
     })
 </script>
@@ -61,22 +68,29 @@
     {#await data.customers}
         loading customers
     {:then customers} 
-          <div transition:fade={{duration:600}}>
-            <Revenue label="Total revenue" amount={totalRevenue(searchedPayments(dateSearchPayments(paymentRecords)))} />
-            <div class="flex">
-                <Search bind:search={search} searchType='payment record number' data={data.searchForm}/>      
-                <DateSearch bind:startDate={startDate} bind:endDate={endDate} {minDate} {maxDate} data={data.dateSearchForm}/>
+        {#if paymentRecords[0]}
+            <div transition:fade={{duration:600}}>
+                <Revenue label="Total revenue" amount={totalRevenue(searchedPayments(dateSearchPayments(paymentRecords)))} />
+                <div class="flex">
+                    <Search bind:search={search} searchType='payment record number' data={data.searchForm}/>      
+                    <DateSearch bind:startDate={startDate} bind:endDate={endDate} {minDate} {maxDate} data={data.dateSearchForm}/>
+                </div>
+                <HorizontalDivider />
+                {#each slicedSource(dateSearchPayments(searchedPayments(paymentRecords))) as paymentRecord}
+                {@const customer = customers.find((customer) => customer.id === paymentRecord.customerId) }
+                <div class="flex">
+                    <PaymentRecordEmployee paymentRecord={paymentRecord} />
+                    <VerticalDivider heightClass='h-30' />
+                    {#if customer}
+                        <User user={customer} />
+                    {/if}
+                </div>
+                <HorizontalDivider />
+                {/each}
+                <Pagination bind:size={size} bind:pageNum={pageNum} array={searchedPayments(paymentRecords)} label='payment records'/>
             </div>
-            {#each slicedSource(dateSearchPayments(searchedPayments(paymentRecords))) as paymentRecord}
-            {@const customer = customers.find((customer) => customer.id === paymentRecord.customerId) }
-            <div class="flex">
-                <PaymentRecordEmployee paymentRecord={paymentRecord} />
-                {#if customer}
-                    <User user={customer} />
-                {/if}
-            </div>
-            {/each}
-            <Pagination bind:size={size} bind:pageNum={pageNum} array={searchedPayments(paymentRecords)} label='payment records'/>
-        </div>
+        {:else}
+            No payment records from that year
+        {/if}
     {/await}
 {/await}

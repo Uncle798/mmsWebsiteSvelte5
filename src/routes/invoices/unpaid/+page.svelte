@@ -7,6 +7,9 @@
    import Pagination from '$lib/displayComponents/Pagination.svelte';
 	import Search from '$lib/forms/Search.svelte';
 	import Revenue from '$lib/displayComponents/Revenue.svelte';
+	import HorizontalDivider from '$lib/displayComponents/HorizontalDivider.svelte';
+	import VerticalDivider from '$lib/displayComponents/VerticalDivider.svelte';
+	import User from '$lib/displayComponents/User.svelte';
    let { data }: { data: PageData } = $props();
    let { form, enhance } = superForm(data.searchForm, {
       onChange(event) {
@@ -33,10 +36,25 @@
 {#await data.invoices}
    Loading {numberFormatter.format(data.invoiceCount)} invoices 
 {:then invoices} 
-   <Revenue label='Total invoiced without payment record' amount={totalInvoiced(searchedInvoices(invoices))} />
-   <Search data={data.searchForm} bind:search={search} searchType='invoice number' />
-   {#each slicedSource(searchedInvoices(invoices)) as invoice }
-      <InvoiceEmployee invoice={invoice} />
-   {/each}
-   <Pagination bind:pageNum={pageNum} bind:size={size} label='invoices' array={searchedInvoices(invoices)}/>
+   {#await data.customers}
+      Loading customers...
+   {:then customers} 
+      {#if invoices.length > 0}
+         <Revenue label='Total invoiced without payment record' amount={totalInvoiced(searchedInvoices(invoices))} />
+         <Search data={data.searchForm} bind:search={search} searchType='invoice number' />
+         <HorizontalDivider />
+         {#each slicedSource(searchedInvoices(invoices)) as invoice }
+         {@const customer = customers.find((customer) => customer.id === invoice.customerId)}
+            <div class="flex">
+               <InvoiceEmployee invoice={invoice} />
+               <VerticalDivider heightClass='h-30' />
+               {#if customer}
+                  <User user={customer} />
+               {/if}
+            </div>
+            <HorizontalDivider />
+         {/each}
+         <Pagination bind:pageNum={pageNum} bind:size={size} label='invoices' array={searchedInvoices(invoices)}/>
+      {/if}
+   {/await}
 {/await}

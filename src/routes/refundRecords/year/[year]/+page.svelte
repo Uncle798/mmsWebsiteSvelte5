@@ -9,6 +9,8 @@
 	import Pagination from '$lib/displayComponents/Pagination.svelte';
 	import Revenue from '$lib/displayComponents/Revenue.svelte';
 	import Header from '$lib/Header.svelte';
+	import HorizontalDivider from '$lib/displayComponents/HorizontalDivider.svelte';
+	import VerticalDivider from '$lib/displayComponents/VerticalDivider.svelte';
     
     let { data }: { data: PageData } = $props();
     let size = $state(25)
@@ -38,6 +40,7 @@
     }))
     let totalRevenue = $derived((refunds:RefundRecord[]) => {
         let totalRevenue:number = 0;
+        
         refunds.forEach((refund) =>{
             totalRevenue += refund.refundAmount
         })
@@ -52,22 +55,30 @@
         <a href="/refundRecords/year/{dayjs(month).format('YYYY')}/month/{month.getMonth()+1}" class="btn">{dayjs(month).format('MMMM')}</a>
     {/each}
     {:then refunds}
-    {#await data.customers}
-    Loading customers
-    {:then customers} 
-        <Header title="{refunds[refunds.length-1].refundCreated.getFullYear().toString()} refund records" />
-        <Revenue amount={totalRevenue(searchRefunds(dateSearchRefunds(refunds)))} label='Amount refunded'/>
-        <Search data={data.searchForm} bind:search={search} searchType='refund record' />
-        <DateSearch data={data.dateSearchForm} bind:startDate={startDate} bind:endDate={endDate} minDate={minDate} maxDate={maxDate} />
-        {#each slicedRefunds(searchRefunds(dateSearchRefunds(refunds))) as refund}
-            {@const customer = customers.find((customer)=> customer.id === refund.customerId)}
-            <div class="flex">
-                <RefundRecordDisplay refundRecord={refund} />
-                {#if customer}
-                    <User user={customer} />
-                {/if}
-            </div>
-        {/each}
-        <Pagination bind:size={size} bind:pageNum={pageNum} array={searchRefunds(dateSearchRefunds(refunds))} label='refunds' />
+        {#await data.customers}
+        Loading customers
+        {:then customers}
+            {#if refunds.length > 0}
+                <Header title="{refunds[refunds.length-1].refundCreated.getFullYear().toString()} refund records" />
+                <Revenue amount={totalRevenue(searchRefunds(dateSearchRefunds(refunds)))} label='Amount refunded'/>
+                <HorizontalDivider />
+                <div class="flex">
+                    <Search data={data.searchForm} bind:search={search} searchType='refund record' />
+                    <DateSearch data={data.dateSearchForm} bind:startDate={startDate} bind:endDate={endDate} minDate={minDate} maxDate={maxDate} />
+                </div>
+                <HorizontalDivider />
+                {#each slicedRefunds(searchRefunds(dateSearchRefunds(refunds))) as refund}
+                    {@const customer = customers.find((customer)=> customer.id === refund.customerId)}
+                    <div class="flex">
+                        <RefundRecordDisplay refundRecord={refund} />
+                        <VerticalDivider heightClass='h-30' />
+                        {#if customer}
+                            <User user={customer} />
+                        {/if}
+                    </div>
+                    <HorizontalDivider />
+                {/each}
+                <Pagination bind:size={size} bind:pageNum={pageNum} array={searchRefunds(dateSearchRefunds(refunds))} label='refunds' />
+            {/if}
     {/await} 
 {/await}
