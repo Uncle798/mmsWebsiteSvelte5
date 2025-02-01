@@ -2,12 +2,13 @@
    import type { Unit, Lease } from '@prisma/client';
    interface Props {
       unit: Unit,
+      widthClass: string;
    }
-   let { unit }:Props = $props();
+   let { unit, widthClass }:Props = $props();
    const currencyFormatter = new Intl.NumberFormat('en-US', {style:'currency', currency:'USD'});
 </script>
 
-<div class="m-4 w-1/3 flex-none">
+<div class="m-4 {widthClass} flex-none">
    <p>Unit Number: <a href="/units/{unit.num}">{unit.num.replace(/^0+/gm,'')}</a></p>
    <p>Size: <a href="/units/size/{unit.size}">{unit.size.replace(/^0+/gm, '').replace(/x0/gm, 'x')}</a></p>
    <p>Advertised Price: {currencyFormatter.format(unit.advertisedPrice)}</p>

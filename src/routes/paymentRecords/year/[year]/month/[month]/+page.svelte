@@ -69,7 +69,7 @@
             <div class="flex">
                 <PaymentRecordEmployee paymentRecord={paymentRecord} />
                 {#if customer}
-                    <User user={customer} />
+                    <User user={customer} widthClass='w-1/3'/>
                 {/if}
             </div>
             {/each}

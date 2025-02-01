@@ -80,7 +80,7 @@
                     <PaymentRecordEmployee paymentRecord={paymentRecord} />
                     <VerticalDivider heightClass="h-30"/>
                     {#if customer}
-                        <User user={customer} />
+                        <User user={customer} widthClass='w-1/3'/>
                     {/if}
                 </div>
                 <HorizontalDivider />

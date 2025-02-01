@@ -2,12 +2,13 @@
 	import type { PartialUser } from "$lib/server/partialTypes";
 
    interface Props {
-      user: PartialUser
+      user: PartialUser;
+      widthClass: string;
    }
-   let { user }:Props = $props()
+   let { user, widthClass }:Props = $props()
 </script>
 
-<div class="m-4 w-1/3 flex-none">
+<div class="m-4 {widthClass} flex-none">
    <p ><a href="/users/{user.id}">{user.givenName} {user.familyName}</a></p>
    {#if user.organizationName}
       <p >{user.organizationName}</p>

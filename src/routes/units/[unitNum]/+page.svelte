@@ -35,9 +35,9 @@
     {#if unit}
     <Header title='Unit number: {unit.num}' />
     <div transition:fade={{duration:600}}>
-        <UnitEmployee unit={unit}/>
+        <UnitEmployee {unit} widthClass='w-1/4'/>
         <Revenue label='Total revenue from this unit' amount={data.totalRevenue} />
-        <UnitNotesForm data={data.unitNotesForm} unit={unit} />
+        <UnitNotesForm data={data.unitNotesForm} {unit} widthClass='w-1/4'/>
         <HorizontalDivider />
         <UnitPricingForm data={data.unitPricingForm} size={unit.size} oldPrice={unit.advertisedPrice} unitPricingFormModalOpen={modalOpen} />
         <HorizontalDivider />
@@ -46,18 +46,18 @@
                 <div class="flex">
                     {#if !lease.leaseEnded}
                         <div class="flex">
-                            <LeaseEmployee lease={lease} />
+                            <LeaseEmployee {lease} widthClass='w-1/4'/>
                             <button class="btn" onclick={()=>{modalOpen=true; currentLeaseId=lease.leaseId}}>End lease</button>
                         </div> 
                         <VerticalDivider heightClass='h-30' />                      
                         {#if customer}
-                            <User user={customer} />
+                            <User user={customer} widthClass='w-1/4'/>
                         {/if}
                         {:else}
-                            <LeaseEmployee lease={lease} />
+                            <LeaseEmployee {lease} widthClass='w-1/4'/>
                             <VerticalDivider heightClass='h-30' />
                         {#if customer}
-                            <User user={customer} />
+                            <User user={customer} widthClass='w-1/4'/>
                         {/if}
                     {/if}
                 </div>

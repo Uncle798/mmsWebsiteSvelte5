@@ -52,10 +52,10 @@
          {#each slicedSource(searchedSource(customers)) as customer}
          {@const lease = leases.find((lease) => lease.customerId === customer.id)}
             <div class="flex row-auto">
-               <User user={customer} />
+               <User user={customer} widthClass='w-1/3'/>
                <VerticalDivider heightClass='h-30'/>
                {#if lease}
-               <LeaseEmployee lease={lease} />
+                  <LeaseEmployee {lease} widthClass='w-1/3'/>
                {/if}
             </div>
             <HorizontalDivider />
