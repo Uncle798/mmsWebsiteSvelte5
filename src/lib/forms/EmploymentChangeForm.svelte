@@ -18,7 +18,7 @@
       }
    });
 </script>
-<div class="card p-4">
+<div class="m-4 flex-none">
    <FormMessage message={$message} />
    <form action="/forms/employmentChangeForm" method="POST" use:enhance>
       <Switch name='employee' bind:checked={employeeChecked}>Employee</Switch>
