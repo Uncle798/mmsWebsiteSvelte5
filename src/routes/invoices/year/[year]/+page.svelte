@@ -10,10 +10,11 @@
 	import Search from '$lib/forms/Search.svelte';
 	import DateSearch from '$lib/forms/DateSearch.svelte';
 	import dayjs from 'dayjs';
+    import utc from 'dayjs/plugin/utc'
 	import Revenue from '$lib/displayComponents/Revenue.svelte';
     import HorizontalDivider from '$lib/displayComponents/HorizontalDivider.svelte';
     import VerticalDivider from '$lib/displayComponents/VerticalDivider.svelte';
-
+    dayjs.extend(utc)
     let { data }: { data: PageData } = $props();
     let pageNum = $state(1);
     let size = $state(25);
@@ -25,10 +26,10 @@
     const numberFormatter = new Intl.NumberFormat('en-US');
     const wrapper = new Promise<Invoice[]>(async res => {
         const invoices = await data.invoices
-        startDate = dayjs(invoices[0].invoiceCreated).startOf('year').toDate();
+        startDate = dayjs.utc(invoices[0].invoiceCreated).startOf('year').toDate();
         minDate = startDate;
-        endDate = new Date();
-        maxDate = minDate;
+        endDate = dayjs.utc(invoices[0].invoiceCreated).endOf('year').toDate();
+        maxDate = endDate;
         res(invoices)
     })
     let slicedInvoices = $derived((invoices:Invoice[]) => invoices.slice((pageNum-1)*size, pageNum*size));
@@ -81,7 +82,7 @@
                 <InvoiceEmployee invoice={invoice} />
                 <VerticalDivider heightClass='h-30' />
                 {#if customer}
-                    <User user={customer} />
+                    <User user={customer} widthClass='w-1/3'/>
                 {/if}
             </div>
             <HorizontalDivider />
