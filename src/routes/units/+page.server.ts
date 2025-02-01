@@ -36,33 +36,15 @@ export const load:PageServerLoad = async (event) =>{
          }
       });
       const customers = prisma.user.findMany()
-      const units = await prisma.unit.findMany({
+      const units = prisma.unit.findMany({
          orderBy: {
             num: 'asc'
          }
       });
-
-      type SizePrice ={
-         size: string,
-         price: number,
-      }
-      const sizesPrices:SizePrice[]=[];
-      units.forEach((unit) =>{
-         const size = sizesPrices.find((s) => s.size === unit.size);
-         if(!size){
-            const sizePrice = {} as SizePrice;
-            sizePrice.size = unit.size;
-            sizePrice.price = unit.advertisedPrice;
-            sizesPrices.push(sizePrice);
-         }
-      });
-      sizesPrices.sort((a,b) => a.size > b.size ? 1 : 
-      (b.size > a.size) ? -1 : 0);
       return {
          units,
          leases, 
          customers,
-         sizesPrices,
          unitNotesForm,
          unitPricingForm,
          leaseEndForm,
