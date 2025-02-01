@@ -2,15 +2,14 @@
    import Pagination from '$lib/displayComponents/Pagination.svelte';
 	import EmploymentChangeForm from '$lib/forms/EmploymentChangeForm.svelte';
 	import Header from '$lib/Header.svelte';
-	import SuperDebug, { superForm, } from 'sveltekit-superforms';
    import type { PageData } from './$types';
 	import type { PartialUser } from '$lib/server/partialTypes';
-	import { goto } from '$app/navigation';
    import { fade } from 'svelte/transition';
 	import UserAdmin from '$lib/displayComponents/UserAdmin.svelte';
 	import Search from '$lib/forms/Search.svelte';
 	import User from '$lib/displayComponents/User.svelte';
 	import HorizontalDivider from '$lib/displayComponents/HorizontalDivider.svelte';
+	import VerticalDivider from '$lib/displayComponents/VerticalDivider.svelte';
 
    let { data }: { data: PageData } = $props();
    let search = $state('')
@@ -33,7 +32,8 @@
    <Search data={data.searchForm} bind:search={search} searchType='user' />
       {#each slicedSource(searchedUsers(users)) as user (user.id)}
          <div class="flex">
-            <UserAdmin user={user} />
+            <UserAdmin user={user} widthClass='w-1/3' />
+            <VerticalDivider heightClass='h-30' />
             <EmploymentChangeForm 
                data={data.employmentChangeForm} 
                employeeChecked={user.employee} 
