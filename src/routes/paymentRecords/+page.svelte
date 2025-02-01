@@ -9,10 +9,12 @@
 	import Search from '$lib/forms/Search.svelte';
 	import Placeholder from '$lib/displayComponents/Placeholder.svelte';
     import dayjs from 'dayjs';
+    import utc from 'dayjs/plugin/utc'
 	import DateSearch from '$lib/forms/DateSearch.svelte';
 	import Revenue from '$lib/displayComponents/Revenue.svelte';
 	import HorizontalDivider from '$lib/displayComponents/HorizontalDivider.svelte';
 	import VerticalDivider from '$lib/displayComponents/VerticalDivider.svelte';
+    dayjs.extend(utc)
     let { data }: { data: PageData } = $props();
     let pageNum = $state(1);
     let size = $state(25);
@@ -24,10 +26,11 @@
     let wrapper = new Promise<PaymentRecord[]>(async res => {
         const paymentRecords = await data.paymentRecords
         res(paymentRecords)
-        if(paymentRecords[0]){
-            startDate = dayjs(paymentRecords[0].paymentCreated).startOf('year').toDate();
+        if(paymentRecords.length > 0){
+            startDate = dayjs.utc(paymentRecords[0].paymentCreated).startOf('year').toDate();
+            console.log('startDate', startDate)
             minDate = startDate;
-            endDate = dayjs(paymentRecords[paymentRecords.length-1].paymentCreated).endOf('year').toDate();
+            endDate = dayjs.utc(paymentRecords[paymentRecords.length-1].paymentCreated).endOf('year').toDate();
             maxDate = endDate;
         }
     })
@@ -82,7 +85,7 @@
                     <PaymentRecordEmployee paymentRecord={paymentRecord} />
                     <VerticalDivider heightClass='h-30' />
                     {#if customer}
-                        <User user={customer} />
+                        <User user={customer} widthClass='w-1/3'/>
                     {/if}
                 </div>
                 <HorizontalDivider />
