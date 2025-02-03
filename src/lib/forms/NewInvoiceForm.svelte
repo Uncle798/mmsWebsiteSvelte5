@@ -1,5 +1,4 @@
 <script lang='ts'>
-	import LeaseEmployee from "$lib/displayComponents/LeaseEmployee.svelte";
    import FormMessage from "$lib/formComponents/FormMessage.svelte";
 	import FormSubmitWithProgress from "$lib/formComponents/FormSubmitWithProgress.svelte";
 	import NumberInput from "$lib/formComponents/NumberInput.svelte";
@@ -102,7 +101,7 @@
          label='Invoice amount: $'
          name='invoiceAmount'
       />
-      <div class="card m-4">
+      <div class="p-4">
          <label for="depost">Deposit
             <Switch name='deposit' bind:checked={$form.deposit} label='Deposit'/>
          </label>

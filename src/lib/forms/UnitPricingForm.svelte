@@ -21,7 +21,10 @@
       onUpdated(){
          unitPricingFormModalOpen=false;
          invalidateAll();
-      },   
+      }, 
+      warnings: {
+         duplicateId: false
+      }
    })
    onMount(()=>{
       $form.price = oldPrice
@@ -30,7 +33,7 @@
 <div class={classes}>
    <FormMessage message={$message} />
    <form action="/forms/unitPricingForm" method="POST" use:enhance>
-      <p class="m-4">Change all {size.replace(/^0+/gm,'').replace(/x0/gm,'x')} units from ${oldPrice} to </p>
+      <p class="p-4">Change all {size.replace(/^0+/gm,'').replace(/x0/gm,'x')} units from ${oldPrice} to </p>
       <NumberInput
          bind:value={$form.price}
          errors={$errors.price}
@@ -41,7 +44,7 @@
       <Switch
          bind:checked={$form.changeDeposit}
          name='changeDeposit'
-         classes='m-4'
+         classes='p-4'
       >
          Change the deposit as well
       </Switch>

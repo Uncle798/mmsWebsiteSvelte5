@@ -51,7 +51,7 @@
          label='Refund amount'
          name='amount'
       />
-      <select name="refundType" bind:value={$form.refundType} class="select m-4">
+      <select name="refundType" bind:value={$form.refundType} class="select p-4">
          {#each ['Stripe', 'Cash', 'Check'] as type}
             <option value={type.toUpperCase()} selected={type.toUpperCase() === paymentRecord.paymentType}>{type}</option>
          {/each}
