@@ -27,7 +27,7 @@
       $form.endDate = endDate;
    })
 </script>
-<div class="m-4 {classes}">
+<div class="p-4 {classes}">
    <form method="POST" use:enhance >
       <div class="flex">
          <div>

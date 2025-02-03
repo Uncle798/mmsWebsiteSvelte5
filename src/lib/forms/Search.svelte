@@ -17,7 +17,7 @@
    })
 </script>
 
-<div class="m-4 {classes}">
+<div class="p-4 {classes}">
    <form method="POST" use:enhance>
        <label class="label-text">Search by {searchType}
            <input type="search" name="search" id="search" class="input" placeholder="Search by {searchType} ..." bind:value={search}>
