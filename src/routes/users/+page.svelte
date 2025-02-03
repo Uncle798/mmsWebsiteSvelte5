@@ -33,7 +33,7 @@
       {#each slicedSource(searchedUsers(users)) as user (user.id)}
          <div class="flex">
             <UserAdmin user={user} widthClass='w-1/3' />
-            <VerticalDivider heightClass='h-30' />
+            <VerticalDivider classes='h-30' />
             <EmploymentChangeForm 
                data={data.employmentChangeForm} 
                employeeChecked={user.employee} 

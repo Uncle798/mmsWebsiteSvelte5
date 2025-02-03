@@ -79,9 +79,9 @@
             {@const customer = customers.find((customer) => customer.id === invoice.customerId)}  
             <div class="flex" transition:fade={{duration:600}}>
                 <InvoiceEmployee invoice={invoice} />
-                <VerticalDivider heightClass ='h-30' />
+                <VerticalDivider classes ='h-30' />
                 {#if customer}
-                    <User user={customer} widthClass='w-1/4'/>
+                    <User user={customer} classes='w-1/4'/>
                 {/if}
             </div>
             <HorizontalDivider />

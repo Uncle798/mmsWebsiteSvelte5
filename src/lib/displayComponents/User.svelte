@@ -3,12 +3,12 @@
 
    interface Props {
       user: PartialUser;
-      widthClass: string;
+      classes?: string;
    }
-   let { user, widthClass }:Props = $props()
+   let { user, classes }:Props = $props()
 </script>
 
-<div class="m-4 {widthClass} flex-none">
+<div class="m-4 flex-none {classes}">
    <p ><a href="/users/{user.id}">{user.givenName} {user.familyName}</a></p>
    {#if user.organizationName}
       <p >{user.organizationName}</p>

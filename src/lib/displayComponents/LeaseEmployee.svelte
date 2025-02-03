@@ -3,13 +3,13 @@
 	import dayjs from "dayjs";
    interface Props {
       lease: Lease;
-      widthClass: string;
+      classes: string;
    }
-   let { lease, widthClass }:Props = $props();
+   let { lease, classes }:Props = $props();
    const currencyFormatter = new Intl.NumberFormat('en-US', {style:'currency', currency:'USD'});
 </script>
 
-<div class="m-4 {widthClass} flex-none">
+<div class="m-4 {classes} flex-none">
    <p>Unit number: <a href="/units/{lease.unitNum}">{lease.unitNum.replace(/^0+/gm,'')}</a></p>
    <p>Lease effective date {dayjs(lease.leaseEffectiveDate).format('M/D/YYYY')}</p>
    {#if lease.leaseEnded}

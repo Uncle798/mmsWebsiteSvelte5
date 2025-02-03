@@ -15,9 +15,9 @@
       data: SuperValidated<Infer<UnitNotesFormSchema>>
       unitNotesFormModalOpen?: boolean
       unit:Unit
-      widthClass: string;
+      classes: string;
    }
-   let { data, unitNotesFormModalOpen, unit, widthClass }:Props = $props();
+   let { data, unitNotesFormModalOpen, unit, classes }:Props = $props();
 
    let { form, message, errors, constraints, enhance, delayed, timeout} = superForm(data, {
       onUpdated(){
@@ -31,7 +31,7 @@
 </script>
 
 <FormMessage message={$message} />
-<form action="/forms/unitNotesForm" method="POST" use:enhance class="{widthClass}">
+<form action="/forms/unitNotesForm" method="POST" use:enhance class="{classes}">
    <TextInput
       bind:value={$form.notes}
       errors={$errors.notes}

@@ -49,17 +49,20 @@
          <Search search={search} searchType='customer name' data={data.userSearchForm}/>
          <HorizontalDivider />
          <Revenue label='Current monthly invoiced' amount={totalLeased(leases)} />
+         <HorizontalDivider />
+         <div class="flex flex-row flex-wrap">
          {#each slicedSource(searchedSource(customers)) as customer}
          {@const lease = leases.find((lease) => lease.customerId === customer.id)}
-            <div class="flex row-auto">
-               <User user={customer} widthClass='w-1/3'/>
-               <VerticalDivider heightClass='h-30'/>
+            <div class="flex basis-full">
+               <User user={customer} classes='basis- flex-none'/>
+               <VerticalDivider classes='h-30'/>
                {#if lease}
-                  <LeaseEmployee {lease} widthClass='w-1/3'/>
+                  <LeaseEmployee {lease} classes='basis-64'/>
                {/if}
             </div>
             <HorizontalDivider />
          {/each}
+         </div>
          <Pagination bind:pageNum={pageNum} bind:size={size} label='users' array={searchedSource(customers)}/>
       </div>
    {/await}
