@@ -4,12 +4,13 @@
 
    interface Props {
       refundRecord: RefundRecord;
+      classes?: string;
    }
-   let { refundRecord }:Props = $props();
+   let { refundRecord, classes }:Props = $props();
    const currencyFormatter = new Intl.NumberFormat('en-US', {style:'currency', currency:'USD'});
 </script>
 
-<div class="m-4 w-1/3 flex-none">
+<div class="m-4 flex-none {classes}">
    <p>Refund record number: <a href="/refundRecords/{refundRecord.refundNumber}">{refundRecord.refundNumber}</a></p>
    <p>Refund amount: {currencyFormatter.format(refundRecord.refundAmount)}</p>
    {#if refundRecord.refundCompleted}

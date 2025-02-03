@@ -3,7 +3,7 @@
    import dayjs from "dayjs";
    interface Props {
       invoice:Invoice;
-      classes: string;
+      classes?: string;
    }
    let { invoice, classes }:Props = $props();
    const currencyFormatter = new Intl.NumberFormat('en-US', {style:'currency', currency:'USD'});

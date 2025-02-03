@@ -5,7 +5,7 @@
 
    interface Props {
       paymentRecord:PaymentRecord
-      classes: string
+      classes?: string
    }
    let { paymentRecord, classes }:Props =$props();
    const currencyFormatter = new Intl.NumberFormat('en-US', {style:'currency', currency:'USD'});
