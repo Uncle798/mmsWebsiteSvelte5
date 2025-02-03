@@ -2,13 +2,18 @@
     import Header from '$lib/Header.svelte';
 	import { fade } from 'svelte/transition';
     import type { PageData } from './$types';
-	import Revenue from '$lib/displayComponents/Revenue.svelte';
+	import HorizontalDivider from '$lib/displayComponents/HorizontalDivider.svelte';
     let { data }:{data:PageData} = $props();
-
+    const currencyFormatter = new Intl.NumberFormat('en-US', {style: 'currency', currency:'USD'})
 </script>
 <Header title='Available Units' />
 {#if data.lostRevenue}
-    <Revenue amount={data.lostRevenue} label='Available stock per month' />
+    <div class="flex">
+        <span class="m-2">Available: {data.availableUnits.length} of {data.totalUnits}</span>
+        <span class="m-2">Available percentage {Math.round(data.percentAvailable)}%</span>
+        <span class="m-2">Open revenue per month: {currencyFormatter.format(data.lostRevenue)}</span>
+    </div>
+    <HorizontalDivider />
 {/if}
 <div class="table-wrap" transition:fade={{duration:600}}>
     <table class="table">

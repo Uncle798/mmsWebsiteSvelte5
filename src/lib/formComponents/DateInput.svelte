@@ -15,21 +15,21 @@
    }
    let { value = $bindable(), label, errors, constraints, placeholder, name, min, max, ...others }:Props = $props()
 </script>
-<div class="mx-4">
-<label class="label">
-   {#if label}<span class="label-text">{label}</span>{/if}
-   <input
-      type="date"
-      class="input"
-      name={name}
-      bind:value={value}
-      aria-invalid={errors ? 'true' : undefined}
-      placeholder={placeholder}
-      min={dayjs.utc(min).format('YYYY-MM-DD')}
-      max={dayjs.utc(max).format('YYYY-MM-DD')}
-      {...constraints}
-      {...others}
-   />
- </label>
- {#if errors}<span class="invalid">{errors}</span>{/if}
+<div class="mb-2 mx-2">
+   <label class="label">
+      {#if label}<span class="label-text">{label}</span>{/if}
+      <input
+         type="date"
+         class="input"
+         name={name}
+         bind:value={value}
+         aria-invalid={errors ? 'true' : undefined}
+         placeholder={placeholder}
+         min={dayjs.utc(min).format('YYYY-MM-DD')}
+         max={dayjs.utc(max).format('YYYY-MM-DD')}
+         {...constraints}
+         {...others}
+      />
+   </label>
+   {#if errors}<span class="invalid">{errors}</span>{/if}
 </div>

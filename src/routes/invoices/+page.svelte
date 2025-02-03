@@ -27,7 +27,6 @@
     const wrapper = new Promise<Invoice[]>(async res => {
         const invoices = await data.invoices
         startDate = dayjs.utc(invoices[0].invoiceCreated).startOf('year').toDate();
-        console.log('startDate', startDate);
         minDate = startDate;
         endDate = new Date();
         maxDate = endDate;
@@ -67,19 +66,21 @@
 {:then invoices}
     {#await data.customers}
         <Header title='Loading customers' />
+        Loading customers...
     {:then customers}
         <Header title='All invoices' />
-        <Revenue label="Total invoiced (not including deposits)" amount={totalRevenue(searchedInvoices(dateSearchedInvoices(invoices)))} />
         <div class="flex">
-            <Search data={data.searchForm} bind:search={search} searchType='invoice number'/>
-            <DateSearch data={data.dateSearchForm} bind:startDate={startDate} bind:endDate={endDate} {minDate} {maxDate} />
+            <Search data={data.searchForm} bind:search={search} searchType='invoice number' classes='h-28'/>
+            <DateSearch data={data.dateSearchForm} bind:startDate={startDate} bind:endDate={endDate} {minDate} {maxDate} classes='h-28'/>
         </div>
+        <HorizontalDivider />
+        <Revenue label="Total invoiced (not including deposits)" amount={totalRevenue(searchedInvoices(dateSearchedInvoices(invoices)))} />
         <HorizontalDivider />
         {#each  slicedInvoices(searchedInvoices(invoices)) as invoice}  
             {@const customer = customers.find((customer) => customer.id === invoice.customerId)}  
             <div class="flex" transition:fade={{duration:600}}>
-                <InvoiceEmployee invoice={invoice} />
-                <VerticalDivider classes ='h-30' />
+                <InvoiceEmployee {invoice} classes='w-80' />
+                <VerticalDivider classes='h-30' />
                 {#if customer}
                     <User user={customer} classes='w-1/4'/>
                 {/if}
