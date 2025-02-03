@@ -53,9 +53,6 @@ async function deleteAll() {
    await prisma.address.deleteMany().catch((err) =>{
       console.error(err);
    });
-   await prisma.passwordReset.deleteMany().catch((err) =>{
-      console.error(err);
-   });
    await prisma.verification.deleteMany().catch((err) =>{
       console.error(err);
    });
