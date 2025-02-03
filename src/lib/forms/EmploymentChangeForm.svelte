@@ -18,13 +18,12 @@
       }
    });
 </script>
-<div class="m-4 flex-none">
+<div class="my-2 flex-none">
    <FormMessage message={$message} />
    <form action="/forms/employmentChangeForm" method="POST" use:enhance>
       <Switch name='employee' bind:checked={employeeChecked}>Employee</Switch>
       <Switch name='admin' bind:checked={adminChecked}>Admin</Switch>
       <input type="hidden" name='userId' value={userId} />
       <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} buttonText="Change employment status"/>
-
    </form>
 </div>
