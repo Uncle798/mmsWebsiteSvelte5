@@ -16,7 +16,7 @@ export const load:PageServerLoad = (async (event) => {
       where: {
          unavailable: false
       },
-   })
+   });
    const availableUnits:Unit[] = [];
    units.forEach((unit) => {
       const lease = leases.find((l) => l.unitNum === unit.num)
@@ -26,11 +26,13 @@ export const load:PageServerLoad = (async (event) => {
    })
    if(event.locals.user?.employee){
       let lostRevenue = 0;
+      const percentAvailable = (availableUnits.length * 100)/units.length;
+      const totalUnits = units.length
       availableUnits.forEach((unit) => {
          lostRevenue += unit.advertisedPrice
       })
-
-      return { availableUnits, userId, lostRevenue, }
+      
+      return { availableUnits, userId, totalUnits, lostRevenue, percentAvailable, }
    }
    return { availableUnits, userId }; 
 }) 
