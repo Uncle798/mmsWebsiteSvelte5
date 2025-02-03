@@ -82,10 +82,10 @@
                 {#each slicedSource(dateSearchPayments(searchedPayments(paymentRecords))) as paymentRecord}
                 {@const customer = customers.find((customer) => customer.id === paymentRecord.customerId) }
                 <div class="flex">
-                    <PaymentRecordEmployee paymentRecord={paymentRecord} />
-                    <VerticalDivider heightClass='h-30' />
+                    <PaymentRecordEmployee paymentRecord={paymentRecord} classes="" />
+                    <VerticalDivider classes='h-30' />
                     {#if customer}
-                        <User user={customer} widthClass='w-1/3'/>
+                        <User user={customer} classes='w-1/3'/>
                     {/if}
                 </div>
                 <HorizontalDivider />
