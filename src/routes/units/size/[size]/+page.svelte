@@ -54,15 +54,16 @@
 <Revenue label='Total invoiced from all {data.size.replace(/^0/gm,'').replace(/x0/gm, 'x')} units' amount={data.totalInvoiced}/>
 {#each data.units as unit}
 {@const leases = data.leases.filter((lease) => lease.unitNum === unit.num) }
-   <div class="flex">
-      <UnitEmployee {unit} />
-      <VerticalDivider heightClass='h-30'/>
+   <div class="flex w-full">
+      <UnitEmployee {unit} classes='h-36 w-1/3'/>
+      <VerticalDivider classes=''/>
       {#each leases as lease}
          {#if !lease.leaseEnded}
-            <LeaseEmployee {lease} />
          {@const customer = data.customers.find((customer) => customer.id === lease.customerId)}
+            <LeaseEmployee {lease} classes=' w-1/3'/>
             {#if customer}
-               <User user={customer} />
+               <VerticalDivider classes='' />
+               <User user={customer} classes='w-1/3'/>
             {/if}
          {/if}
       {/each}
