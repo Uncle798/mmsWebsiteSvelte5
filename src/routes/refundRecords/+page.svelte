@@ -70,7 +70,7 @@
       {@const customer = customers.find((customer) => customer.id === refund.customerId)}
          <div class="flex">
             <RefundRecordDisplay refundRecord={refund} />
-            <VerticalDivider heightClass='h-30' />
+            <VerticalDivider classes='h-30' />
             {#if customer}
                <User user={customer} />
             {/if}
