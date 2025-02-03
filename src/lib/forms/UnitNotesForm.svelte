@@ -29,23 +29,24 @@
       $form.notes = unit.notes
    })
 </script>
-
-<FormMessage message={$message} />
-<form action="/forms/unitNotesForm" method="POST" use:enhance class="{classes}">
-   <TextInput
-      bind:value={$form.notes}
-      errors={$errors.notes}
-      constraints={$constraints.notes}
-      label='Notes'
-      name='notes'
-   />
-   <Switch 
-      bind:checked={unit.unavailable}
-      name='unavailable'  
-      classes='m-4'
-   >
-      Unit is unavailable
-   </Switch>
-   <input type="hidden" name="unitNum" id="unitNum" value={unit.num} />
-   <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} buttonText='Submit notes and unit availability'/>
-</form>
+<div class={classes}>
+   <FormMessage message={$message} />
+   <form action="/forms/unitNotesForm" method="POST" use:enhance>
+      <TextInput
+         bind:value={$form.notes}
+         errors={$errors.notes}
+         constraints={$constraints.notes}
+         label='Notes'
+         name='notes'
+      />
+      <Switch 
+         bind:checked={unit.unavailable}
+         name='unavailable'  
+         classes='m-4'
+      >
+         Unit is unavailable
+      </Switch>
+      <input type="hidden" name="unitNum" id="unitNum" value={unit.num} />
+      <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} buttonText='Submit notes and unit availability'/>
+   </form>
+</div>

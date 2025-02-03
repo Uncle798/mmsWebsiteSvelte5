@@ -8,15 +8,18 @@
    interface Props {
       data: SuperValidated<Infer<CuidIdFormSchema>>;
       discountId: string | undefined;
+      classes?: string;
    }
-   let { data, discountId }:Props = $props();
+   let { data, discountId, classes }:Props = $props();
    let { form, errors, message, constraints, enhance, delayed, timeout} = superForm(data, {
       onUpdate(){
       }
    });
 </script>
-<FormMessage message={$message} />
-<form action="/forms/discountEndForm" method="POST" use:enhance>
-   <input type='hidden' name="discountId" value={discountId} />
-   <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} buttonText='End this discount'/>
-</form>
+<div class={classes}>
+   <FormMessage message={$message} />
+   <form action="/forms/discountEndForm" method="POST" use:enhance>
+      <input type='hidden' name="discountId" value={discountId} />
+      <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} buttonText='End this discount'/>
+   </form>
+</div>
