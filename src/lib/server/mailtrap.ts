@@ -19,7 +19,7 @@ export async function sendVerificationEmail(verificationCode:string, email:strin
    }).catch((err) =>{
       console.error(err);
    })
-      return response;
+   return response;
 }
 
 export async function sendMagicLinkEmail(magicLink:string, email:string) {
