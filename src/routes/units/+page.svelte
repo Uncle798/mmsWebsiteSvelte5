@@ -13,6 +13,7 @@
     
     import { fade } from 'svelte/transition';
 	import type { Unit } from '@prisma/client';
+	import VerticalDivider from '$lib/displayComponents/VerticalDivider.svelte';
     let { data }: { data: PageData } = $props();
     let { units } = data;
     let modalOpen = $state(false);
@@ -57,38 +58,47 @@
     {/snippet}
 </Modal>
 
-{#await data.leases}
-    loading leases
+{#await data.units}
+    loading units
     <Placeholder />
-{:then leases} 
-    {#await data.customers}
-        loading customers 
+{:then units} 
+    {#await data.leases}
+        loading leases
         <Placeholder />
-    {:then customers}
-    {#if units}   
-    {#each slicedUnits(filteredUnits(units)) as unit (unit.num)}
-        {@const lease = leases?.find((lease) => lease.unitNum === unit.num)}
-        <div class="flex" transition:fade={{duration:600}}>
-            <div class="grid grid-cols-1">
-                <UnitEmployee {unit} />
-                <button class="btn" onclick={()=> openModal('unitPricing', unit.advertisedPrice, '', unit.size)}>Change all {unit.size.replace(/^0+/gm,'').replace(/x0/gm,'x')} pricing</button>
-            </div>
-            {#if data.unitNotesForm}
-                <UnitNotesForm data={data.unitNotesForm} unit={unit}/>
+    {:then leases} 
+        {#await data.customers}
+            loading customers 
+            <Placeholder />
+        {:then customers}
+            {#if units}   
+                {#each slicedUnits(filteredUnits(units)) as unit (unit.num)}
+                    {@const lease = leases?.find((lease) => lease.unitNum === unit.num)}
+                    <div class="grid container grid-cols-4 grid-rows-{slicedUnits(filteredUnits(units)).length} auto-cols-max gap-0" transition:fade={{duration:600}}>
+                        <div class="w-full border-r-2 border-b-2 border-primary-950 rounded-sm">
+                            <UnitEmployee {unit} classes=''/>
+                            <button class="btn bg-primary-900 rounded-lg" onclick={()=> openModal('unitPricing', unit.advertisedPrice, '', unit.size)}>Change all {unit.size.replace(/^0+/gm,'').replace(/x0/gm,'x')} pricing</button>
+                        </div>
+                        {#if data.unitNotesForm}
+                            <UnitNotesForm data={data.unitNotesForm} {unit} classes='min-w-80 border-r-2 border-b-2 border-primary-950'/>
+                        {/if}
+                        {#if lease}
+                        {@const customer = customers?.find((customer) => customer.id === lease.customerId)}
+                            <div class="w-full min-w-80 border-r-2 border-b-2 border-primary-950">
+                                <LeaseEmployee {lease} classes='w-80 m-4'/>
+                                <button class="btn bg-primary-900 rounded-lg" onclick={()=>openModal('lease', 0, lease.leaseId)}>End Lease</button>
+                            </div>
+                            {#if customer}
+                                <User user={customer} classes='w-full border-b-2 border-primary-950 '/>
+                                {:else}
+                                <div class="w-full border-b-2 border-primary-950 min-w-80" ></div>
+                            {/if}
+                            {:else}
+                            <div class="w-full border-r-2 border-b-2 border-primary-950"></div>
+                        {/if}
+                    </div>
+                {/each}
+            <Pagination pageNum={pageNum} size={size} array={filteredUnits(units)} label='units'/>
             {/if}
-            {#if lease}
-                {@const customer = customers?.find((customer) => customer.id === lease.customerId)}
-                <div>
-                    <LeaseEmployee lease={lease} />
-                    <button class="btn" onclick={()=>openModal('lease', 0, lease.leaseId)}>End Lease</button>
-                </div>
-                {#if customer}
-                    <User user={customer} />
-                {/if}
-            {/if}
-        </div>
-    {/each}
-    <Pagination pageNum={pageNum} size={size} array={filteredUnits(units)} label='units'/>
-    {/if}
+        {/await}    
     {/await}
 {/await}
