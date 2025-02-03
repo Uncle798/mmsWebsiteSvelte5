@@ -10,7 +10,7 @@
    const currencyFormatter = new Intl.NumberFormat('en-US', {style:'currency', currency:'USD'});
 </script>
 
-<div class="m-4 flex-none {classes}">
+<div class="p-4 flex-none {classes}">
    <p>Refund record number: <a href="/refundRecords/{refundRecord.refundNumber}">{refundRecord.refundNumber}</a></p>
    <p>Refund amount: {currencyFormatter.format(refundRecord.refundAmount)}</p>
    {#if refundRecord.refundCompleted}
