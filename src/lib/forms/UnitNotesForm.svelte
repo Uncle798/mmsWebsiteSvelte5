@@ -23,7 +23,10 @@
       onUpdated(){
          unitNotesFormModalOpen=false;
          invalidateAll();
-      },   
+      },
+      warnings: {
+         duplicateId: false
+      } 
    })
    onMount(()=>{
       $form.notes = unit.notes
@@ -42,7 +45,7 @@
       <Switch 
          bind:checked={unit.unavailable}
          name='unavailable'  
-         classes='m-4'
+         classes='p-4'
       >
          Unit is unavailable
       </Switch>

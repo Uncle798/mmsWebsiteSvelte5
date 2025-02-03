@@ -8,7 +8,7 @@
    const currencyFormatter = new Intl.NumberFormat('en-US', {style:'currency', currency:'USD'});
 </script>
 
-<div class="m-4 {classes} flex-none">
+<div class="p-4 {classes} flex-none">
    <p>Unit Number: <a href="/units/{unit.num}">{unit.num.replace(/^0+/gm,'')}</a></p>
    <p>Size: <a href="/units/size/{unit.size}">{unit.size.replace(/^0+/gm, '').replace(/x0/gm, 'x')}</a></p>
    <p>Advertised Price: {currencyFormatter.format(unit.advertisedPrice)}</p>

@@ -8,7 +8,7 @@
    let { user, widthClass }:Props = $props()
 </script>
 
-<div class="m-4 {widthClass} flex-none">
+<div class="p-4 {widthClass} flex-none">
    <p ><a href="/users/{user.id}">{user.givenName} {user.familyName}</a></p>
    {#if user.organizationName}
       <p><a href="/users/{user.id}">{user.organizationName}</a></p>

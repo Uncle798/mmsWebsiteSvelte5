@@ -53,7 +53,7 @@
                 goto(`/refundRecords/new?paymentNum=${paymentNumber}`)
                 console.log(paymentNumber);
             }}
-            classes='m-4'
+            classes='p-4'
         />
     {/if}
 {/if}

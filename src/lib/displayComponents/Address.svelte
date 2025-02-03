@@ -2,11 +2,12 @@
 	import type { Address } from "@prisma/client";
    interface Props {
       address: Address;
+      classes?: string;
    }
-   let { address = $bindable() }:Props = $props()
+   let { address = $bindable(), classes }:Props = $props()
 </script>
 
-<div class="m-4">
+<div class="p-4">
    <p>{address.address1}</p>
    {#if address.address2}
       <p>{address.address2}</p>

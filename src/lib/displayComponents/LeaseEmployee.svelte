@@ -9,7 +9,7 @@
    const currencyFormatter = new Intl.NumberFormat('en-US', {style:'currency', currency:'USD'});
 </script>
 
-<div class="m-4 {classes} flex-none">
+<div class="p-4 {classes} flex-none">
    <p>Unit number: <a href="/units/{lease.unitNum}">{lease.unitNum.replace(/^0+/gm,'')}</a></p>
    <p>Lease effective date {dayjs(lease.leaseEffectiveDate).format('M/D/YYYY')}</p>
    {#if lease.leaseEnded}

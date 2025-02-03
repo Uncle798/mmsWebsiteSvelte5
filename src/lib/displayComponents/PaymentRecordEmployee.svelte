@@ -11,7 +11,7 @@
    const currencyFormatter = new Intl.NumberFormat('en-US', {style:'currency', currency:'USD'});
 </script>
 
-<div class=" m-4 flex-none {classes}">
+<div class=" p-4 flex-none {classes}">
    <p>Payment record number: <a href="/paymentRecords/{paymentRecord.paymentNumber}">{paymentRecord.paymentNumber}</a></p>
    <p>Payment amount: {currencyFormatter.format(paymentRecord.paymentAmount)}</p>
    <p>Payment created: {dayjs(paymentRecord.paymentCreated).format('M/D/YYYY')}</p>

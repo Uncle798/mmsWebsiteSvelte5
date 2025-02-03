@@ -9,7 +9,7 @@
    const currencyFormatter = new Intl.NumberFormat('en-US', {style:'currency', currency:'USD'});
 </script>
 
-<div class="m-4 flex-none {classes}">
+<div class="p-4 flex-none {classes}">
    <p><a href="/invoices/{invoice.invoiceNum}"><span class="font-semibold">Invoice number:</span> {invoice.invoiceNum}</a></p>
    <p><span class="font-semibold">Invoice amount:</span> {currencyFormatter.format(invoice.invoiceAmount)}</p>
    <p><span class="font-semibold">Created:</span> {dayjs(invoice.invoiceCreated).format('M/D/YYYY')}</p>
