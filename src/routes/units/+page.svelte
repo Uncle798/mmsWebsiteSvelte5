@@ -71,9 +71,9 @@
             <Placeholder />
         {:then customers}
             {#if units}   
+            <div class="grid container grid-cols-4 grid-rows-{slicedUnits(filteredUnits(units)).length} auto-cols-max gap-0" transition:fade={{duration:600}}>
                 {#each slicedUnits(filteredUnits(units)) as unit (unit.num)}
-                    {@const lease = leases?.find((lease) => lease.unitNum === unit.num)}
-                    <div class="grid container grid-cols-4 grid-rows-{slicedUnits(filteredUnits(units)).length} auto-cols-max gap-0" transition:fade={{duration:600}}>
+                {@const lease = leases?.find((lease) => lease.unitNum === unit.num)}
                         <div class="w-full border-r-2 border-b-2 border-primary-950 rounded-sm">
                             <UnitEmployee {unit} classes=''/>
                             <button class="btn bg-primary-900 rounded-lg" onclick={()=> openModal('unitPricing', unit.advertisedPrice, '', unit.size)}>Change all {unit.size.replace(/^0+/gm,'').replace(/x0/gm,'x')} pricing</button>
@@ -84,19 +84,19 @@
                         {#if lease}
                         {@const customer = customers?.find((customer) => customer.id === lease.customerId)}
                             <div class="w-full min-w-80 border-r-2 border-b-2 border-primary-950">
-                                <LeaseEmployee {lease} classes='w-80 m-4'/>
+                                <LeaseEmployee {lease} classes='w-80 p-4'/>
                                 <button class="btn bg-primary-900 rounded-lg" onclick={()=>openModal('lease', 0, lease.leaseId)}>End Lease</button>
                             </div>
                             {#if customer}
                                 <User user={customer} classes='w-full border-b-2 border-primary-950 '/>
-                                {:else}
+                            {:else}
                                 <div class="w-full border-b-2 border-primary-950 min-w-80" ></div>
                             {/if}
                             {:else}
                             <div class="w-full border-r-2 border-b-2 border-primary-950"></div>
                         {/if}
-                    </div>
-                {/each}
+                    {/each}
+                </div>
             <Pagination pageNum={pageNum} size={size} array={filteredUnits(units)} label='units'/>
             {/if}
         {/await}    
