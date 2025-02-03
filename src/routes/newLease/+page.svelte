@@ -13,6 +13,7 @@
 	import FormMessage from '$lib/formComponents/FormMessage.svelte';
 	import Header from '$lib/Header.svelte';
 	import LeaseDiscountForm from '$lib/forms/LeaseDiscountForm.svelte';
+	import { fade, crossfade, blur } from 'svelte/transition';
     
     let { data }: {data:PageData} = $props();
     let { form, message, errors, constraints, enhance, delayed, timeout } = superForm(data.leaseForm);
@@ -31,12 +32,15 @@
     })
 </script>
 <Header title='New lease'/>
+<div transition:fade={{duration:600}}>
+
 
 {#if data.user}
     <User user={data.user} />
 {/if}
 <FormMessage message={$message} />
 <form method="post" use:enhance>
+    <input type='hidden' name=customerId value={data.user?.id} />
     {#if data.user?.organizationName}
         <Checkbox
             bind:value={$form.organization}
@@ -65,12 +69,14 @@
     </Modal>
     {/if}
     {#if data.unit}
-    <UnitCustomer unit={data.unit} />
-    <input type="hidden" name="unitNum" value={data.unit.num}>
-    {#if data.discount}
-    Discount ${data.discount.amountOff}
-    Monthly Rent: ${data.unit.advertisedPrice! - data.discount.amountOff}
-    {/if}
+        <UnitCustomer unit={data.unit} />
+        <input type="hidden" name="unitNum" value={data.unit.num}>
+        {#if data.discount}
+            <div class="card p-4" transition:fade={{duration:300}}>
+                Discount ${data.discount.amountOff}
+                Monthly Rent: ${data.unit.advertisedPrice! - data.discount.amountOff}
+            </div>
+        {/if}
     {/if}
     <div class="flex">
         {#if data.unit && data.address}
@@ -79,5 +85,8 @@
     </div>
 </form>
 {#if !data.discount}
-<LeaseDiscountForm data={data.leaseDiscountForm} unitNum={data.unitNum} />
+    <div transition:fade={{duration:600}}>
+        <LeaseDiscountForm data={data.leaseDiscountForm} unitNum={data.unitNum} />
+    </div>
 {/if}
+</div>

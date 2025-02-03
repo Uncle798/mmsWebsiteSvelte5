@@ -1,14 +1,16 @@
 import { PUBLIC_COMPANY_NAME, PUBLIC_URL } from "$env/static/public";
+import type { Invoice } from "@prisma/client";
 import { MailtrapClient } from "mailtrap";
+import type { PartialUser } from "./partialTypes";
 
 const token = process.env.MAILTRAP_TOKEN!;
 export const mailtrap = new MailtrapClient({token})
 
+const sender = {
+   name: 'computer@bransonschlegel.com',
+   email: 'computer@bransonschlegel.com',
+}
 export async function sendVerificationEmail(verificationCode:string, email:string) {
-   const sender = {
-      name: 'computer@bransonschlegel.com',
-      email: 'computer@bransonschlegel.com',
-   }
    const response = await mailtrap.send({
       from:sender,
       to: [{email}],
@@ -17,14 +19,11 @@ export async function sendVerificationEmail(verificationCode:string, email:strin
    }).catch((err) =>{
       console.error(err);
    })
-   return response;
+      return response;
 }
 
 export async function sendMagicLinkEmail(magicLink:string, email:string) {
-   const sender = {
-      name: 'computer@bransonschlegel.com',
-      email: 'computer@bransonschlegel.com',
-   }
+
    const response = await mailtrap.send({
       from:sender,
       to: [{email}],
@@ -35,4 +34,15 @@ export async function sendMagicLinkEmail(magicLink:string, email:string) {
       console.error(err);
    })
    return response;
+}
+
+export async function sendInvoiceEmail(invoice:Invoice, customer:PartialUser) {
+   const response = await mailtrap.send({
+      from: sender,
+      to: [{email: customer.email!}],
+      subject: `Invoice ${invoice.invoiceNum} from ${PUBLIC_COMPANY_NAME}`,
+      html: `Hello ${customer.givenName} <br/>Please pay $${invoice.invoiceAmount} for ${invoice.invoiceNotes} to pay please visit \
+      <a href="${PUBLIC_URL}/invoices/pay?invoiceNum=${invoice.invoiceNum}>Pay invoice </a>`
+   })
+   return response
 }

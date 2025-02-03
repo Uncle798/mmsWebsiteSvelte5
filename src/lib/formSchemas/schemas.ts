@@ -9,8 +9,9 @@ export type EmploymentFormSchema = typeof employmentFormSchema;
 
 export const unitPricingFormSchema = z.object({
    size: z.string().min(5).max(7).trim(),
-   price: z.number().int().min(0).max(10000),
-   lowerPrice: z.boolean().nullable(),
+   price: z.number().int().positive(),
+   changeDeposit: z.boolean(),
+   lowerPrice: z.boolean(),
 });
 export type UnitPricingFormSchema = typeof unitPricingFormSchema;
 
@@ -31,6 +32,8 @@ export const newLeaseSchema = z.object({
    unitNum: z.string().min(3).max(9),
    organization: z.boolean(),
    discountId: z.string().min(23).max(30).optional(),
+   customerId: z.string().min(23).max(30),
+   paymentType: z.enum(['CASH', 'CHECK', 'STRIPE']).optional()
 })
 export type NewLeaseSchema = typeof newLeaseSchema;
 
@@ -99,7 +102,7 @@ export const addressFormSchema = z.object({
    address2: z.string().min(2).max(255).trim().optional(),
    city: z.string(),
    state: z.string().min(2).max(255),
-   zip: z.string(),
+   postalCode: z.string().min(5).max(9),
    country: z.string().min(2).max(2),
    phoneNum1: z.string().min(10).max(12).trim(),
    phoneNum1Country: z.string().min(2).max(2).trim(),
@@ -163,17 +166,18 @@ export const newDiscountFormSchema = z.object({
 });
 export type NewDiscountFormSchema = typeof newDiscountFormSchema;
 
-export const discountEndFormSchema = z.object({
+export const cuidIdFormSchema = z.object({
    discountId: z.string().min(23).max(30)
 });
-export type DiscountEndFormSchema = typeof discountEndFormSchema;
+export type CuidIdFormSchema = typeof cuidIdFormSchema;
 
 export const newInvoiceFormSchema = z.object({
    customerId: z.string().min(23).max(30),
    invoiceNotes: z.string().nullable(),
    employeeId: z.string().min(23).max(30),
-   invoiceAmount: z.number(),
+   invoiceAmount: z.number().positive(),
    leaseId: z.string().min(23).max(30).nullable(),
+   deposit: z.boolean()
 })
 export type NewInvoiceFormSchema = typeof newInvoiceFormSchema;
 
@@ -181,3 +185,36 @@ export const magicLinkFormSchema = z.object({
    email: z.string().min(5)
 });
 export type MagicLinkFormSchema  = typeof magicLinkFormSchema;
+
+export const newPaymentRecordFormSchema = z.object({
+   customerId: z.string().min(23).max(30),
+   employeeId: z.string().min(23).max(30),
+   invoiceNum: z.number().nullable(),
+   paymentAmount: z.number().positive(),
+   payee: z.string().nullable().optional(),
+   paymentCompleted: z.boolean(),
+   paymentNotes: z.string().nullable(),
+   paymentType: z.enum(['CASH', 'CHECK', 'STRIPE']),
+   cashOrCheck: z.boolean(),
+   deposit: z.boolean() 
+})
+export type NewPaymentRecordFormSchema = typeof newPaymentRecordFormSchema;
+
+export const paymentRecordDeleteSchema = z.object({
+   paymentRecordNumber: z.number().positive()
+});
+export type PaymentRecordDeleteSchema = typeof paymentRecordDeleteSchema;
+
+export const refundFormSchema = z.object({
+   paymentRecordNumber: z.number().positive(),
+   amount: z.number().positive(),
+   notes: z.string().nullable(),
+   refundType: z.enum(['CASH', 'CHECK', 'STRIPE']), 
+})
+export type RefundFormSchema = typeof refundFormSchema;
+
+export const dateSearchFormSchema = z.object({
+   startDate: z.date().optional(),
+   endDate: z.date().optional()
+});
+export type DateSearchFormSchema = typeof dateSearchFormSchema;

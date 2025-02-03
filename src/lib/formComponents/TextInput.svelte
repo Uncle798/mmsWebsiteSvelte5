@@ -13,7 +13,7 @@
    }
    let { value = $bindable(), label, errors, constraints, placeholder, name, autocomplete,...others }:Props = $props()
 </script>
-
+<div class="mx-4">
 <label class="label">
    {#if label}<span class="label-text">{label}</span><br />{/if}
    <input
@@ -29,3 +29,4 @@
    />
  </label>
  {#if errors}<span class="invalid">{errors}</span>{/if}
+</div>

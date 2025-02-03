@@ -8,6 +8,7 @@
 	import FormMessage from '$lib/formComponents/FormMessage.svelte';
 	import Header from '$lib/Header.svelte';
 	import { redirect } from '@sveltejs/kit';
+	import { fade } from 'svelte/transition';
     
     export let data: PageData;
     let { form, message, errors, constraints, enhance, delayed, timeout } = superForm(data.magicLinkForm);
@@ -53,21 +54,21 @@
     })
 </script>
 <Header title="Login" />
-<div>
+<div transition:fade={{duration:600}}>
     <p class="h2">Please enter your email to login </p>
-</div>
-<div class="h3">
-    <FormMessage message={$message} />
-</div>
-
-<form method="post" use:enhance >
-    <EmailInput
+    <div class="h3">
+        <FormMessage message={$message} />
+    </div>
+    
+    <form method="post" use:enhance >
+        <EmailInput
         bind:value={$form.email}
         errors={$errors.email}
         constraints={$constraints.email}
         label='Registered email address: '
         name='email'
-    />
-    <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} buttonText='Email me a link to login'/>
-</form>
-<a href="/register?redirectTo={data.redirectTo}&unitNum={data.unitNum}" class="btn">Register new account</a>
+        />
+        <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} buttonText='Email me a link to login'/>
+    </form>
+    <a href="/register?redirectTo={data.redirectTo}&unitNum={data.unitNum}" class="btn">Register new account</a>
+</div>

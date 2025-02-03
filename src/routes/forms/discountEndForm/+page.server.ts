@@ -1,4 +1,4 @@
-import { discountEndFormSchema } from "$lib/formSchemas/schemas";
+import { cuidIdFormSchema } from "$lib/formSchemas/schemas";
 import { prisma } from "$lib/server/prisma";
 import { ratelimit } from "$lib/server/rateLimit";
 import { redirect, type Actions } from "@sveltejs/kit";
@@ -11,8 +11,8 @@ export const actions: Actions = {
          redirect(302, '/login?toast=employee');
       }
       const formData = await event.request.formData();
-      const discountEndForm = await superValidate(formData, zod(discountEndFormSchema));
-      const { success, reset } = await ratelimit.register.limit(event.locals.user?.id)
+      const discountEndForm = await superValidate(formData, zod(cuidIdFormSchema));
+      const { success, reset } = await ratelimit.employeeForm.limit(event.locals.user?.id)
 		if(!success) {
 			const timeRemaining = Math.floor((reset - Date.now()) /1000);
 			return message(discountEndForm, `Please wait ${timeRemaining}s before trying again.`)

@@ -7,15 +7,17 @@
 	import TextInput from "$lib/formComponents/TextInput.svelte";
 	import { Switch } from "@skeletonlabs/skeleton-svelte";
 	import { invalidateAll } from "$app/navigation";
+	import { onMount } from "svelte";
+	import type { Unit } from "@prisma/client";
 
    
    interface Props {
       data: SuperValidated<Infer<UnitNotesFormSchema>>
       unitNotesFormModalOpen?: boolean
-      unitNum: string
-      available: boolean
+      unit:Unit
+      classes: string;
    }
-   let { data, unitNotesFormModalOpen, unitNum, available }:Props = $props();
+   let { data, unitNotesFormModalOpen, unit, classes }:Props = $props();
 
    let { form, message, errors, constraints, enhance, delayed, timeout} = superForm(data, {
       onUpdated(){
@@ -23,10 +25,13 @@
          invalidateAll();
       },   
    })
+   onMount(()=>{
+      $form.notes = unit.notes
+   })
 </script>
 
 <FormMessage message={$message} />
-<form action="/forms/unitNotesForm" method="POST" use:enhance>
+<form action="/forms/unitNotesForm" method="POST" use:enhance class="{classes}">
    <TextInput
       bind:value={$form.notes}
       errors={$errors.notes}
@@ -35,10 +40,12 @@
       name='notes'
    />
    <Switch 
-      bind:checked={available}
-      name='unavailable'
-      label='Unit is unavailable'
-   />
-   <input type="hidden" name="unitNum" id="unitNum" value={unitNum} />
+      bind:checked={unit.unavailable}
+      name='unavailable'  
+      classes='m-4'
+   >
+      Unit is unavailable
+   </Switch>
+   <input type="hidden" name="unitNum" id="unitNum" value={unit.num} />
    <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} buttonText='Submit notes and unit availability'/>
 </form>

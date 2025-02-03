@@ -7,6 +7,7 @@
 	import NumberInput from "$lib/formComponents/NumberInput.svelte";
 	import { Switch } from "@skeletonlabs/skeleton-svelte";
 	import FormSubmitWithProgress from "$lib/formComponents/FormSubmitWithProgress.svelte";
+	import { onMount } from "svelte";
 
    interface Props {
       data: SuperValidated<Infer<UnitPricingFormSchema>>
@@ -14,19 +15,23 @@
       size: string,
       oldPrice: number
    }
-   let { data, unitPricingFormModalOpen=$bindable(false), size, oldPrice} = $props();
+   let { data, unitPricingFormModalOpen=$bindable(false), size, oldPrice}:Props = $props();
    let { form, message, errors, constraints, enhance, delayed, timeout} = superForm(data, {
       onUpdated(){
          unitPricingFormModalOpen=false;
          invalidateAll();
       },   
    })
+   onMount(()=>{
+      $form.price = oldPrice
+   })
 </script>
 
 <FormMessage message={$message} />
 
 <form action="/forms/unitPricingForm" method="POST" use:enhance>
-   Change all {size.replace(/^0+/gm,'').replace(/x0/gm,'x')} units from ${oldPrice} to 
+
+   <p class="m-4">Change all {size.replace(/^0+/gm,'').replace(/x0/gm,'x')} units from ${oldPrice} to </p>
    <NumberInput
       bind:value={$form.price}
       errors={$errors.price}
@@ -35,11 +40,19 @@
       name='price'
    />
    <Switch
+      bind:checked={$form.changeDeposit}
+      name='changeDeposit'
+      classes='m-4'
+   >
+      Change the deposit as well
+   </Switch>
+
+   <Switch
       bind:checked={$form.lowerPrice}
       name="lowerPrice"
       label='Lower Price'>
       Lower the price.
    </Switch>
    <input type="hidden" name="size" id="size" value={size}>
-   <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} />
+   <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} buttonText='Submit new price'/>
 </form>

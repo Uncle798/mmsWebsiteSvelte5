@@ -1,6 +1,6 @@
 <script lang="ts">
     import { PUBLIC_COMPANY_NAME, PUBLIC_STRIPE_TEST, PUBLIC_URL } from '$env/static/public';
-    import Invoice from '$lib/displayComponents/Invoice.svelte';
+    import InvoiceEmployee from '$lib/displayComponents/InvoiceEmployee.svelte';
     import { Elements, PaymentElement, LinkAuthenticationElement, Address, } from 'svelte-stripe';
     import { onMount } from 'svelte';
     import { loadStripe } from '@stripe/stripe-js'
@@ -9,6 +9,7 @@
     import type { PageData } from './$types';
 	import { goto } from '$app/navigation';
 	import Header from '$lib/Header.svelte';
+	import { fade } from 'svelte/transition';
 
 
     let { data }: { data: PageData } = $props();
@@ -19,19 +20,22 @@
     let error = null;
     let processing = $state(false);
     let mounted = $state(false);
-
+    let currentTime = $state(new Date());
     onMount(async () =>{
+        const interval = setInterval(() =>{
+            currentTime = new Date();
+        }, 1000)
         stripe = await loadStripe(PUBLIC_STRIPE_TEST);
         clientSecret = await createPaymentIntent();
         mounted = true;
     })
     async function createPaymentIntent() {
-        const response = await fetch('/api/stripe/paymentIntent?invoiceNum=' + data.invoice?.invoiceNum, {
+        const response = await fetch(`/api/stripe/paymentIntent?invoiceNum=${data.invoice?.invoiceNum}`, {
             method: 'POST',
             headers: {
                 'content-type': 'applications/json'
             },
-            body:JSON.stringify({ price:data.invoice?.invoiceAmount})
+            body:JSON.stringify({ price:data.invoice?.invoiceAmount, stripeId:data.stripeId, })
         });
         const clientSecret = await response.json();
         return clientSecret;
@@ -55,19 +59,20 @@
         if(result.error){
             error = result.error;
             processing = false;
-        } else {
-            goto('/newLease/leaseSent?invoiceNum=' + data.invoice?.invoiceNum);
-        }
-
+        } 
     }
     
 </script>
 <Header title='Pay your deposit'/>
+Current time = {currentTime}
+
 {#if !mounted}
-    ...loading
+    <div transition:fade={{duration:600}}>
+        ...loading
+    </div>
     {:else}
     {#if data.invoice}
-        <Invoice invoice={data.invoice} />
+        <InvoiceEmployee invoice={data.invoice} />
         <div class="p-4">
             
             <form onsubmit={submit}>

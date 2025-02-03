@@ -9,7 +9,7 @@ export const load:PageServerLoad = (async (event) => {
    if(!event.locals.user){
       redirect(302, '/login?toast=unauthorized')
    }
-   const addressPromise = prisma.contactInfo.findFirst({
+   const addressPromise = prisma.address.findFirst({
       where: {
          userId: event.locals.user.id,
          softDelete: false
@@ -47,6 +47,7 @@ export const load:PageServerLoad = (async (event) => {
       addressPromise, 
       leasesPromise, 
       invoicesPromise, 
-      paymentsPromise };
+      paymentsPromise 
+   };
 })
 

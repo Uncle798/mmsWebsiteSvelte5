@@ -1,37 +1,83 @@
 import { prisma } from '$lib/server/prisma';
-import { dropbox } from '$lib/server/dropbox';
-import type { Error, files } from 'dropbox';
 import { decryptRSA } from '@anvilco/encryption';
-import { ANVIL_RSA_PRIVATE_KEY_BASE64, ANVIL_WEBHOOK_TOKEN } from '$env/static/private';
+import { ANVIL_RSA_PRIVATE_KEY_BASE64 } from '$env/static/private';
 import type { RequestHandler } from './$types';
+import { stripe } from '$lib/server/stripe';
+import { fail } from '@sveltejs/kit';
+import dayjs from 'dayjs';
 
 const key = Buffer.from(ANVIL_RSA_PRIVATE_KEY_BASE64, 'base64').toString('ascii');
 
 export const POST: RequestHandler = async (event) => {
    const data = await event.request.json();
-   console.log(data);
-   if(data.token === ANVIL_WEBHOOK_TOKEN){
-      const decrypted = decryptRSA(key, data.data);
-      console.log(decrypted);
-      if(decrypted.etchPacket.completedAt){
-         const lease = await prisma.lease.update({
+   if(data.action === 'signerComplete' || data.action === 'etchPacketComplete'){
+      const decrypted:string = decryptRSA(key, data.data);
+      const object = JSON.parse(decrypted);
+      const { etchPacket, signers } = object;
+      if(signers[0].completedAt && object.status === 'completed' && object.routingOrder === 1){
+         await prisma.lease.update({
             where: {
-               anvilEID:String(decrypted.etchPacket.eid),
+               anvilEID: etchPacket.eid
             },
             data: {
-               leaseReturnedAt: decrypted.etchPacket.completedAt,
+               leaseReturnedAt: signers[0].completedAt
             }
          })
-         console.log(lease);
-         const downloadUrl = decrypted['downloadZipURL'];
-         await dropbox.filesSaveUrl(downloadUrl)
-         .then((response) => {
-            console.log(response);
-          })
-          .catch((uploadErr: Error<files.UploadError>) => {
-            console.error(uploadErr);
-          });
       }
-   }
+      if(object.downloadZipURL){
+         // const url:string = object.downloadZipURL;
+         // const name:string = object.name;
+         // dropbox.filesSaveUrl({ url, path: `/${name.replace(/ /gm, '_').trim()}.pdf` })
+         //    .then((response) => {
+         //       console.log(response);
+         //    })
+         //    .catch((uploadErr: Error<files.UploadError>) => {
+         //       console.error(uploadErr);
+         //    });
+            const createInvoice = async () => {        
+               const lease = await prisma.lease.findUnique({
+                  where: {
+                     anvilEID: object.eid
+                  }
+               })
+               if(!lease){
+                  fail(404)
+               }
+               const customer = await prisma.user.findUnique({
+                  where: {
+                     id: lease!.customerId
+                  }
+               })
+               const date = dayjs(lease?.leaseReturnedAt).format('M/D/YYYY')
+               const invoice = await prisma.invoice.create({
+                  data: {
+                     customerId: lease?.customerId,
+                     invoiceAmount: lease!.price,
+                     invoiceNotes: `Rent for unit ${lease?.unitNum.replace(/^0+/gm, '')} for ${date}`
+                  }
+               })
+               const stripeInvoice = await stripe.invoices.create({
+                  customer: customer?.stripeId ? customer.stripeId : undefined,
+                  collection_method: 'send_invoice',
+                  description: invoice.invoiceNotes ? invoice.invoiceNotes : undefined,
+                  auto_advance: false,
+                  metadata: {
+                     invoiceNum: invoice.invoiceNum
+                  },
+                  days_until_due: 7,
+               })
+               await stripe.invoiceItems.create({
+                  customer: customer!.stripeId!,
+                  amount: lease?.price ? lease.price*100 : undefined,
+                  description: invoice.invoiceNotes ? invoice.invoiceNotes : undefined,
+                  invoice: stripeInvoice.id,
+               })
+               await stripe.invoices.finalizeInvoice(stripeInvoice.id, {
+                  auto_advance: true,
+               })
+            }
+            createInvoice();
+         }
+      }
    return new Response(JSON.stringify('ok'), {status: 200});
 }

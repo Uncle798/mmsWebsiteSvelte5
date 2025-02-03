@@ -10,6 +10,7 @@
 	import { BadgeCheck, } from 'lucide-svelte';
 	import LeaseCustomer from '$lib/displayComponents/LeaseCustomer.svelte';
 	import LeaseEndForm from '$lib/forms/LeaseEndForm.svelte';
+	import { fade } from 'svelte/transition';
     
     let {data}:{ data: PageData} = $props();
     let addressModalOpen = $state(false);
@@ -26,15 +27,18 @@
 </script>
 <Header title='Settings for {data.user?.givenName}' />
 
+<div transition:fade={{duration:600}}>
+
+
 <span class="h1">{data.user?.givenName} {data.user?.familyName}</span>
 {#if data.user?.organizationName}
     <span class="h2">{data.user.organizationName}</span>
 {/if}
 <Modal
-bind:open={nameModalOpen}
-triggerBase="btn preset-tonal"
-contentBase="card bg-surface-400-600 p-4 space-y-4 shadow-xl max-w-screen-sm"
-backdropClasses="backdrop-blur-sm"
+    bind:open={nameModalOpen}
+    triggerBase="btn preset-tonal"
+    contentBase="card bg-surface-400-600 p-4 space-y-4 shadow-xl max-w-screen-sm"
+    backdropClasses="backdrop-blur-sm"
 >
     {#snippet trigger()}
         Change Name
@@ -121,7 +125,6 @@ backdropClasses="backdrop-blur-sm"
     {#if leases}
     <Modal 
         bind:open={leaseEndModalOpen}
-        triggerBase="btn preset-tonal"
         contentBase="card bg-surface-400-600 p-4 space-y-4 shadow-xl max-w-screen-sm"
         backdropClasses="backdrop-blur-sm"
     >
@@ -138,3 +141,5 @@ backdropClasses="backdrop-blur-sm"
         {/each}
     {/if}
 {/await}
+
+</div>

@@ -6,6 +6,11 @@ import { zod } from 'sveltekit-superforms/adapters';
 import { redirect } from "@sveltejs/kit";
 import { ratelimit } from "$lib/server/rateLimit";
 import { fail } from "@sveltejs/kit";
+import { qStash } from "$lib/server/qStash";
+import { PUBLIC_URL } from "$env/static/public";
+import { stripe } from "$lib/server/stripe";
+import dayjs from "dayjs";
+import { MY_EMAIL } from "$env/static/private";
 
 export const load:PageServerLoad = (async (event) =>{
    const unitNum = event.url.searchParams.get('unitNum');
@@ -33,7 +38,7 @@ export const load:PageServerLoad = (async (event) =>{
       console.error(err);
    });
 
-   const address = await prisma.contactInfo.findFirst({
+   const address = await prisma.address.findFirst({
       where:{
          userId:event.locals.user.id
       }
@@ -70,8 +75,6 @@ export const actions:Actions = {
          where:{
             id:event.locals.user?.id
          }
-      }).catch((err) =>{
-         console.error(err);
       })
       const unit = await prisma.unit.findFirst({
          where:{
@@ -97,7 +100,7 @@ export const actions:Actions = {
       if(currentLease){
          message(leaseForm, 'That unit is already leased');
       }
-      const address = await prisma.contactInfo.findFirst({
+      const address = await prisma.address.findFirst({
          where: {
             softDelete: false,
             userId: event.locals.user?.id
@@ -111,11 +114,14 @@ export const actions:Actions = {
             employee: true,
          }
       })
-      const discount = await prisma.discountCode.findFirst({
-         where: {
-            discountId: leaseForm.data.discountId
-         }
-      })
+      let discount;
+      if(leaseForm.data.discountId){
+         discount = await prisma.discountCode.findFirst({
+            where: {
+               discountId: leaseForm.data.discountId
+            }
+         })
+      }
       let price = unit.advertisedPrice;
       if(discount){
          price = unit.advertisedPrice - discount.amountOff
@@ -127,8 +133,16 @@ export const actions:Actions = {
             employeeId: employee.id,
             unitNum: leaseForm.data.unitNum,
             price,
-            contactInfoId:address?.contactId,
+            addressId:address?.addressId,
             leaseEffectiveDate: new Date(),
+         }
+      })
+      await prisma.unit.update({
+         where: {
+            num: unit.num
+         },
+         data: {
+            leasedPrice: price
          }
       })
       const invoice = await prisma.invoice.create({
@@ -136,9 +150,76 @@ export const actions:Actions = {
             invoiceAmount: unit.deposit,
             customerId: lease.customerId,
             leaseId: lease.leaseId,
-            invoiceNotes:'Deposit for unit ' + lease.unitNum.replace(/^0+/gm,''), 
+            invoiceNotes:'Deposit for unit ' + lease.unitNum.replace(/^0+/gm,''),
+            deposit: true,  
          }
       })
-      redirect(302, '/newLease/payDeposit?invoiceNum=' + invoice.invoiceNum)
+      let name:string = `${customer.givenName} ${customer.familyName}`
+      if(customer.organizationName){
+         name= customer.organizationName;
+      }
+      const existingStripeCustomer = await stripe.customers.search({
+         query: `email:'${customer.email}'`
+      })
+      let stripeId:string =  existingStripeCustomer.data[0].id;
+      if(existingStripeCustomer.data.length === 0){
+         const stripeCustomer = await stripe.customers.create({
+            name: name,
+            email: MY_EMAIL,  // test mode
+            // email: customer.email ? customer.email : undefined, // prod mode
+            address: {
+               line1: address.address1,
+               line2: address.address2 ? address.address2 : undefined,
+               city: address.city,
+               state: address.state,
+               postal_code: address.postalCode,
+               country: address.country,
+            },
+            description: `Unit number ${unit.num.replace(/^0+/gm, '')} starting ${dayjs(lease.leaseCreatedAt).format('M/YYYY')}`,
+            metadata: {
+               customerId: customer.id
+            }
+         })
+         stripeId = stripeCustomer.id
+         prisma.user.update({
+            where: {
+               id: customer.id
+            },
+            data: {
+               stripeId
+            }
+         })
+      } else {
+         const stripeCustomer = await stripe.customers.update(existingStripeCustomer.data[0].id, {
+            name: name,
+            address: {
+               line1: address.address1,
+               line2: address.address2 ? address.address2 : undefined,
+               city: address.city,
+               state: address.state,
+               postal_code: address.postalCode,
+               country: address.country,
+            },
+            description: `Unit number ${unit.num.replace(/^0+/gm, '')} starting ${dayjs(lease.leaseCreatedAt).format('M/YYYY')}`,
+            metadata: {
+               customerId: customer.id
+            }
+         });
+         stripeId = stripeCustomer.id
+      }
+      prisma.user.update({
+         where: {
+            id: customer.id
+         },
+         data: {
+            stripeId
+         }
+      })
+      qStash.trigger({
+         url: `${PUBLIC_URL}/api/upstash/workflow`,
+         body:  { leaseId:lease.leaseId },
+         workflowRunId: lease.leaseId
+      })
+      redirect(303, `/makePayment?invoiceNum=${invoice.invoiceNum}&stripeId=${stripeId}`)
    }
 }

@@ -1,54 +1,48 @@
 <script lang="ts">
-   import { Pagination } from '@skeletonlabs/skeleton-svelte';
-   import User from '$lib/displayComponents/User.svelte';
+   import Pagination from '$lib/displayComponents/Pagination.svelte';
 	import EmploymentChangeForm from '$lib/forms/EmploymentChangeForm.svelte';
 	import Header from '$lib/Header.svelte';
-	import { superForm, } from 'sveltekit-superforms';
    import type { PageData } from './$types';
 	import type { PartialUser } from '$lib/server/partialTypes';
-	import { goto } from '$app/navigation';
+   import { fade } from 'svelte/transition';
+	import UserAdmin from '$lib/displayComponents/UserAdmin.svelte';
+	import Search from '$lib/forms/Search.svelte';
+	import User from '$lib/displayComponents/User.svelte';
+	import HorizontalDivider from '$lib/displayComponents/HorizontalDivider.svelte';
+	import VerticalDivider from '$lib/displayComponents/VerticalDivider.svelte';
 
    let { data }: { data: PageData } = $props();
-   let {form:searchForm, enhance} = superForm(data.searchForm, {
-      onSubmit(input) {
-         input.cancel()
-         const search = input.formData.get('search')?.toString();
-         if(search){
-            goto(`/users?search=${search}`)
-         }
-      },
-   });
+   let search = $state('')
    let pageNum = $state(1);
    let size = $state(25);
-   let slicedSource = $derived((s:PartialUser[]) => s.slice((pageNum-1)*size, pageNum*size));
+   
+   let slicedSource = $derived((users:PartialUser[]) => users.slice((pageNum-1)*size, pageNum*size));
+   let searchedUsers = $derived((users:PartialUser[]) => 
+      users.filter((user) => {
+         return user.givenName?.toLowerCase().includes(search.toLowerCase()) ||
+         user.familyName?.toLowerCase().includes(search.toLowerCase());
+      })
+   )
 </script>
 <Header title='All users' />
-{#if !data.users}
+{#await data.users}
    ...loading users
-{:else }
-<form method="post" use:enhance>
-   <input type="text" name="search" class="input" placeholder="Search by name" bind:value={$searchForm.search}>
-   <button class="btn">Submit</button>
-   <button class="btn" onclick={()=> goto('/users', {invalidateAll: true})}>Clear</button>
-</form>
-{#each slicedSource(data.users) as user (user.id)}
-<div class="flex">
-   <User user={user} />
-   <EmploymentChangeForm 
-      data={data.employmentChangeForm} 
-      employeeChecked={user.employee} 
-      adminChecked={user.admin}
-      userId={user.id}
-   />
-</div>
-{/each}
-<footer class="flex justify-between">
-   <select name="size" id="size" class="select" bind:value={size}>
-      {#each [5,10,25,50] as v}
-         <option value={v}>Show {v} users per page</option>
+{:then users }
+<div transition:fade={{duration:600}}>
+   <Search data={data.searchForm} bind:search={search} searchType='user' />
+      {#each slicedSource(searchedUsers(users)) as user (user.id)}
+         <div class="flex">
+            <UserAdmin user={user} widthClass='w-1/3' />
+            <VerticalDivider classes='h-30' />
+            <EmploymentChangeForm 
+               data={data.employmentChangeForm} 
+               employeeChecked={user.employee} 
+               adminChecked={user.admin}
+               userId={user.id}
+            />
+         </div>
+         <HorizontalDivider />
       {/each}
-         <option value={data.users.length}>Show all {data.users.length} users</option>
-   </select>
-   <Pagination data={data.users} bind:page={pageNum} bind:pageSize={size} count={data.users.length} alternative/>
-</footer>
-{/if}
+      <Pagination bind:size={size} bind:pageNum={pageNum} array={searchedUsers(users)} label='users'/>
+</div>
+{/await}

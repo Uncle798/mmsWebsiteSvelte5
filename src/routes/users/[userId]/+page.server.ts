@@ -12,7 +12,7 @@ export const load: PageServerLoad = async (event) => {
    const leaseEndForm = await superValidate(zod(leaseEndFormSchema))
    const userId = event.params.userId;
 
-   const dbUser = await prisma.user.findFirst({
+   const dbUser = await prisma.user.findUnique({
       where: {
          id: userId
       }
@@ -20,7 +20,7 @@ export const load: PageServerLoad = async (event) => {
    if(dbUser === null){
       error(404, {message:'User not found'})
    }
-   const address = await prisma.contactInfo.findFirst({
+   const address = await prisma.address.findFirst({
       where: { 
          AND:[
             { userId: userId },
@@ -29,7 +29,7 @@ export const load: PageServerLoad = async (event) => {
       }
    })
    
-   const leases = await prisma.lease.findMany({
+   const leases = prisma.lease.findMany({
       where: {
          customerId: dbUser?.id
       },
@@ -37,7 +37,7 @@ export const load: PageServerLoad = async (event) => {
          leaseEffectiveDate: 'desc'
       }
    })
-   const invoices = await prisma.invoice.findMany({
+   const invoices = prisma.invoice.findMany({
       where: {
          customerId: dbUser?.id
       },
@@ -45,13 +45,21 @@ export const load: PageServerLoad = async (event) => {
          invoiceCreated: 'desc'
       }
    })
-   const payments = await prisma.paymentRecord.findMany({
+   const paymentRecords = prisma.paymentRecord.findMany({
       where: {
          customerId: dbUser.id
       },
       orderBy: {
          paymentCompleted: 'desc'
       }
+   });
+   const refunds = prisma.refundRecord.findMany({
+      where: {
+         customerId: dbUser.id
+      },
+      orderBy: {
+         refundCreated: 'desc'
+      }
    })
-   return { dbUser, address, leases, invoices, payments, addressForm, leaseEndForm, }
+   return { dbUser, address, leases, invoices, paymentRecords, addressForm, leaseEndForm, refunds }
 };

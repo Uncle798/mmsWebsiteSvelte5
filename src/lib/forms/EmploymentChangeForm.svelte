@@ -12,15 +12,18 @@
       userId: string
    }
    let { data,  employeeChecked=$bindable(false), adminChecked=$bindable(false), userId}:Props = $props();
-   let { form, message, errors, constraints, enhance, delayed, timeout} = superForm(data);
+   let { form, message, errors, constraints, enhance, delayed, timeout, } = superForm(data, {
+      warnings:{
+         duplicateId: false
+      }
+   });
 </script>
-<div class="card p-4">
+<div class="my-2 flex-none">
    <FormMessage message={$message} />
    <form action="/forms/employmentChangeForm" method="POST" use:enhance>
       <Switch name='employee' bind:checked={employeeChecked}>Employee</Switch>
       <Switch name='admin' bind:checked={adminChecked}>Admin</Switch>
       <input type="hidden" name='userId' value={userId} />
       <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} buttonText="Change employment status"/>
-
    </form>
 </div>

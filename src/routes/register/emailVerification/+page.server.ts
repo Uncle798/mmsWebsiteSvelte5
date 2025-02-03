@@ -22,7 +22,6 @@ export const load:PageServerLoad = (async (event) => {
             userId: event.locals.user?.id
         }
     });
-    console.log('verification: ', verification);
     if(!verification || verification?.expiresAt.getTime() <= Date.now() ){
         const code = await generateEmailVerificationRequest(event.locals.user.id, event.locals.user.email!);
         sendVerificationEmail(code, event.locals.user.email!);
@@ -79,8 +78,9 @@ export const actions: Actions ={
                 emailVerified: true
             }
         })
-        const redirectTo = event.url.searchParams.get('redirect');
+        const redirectTo = event.url.searchParams.get('redirectTo');
         const unitNum = event.url.searchParams.get('unitNum');
+        console.log(redirectTo)
         if(redirectTo === 'home'){
             redirect(302, '/')
         }

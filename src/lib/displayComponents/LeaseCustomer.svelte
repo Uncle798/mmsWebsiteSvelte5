@@ -8,10 +8,12 @@
    let { lease }:Props = $props()
 </script>
 
-<div class="card p-4">
+<div class="m-4 w-1/3 flex-none">
    <p>Unit number: {lease.unitNum.replace(/^0+/gm, '')}</p>
-   <p>Lease effective date {dayjs(lease.leaseEffectiveDate).format('M/D/YYYY')}</p>
+   <p>Lease effective date: {dayjs(lease.leaseEffectiveDate).format('M/D/YYYY')}</p>
    {#if lease.leaseEnded}
       <p>Lease end date: {dayjs(lease.leaseEnded).format('M/D/YYYY')}</p>
+      {:else}
+      <p><a href="/autopay?leaseId={lease.leaseId}">Sign up for auto-pay through Stripe</a></p>
    {/if}
 </div>

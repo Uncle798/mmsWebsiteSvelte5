@@ -1,6 +1,5 @@
 generator client {
-  provider        = "prisma-client-js"
-  previewFeatures = ["omitApi"]
+  provider = "prisma-client-js"
 }
 
 datasource db {
@@ -9,7 +8,7 @@ datasource db {
 }
 
 model User {
-  id                   String          @id @unique @default(cuid()) @map("id")
+  id                   String          @id @unique @default(cuid(2)) @map("id")
   createdAt            DateTime        @default(now()) @map("created_at")
   updatedAt            DateTime?       @updatedAt @map("updated_at")
   email                String?         @unique
@@ -20,13 +19,17 @@ model User {
   passwordHash         String?         @map("password_hash")
   employee             Boolean         @default(false)
   admin                Boolean         @default(false)
-  contactInfo          ContactInfo[]
+  stripeId             String?
+  archive              Boolean         @default(false)
+  address              Address[]
   customerInvoices     Invoice[]       @relation("customer")
   employeeInvoices     Invoice[]       @relation("employee")
   customerLeases       Lease[]         @relation("customer")
   employeeLeases       Lease[]         @relation("employee")
   paymentMade          PaymentRecord[] @relation("customer")
   paymentReceived      PaymentRecord[] @relation("employee")
+  refundReceived       RefundRecord[]  @relation("customer")
+  refundMade           RefundRecord[]  @relation("employee")
   session              Session[]
   verification         Verification[]
   employeeDiscountCode DiscountCode[]
@@ -37,14 +40,14 @@ model User {
   @@map("users")
 }
 
-model ContactInfo {
-  contactId          String  @id @unique @default(cuid())
+model Address {
+  addressId          String  @id @unique @default(cuid(2))
   userId             String
   address1           String
   address2           String?
   city               String
   state              String
-  zip                String
+  postalCode         String
   country            String
   phoneNum1          String
   phoneNum1Country   String
@@ -52,6 +55,8 @@ model ContactInfo {
   softDelete         Boolean @default(false)
   user               User    @relation(fields: [userId], references: [id], onUpdate: NoAction)
   leases             Lease[]
+
+  @@map("address")
 }
 
 model Unit {
@@ -70,33 +75,34 @@ model Unit {
 }
 
 model Lease {
-  leaseId            String        @id @unique @default(cuid())
-  customerId         String
-  employeeId         String
-  contactInfoId      String
-  unitNum            String
-  price              Int
-  discount           Int?
-  discountId         String?
-  leaseCreatedAt     DateTime      @default(now())
-  leaseReturnedAt    DateTime?
-  leaseEffectiveDate DateTime
-  leaseEnded         DateTime?
-  dropboxURL         String?
-  anvilEID           String?       @unique
-  invoices           Invoice[]
-  contactInfo        ContactInfo   @relation(fields: [contactInfoId], references: [contactId], onDelete: NoAction, onUpdate: NoAction)
-  customer           User          @relation("customer", fields: [customerId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  employee           User          @relation("employee", fields: [employeeId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  unit               Unit          @relation(fields: [unitNum], references: [num])
-  discountCode       DiscountCode? @relation(fields: [discount, discountId], references: [amountOff, discountId])
+  leaseId              String        @id @unique @default(cuid(2))
+  customerId           String
+  employeeId           String
+  addressId            String
+  unitNum              String
+  price                Int
+  discount             Int?
+  discountId           String?
+  leaseCreatedAt       DateTime      @default(now())
+  leaseReturnedAt      DateTime?
+  leaseEffectiveDate   DateTime
+  leaseEnded           DateTime?
+  dropboxURL           String?
+  anvilEID             String?       @unique
+  stripeSubscriptionId String?
+  invoices             Invoice[]
+  Address              Address       @relation(fields: [addressId], references: [addressId], onDelete: NoAction, onUpdate: NoAction)
+  customer             User          @relation("customer", fields: [customerId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  employee             User          @relation("employee", fields: [employeeId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  unit                 Unit          @relation(fields: [unitNum], references: [num])
+  discountCode         DiscountCode? @relation(fields: [discount, discountId], references: [amountOff, discountId])
 
   @@unique([leaseId, unitNum, price])
   @@index([leaseId, leaseCreatedAt(sort: Desc)])
 }
 
 model DiscountCode {
-  discountId      String    @id @unique @default(cuid())
+  discountId      String    @id @unique @default(cuid(2))
   code            String    @unique
   amountOff       Int
   notes           String?
@@ -111,21 +117,25 @@ model DiscountCode {
 }
 
 model PaymentRecord {
-  paymentNumber    Int         @id @unique @default(autoincrement())
+  paymentNumber    Int           @id @unique @default(autoincrement())
+  stripeId         String?       @unique
+  invoiceNum       Int?
   customerId       String
   unitNum          String?
   paymentAmount    Int
-  receiverId       String?
+  employeeId       String?
   payee            String?
-  paymentCreated   DateTime    @default(now())
+  paymentCreated   DateTime      @default(now())
   paymentCompleted DateTime?
   paymentNotes     String?
+  deposit          Boolean       @default(false)
+  refunded         Boolean       @default(false)
+  refundNumber     Int?
   paymentType      PaymentType
-  invoiceNum       Int? @unique
   invoice          Invoice?
-  customer         User        @relation("customer", fields: [customerId], references: [id])
-  receiver         User?       @relation("employee", fields: [receiverId], references: [id])
-
+  customer         User          @relation("customer", fields: [customerId], references: [id])
+  receiver         User?         @relation("employee", fields: [employeeId], references: [id])
+  RefundRecord     RefundRecord? @relation(fields: [refundNumber], references: [refundNumber])
 }
 
 model Invoice {
@@ -137,10 +147,28 @@ model Invoice {
   invoiceCreated   DateTime       @default(now())
   paymentRecordNum Int?           @unique
   invoiceNotes     String?
+  stripeId         String?        @unique
+  deposit          Boolean        @default(false)
   customer         User?          @relation("customer", fields: [customerId], references: [id])
   employee         User?          @relation("employee", fields: [employeeId], references: [id])
   lease            Lease?         @relation(fields: [leaseId], references: [leaseId])
   paymentRecord    PaymentRecord? @relation(fields: [paymentRecordNum], references: [paymentNumber])
+}
+
+model RefundRecord {
+  refundNumber     Int             @id @unique @default(autoincrement())
+  stripeId         String?         @unique
+  customerId       String
+  refundAmount     Int
+  employeeId       String?
+  refundNotes      String?
+  refundCreated    DateTime        @default(now())
+  refundCompleted  DateTime?
+  paymentRecordNum Int
+  refundType       PaymentType
+  paymentRecord    PaymentRecord[]
+  customer         User            @relation("customer", fields: [customerId], references: [id])
+  employee         User?           @relation("employee", fields: [employeeId], references: [id])
 }
 
 model Session {
@@ -153,7 +181,7 @@ model Session {
 }
 
 model Verification {
-  id        String   @id @default(cuid())
+  id        String   @id @default(cuid(2))
   code      String
   userId    String   @map("user_id")
   email     String
@@ -168,9 +196,10 @@ model PasswordReset {
   userId    String   @map("user_id")
   expiresAt DateTime @map("expires_at")
 }
+
 model MagicLink {
   tokenHash String   @unique @map("token_hash")
-  email String
+  email     String
   expiresAt DateTime @map("expires_at")
 }
 

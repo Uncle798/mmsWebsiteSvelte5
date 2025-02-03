@@ -3,7 +3,8 @@
    interface Props {
       title: string
    }
-   let { title }:Props = $props()
+   let { title }:Props = $props();
+   
 </script>
 <svelte:head>
 	<title>{PUBLIC_COMPANY_NAME} | {title}</title>

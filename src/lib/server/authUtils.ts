@@ -41,10 +41,6 @@ export async function validateSessionToken(token:string):Promise<SessionValidati
       where: {
          id: session?.userId
       },
-      omit:{
-         createdAt: true,
-         updatedAt: true,
-      }
    })
    if(!session){
       return {session: null, user: null};

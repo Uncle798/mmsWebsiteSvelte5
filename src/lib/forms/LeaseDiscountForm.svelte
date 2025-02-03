@@ -2,15 +2,16 @@
 	import FormMessage from "$lib/formComponents/FormMessage.svelte";
 	import FormSubmitWithProgress from "$lib/formComponents/FormSubmitWithProgress.svelte";
 	import TextInput from "$lib/formComponents/TextInput.svelte";
-import type { LeaseDiscountFormSchema } from "$lib/formSchemas/schemas";
+   import type { LeaseDiscountFormSchema } from "$lib/formSchemas/schemas";
 	import type { Infer, SuperValidated } from "sveltekit-superforms";
    import { superForm } from "sveltekit-superforms";
 
    interface Props {
       data: SuperValidated<Infer<LeaseDiscountFormSchema>>,
-      unitNum: string | undefined
+      unitNum: string | undefined,
+      customerId?: string, 
    }
-   let { data, unitNum}:Props = $props();
+   let { data, unitNum, customerId }:Props = $props();
    let { form, errors, message, constraints, enhance, delayed, timeout} = superForm(data, {
       onUpdate(){
       }
@@ -18,8 +19,8 @@ import type { LeaseDiscountFormSchema } from "$lib/formSchemas/schemas";
 </script>
 
 <FormMessage message={$message} />
-<form action='/forms/leaseDiscountForm' method="post" use:enhance>
-   <div class="card p-4">
+<form action='/forms/leaseDiscountForm?userId={customerId}' method="post" use:enhance>
+   <div class="card">
       <TextInput
       bind:value={$form.code}
       errors={$errors.code}

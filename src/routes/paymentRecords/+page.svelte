@@ -1,55 +1,99 @@
 <script lang="ts">
-	import { superForm } from 'sveltekit-superforms';
     import type { PageData } from './$types';
-	import { goto } from '$app/navigation';
 	import type { PaymentRecord } from '@prisma/client';
 	import Header from '$lib/Header.svelte';
-	import PaymentRecordComponent from '$lib/displayComponents/PaymentRecord.svelte';
-	import { Pagination } from '@skeletonlabs/skeleton-svelte';
+	import PaymentRecordEmployee from '$lib/displayComponents/PaymentRecordEmployee.svelte';
+	import Pagination from '$lib/displayComponents/Pagination.svelte';
 	import User from '$lib/displayComponents/User.svelte';
-
+	import { fade } from 'svelte/transition';
+	import Search from '$lib/forms/Search.svelte';
+	import Placeholder from '$lib/displayComponents/Placeholder.svelte';
+    import dayjs from 'dayjs';
+    import utc from 'dayjs/plugin/utc'
+	import DateSearch from '$lib/forms/DateSearch.svelte';
+	import Revenue from '$lib/displayComponents/Revenue.svelte';
+	import HorizontalDivider from '$lib/displayComponents/HorizontalDivider.svelte';
+	import VerticalDivider from '$lib/displayComponents/VerticalDivider.svelte';
+    dayjs.extend(utc)
     let { data }: { data: PageData } = $props();
-    let { form, enhance } = superForm(data.paymentSearchForm,{
-        onSubmit(input) {
-            input.cancel();
-            const search = input.formData.get('search')?.toString();
-            if(search){
-                goto(`/paymentRecords?search=${search}`)
-            }
-        },
-    });
     let pageNum = $state(1);
     let size = $state(25);
-    let slicedSource = $derived((s:PaymentRecord[]) => s.slice((pageNum -1) * size, pageNum*size));
+    let search = $state('');
+    let startDate = $state<Date>(new Date());
+    let endDate = $state<Date>(new Date());
+    let maxDate = $state<Date>();
+    let minDate = $state<Date>();
+    let wrapper = new Promise<PaymentRecord[]>(async res => {
+        const paymentRecords = await data.paymentRecords
+        res(paymentRecords)
+        if(paymentRecords.length > 0){
+            startDate = dayjs.utc(paymentRecords[0].paymentCreated).startOf('year').toDate();
+            console.log('startDate', startDate)
+            minDate = startDate;
+            endDate = dayjs.utc(paymentRecords[paymentRecords.length-1].paymentCreated).endOf('year').toDate();
+            maxDate = endDate;
+        }
+    })
+    const numberFormatter = new Intl.NumberFormat('en-US');
+    let slicedSource = $derived((paymentRecords:PaymentRecord[]) => paymentRecords.slice((pageNum -1) * size, pageNum*size));
+    let searchedPayments = $derived((paymentRecords:PaymentRecord[]) => paymentRecords.filter((paymentRecord) => paymentRecord.paymentNumber.toString().includes(search) ))
+    let dateSearchPayments = $derived((paymentRecords:PaymentRecord[]) => paymentRecords.filter((paymentRecord) => {
+        if(!startDate || !endDate){
+            return
+        }
+        return paymentRecord.paymentCreated >= startDate && paymentRecord.paymentCreated <= endDate;
+    }))
+    let totalRevenue = $derived((paymentRecords:PaymentRecord[]) => {
+        console.log('paymentRecords[0]', paymentRecords[0])
+        let totalRevenue = 0;
+        if(paymentRecords[0]){
+            paymentRecords.forEach((paymentRecord) => {
+                if(paymentRecord.paymentCompleted && !paymentRecord.refunded){
+                    totalRevenue += paymentRecord.paymentAmount
+                }
+            })
+        }
+        return totalRevenue;
+    })
 </script>
 
 <Header title='Payment Records' />
-
-{#if !data.paymentRecords}
-    ...loading payment records
-{:else}
-    <form method="post" use:enhance>
-        <input type="search" name="search" id="search" class="input" placeholder="Search by payment record number" bind:value={$form.search}>
-        <button class="btn">Submit</button>
-        <button class="btn" onclick={()=> goto('/users', {invalidateAll: true})}>Clear</button>
-    </form>
-    {#each slicedSource(data.paymentRecords) as paymentRecord (paymentRecord.paymentId)}
-        {@const customer = data.customers.find((customer) => customer.id === paymentRecord.customerId)}
-        <div class="flex">
-
-            <PaymentRecordComponent paymentRecord={paymentRecord} />
-            {#if customer}
-            <User user={customer} />
-            {/if}
-        </div>
-    {/each}
-    <footer class="flex justify-between">
-        <select name="size" id="size" class='select' bind:value={size}>
-            {#each [5,10,25,50] as v}
-                <option value={v}>Show {v} users per page</option>
-            {/each}
-                <option value={data.paymentRecords.length}>Show all {data.paymentRecords.length} payment records</option>
-        </select>
-        <Pagination data={data.paymentRecords} bind:page={pageNum} bind:pageSize={size} count={data.paymentRecords.length} alternative />
-    </footer>
-{/if}
+{#await wrapper}
+    loading {numberFormatter.format(data.paymentRecordCount)} payment records
+    {#if data.years}
+        or select year: 
+        {#each data.years as year}
+            <a href='/paymentRecords/year/{year}' class="btn">{year}</a>
+        {/each}
+    {/if}
+    <Placeholder />
+{:then paymentRecords} 
+    {#await data.customers}
+        loading customers
+    {:then customers} 
+        {#if paymentRecords[0]}
+            <div transition:fade={{duration:600}}>
+                <Revenue label="Total revenue" amount={totalRevenue(searchedPayments(dateSearchPayments(paymentRecords)))} />
+                <div class="flex">
+                    <Search bind:search={search} searchType='payment record number' data={data.searchForm}/>      
+                    <DateSearch bind:startDate={startDate} bind:endDate={endDate} {minDate} {maxDate} data={data.dateSearchForm}/>
+                </div>
+                <HorizontalDivider />
+                {#each slicedSource(dateSearchPayments(searchedPayments(paymentRecords))) as paymentRecord}
+                {@const customer = customers.find((customer) => customer.id === paymentRecord.customerId) }
+                <div class="flex">
+                    <PaymentRecordEmployee paymentRecord={paymentRecord} />
+                    <VerticalDivider heightClass='h-30' />
+                    {#if customer}
+                        <User user={customer} widthClass='w-1/3'/>
+                    {/if}
+                </div>
+                <HorizontalDivider />
+                {/each}
+                <Pagination bind:size={size} bind:pageNum={pageNum} array={searchedPayments(paymentRecords)} label='payment records'/>
+            </div>
+        {:else}
+            No payment records from that year
+        {/if}
+    {/await}
+{/await}
