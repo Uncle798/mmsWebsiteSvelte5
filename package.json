@@ -56,7 +56,6 @@
 	"dependencies": {
 		"@anvilco/anvil": "^3.3.1",
 		"@anvilco/encryption": "^2.0.4",
-		"@friendofsvelte/tipex": "0.0.7-fix-0",
 		"@mapbox/search-js-web": "1.0.0-beta.22",
 		"@oslojs/crypto": "^1.0.1",
 		"@oslojs/encoding": "^1.1.0",
