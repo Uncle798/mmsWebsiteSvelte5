@@ -2,7 +2,7 @@
    import type { Unit, Lease } from '@prisma/client';
    interface Props {
       unit: Unit,
-      classes: string;
+      classes?: string;
    }
    let { unit, classes }:Props = $props();
    const currencyFormatter = new Intl.NumberFormat('en-US', {style:'currency', currency:'USD'});
