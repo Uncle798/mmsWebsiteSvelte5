@@ -13,7 +13,7 @@ import InvoiceEmployee from '$lib/displayComponents/InvoiceEmployee.svelte';
 
 {#if data.paymentRecord }
    <Header title='Payment Record Num: {data.paymentRecord}' />
-   <div class=flex>
+   <div class="flex">
       <PaymentRecordEmployee paymentRecord={data.paymentRecord} classes='w-1/3'/>
       <VerticalDivider classes=''/>
       {#if data.customer}
