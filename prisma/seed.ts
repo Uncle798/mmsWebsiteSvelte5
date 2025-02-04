@@ -397,9 +397,9 @@ async function  main (){
       const months:Date[] = arrayOfMonths(lease.leaseEffectiveDate, leaseEndDate);
       let i = 0;
       for await (const month of months) {
-         let deposit = true;
-         if(i !== 0){
-            deposit = false
+         let deposit = false;
+         if(i === 0){
+            deposit = true;
          }
          const invoice = makeInvoice(lease, month, deposit)
          invoices.push(invoice)
