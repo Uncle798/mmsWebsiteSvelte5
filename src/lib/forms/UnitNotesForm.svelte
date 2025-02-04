@@ -26,7 +26,6 @@
       multipleSubmits: 'allow',
       onUpdated(){
          unitNotesFormModalOpen=false;
-         invalidateAll();
       },
       warnings: {
          duplicateId: false
