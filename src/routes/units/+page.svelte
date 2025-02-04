@@ -10,18 +10,18 @@
 	import UnitNotesForm from '$lib/forms/UnitNotesForm.svelte';
 	import UnitPricingForm from '$lib/forms/UnitPricingForm.svelte';
 	import Header from '$lib/Header.svelte';
-
 	import { fade } from 'svelte/transition';
-	import type { Unit } from '@prisma/client';
-	import VerticalDivider from '$lib/displayComponents/VerticalDivider.svelte';
+	import type { Lease, Unit } from '@prisma/client';
+	import Search from '$lib/forms/Search.svelte';
+	import Address from '$lib/displayComponents/Address.svelte';
+	import HorizontalDivider from '$lib/displayComponents/HorizontalDivider.svelte';
+	import Revenue from '$lib/displayComponents/Revenue.svelte';
 	let { data }: { data: PageData } = $props();
-	let { units } = data;
 	let modalOpen = $state(false);
 	let currentLeaseId = $state('');
 	let globalModalType = $state('');
 	let currentSize = $state('');
 	let currentOldPrice = $state(0);
-	let unitSearch = $state('');
 	function openModal(modalType: string, oldPrice: number, leaseId?: string, size?: string) {
 		if (leaseId) {
 			currentLeaseId = leaseId;
@@ -40,6 +40,13 @@
 	let filteredUnits = $derived((units: Unit[]) =>
 		units.filter((unit) => unit.num.toString().includes(search))
 	);
+	const totalRevenue = $derived((leases:Lease[]) => {
+		let totalRevenue = 0;
+		leases.forEach((lease) => {
+			totalRevenue += lease.price
+		})
+		return totalRevenue;
+	})
 </script>
 
 <Header title="All units" />
@@ -72,100 +79,59 @@
 </Modal>
 
 {#await data.units}
-    loading units
-    <Placeholder />
+   Loading units...
+   <Placeholder />
 {:then units} 
-    {#await data.leases}
-        loading leases
-        <Placeholder />
-    {:then leases} 
-        {#await data.customers}
-            loading customers 
-            <Placeholder />
-        {:then customers}
-            {#if units}   
-            <div class="grid container grid-cols-4 grid-rows-{slicedUnits(filteredUnits(units)).length} auto-cols-max gap-0" transition:fade={{duration:600}}>
-                {#each slicedUnits(filteredUnits(units)) as unit (unit.num)}
-                {@const lease = leases?.find((lease) => lease.unitNum === unit.num)}
-                        <div class="w-full border-r-2 border-b-2 border-primary-950 rounded-sm">
-                            <UnitEmployee {unit} classes=''/>
-                            <button class="btn bg-primary-900 rounded-lg" onclick={()=> openModal('unitPricing', unit.advertisedPrice, '', unit.size)}>Change all {unit.size.replace(/^0+/gm,'').replace(/x0/gm,'x')} pricing</button>
-                        </div>
-                        {#if data.unitNotesForm}
-                            <UnitNotesForm data={data.unitNotesForm} {unit} classes='min-w-80 border-r-2 border-b-2 border-primary-950'/>
-                        {/if}
-                        {#if lease}
-                        {@const customer = customers?.find((customer) => customer.id === lease.customerId)}
-                            <div class="w-full min-w-80 border-r-2 border-b-2 border-primary-950">
-                                <LeaseEmployee {lease} classes='w-80 p-4'/>
-                                <button class="btn bg-primary-900 rounded-lg" onclick={()=>openModal('lease', 0, lease.leaseId)}>End Lease</button>
-                            </div>
-                            {#if customer}
-                                <User user={customer} classes='w-full border-b-2 border-primary-950 '/>
-                            {:else}
-                                <div class="w-full border-b-2 border-primary-950 min-w-80" ></div>
-                            {/if}
-                            {:else}
-                            <div class="w-full border-r-2 border-b-2 border-primary-950"></div>
-                        {/if}
-                    {/each}
-                </div>
-            <Pagination pageNum={pageNum} size={size} array={filteredUnits(units)} label='units'/>
-            {/if}
-        {/await}    
-    {/await}
-	loading units
-	<Placeholder />
-{:then units}
 	{#await data.leases}
 		loading leases
 		<Placeholder />
-	{:then leases}
+	{:then leases} 
 		{#await data.customers}
-			loading customers
+			loading customers 
 			<Placeholder />
 		{:then customers}
-			{#if units}
-				{#each slicedUnits(filteredUnits(units)) as unit (unit.num)}
-					{@const lease = leases?.find((lease) => lease.unitNum === unit.num)}
-					<div class="container grid grid-cols-4 gap-0" transition:fade={{ duration: 600 }}>
-						<div class="w-full rounded-sm border-b-2 border-r-2 border-primary-950 p-2">
-							<UnitEmployee {unit} classes="" />
-							<button
-								class="btn rounded-lg bg-primary-900"
-								onclick={() => openModal('unitPricing', unit.advertisedPrice, '', unit.size)}
-								>Change all {unit.size.replace(/^0+/gm, '').replace(/x0/gm, 'x')} pricing</button
-							>
-						</div>
-						{#if data.unitNotesForm}
-							<UnitNotesForm
-								data={data.unitNotesForm}
-								{unit}
-								classes="min-w-80 border-r-2 border-b-2 border-primary-950"
-							/>
-						{/if}
-						{#if lease}
-							{@const customer = customers?.find((customer) => customer.id === lease.customerId)}
-							<div class="w-full min-w-80 border-b-2 border-r-2 border-primary-950 p-2">
-								<LeaseEmployee {lease} classes="m-4" />
-								<button
-									class="btn rounded-lg bg-primary-900"
-									onclick={() => openModal('lease', 0, lease.leaseId)}>End Lease</button
-								>
+			{#await data.addresses}
+				loading addresses
+			{:then addresses} 
+            {#if units}
+					<Search {search} searchType='Unit number' data={data.searchForm} />
+					<HorizontalDivider />
+					<Revenue label='Current leased monthly revenue' amount={totalRevenue(leases)} />
+					<HorizontalDivider />
+            	<div class="grid container grid-cols-4 px-2 justify-center" transition:fade={{duration:600}}>
+               	{#each slicedUnits(filteredUnits(units)) as unit (unit.num)}
+               	{@const lease = leases?.find((lease) => lease.unitNum === unit.num)}
+							<div class="border-b border-r border-primary-950 min-w-64 flex flex-col">
+								<UnitEmployee {unit} classes='p-4'/>
+								<button class="btn preset-filled-primary-50-950 rounded-lg mx-2" onclick={()=> openModal('unitPricing', unit.advertisedPrice, '', unit.size)}>Change all {unit.size.replace(/^0+/gm,'').replace(/x0/gm,'x')} pricing</button>
 							</div>
-							{#if customer}
-								<User user={customer} classes="w-full border-b-2 border-primary-950 " />
-							{:else}
-								<div class="w-full min-w-80 border-b-2 border-primary-950"></div>
+							{#if data.unitNotesForm}
+								<UnitNotesForm data={data.unitNotesForm} {unit} classes='border-b border-r border-primary-950 p-4 min-w-64'/>
 							{/if}
-						{:else}
-							<div class="w-full border-b-2 border-r-2 border-primary-950"></div>
-							<div class="w-full min-w-80 border-b-2 border-primary-950"></div>
-						{/if}
+							{#if lease}
+							{@const customer = customers?.find((customer) => customer.id === lease.customerId)}
+								<div class="min-w-64 flex flex-col border-r border-b border-primary-950">
+									<LeaseEmployee {lease} classes=''/>
+									<button class="btn preset-filled-primary-50-950 rounded-lg m-4" onclick={()=>openModal('lease', 0, lease.leaseId)}>End Lease</button>
+								</div>
+								<div class="flex flex-col min-w-64 border-b-2  border-primary-950">
+									{#if customer}
+									{@const address = addresses.find((address) => address.userId === customer.id)}
+										<User user={customer} classes='px-4 pt-4'/>
+										{#if address}
+											<Address {address} classes='px-4' />
+										{/if}
+									{/if}
+								</div>
+							{:else}
+								<div class="border-b-2 border-primary-950 border-r-2 min-w-64"></div>
+								<div class="border-b-2 border-primary-950 min-w-64"></div>
+							{/if}
+						{/each}
 					</div>
-				{/each}
-				<Pagination {pageNum} {size} array={filteredUnits(units)} label="units" />
-			{/if}
-		{/await}
+            	<Pagination pageNum={pageNum} size={size} array={filteredUnits(units)} label='units'/>
+            {/if}
+			{/await}
+		{/await}    
 	{/await}
 {/await}
