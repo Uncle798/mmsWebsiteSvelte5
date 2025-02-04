@@ -70,7 +70,7 @@
     {#await data.customers}
         loading customers
     {:then customers} 
-        {#await data.contacts}
+        {#await data.addresses}
             loading contacts
         {:then addresses}         
             {#if paymentRecords.length >0}
