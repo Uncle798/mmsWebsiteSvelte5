@@ -1,5 +1,6 @@
 <script lang="ts">
    import type { Unit, Lease } from '@prisma/client';
+	import HorizontalDivider from './HorizontalDivider.svelte';
    interface Props {
       unit: Unit,
       classes?: string;
@@ -8,14 +9,24 @@
    const currencyFormatter = new Intl.NumberFormat('en-US', {style:'currency', currency:'USD'});
 </script>
 
-<div class="p-4 {classes} flex-none">
-   <p>Unit Number: <a href="/units/{unit.num}">{unit.num.replace(/^0+/gm,'')}</a></p>
-   <p>Size: <a href="/units/size/{unit.size}">{unit.size.replace(/^0+/gm, '').replace(/x0/gm, 'x')}</a></p>
-   <p>Advertised Price: {currencyFormatter.format(unit.advertisedPrice)}</p>
+<div class="grid grid-cols-2 gap-x-2 {classes}">
+   <div class="text-right">Unit Number:</div>
+   <div class="font-medium">{unit.num.replace(/^0+/gm,'')}</div>
+   <HorizontalDivider classes='col-span-2'/>
+   <div class="text-right">Size:</div>
+   <div class="font-medium"> <a href="/units/size/{unit.size}">{unit.size.replace(/^0+/gm, '').replace(/x0/gm, 'x')}</a></div>
+   <HorizontalDivider classes='col-span-2'/>
+   <div class="text-right inset-2">Advertised Price: </div>
+   <div class="font-medium">{currencyFormatter.format(unit.advertisedPrice)}</div>
+   <HorizontalDivider classes='col-span-2'/>
    {#if unit.leasedPrice}
-   <p>Leased Price: {currencyFormatter.format(unit.leasedPrice)}</p>
+      <div class="text-right">Leased Price: </div>
+      <div class="font-medium">{currencyFormatter.format(unit.leasedPrice)}</div>
+      <HorizontalDivider classes='col-span-2'/>
    {/if}
    {#if unit.notes}
-      <p>Notes: {unit.notes}</p>
+      <div class="text-right">Notes:</div>
+      <div class="font-medium"> {unit.notes}</div>
+      <HorizontalDivider classes='col-span-2'/>
    {/if}
 </div>

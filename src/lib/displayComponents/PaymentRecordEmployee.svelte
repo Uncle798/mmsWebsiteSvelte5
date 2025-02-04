@@ -1,6 +1,7 @@
 <script lang='ts'>
 	import type { PaymentRecord } from "@prisma/client";
 	import dayjs from "dayjs";
+	import HorizontalDivider from "./HorizontalDivider.svelte";
 
 
    interface Props {
@@ -11,27 +12,39 @@
    const currencyFormatter = new Intl.NumberFormat('en-US', {style:'currency', currency:'USD'});
 </script>
 
-<div class=" p-4 flex-none {classes}">
-   <p>Payment record number: <a href="/paymentRecords/{paymentRecord.paymentNumber}">{paymentRecord.paymentNumber}</a></p>
-   <p>Payment amount: {currencyFormatter.format(paymentRecord.paymentAmount)}</p>
-   <p>Payment created: {dayjs(paymentRecord.paymentCreated).format('M/D/YYYY')}</p>
+<div class="p-2  {classes} grid grid-cols-2 min-w-80 ">
+   <div class="text-left">Payment record number:</div> 
+   <div class="text-left px-2"><a href="/paymentRecords/{paymentRecord.paymentNumber}" class="font-semibold text-right">{paymentRecord.paymentNumber}</a></div>
+   <HorizontalDivider classes='col-span-2'/>
+   <div>Payment amount:</div> 
+   <div class="text-left px-2 font-semibold">{currencyFormatter.format(paymentRecord.paymentAmount)}</div>
+   <HorizontalDivider classes='col-span-2' />
+   <div>Payment created:</div>
+   <div class="text-left px-2 font-semibold">{dayjs(paymentRecord.paymentCreated).format('M/D/YYYY')}</div>
+   <HorizontalDivider classes='col-span-2' />
    {#if paymentRecord.paymentCompleted && paymentRecord.paymentCompleted.getDate() !== paymentRecord.paymentCreated.getDate()}
-   <p>Payment completed: { dayjs(paymentRecord.paymentCompleted).format('M/D/YYYY')}</p>
+   <div>Payment completed:</div>
+   <div class="text-left px-2 font-semibold">{ dayjs(paymentRecord.paymentCompleted).format('M/D/YYYY')}</div>
    {:else if !paymentRecord.paymentCompleted}
-      Payment not completed
+   <div class="col-span-2">Payment not completed</div>
    {/if}
-   <p>Payment type: {paymentRecord.paymentType.replace(/\w\S*/g, text => text.charAt(0).toUpperCase() + text.substring(1).toLowerCase())}</p>
+   <HorizontalDivider classes='col-span-2' />
+   <div>Payment type:</div>
+   <div class="text-left px-2 font-semibold">{paymentRecord.paymentType.replace(/\w\S*/g, text => text.charAt(0).toUpperCase() + text.substring(1).toLowerCase())}</div>
+   <HorizontalDivider classes='col-span-2' />
    {#if paymentRecord.invoiceNum}
-      <p>Payment notes:</p>
-         <p class="indend-8"> <a href="/invoices/{paymentRecord.invoiceNum}">{paymentRecord.paymentNotes}</a></p>
-      {:else}
-      <p class="">Payment notes: </p>
-      <p class="indent-8">{paymentRecord.paymentNotes}</p>
+   <div>Payment notes:</div>
+   <div class="text-left pl-6 pr-2 -indent-4 font-semibold"> <a href="/invoices/{paymentRecord.invoiceNum}">{paymentRecord.paymentNotes}</a></div>
+   {:else}
+   <div class="">Payment notes: </div>
+   <div class="text-left pl-6 pr-2 -indent-4 font-semibold">{paymentRecord.paymentNotes}</div>
    {/if}
+   <HorizontalDivider classes='col-span-2' />
    {#if paymentRecord.deposit}
-      Deposit
+   <div class="col-span-2 text-center px-2 font-semibold">Deposit</div>
    {/if}
+   <HorizontalDivider classes='col-span-2' />
    {#if paymentRecord.refunded}
-      <p>Refunded</p>
+      <div class="col-span-2 text-center px-2 font-semibold">Refunded</div>
    {/if}
 </div>

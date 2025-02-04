@@ -48,7 +48,7 @@
 					max={maxDate}
 				/>
 				<button
-					class="btn rounded-lg bg-primary-950"
+					class="btn rounded-lg preset-filled-primary-50-950"
 					type="button"
 					onclick={() => {
 						$form.startDate = undefined;
@@ -67,7 +67,7 @@
 					max={maxDate}
 				/>
 				<button
-					class="btn rounded-lg bg-primary-950"
+					class="btn preset-filled-primary-50-950 rounded-lg shadow-lg"
 					type="button"
 					onclick={() => {
 						$form.endDate = undefined;

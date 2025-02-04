@@ -20,6 +20,10 @@
    let { data, unitNotesFormModalOpen, unit, classes }:Props = $props();
 
    let { form, message, errors, constraints, enhance, delayed, timeout} = superForm(data, {
+      onChange(event) {
+      
+      },
+      multipleSubmits: 'allow',
       onUpdated(){
          unitNotesFormModalOpen=false;
          invalidateAll();
@@ -32,7 +36,7 @@
       $form.notes = unit.notes
    })
 </script>
-<div class={classes}>
+<div class="{classes} flex flex-col">
    <FormMessage message={$message} />
    <form action="/forms/unitNotesForm" method="POST" use:enhance>
       <TextInput
@@ -50,6 +54,6 @@
          Unit is unavailable
       </Switch>
       <input type="hidden" name="unitNum" id="unitNum" value={unit.num} />
-      <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} buttonText='Submit notes and unit availability'/>
+      <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} buttonText='Update notes'/>
    </form>
 </div>
