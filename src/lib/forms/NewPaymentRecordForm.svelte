@@ -28,7 +28,7 @@
    let { form, errors, message, constraints, enhance, delayed, timeout} = superForm(data, {
       onSubmit({formData}) {
          formData.set('customerId', selectedCustomer[0]);
-         formData.set('invoiceNum', selectedInvoice[0]);
+         formData.set('invoiceNum', selectedInvoice[0])
       },
    });
    let selectedCustomer = $state([defaultCustomer]);
@@ -64,11 +64,11 @@
       if(defaultInvoice){
          const invoice = invoices.find((invoice) => invoice.invoiceNum.toString() === defaultInvoice)
          if(invoice){
-               invoiceSelected = true
-               $form.paymentAmount=invoice.invoiceAmount;
-               $form.paymentNotes=`Payment for invoice number: ${invoice.invoiceNum} ${invoice.invoiceNotes}`
-               $form.deposit=invoice.deposit;
-            }
+            invoiceSelected = true
+            $form.paymentAmount=invoice.invoiceAmount;
+            $form.paymentNotes=`Payment for invoice number: ${invoice.invoiceNum} ${invoice.invoiceNotes}`
+            $form.deposit=invoice.deposit;
+         }
       }
    })
 </script>
@@ -117,8 +117,10 @@
                onValueChange={(details)=>{
                   const invoice = invoices.find((invoice) => invoice.invoiceNum.toString() === details.value[0])
                   if(invoice){
+                     selectedInvoice[0]=invoice.invoiceNum.toString();
                      $form.paymentAmount=invoice.invoiceAmount;
                      $form.paymentNotes=`Payment for invoice number: ${invoice.invoiceNum}, ${invoice.invoiceNotes}`
+                     $form.invoiceNum =invoice.invoiceNum;
                   }
                   invoiceSelected = true
                }}
