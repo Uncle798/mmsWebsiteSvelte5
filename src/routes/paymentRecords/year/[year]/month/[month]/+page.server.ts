@@ -38,6 +38,11 @@ export const load = (async (event) => {
              ]  
          },
     });
-    const customers = prisma.user.findMany()
-    return { paymentRecords, searchForm, paymentRecordCount, customers, dateSearchForm };
+    const customers = prisma.user.findMany();
+    const addresses = prisma.address.findMany({
+      where: {
+        softDelete: false,
+      }
+    });
+    return { paymentRecords, searchForm, paymentRecordCount, customers, dateSearchForm, addresses };
 }) satisfies PageServerLoad;

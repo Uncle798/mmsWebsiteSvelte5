@@ -23,6 +23,14 @@ export const load = (async (event) => {
          invoiceNum: paymentRecord?.invoiceNum ? paymentRecord.invoiceNum : undefined
       }
    });
+   const address = await prisma.address.findFirst({
+      where: {
+         AND:[
+            { softDelete: false },
+            { userId: customer?.id },
+         ]
+      }
+   })
    let refundRecord:RefundRecord | null = null;
    if(paymentRecord?.refundNumber){
       refundRecord = await prisma.refundRecord.findUnique({
@@ -31,5 +39,5 @@ export const load = (async (event) => {
          }
       })
    }
-   return { paymentRecord, customer, invoice, refundRecord };
+   return { paymentRecord, customer, invoice, refundRecord, address };
 }) satisfies PageServerLoad;
