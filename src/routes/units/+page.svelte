@@ -103,7 +103,7 @@
                	{@const lease = leases?.find((lease) => lease.unitNum === unit.num)}
 							<div class="border-b border-r border-primary-950 min-w-64 flex flex-col">
 								<UnitEmployee {unit} classes='p-4'/>
-								<button class="btn preset-filled-primary-50-950 rounded-lg mx-2" onclick={()=> openModal('unitPricing', unit.advertisedPrice, '', unit.size)}>Change all {unit.size.replace(/^0+/gm,'').replace(/x0/gm,'x')} pricing</button>
+								<button class="btn preset-filled-primary-50-950 rounded-lg mx-2 mb-2" onclick={()=> openModal('unitPricing', unit.advertisedPrice, '', unit.size)}>Change all {unit.size.replace(/^0+/gm,'').replace(/x0/gm,'x')} pricing</button>
 							</div>
 							{#if data.unitNotesForm}
 								<UnitNotesForm data={data.unitNotesForm} {unit} classes='border-b border-r border-primary-950 p-4 min-w-64'/>

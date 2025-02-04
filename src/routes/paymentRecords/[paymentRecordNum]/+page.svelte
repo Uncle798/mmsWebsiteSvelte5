@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Address from '$lib/displayComponents/Address.svelte';
 	import HorizontalDivider from '$lib/displayComponents/HorizontalDivider.svelte';
 import InvoiceEmployee from '$lib/displayComponents/InvoiceEmployee.svelte';
    import PaymentRecordEmployee from '$lib/displayComponents/PaymentRecordEmployee.svelte';
@@ -14,19 +15,21 @@ import InvoiceEmployee from '$lib/displayComponents/InvoiceEmployee.svelte';
 {#if data.paymentRecord }
    <Header title='Payment Record Num: {data.paymentRecord}' />
    <div class="flex">
-      <PaymentRecordEmployee paymentRecord={data.paymentRecord} classes='w-1/3'/>
-      <VerticalDivider classes=''/>
-      {#if data.customer}
-         <User user={data.customer} classes='w-1/3'/>
-         <VerticalDivider classes='' />
-      {/if}
+      <PaymentRecordEmployee paymentRecord={data.paymentRecord} classes='p-2 min-w-60 border-b-2 border-e-2 border-primary-950'/>
+      <div class="flex flex-col p-2 min-w-60 border-b-2 border-e-2 border-primary-950">
+         {#if data.customer}
+            <User user={data.customer} classes=''/>
+            {#if data.address}
+               <Address address={data.address} />
+            {/if}
+         {/if}
+      </div>
       {#if data.invoice}
-         <InvoiceEmployee invoice={data.invoice} classes='w-1/3'/>
+         <InvoiceEmployee invoice={data.invoice} classes='p-2 min-w-60 border-b-2 border-e-2 border-primary-950'/>
       {/if}
       {#if data.refundRecord}
-         <RefundRecordDisplay refundRecord={data.refundRecord} />
+         <RefundRecordDisplay refundRecord={data.refundRecord} classes='p-2 min-w-60 border-b-2 border-primary-950 '/>
       {/if}
-
    </div>
    <HorizontalDivider />
 {/if}

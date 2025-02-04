@@ -9,7 +9,13 @@
 	import Search from '$lib/forms/Search.svelte';
 	import Placeholder from '$lib/displayComponents/Placeholder.svelte';
     import dayjs from 'dayjs';
+    import utc from 'dayjs/plugin/utc'
 	import DateSearch from '$lib/forms/DateSearch.svelte';
+	import Revenue from '$lib/displayComponents/Revenue.svelte';
+	import HorizontalDivider from '$lib/displayComponents/HorizontalDivider.svelte';
+	import VerticalDivider from '$lib/displayComponents/VerticalDivider.svelte';
+	import Address from '$lib/displayComponents/Address.svelte';
+    dayjs.extend(utc)
     let { data }: { data: PageData } = $props();
     let pageNum = $state(1);
     let size = $state(25);
@@ -21,13 +27,14 @@
     let wrapper = new Promise<PaymentRecord[]>(async res => {
         const paymentRecords = await data.paymentRecords
         res(paymentRecords)
-        startDate = dayjs(paymentRecords[0].paymentCreated).startOf('month').toDate();
-        minDate = startDate;
-        endDate = dayjs(paymentRecords[paymentRecords.length-1].paymentCreated).endOf('month').toDate();
-        maxDate = endDate;
+        if(paymentRecords.length > 0){
+            startDate = dayjs.utc(paymentRecords[0].paymentCreated).startOf('year').toDate();
+            minDate = startDate;
+            endDate = dayjs.utc(paymentRecords[paymentRecords.length-1].paymentCreated).endOf('year').toDate();
+            maxDate = endDate;
+        }
     })
     const numberFormatter = new Intl.NumberFormat('en-US');
-    const currencyFormatter = new Intl.NumberFormat('en-US', {style:'currency', currency:'USD'});
     let slicedSource = $derived((paymentRecords:PaymentRecord[]) => paymentRecords.slice((pageNum -1) * size, pageNum*size));
     let searchedPayments = $derived((paymentRecords:PaymentRecord[]) => paymentRecords.filter((paymentRecord) => paymentRecord.paymentNumber.toString().includes(search) ))
     let dateSearchPayments = $derived((paymentRecords:PaymentRecord[]) => paymentRecords.filter((paymentRecord) => {
@@ -38,42 +45,57 @@
     }))
     let totalRevenue = $derived((paymentRecords:PaymentRecord[]) => {
         let totalRevenue = 0;
-        paymentRecords.forEach((paymentRecord) => {
-            if(paymentRecord.paymentCompleted){
-                totalRevenue += paymentRecord.paymentAmount
-            }
-        })
+        if(paymentRecords[0]){
+            paymentRecords.forEach((paymentRecord) => {
+                if(paymentRecord.paymentCompleted && !paymentRecord.refunded){
+                    totalRevenue += paymentRecord.paymentAmount
+                }
+            })
+        }
         return totalRevenue;
     })
 </script>
 
 <Header title='Payment Records' />
 {#await wrapper}
-    loading {numberFormatter.format(data.paymentRecordCount)} payment records 
+    loading {numberFormatter.format(data.paymentRecordCount)} payment records
     <Placeholder />
 {:then paymentRecords} 
     {#await data.customers}
         loading customers
-        <Placeholder />
     {:then customers} 
-          <div transition:fade={{duration:600}}>
-            <div>
-                Total revenue: {currencyFormatter.format(totalRevenue(searchedPayments(dateSearchPayments(paymentRecords))))}
-            </div>
-            <div class="flex">
-                <Search bind:search={search} searchType='payment record number' data={data.searchForm}/>      
-                <DateSearch bind:startDate={startDate} bind:endDate={endDate} {minDate} {maxDate} data={data.dateSearchForm}/>
-            </div>
-            {#each slicedSource(searchedPayments(paymentRecords)) as paymentRecord}
-            {@const customer = customers.find((customer) => customer.id === paymentRecord.customerId) }
-            <div class="flex">
-                <PaymentRecordEmployee paymentRecord={paymentRecord} />
-                {#if customer}
-                    <User user={customer} widthClass='w-1/3'/>
-                {/if}
-            </div>
-            {/each}
-            <Pagination bind:size={size} bind:pageNum={pageNum} array={searchedPayments(paymentRecords)} label='payment records'/>
-        </div>
+        {#await data.addresses}
+            loading contacts
+        {:then addresses}         
+            {#if paymentRecords.length >0}
+                <div transition:fade={{duration:600}}>
+                    <div class="flex">
+                        <Search bind:search={search} searchType='payment record number' data={data.searchForm}/>      
+                        <DateSearch bind:startDate={startDate} bind:endDate={endDate} {minDate} {maxDate} data={data.dateSearchForm}/>
+                    </div>
+                    <HorizontalDivider />
+                    <Revenue label="Total revenue" amount={totalRevenue(searchedPayments(dateSearchPayments(paymentRecords)))} />
+                    <HorizontalDivider />
+                    <div class="grid grid-cols-2">
+                        {#each slicedSource(dateSearchPayments(searchedPayments(paymentRecords))) as paymentRecord}
+                        {@const customer = customers.find((customer) => customer.id === paymentRecord.customerId) }
+                            <PaymentRecordEmployee paymentRecord={paymentRecord} classes="border-e-2 border-b-2 border-primary-950 p-2 min-w-64" />
+                            {#if customer}
+                            {@const address = addresses.find((address)=> address.userId === customer.id)}
+                            <div class="flex flex-col border-b-2 border-primary-950 min-w-64">
+                            <User user={customer} classes='mx-2 mt-2'/>
+                                {#if address}
+                                    <Address {address} classes='mx-2'/>
+                                {/if}
+                            </div>
+                            {/if}
+                        {/each}
+                    </div>
+                    <Pagination bind:size={size} bind:pageNum={pageNum} array={searchedPayments(paymentRecords)} label='payment records'/>
+                </div>
+            {:else}
+                No payment records from that month
+            {/if}
+        {/await}
     {/await}
 {/await}

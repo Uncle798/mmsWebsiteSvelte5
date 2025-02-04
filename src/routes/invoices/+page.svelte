@@ -72,32 +72,31 @@
         {#await data.addresses}
             Loading addresses...
         {:then addresses}
-            {#if invoices.length >0}
-                
-            <Header title='All invoices' />
-            <div class="flex">
-                <Search data={data.searchForm} bind:search={search} searchType='invoice number' classes='h-28'/>
-                <DateSearch data={data.dateSearchForm} bind:startDate={startDate} bind:endDate={endDate} {minDate} {maxDate} classes='h-28'/>
-            </div>
-            <HorizontalDivider />
-            <Revenue label="Total invoiced (not including deposits)" amount={totalRevenue(searchedInvoices(dateSearchedInvoices(invoices)))} />
-            <HorizontalDivider />
-            <div class="grid grid-cols-2 ">
-                {#each  slicedInvoices(searchedInvoices(invoices)) as invoice}  
-                {@const customer = customers.find((customer) => customer.id === invoice.customerId)}  
-                    <InvoiceEmployee {invoice} classes='border-e-2 border-b-2' />
-                    {#if customer}
-                    {@const address = addresses.find((address) => address.userId === customer.id)}
-                    <div class="flex flex-col border-b-2">
-                        <User user={customer} classes=''/>
-                        {#if address}
-                        <Address {address} />
+            {#if invoices.length >0}       
+                <Header title='All invoices' />
+                <div class="flex">
+                    <Search data={data.searchForm} bind:search={search} searchType='invoice number' classes='h-28'/>
+                    <DateSearch data={data.dateSearchForm} bind:startDate={startDate} bind:endDate={endDate} {minDate} {maxDate} classes='h-28'/>
+                </div>
+                <HorizontalDivider />
+                <Revenue label="Total invoiced (not including deposits)" amount={totalRevenue(searchedInvoices(dateSearchedInvoices(invoices)))} />
+                <HorizontalDivider />
+                <div class="grid grid-cols-2 ">
+                    {#each  slicedInvoices(searchedInvoices(invoices)) as invoice}  
+                    {@const customer = customers.find((customer) => customer.id === invoice.customerId)}  
+                        <InvoiceEmployee {invoice} classes='border-e-2 border-b-2 dark:border-primary-950 border-primary-50 px-2' />
+                        {#if customer}
+                        {@const address = addresses.find((address) => address.userId === customer.id)}
+                            <div class="flex flex-col border-b-2 dark:border-primary-950 border-primary-50 px-2 pt-2">
+                                <User user={customer} classes=''/>
+                                {#if address}
+                                    <Address {address} />
+                                {/if}
+                            </div>
                         {/if}
-                    </div>
-                    {/if}
-                {/each}
-            </div>
-            <Pagination bind:pageNum={pageNum} bind:size={size} array={searchedInvoices(invoices)} label='invoices' />
+                    {/each}
+                </div>
+                <Pagination bind:pageNum={pageNum} bind:size={size} array={searchedInvoices(invoices)} label='invoices' />
             {/if}
         {/await}
     {/await}

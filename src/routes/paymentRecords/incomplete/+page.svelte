@@ -36,7 +36,7 @@
    {/snippet}
 </Modal>
 
-<div transition:fade={{duration:500}}>
+<div transition:fade={{duration:600}}>
    {#each data.paymentRecords as paymentRecord}
       <div class="card p-4">
          <PaymentRecordEmployee paymentRecord={paymentRecord} />

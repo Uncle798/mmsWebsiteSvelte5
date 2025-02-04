@@ -12,8 +12,9 @@
 	import dayjs from 'dayjs';
     import utc from 'dayjs/plugin/utc'
 	import Revenue from '$lib/displayComponents/Revenue.svelte';
-    import HorizontalDivider from '$lib/displayComponents/HorizontalDivider.svelte';
-    import VerticalDivider from '$lib/displayComponents/VerticalDivider.svelte';
+	import HorizontalDivider from '$lib/displayComponents/HorizontalDivider.svelte';
+	import VerticalDivider from '$lib/displayComponents/VerticalDivider.svelte';
+	import Address from '$lib/displayComponents/Address.svelte';
     dayjs.extend(utc)
     let { data }: { data: PageData } = $props();
     let pageNum = $state(1);
@@ -28,7 +29,7 @@
         const invoices = await data.invoices
         startDate = dayjs.utc(invoices[0].invoiceCreated).startOf('year').toDate();
         minDate = startDate;
-        endDate = dayjs.utc(invoices[0].invoiceCreated).endOf('year').toDate();
+        endDate = new Date();
         maxDate = endDate;
         res(invoices)
     })
@@ -52,41 +53,51 @@
 </script>
 {#await wrapper}
     <Header title='Loading invoices' />
-    Loading {numberFormatter.format(data.invoiceCount)} invoices
+    Loading {numberFormatter.format(data.invoiceCount)} invoices, 
     {#if data.months}
-    or select month: 
+    or select year: 
     {#each data.months as month}
-    <a href="/invoices/year/{month.getFullYear()}/month/{month.getMonth()}" class="btn">{dayjs(month).format('MMMM')}</a>
+    <a href="/invoices/year/{month.getFullYear()}/month/{month.getMonth()}" class="btn">{dayjs(month).format('MMMM')},</a>
     {/each}
     {/if}
-    
+    or:
+    <a href="/invoices/unpaid" class="btn">Unpaid invoices</a>
     
     <Placeholder />
-    {:then invoices}
+{:then invoices}
     {#await data.customers}
-    <Header title='Loading customers' />
-    loading customers
-    <Placeholder />
+        <Header title='Loading customers' />
+        Loading customers...
     {:then customers}
-        <Header title='{invoices[invoices.length-1].invoiceCreated.getFullYear().toString()} Invoices' />
-        <Revenue label="Total invoiced (not including deposits)" amount={totalRevenue(searchedInvoices(dateSearchedInvoices(invoices)))} />
-        <HorizontalDivider />
-        <div class="flex">
-            <Search data={data.searchForm} bind:search={search} searchType='invoice number'/>
-            <DateSearch data={data.dateSearchForm} bind:startDate={startDate} bind:endDate={endDate} {minDate} {maxDate} />
-        </div>
-        <HorizontalDivider />
-        {#each  slicedInvoices(searchedInvoices(invoices)) as invoice}  
-            {@const customer = customers.find((customer) => customer.id === invoice.customerId)}  
-            <div class="flex" transition:fade={{duration:600}}>
-                <InvoiceEmployee invoice={invoice} />
-                <VerticalDivider heightClass='h-30' />
-                {#if customer}
-                    <User user={customer} widthClass='w-1/3'/>
-                {/if}
-            </div>
-            <HorizontalDivider />
-        {/each}
-        <Pagination bind:pageNum={pageNum} bind:size={size} array={searchedInvoices(invoices)} label='invoices' />
+        {#await data.addresses}
+            Loading addresses...
+        {:then addresses}
+            {#if invoices.length >0}       
+                <Header title='All invoices' />
+                <div class="flex">
+                    <Search data={data.searchForm} bind:search={search} searchType='invoice number' classes='h-28'/>
+                    <DateSearch data={data.dateSearchForm} bind:startDate={startDate} bind:endDate={endDate} {minDate} {maxDate} classes='h-28'/>
+                </div>
+                <HorizontalDivider />
+                <Revenue label="Total invoiced (not including deposits)" amount={totalRevenue(searchedInvoices(dateSearchedInvoices(invoices)))} />
+                <HorizontalDivider />
+                <div class="grid grid-cols-2 ">
+                    {#each  slicedInvoices(searchedInvoices(invoices)) as invoice}  
+                    {@const customer = customers.find((customer) => customer.id === invoice.customerId)}  
+                        <InvoiceEmployee {invoice} classes='border-e-2 border-b-2 dark:border-primary-950 border-primary-50 px-2' />
+                        {#if customer}
+                        {@const address = addresses.find((address) => address.userId === customer.id)}
+                            <div class="flex flex-col border-b-2 dark:border-primary-950 border-primary-50 px-2 pt-2">
+                                <User user={customer} classes=''/>
+                                {#if address}
+                                    <Address {address} />
+                                {/if}
+                            </div>
+                        {/if}
+                    {/each}
+                </div>
+                <Pagination bind:pageNum={pageNum} bind:size={size} array={searchedInvoices(invoices)} label='invoices' />
+            {/if}
+        {/await}
     {/await}
 {/await}

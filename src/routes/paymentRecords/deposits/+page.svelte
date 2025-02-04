@@ -8,6 +8,7 @@
 	import Search from '$lib/forms/Search.svelte';
 	import Pagination from '$lib/displayComponents/Pagination.svelte';
 	import Revenue from '$lib/displayComponents/Revenue.svelte';
+	import HorizontalDivider from '$lib/displayComponents/HorizontalDivider.svelte';
     interface Props {
         data: PageData;
     }
@@ -53,10 +54,16 @@
     loading {numberFormatter.format(data.depositCount)} deposits
 {:then deposits} 
     <Revenue amount={totalRevenue(searchedPaymentRecords(deposits))} label='Amount of deposits: ' />
+    <HorizontalDivider />
     <Search bind:search={search} searchType='payment record number' data={data.searchForm} />
-    {#each slicedSource(searchedPaymentRecords(deposits)) as deposit}
-        <PaymentRecordEmployee paymentRecord={deposit} />
-        <button type="button" class="btn" onclick={() => refundModal(deposit)}>Refund this deposit</button>
-    {/each}
-    <Pagination pageNum={pageNum} size={size} array={searchedPaymentRecords(deposits)} label='invoices'/>
+    <HorizontalDivider />
+    <div class="flex flex-col">
+        {#each slicedSource(searchedPaymentRecords(deposits)) as deposit}
+        <div class="flex flex-col border-y-2 justify-self-start">
+            <PaymentRecordEmployee paymentRecord={deposit} classes='px-2'/>
+            <button type="button" class="btn" onclick={() => refundModal(deposit)}>Refund this deposit</button>
+        </div>
+        {/each}
+        <Pagination pageNum={pageNum} size={size} array={searchedPaymentRecords(deposits)} label='invoices'/>
+    </div>
 {/await}
