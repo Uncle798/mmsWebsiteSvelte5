@@ -30,7 +30,7 @@
       <div class='text-right'>Payment record num:</div> 
       <div class="font-medium"><a href="/paymentRecords/{invoice.paymentRecordNum}" class="">{invoice.paymentRecordNum}</a></div>
    {:else}
-      <div class='col-span-2 m-2'><a href="/paymentRecords/new?defaultCustomer={invoice.customerId}&defaultInvoice={invoice.invoiceNum}" class="btn preset-filled-primary-50-950 rounded-lg self-center">Make a payment record for this lease</a></div>
+      <div class='col-span-2 m-2'><a href="/paymentRecords/new?defaultCustomer={invoice.customerId}&defaultInvoice={invoice.invoiceNum}" class="btn preset-filled-primary-50-950 rounded-lg">Make a payment record for this lease</a></div>
    {/if}
    {#if invoice.deposit}
       <div class="col-span-2 font-medium text-center">Deposit</div>

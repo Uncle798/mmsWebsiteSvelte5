@@ -13,8 +13,8 @@
 </script>
 
 <div class="{classes} grid grid-cols-2 gap-x-2 ">
-   <div class="text-right">Payment record number:</div> 
-   <div class="text-left"><a href="/paymentRecords/{paymentRecord.paymentNumber}" class="font-medium text-right">{paymentRecord.paymentNumber}</a></div>
+   <div class="text-right ">Payment record number:</div> 
+   <div class="text-left align-text-bottom"><a href="/paymentRecords/{paymentRecord.paymentNumber}" class="font-medium text-right">{paymentRecord.paymentNumber}</a></div>
    <HorizontalDivider classes='col-span-2'/>
    <div class="text-right">Payment amount:</div> 
    <div class="font-medium">{currencyFormatter.format(paymentRecord.paymentAmount)}</div>

@@ -12,7 +12,7 @@
     import utc from 'dayjs/plugin/utc'
 	import DateSearch from '$lib/forms/DateSearch.svelte';
 	import Revenue from '$lib/displayComponents/Revenue.svelte';
-	import HorizontalDivider from '$lib/displayComponents/HorizontalDivider.svelte';
+	import HorizontalDivider from '$lib/displayComponents/HorizontalDivider.svelte';    
 	import Address from '$lib/displayComponents/Address.svelte';
     dayjs.extend(utc)
     let { data }: { data: PageData } = $props();

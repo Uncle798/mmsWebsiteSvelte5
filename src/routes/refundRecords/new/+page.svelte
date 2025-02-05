@@ -38,7 +38,7 @@
 <FormMessage message={$message} />
 
 {#if data.paymentRecord}
-    <PaymentRecord paymentRecord={data.paymentRecord} />
+    <PaymentRecord paymentRecord={data.paymentRecord} classes='p-2'/>
 {/if}
 
 {#if data.deposits}  
@@ -71,5 +71,5 @@
 </form>
 {/if}
 {#if data.paymentRecord}
-<NewRefundForm data={data.refundForm} paymentRecord={data.paymentRecord}/>
+<NewRefundForm data={data.refundForm} paymentRecord={data.paymentRecord} classes='p-2'/>
 {/if}
