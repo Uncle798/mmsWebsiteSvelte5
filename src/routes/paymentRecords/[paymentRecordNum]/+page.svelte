@@ -14,8 +14,13 @@ import InvoiceEmployee from '$lib/displayComponents/InvoiceEmployee.svelte';
 
 {#if data.paymentRecord }
    <Header title='Payment Record Num: {data.paymentRecord}' />
-   <div class="flex">
-      <PaymentRecordEmployee paymentRecord={data.paymentRecord} classes='p-2 min-w-60 border-b-2 border-e-2 border-primary-950'/>
+   <div class="flex border-t-2 dark:border-primary-950 border-primary-50">
+      <div class="flex flex-col p-2 min-w-60 border-b-2 border-e-2 border-primary-950">
+         <PaymentRecordEmployee paymentRecord={data.paymentRecord} classes=''/>
+         {#if !data.paymentRecord.refunded}
+            <a href='/refundRecords/new?paymentNumber={data.paymentRecord.paymentNumber}' class="btn rounded-lg preset-filled-primary-50-950 m-2">Refund this payment</a>
+         {/if}
+      </div>
       <div class="flex flex-col p-2 min-w-60 border-b-2 border-e-2 border-primary-950">
          {#if data.customer}
             <User user={data.customer} classes=''/>
