@@ -23,8 +23,9 @@
       defaultCustomer?: string;
       defaultInvoice?: string;
       classes?: string;
+      customerSelected: boolean;
    }
-   let { data, employeeId, customers, invoices,  invoiceForm, leases, defaultCustomer='', defaultInvoice='', classes }:Props = $props();
+   let { data, employeeId, customers, invoices,  invoiceForm, leases, defaultCustomer='', defaultInvoice='', classes, customerSelected=$bindable(false) }:Props = $props();
    let { form, errors, message, constraints, enhance, delayed, timeout} = superForm(data, {
       onSubmit({formData}) {
          formData.set('customerId', selectedCustomer[0]);
@@ -92,18 +93,25 @@
 
 <div class={classes}>
    <FormMessage message={$message} />
-
    <form action="/forms/newPaymentRecordForm" method="POST" use:enhance>
-      <div class="p-4">
+      <div class="">
          <Combobox
             data={customerComboBoxData}
             bind:value={selectedCustomer}
             label='Select Customer'
             placeholder='Select customer...'
             openOnClick={true}
+            onValueChange={(details)=>{
+               if(selectedCustomer[0].length > 0){
+                  customerSelected = true;
+               }
+               selectedCustomer[0]=details.value[0]
+               selectedInvoice[0]=''
+               invoiceSelected = false
+            }}
          />
       </div>
-      <div class="p-4">
+      <div class="">
          {#if !invoiceSelected}
             <button class="btn" onclick={()=>invoiceFormOpen=true} type='button'>Create New Invoice</button>
          {/if}
@@ -135,7 +143,7 @@
             label='Payment amount: $'
             name='paymentAmount'
          />
-         <div class="p-4">
+         <div class="">
          <label for="paymentType">Payment type
             <select name="paymentType" id="paymentType" class="select">
                <option value='CASH'>Cash</option>
