@@ -11,10 +11,11 @@
 </script>
 
 <div class="grid grid-cols-2 gap-x-2 {classes}">
-   <div class='text-right'>Invoice number</div> 
+   <div class="col-span-2 text-center text-sm font-semibold">Invoice</div>
+   <div class='text-right'>Number</div> 
    <div class="font-medium"><a href="/invoices/{invoice.invoiceNum}">{invoice.invoiceNum}</a></div>
    <HorizontalDivider classes='col-span-2' />
-   <div class='text-right'>Invoice amount</div>
+   <div class='text-right'>Amount</div>
    <div class="font-medium ">{currencyFormatter.format(invoice.invoiceAmount)}</div>
    <HorizontalDivider classes='col-span-2' />
    <div class='text-right'>Created</div> 
@@ -23,11 +24,11 @@
    <div class='text-right'>Lease ID</div> 
    <div class="truncate font-medium"><a href="/leases/{invoice.leaseId}">{invoice.leaseId}</a></div>
    <HorizontalDivider classes='col-span-2' />
-   <div class="text-right">Invoice notes</div> 
+   <div class="text-right">Notes</div> 
    <div class="pl-4 -indent-4 pr-4 font-medium">{invoice.invoiceNotes}</div>
    <HorizontalDivider classes='col-span-2' />
    {#if invoice.paymentRecordNum}
-      <div class='text-right'>Payment record num</div> 
+      <div class='text-right'>Payment number</div> 
       <div class="font-medium"><a href="/paymentRecords/{invoice.paymentRecordNum}" class="">{invoice.paymentRecordNum}</a></div>
       <HorizontalDivider classes='col-span-2'/>
    {:else}

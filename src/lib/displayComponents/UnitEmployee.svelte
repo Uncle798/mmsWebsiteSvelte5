@@ -10,17 +10,20 @@
 </script>
 
 <div class="grid grid-cols-2 gap-x-2 {classes}">
-   <div class="text-right">Unit Number:</div>
+   <div class="col-span-2 text-center text-sm font-semibold -m-1 -mt-2">Unit</div>
+   <div class="text-right">Unit Number</div>
    <div class="font-medium">{unit.num.replace(/^0+/gm,'')}</div>
    <HorizontalDivider classes='col-span-2'/>
-   <div class="text-right">Size:</div>
+   <div class="text-right">Size</div>
    <div class="font-medium"> <a href="/units/size/{unit.size}">{unit.size.replace(/^0+/gm, '').replace(/x0/gm, 'x')}</a></div>
    <HorizontalDivider classes='col-span-2'/>
-   <div class="text-right inset-2">Advertised Price: </div>
+   <div class="text-right">Advertised Price</div>
    <div class="font-medium">{currencyFormatter.format(unit.advertisedPrice)}</div>
+   <div class="text-right">Deposit</div>
+   <div>{currencyFormatter.format(unit.deposit)}</div>
    <HorizontalDivider classes='col-span-2'/>
    {#if unit.leasedPrice}
-      <div class="text-right">Leased Price: </div>
+      <div class="text-right">Leased Price</div>
       <div class="font-medium">{currencyFormatter.format(unit.leasedPrice)}</div>
       <HorizontalDivider classes='col-span-2'/>
    {/if}
