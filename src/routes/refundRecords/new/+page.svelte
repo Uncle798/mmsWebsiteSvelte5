@@ -3,73 +3,53 @@
     import type { PageData } from './$types';
 	import NewRefundForm from '$lib/forms/NewRefundForm.svelte';
     import { superForm } from 'sveltekit-superforms';
-	import { onMount } from 'svelte';
-	import TextInput from '$lib/formComponents/TextInput.svelte';
-	import FormSubmitWithProgress from '$lib/formComponents/FormSubmitWithProgress.svelte';
-	import PaymentRecord from '$lib/displayComponents/PaymentRecordEmployee.svelte';
-	import FormMessage from '$lib/formComponents/FormMessage.svelte';
-	import { goto } from '$app/navigation';
+    import type { PaymentRecord } from '@prisma/client';
+	import PaymentRecordEmployee from '$lib/displayComponents/PaymentRecordEmployee.svelte';
+    import HorizontalDivider  from '$lib/displayComponents/HorizontalDivider.svelte';
     let { data }: { data: PageData } = $props();
     let selectedPayment = $state(['']);
-    let paymentNumber = $state(0)
+    let paymentNumber = $state(0);
+    let search = $state([''])
     interface ComboboxData {
         label: string;
         value: string;
     }
     const paymentRecordComboboxData:ComboboxData[] = [];
-    data.deposits?.forEach((paymentRecord) => {
-        const label = paymentRecord.paymentNotes ? paymentRecord.paymentNotes : '';
-        const value = paymentRecord.paymentNumber.toString();
-        paymentRecordComboboxData.push({label, value})
-    })
-    onMount(()=>{
-        console.log(paymentRecordComboboxData)
-        if(data.paymentRecord){
-            paymentNumber = data.paymentRecord.paymentNumber
+    const depositsWrapper = new Promise<PaymentRecord[]>(async res => {
+        const deposits = await data.deposits
+        if(deposits){
+            res(deposits);
+            deposits.forEach((deposit) => {
+                const label = deposit.paymentNotes? deposit.paymentNotes : '';
+                const value = deposit.paymentNumber.toString();
+                paymentRecordComboboxData.push({label, value})
+            })
+        }
+
+    });
+    const paymentRecordsWrapper = new Promise<PaymentRecord[]>(async res => {
+        const paymentRecords = await data.paymentRecords
+        if(paymentRecords){
+            paymentRecords.forEach((paymentRecord) => {
+                const label = paymentRecord.paymentNotes ? paymentRecord.paymentNotes : '';
+                const value = paymentRecord.paymentNumber.toString();
+                const alreadyThere = paymentRecordComboboxData.find((datum) => datum.value === value)
+                if(!alreadyThere){
+                    paymentRecordComboboxData.push({label, value})
+                }
+            })
         }
     })
     let { form, errors, message, constraints, enhance, delayed, timeout} = superForm(data.searchForm, {
         onSubmit({formData}) {
-
+            
         },
     });
 </script>
 
-<FormMessage message={$message} />
-
 {#if data.paymentRecord}
-    <PaymentRecord paymentRecord={data.paymentRecord} classes='p-2'/>
+    <PaymentRecordEmployee paymentRecord={data.paymentRecord} classes='p-2'/>
+    <HorizontalDivider />   
+    <NewRefundForm data={data.refundForm} paymentRecord={data.paymentRecord} classes='p-2'/>
 {/if}
 
-{#if data.deposits}  
-    {#if  data.deposits.length > 0 }        
-        <Combobox 
-            data={paymentRecordComboboxData}
-            bind:value={selectedPayment}
-            placeholder="Select deposit to refund"
-            openOnClick={false}
-            onValueChange={(details) =>{
-                paymentNumber = parseInt(details.value[0], 10);
-                goto(`/refundRecords/new?paymentNum=${paymentNumber}`)
-                console.log(paymentNumber);
-            }}
-            classes='p-4'
-        />
-    {/if}
-{/if}
-{#if !data.paymentRecord}    
-<form action="/refundRecords/new" method="POST" use:enhance>
-    <TextInput
-        bind:value={$form.search}
-        errors={$errors.search}
-        constraints={$constraints.search}
-        placeholder='Enter a payment record number...'
-        name='search'
-        label='Payment Record number search'
-    />
-    <FormSubmitWithProgress delayed={$delayed} timeout={$timeout}/>
-</form>
-{/if}
-{#if data.paymentRecord}
-<NewRefundForm data={data.refundForm} paymentRecord={data.paymentRecord} classes='p-2'/>
-{/if}
