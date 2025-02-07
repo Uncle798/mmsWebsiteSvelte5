@@ -12,8 +12,6 @@
    import type { Invoice, PaymentRecord } from '@prisma/client';
 	import RefundRecordDisplay from '$lib/displayComponents/RefundRecordDisplay.svelte';
 	import Pagination from '$lib/displayComponents/Pagination.svelte';
-	import HorizontalDivider from '$lib/displayComponents/HorizontalDivider.svelte';
-	import VerticalDivider from '$lib/displayComponents/VerticalDivider.svelte';
    let { data }: { data: PageData } = $props();
    let addressModalOpen = $state(false);
    let leaseEndModalOpen = $state(false);
@@ -23,54 +21,38 @@
    const currencyFormatter = new Intl.NumberFormat('en-US', {style:'currency', currency:'USD'});
    let slicedSource = $derived((paymentRecords:PaymentRecord[]) => paymentRecords.slice((pageNum -1) * size, pageNum*size));
    let searchedPayments = $derived((paymentRecords:PaymentRecord[]) => paymentRecords.filter((paymentRecord) => paymentRecord.paymentNumber.toString().includes(search) ))
-   let totalPayments = $derived((paymentRecords:PaymentRecord[]) => {
-      let totalRevenue = 0;
-      paymentRecords.forEach((paymentRecord) => {
-         if(paymentRecord.paymentCompleted){
-               totalRevenue += paymentRecord.paymentAmount
-         }
-      })
-      return totalRevenue;
-   })
-   let totalInvoices = $derived((invoices:Invoice[]) => {
-      let totalRevenue = 0;
-      invoices.forEach((invoice) => {
-         totalRevenue += invoice.invoiceAmount
-      })
-      return totalRevenue;
-   })
+   let totalInvoiced = $state(0);
+   let totalPaid = $state(0)
    let difference =$state(0)
    const wrapper = new Promise<Invoice[]>(async res => {
       const invoices = await data.invoices;
       const payments = await data.paymentRecords;
-      let totalInvoiced = 0;
       invoices.forEach((invoice) => {
          if(!invoice.deposit){
             totalInvoiced += invoice.invoiceAmount
          }
       })
-      let totalPayed = 0;
       payments.forEach((payment) => {
          if(!payment.deposit){
-            totalPayed += payment.paymentAmount
+            totalPaid += payment.paymentAmount
          }
       })
-      difference = totalInvoiced - totalPayed
+      difference = totalInvoiced - totalPaid
       res(invoices)   
    })
 </script>
 
 {#if data.dbUser}
    <Header title='{data.dbUser.givenName} {data.dbUser.familyName}' />
-   <User user={data.dbUser}/>
+   <User user={data.dbUser} classes='px-2 pt-2' />
 {:else}
 ...loading user
 {/if}
 {#if data.address}
-   <Address bind:address={data.address}/>
+   <Address bind:address={data.address} classes='px-2'/>
    <Modal
       bind:open={addressModalOpen}
-      triggerBase="btn preset-tonal "
+      triggerBase="btn preset-filled-primary-50-950 rounded-lg mx-2 "
       contentBase="card bg-surface-400-600 p-4 space-y-4 shadow-xl max-w-screen-sm"
       backdropClasses="backdrop-blur-sm"
    >
@@ -79,18 +61,18 @@
    {/snippet}
    {#snippet content()}
       <AddressForm data={data.addressForm} bind:addressModalOpen={addressModalOpen} userId={data.dbUser?.id!}/>
-      <button class="btn" onclick={()=>addressModalOpen=false}>Close</button>
+      <button class="btn preset-filled-primary-50-950 rounded-lg mx-2" onclick={()=>addressModalOpen=false}>Close</button>
    {/snippet}
    </Modal>
 {:else}
    ...loading address
 {/if}
-<div class="card m-2">
+<div class="">
 {#await data.leases}
    ...loading leases
 {:then leases}
       {#each leases as lease}
-         <LeaseEmployee lease={lease} />
+         <LeaseEmployee lease={lease} classes='m-2 border-2 border-primary-50 dark:border-primary-950'/>
          {#if !lease?.leaseEnded}
             <Modal
                bind:open={leaseEndModalOpen}
@@ -122,29 +104,29 @@
          ...loading refunds
       {:then refunds}
          <div>
-            <span>Total invoiced: {currencyFormatter.format(totalInvoices(invoices))}</span>
-            <span>Total payed: {currencyFormatter.format(totalPayments(paymentRecords))}</span>
-            <span class="">Outstanding balance: {currencyFormatter.format(difference)}</span>
+            <span class="ml-2">Total invoiced: {currencyFormatter.format(totalInvoiced)}</span>
+            <span>Total paid: {currencyFormatter.format(totalPaid)}</span>
+            {#if difference > 0}
+               <span class="text-red-700 dark:text-green-500">Outstanding balance: {currencyFormatter.format(difference)}</span>
+            {:else if difference < 0 }   
+               <span class="text-green-700 dark:text-green-500">Outstanding balance: {currencyFormatter.format(difference)}</span>
+            {/if}
          </div>
-         <HorizontalDivider />
+         <div class="grid grid-cols-3 mx-2 border-y-2 dark:border-primary-950 border-primary-50">
          {#each invoices as invoice}
          {@const paymentRecord = paymentRecords.find((payment) => payment.invoiceNum === invoice.invoiceNum)}
          {@const refund = refunds.find((refund) => refund.paymentRecordNum === paymentRecord?.paymentNumber)}
-            <div class="flex">
-               <InvoiceEmployee invoice={invoice} />
+               <InvoiceEmployee invoice={invoice} classes='min-w-1/3 border-b-2 border-x-2 border-primary-50 dark:border-primary-950'/>
                {#if paymentRecord}
-                  <div class="grid h-50 grid-cols-[1fr_auto_auto_auto_auto_1fr] items-center gap-4">
-                     <span class="vr border-t-2"></span>
-                  </div>
-                  <PaymentRecordEmployee paymentRecord={paymentRecord}/>
-                  {/if}
-                  {#if refund}
-                  <VerticalDivider heightClass='h-50' />
-                  <RefundRecordDisplay refundRecord={refund} />
+                  <PaymentRecordEmployee paymentRecord={paymentRecord} classes='min-w-1/3 border-b-2 border-e-2 border-primary-50 dark:border-primary-950'/>
                {/if}
-            </div>
-            <HorizontalDivider />
-         {/each}
+               {#if refund}
+                  <RefundRecordDisplay refundRecord={refund} />
+               {:else}
+                  <div class="min-w-1/3 border-b-2 border-e-2 border-primary-50 dark:border-primary-950"></div>
+               {/if}
+               {/each}
+         </div>
          <Pagination bind:pageNum={pageNum} bind:size={size} label='invoices' array={invoices} />
       {/await}
    {/await}

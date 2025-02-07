@@ -9,8 +9,7 @@
 	import Pagination from '$lib/displayComponents/Pagination.svelte';
 	import Revenue from '$lib/displayComponents/Revenue.svelte';
 	import Header from '$lib/Header.svelte';
-	import HorizontalDivider from '$lib/displayComponents/HorizontalDivider.svelte';
-	import VerticalDivider from '$lib/displayComponents/VerticalDivider.svelte';
+    import Address from '$lib/displayComponents/Address.svelte';
     
     let { data }: { data: PageData } = $props();
     let size = $state(25)
@@ -58,27 +57,48 @@
         {#await data.customers}
         Loading customers
         {:then customers}
-            {#if refunds.length > 0}
-                <Header title="{refunds[refunds.length-1].refundCreated.getFullYear().toString()} refund records" />
-                <Revenue amount={totalRevenue(searchRefunds(dateSearchRefunds(refunds)))} label='Amount refunded'/>
-                <HorizontalDivider />
-                <div class="flex">
-                    <Search data={data.searchForm} bind:search={search} searchType='refund record' />
-                    <DateSearch data={data.dateSearchForm} bind:startDate={startDate} bind:endDate={endDate} minDate={minDate} maxDate={maxDate} />
+            {#await data.addresses}
+                Loading addresses
+            {:then addresses} 
+                {#if refunds.length > 0}
+                <div class="flex mx-2 border-b-2 border-primary-50 dark:border-primary-950 ">
+                    <Search
+                        bind:search 
+                        searchType="Refund records" 
+                        data={data.searchForm} 
+                        classes='p-2 '	
+                    />
+                    <DateSearch 
+                        bind:endDate 
+                        bind:startDate 
+                        data={data.dateSearchForm} 
+                        {minDate} 
+                        {maxDate} 
+                        classes='p-2'	
+                    />
                 </div>
-                <HorizontalDivider />
-                {#each slicedRefunds(searchRefunds(dateSearchRefunds(refunds))) as refund}
-                    {@const customer = customers.find((customer)=> customer.id === refund.customerId)}
-                    <div class="flex">
-                        <RefundRecordDisplay refundRecord={refund} />
-                        <VerticalDivider heightClass='h-30' />
-                        {#if customer}
-                            <User user={customer} />
-                        {/if}
-                    </div>
-                    <HorizontalDivider />
-                {/each}
-                <Pagination bind:size={size} bind:pageNum={pageNum} array={searchRefunds(dateSearchRefunds(refunds))} label='refunds' />
+                <Revenue 
+                    label="Total refunds" 
+                    amount={totalRevenue(searchRefunds(dateSearchRefunds(refunds)))}
+                    classes='border-b-2 border-primary-50 dark:border-primary-950 m-2'	
+                />
+                <div class="grid grid-cols-2 mx-2 gap-y-3 gap-x-1 ">
+                    {#each slicedRefunds(searchRefunds(dateSearchRefunds(refunds))) as refund (refund.refundNumber)}
+                        {@const customer = customers.find((customer) => customer.id === refund.customerId)}
+                            <RefundRecordDisplay refundRecord={refund} classes='px-2 pt-2 border-2 rounded-lg border-primary-50 dark:border-primary-95'/>
+                            {#if customer}
+                            {@const address = addresses.find((address) => address.userId === customer.id)}
+                                <div class="flex flex-col rounded-lg border-2 border-primary-50 dark:border-primary-950">
+                                    <User user={customer} classes='pt-2 pl-2 ' />
+                                    {#if address}
+                                        <Address {address} classes='pl-2'/>
+                                    {/if}
+                                </div>
+                            {/if}
+                    {/each}
+                </div>
+                <Pagination bind:size bind:pageNum label="refund records" array={searchRefunds(dateSearchRefunds(refunds))} />
             {/if}
+        {/await}
     {/await} 
 {/await}
