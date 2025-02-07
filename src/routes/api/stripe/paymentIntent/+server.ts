@@ -51,7 +51,7 @@ export const POST:RequestHandler = async (event) => {
          customerId: invoice.customerId,
       },
       setup_future_usage: 'off_session',
-      customer: stripeId,
+      customer: stripeId ? stripeId : undefined,
       description: invoice.invoiceNotes!,
    })
    console.log(paymentIntent)
