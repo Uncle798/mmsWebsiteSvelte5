@@ -21,9 +21,6 @@ export const load = (async (event) => {
     const years = arrayOfYears(firstInvoice!.invoiceCreated.getFullYear());
 
     const invoices = prisma.invoice.findMany({
-        include: {
-            customer: true
-        },
         orderBy: {
             invoiceCreated: 'asc'
         }

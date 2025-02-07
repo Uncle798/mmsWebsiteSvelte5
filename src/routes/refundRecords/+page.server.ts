@@ -20,9 +20,6 @@ export const load = (async (event) => {
             nulls: 'first'
          }
       },
-      include: {
-         customer: true,
-      }
    })
    const customers = prisma.user.findMany();
    const addresses = prisma.address.findMany();
