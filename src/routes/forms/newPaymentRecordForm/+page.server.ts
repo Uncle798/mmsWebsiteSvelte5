@@ -49,7 +49,7 @@ export const actions:Actions = {
       }
       
       if(data.paymentType === 'STRIPE'){
-         redirect(302, '/paymentRecords/stripePayment?invoiceNum='+data.invoiceNum)
+         redirect(302, '/makePayment?invoiceNum='+data.invoiceNum)
       }
       return { newPaymentRecordForm }
    }
