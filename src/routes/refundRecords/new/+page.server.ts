@@ -1,5 +1,5 @@
 import type { PageServerLoad, Actions } from './$types';
-import { redirect } from '@sveltejs/kit';
+import { fail, redirect } from '@sveltejs/kit';
 import { prisma } from '$lib/server/prisma'
 import { message, superValidate } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
@@ -17,7 +17,7 @@ export const load = (async (event) => {
    }
    const refundForm = await superValidate(zod(refundFormSchema));
    const searchForm = await superValidate(zod(formSchema));
-   const paymentNum = event.url.searchParams.get('paymentNumber');
+   const paymentNum = event.url.searchParams.get('paymentNum');
    if(paymentNum){
       const paymentRecord = await prisma.paymentRecord.findUnique({
          where:{
@@ -25,20 +25,11 @@ export const load = (async (event) => {
          }
       })
       if(!paymentRecord){
-         const deposits = await prisma.paymentRecord.findMany({
-            where: {
-               AND:[
-                  { refunded: false },
-                  { deposit: true }
-               ]
-            }
-         })
-         console.log(deposits.length);
-         return { searchForm, refundForm, deposits};
+         fail(404);
       }
       return { paymentRecord, refundForm, searchForm }
    }
-   const deposits = await prisma.paymentRecord.findMany({
+   const deposits = prisma.paymentRecord.findMany({
       where: {
          AND:[
             {
@@ -53,7 +44,15 @@ export const load = (async (event) => {
          paymentCreated: 'desc'
       }
    });
-   return { deposits, refundForm, searchForm };
+   const paymentRecords = prisma.paymentRecord.findMany({
+      where: {
+         refunded: false,
+      },
+      orderBy: {
+         paymentNumber: 'desc'
+      }
+   })
+   return { deposits, paymentRecords, refundForm, searchForm };
 }) satisfies PageServerLoad;
 
 
