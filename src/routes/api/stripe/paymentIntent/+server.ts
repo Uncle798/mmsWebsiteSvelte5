@@ -3,11 +3,33 @@ import { prisma } from '$lib/server/prisma';
 import type { RequestHandler } from '@sveltejs/kit';
 
 export const POST:RequestHandler = async (event) => {
-   const invoiceNum = event.url.searchParams.get('invoiceNum');
    const body = await event.request.json();
-   const { stripeId } = body;
-   if(!invoiceNum || !stripeId){
-      return new Response(JSON.stringify('Info not provided'), { status:400 });
+   console.log('body', body)
+   const { customerId, invoiceNum } = body;
+   if(!invoiceNum){
+      return new Response(JSON.stringify('Invoice not provided'), { status:400 });
+   }
+   const customer = await prisma.user.findUnique({
+      where: {
+         id: customerId
+      }
+   })
+   let stripeId:string | null | undefined = customer?.stripeId
+   if(!customer?.stripeId){
+      const stripeCustomer = await stripe.customers.create({
+         email: customer!.email!,
+         name: `${customer?.givenName} ${customer?.familyName}`
+
+      })
+      await prisma.user.update({
+         where: {
+            id: customer?.id
+         },
+         data: {
+            stripeId: stripeCustomer.id
+         }
+      })
+      stripeId = stripeCustomer.id
    }
    const invoice = await prisma.invoice.findUnique({
       where:{
@@ -17,6 +39,7 @@ export const POST:RequestHandler = async (event) => {
    if(!invoice){
       return new Response(JSON.stringify('not found'),{status:404})
    }
+   console.log(invoice)
    const paymentIntent = await stripe.paymentIntents.create({
       amount: invoice.invoiceAmount * 100,
       currency: 'usd',
@@ -28,8 +51,9 @@ export const POST:RequestHandler = async (event) => {
          customerId: invoice.customerId,
       },
       setup_future_usage: 'off_session',
-      customer: stripeId!,
+      customer: stripeId,
       description: invoice.invoiceNotes!,
    })
+   console.log(paymentIntent)
    return new Response(JSON.stringify(paymentIntent.client_secret), {status:200});
 }
