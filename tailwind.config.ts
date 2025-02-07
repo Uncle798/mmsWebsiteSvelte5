@@ -23,8 +23,11 @@ export default {
 				themes.concord,
 				themes.crimson,
 				themes.fennec,
+				themes.legacy,
 				themes.mint,
 				themes.modern,
+				themes.mona,
+				themes.nosh,
 				themes.pine,
 				themes.vintage,
 			]
