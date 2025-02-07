@@ -46,22 +46,16 @@
       loading leases...
    {:then leases} 
       <div transition:fade={{duration:600}}>
-         <Search search={search} searchType='customer name' data={data.userSearchForm}/>
-         <HorizontalDivider />
-         <Revenue label='Current monthly invoiced' amount={totalLeased(leases)} />
-         <HorizontalDivider />
-         <div class="flex flex-row flex-wrap">
-         {#each slicedSource(searchedSource(customers)) as customer}
-         {@const lease = leases.find((lease) => lease.customerId === customer.id)}
-            <div class="flex basis-full">
-               <User user={customer} classes='basis- flex-none'/>
-               <VerticalDivider classes='h-30'/>
+         <Search search={search} searchType='customer name' data={data.userSearchForm} classes='m-2 border-b-2 border-primary-50 dark:border-primary-950'/>
+         <Revenue label='Current monthly invoiced' amount={totalLeased(leases)} classes='m-2 border-b-2 border-primary-50 dark:border-primary-950'/>
+         <div class="grid grid-cols-2 mx-2 gap-y-3 gap-x-1">
+            {#each slicedSource(searchedSource(customers)) as customer}
+            {@const lease = leases.find((lease) => lease.customerId === customer.id)}
+               <User user={customer} classes='border-2 rounded-lg border-primary-50 dark:border-primary-950 p-2'/>
                {#if lease}
-                  <LeaseEmployee {lease} classes='basis-64'/>
+                  <LeaseEmployee {lease} classes='border-2 rounded-lg border-primary-50 dark:border-primary-950 p-2'/>
                {/if}
-            </div>
-            <HorizontalDivider />
-         {/each}
+            {/each}
          </div>
          <Pagination bind:pageNum={pageNum} bind:size={size} label='users' array={searchedSource(customers)}/>
       </div>
