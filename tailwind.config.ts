@@ -19,13 +19,14 @@ export default {
 		skeleton({
 			themes: [ 
 				themes.catppuccin,
-				themes.mint,
 				themes.cerberus,
-				themes.pine,
 				themes.concord,
+				themes.crimson,
+				themes.fennec,
+				themes.mint,
 				themes.modern,
+				themes.pine,
 				themes.vintage,
-				themes.hamlindigo
 			]
 		})
 	]
