@@ -80,15 +80,15 @@
 
 {#await data.units}
    Loading units...
-   <Placeholder />
+   <Placeholder numCols={2} numRows={3} heightClass='h-32'/>
 {:then units} 
 	{#await data.leases}
 		loading leases
-		<Placeholder />
+		<Placeholder numCols={2} numRows={3} heightClass='h-32'/>
 	{:then leases} 
 		{#await data.customers}
 			loading customers 
-			<Placeholder />
+			<Placeholder numCols={2} numRows={3} heightClass='h-32'/>
 		{:then customers}
 			{#await data.addresses}
 				loading addresses

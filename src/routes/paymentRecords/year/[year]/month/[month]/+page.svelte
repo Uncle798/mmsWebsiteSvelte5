@@ -59,15 +59,15 @@
 <Header title='Payment Records' />
 {#await wrapper}
     Loading {numberFormatter.format(data.paymentRecordCount)} payment records...
-    <Placeholder />
+    <Placeholder numCols={2} numRows={3} heightClass='h-32'/>
     {:then paymentRecords} 
     {#await data.customers}
         Loading customers
-        <Placeholder />
+        <Placeholder numCols={2} numRows={3} heightClass='h-32'/>
     {:then customers} 
     {#await data.addresses}
             Loading contacts
-            <Placeholder />
+            <Placeholder numCols={2} numRows={3} heightClass='h-32'/>
         {:then addresses}         
             {#if paymentRecords.length >0}
             <div transition:fade={{duration:600}}>

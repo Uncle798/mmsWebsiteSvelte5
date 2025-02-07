@@ -64,7 +64,7 @@
             <a href='/paymentRecords/year/{year}' class="btn">{year}</a>
         {/each}
     {/if}
-    <Placeholder />
+    <Placeholder numCols={2} numRows={3} heightClass='h-32'/>
 {:then paymentRecords} 
     {#await data.customers}
         loading customers

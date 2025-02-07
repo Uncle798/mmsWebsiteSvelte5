@@ -63,7 +63,7 @@
     or:
     <a href="/invoices/unpaid" class="btn">Unpaid invoices</a>
     
-    <Placeholder />
+    <Placeholder numCols={2} numRows={3} heightClass='h-32'/>
 {:then invoices}
     {#await data.customers}
         <Header title='Loading customers' />
@@ -72,7 +72,7 @@
         {#await data.addresses}
             Loading addresses...
         {:then addresses}
-            {#if invoices.length >0}       
+            {#if invoices.length >0}
                 <Header title='All invoices' />
                 <div class="flex m-2 border-b-2 dark:border-primary-950 border-primary-50">
                     <Search data={data.searchForm} bind:search={search} searchType='invoice number' classes='w-1/2 p-2'/>

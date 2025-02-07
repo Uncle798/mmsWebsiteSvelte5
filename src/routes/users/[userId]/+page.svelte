@@ -19,7 +19,8 @@
    let pageNum = $state(1);
    let size = $state(5);
    const currencyFormatter = new Intl.NumberFormat('en-US', {style:'currency', currency:'USD'});
-   let slicedSource = $derived((paymentRecords:PaymentRecord[]) => paymentRecords.slice((pageNum -1) * size, pageNum*size));
+   let slicedPayments = $derived((paymentRecords:PaymentRecord[]) => paymentRecords.slice((pageNum -1) * size, pageNum*size));
+   const slicedInvoices = $derived((invoices:Invoice[]) => invoices.slice((pageNum - 1) * size, pageNum * size));
    let searchedPayments = $derived((paymentRecords:PaymentRecord[]) => paymentRecords.filter((paymentRecord) => paymentRecord.paymentNumber.toString().includes(search) ))
    let totalInvoiced = $state(0);
    let totalPaid = $state(0)
@@ -72,7 +73,7 @@
    ...loading leases
 {:then leases}
       {#each leases as lease}
-         <LeaseEmployee lease={lease} classes='m-2 border-2 border-primary-50 dark:border-primary-950'/>
+         <LeaseEmployee lease={lease} classes='m-2 rounded-lg border-2 border-primary-50 dark:border-primary-950'/>
          {#if !lease?.leaseEnded}
             <Modal
                bind:open={leaseEndModalOpen}
@@ -112,18 +113,18 @@
                <span class="text-green-700 dark:text-green-500">Outstanding balance: {currencyFormatter.format(difference)}</span>
             {/if}
          </div>
-         <div class="grid grid-cols-3 mx-2 border-y-2 dark:border-primary-950 border-primary-50">
-         {#each invoices as invoice}
+         <div class="grid grid-cols-3 gap-x-1 gap-y-3 mx-2 ">
+         {#each slicedInvoices(invoices) as invoice}
          {@const paymentRecord = paymentRecords.find((payment) => payment.invoiceNum === invoice.invoiceNum)}
          {@const refund = refunds.find((refund) => refund.paymentRecordNum === paymentRecord?.paymentNumber)}
-               <InvoiceEmployee invoice={invoice} classes='min-w-1/3 border-b-2 border-x-2 border-primary-50 dark:border-primary-950'/>
+               <InvoiceEmployee invoice={invoice} classes='min-w-1/3 rounded-lg border-2 border-primary-50 dark:border-primary-950'/>
                {#if paymentRecord}
-                  <PaymentRecordEmployee paymentRecord={paymentRecord} classes='min-w-1/3 border-b-2 border-e-2 border-primary-50 dark:border-primary-950'/>
+                  <PaymentRecordEmployee paymentRecord={paymentRecord} classes='min-w-1/3 rounded-lg border-2 border-primary-50 dark:border-primary-950'/>
                {/if}
                {#if refund}
-                  <RefundRecordDisplay refundRecord={refund} />
+                  <RefundRecordDisplay refundRecord={refund} classes='min-w-1/3 rounded-lg border-2 border-primary-50 dark:border-primary-950'/>
                {:else}
-                  <div class="min-w-1/3 border-b-2 border-e-2 border-primary-50 dark:border-primary-950"></div>
+                  <div class="min-w-1/3"></div>
                {/if}
                {/each}
          </div>

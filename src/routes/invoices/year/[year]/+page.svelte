@@ -63,7 +63,7 @@
     or:
     <a href="/invoices/unpaid" class="btn">Unpaid invoices</a>
     
-    <Placeholder />
+    <Placeholder numCols={2} numRows={3} heightClass='h-32'/>
 {:then invoices}
     {#await data.customers}
         <Header title='Loading customers' />

@@ -65,7 +65,7 @@
             <a href='/paymentRecords/year/{month.getFullYear()}/month/{month.getMonth()}' class="btn">{dayjs(month).format('MMMM')}</a>
         {/each}
     {/if}
-    <Placeholder />
+    <Placeholder numCols={2} numRows={3} heightClass='h-32'/>
 {:then paymentRecords} 
     {#await data.customers}
         loading customers

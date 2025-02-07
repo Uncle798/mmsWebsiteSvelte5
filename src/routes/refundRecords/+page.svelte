@@ -60,7 +60,7 @@
 			<a href="/refundRecords/year/{year}" class="btn">{year.toString()},</a>
 		{/each}
 	{/if}
-	<Placeholder />
+	<Placeholder numCols={2} numRows={3} heightClass='h-32'/>
 {:then refunds}
 	{#await data.customers}
 		loading customers
