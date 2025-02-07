@@ -5,10 +5,11 @@
       delayed: boolean,
       timeout: boolean,
       buttonText?: string,
+      classes?: string,
    }
-   let { delayed = $bindable(), timeout=$bindable(), buttonText=$bindable('Submit') }:Props = $props();
+   let { delayed = $bindable(), timeout=$bindable(), buttonText=$bindable('Submit'), classes }:Props = $props();
 </script>
-<div class="flex items-center p-4">
+<div class="flex py-2 {classes}">
    <button class="btn rounded-lg preset-filled-primary-50-950 ">{buttonText}</button>
    {#if delayed && !timeout}
    <div transition:fade={{duration:600}}>
