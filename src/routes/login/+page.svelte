@@ -54,8 +54,8 @@
     })
 </script>
 <Header title="Login" />
-<div transition:fade={{duration:600}}>
-    <p class="h2">Please enter your email to login </p>
+<div class="m-2 "transition:fade={{duration:600}}>
+    <p class="h2 ">Please enter your email to login </p>
     <div class="h3">
         <FormMessage message={$message} />
     </div>

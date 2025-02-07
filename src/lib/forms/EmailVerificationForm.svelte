@@ -6,17 +6,20 @@
    import { invalidateAll } from "$app/navigation";
    import FormMessage from "$lib/formComponents/FormMessage.svelte";
    
+   interface Props {
+      data: SuperValidated<Infer<EmailVerificationFormSchema>>; 
+      emailVerificationModalOpen: boolean;
+      redirect: string;
+      emailVerification: Boolean;
+      classes?: string;
+   }
    let {
       data, 
       emailVerificationModalOpen=$bindable(),
       redirect=$bindable(''),
       emailVerification=$bindable(),
-   }:{
-      data:SuperValidated<Infer<EmailVerificationFormSchema>>, 
-      emailVerificationModalOpen:boolean,
-      redirect:string, 
-      emailVerification:Boolean
-   } = $props();
+      classes,
+   }:Props = $props();
    let { form, errors, constraints, message, enhance, submitting, delayed, timeout } = superForm(data, {
       onSubmit(){
          emailVerification=false;
@@ -27,19 +30,21 @@
        },
    });
 </script>
-<FormMessage message={$message} />
-<form method="POST" action="/register/emailVerification?/verify&redirect={redirect}" use:enhance>
-   <TextInput
-       label="Code: "
-       name="code"
-       bind:value={$form.code}
-       errors={$errors.code}
-       constraints={$constraints.code}
-       placeholder='12345678'
-   />
-   <FormProgress delayed={$delayed} timeout={$timeout}/>
-</form>
+<div class={classes}>
+   <FormMessage message={$message} />
+   <form method="POST" action="/register/emailVerification?/verify&redirect={redirect}" use:enhance>
+      <TextInput
+         label="Code: "
+         name="code"
+         bind:value={$form.code}
+         errors={$errors.code}
+         constraints={$constraints.code}
+         placeholder='12345678'
+      />
+      <FormProgress delayed={$delayed} timeout={$timeout}/>
+   </form>
 
-<form method="POST" action="/register/emailVerification?/resend" >
-   <button class="btn">Resend email</button>
-</form>
+   <form method="POST" action="/register/emailVerification?/resend" >
+      <button class="btn bg-preset-950">Resend email</button>
+   </form>
+</div>

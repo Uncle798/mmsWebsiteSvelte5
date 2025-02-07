@@ -4,12 +4,13 @@
 
    interface Props {
       discount: DiscountCode;
+      classes?: string;
    }
    const currencyFormatter = new Intl.NumberFormat('en-US', {style:'currency', currency:'USD'});
-   let { discount }:Props = $props();
+   let { discount, classes }:Props = $props();
 </script>
 
-<div class="m-4 w-1/3 flex-none">
+<div class="p-4 w-1/3 flex-none">
    <p>Code: {discount.code}</p>
    <p>Amount Off: {currencyFormatter.format(discount.amountOff)}</p>
    <p>Notes: {discount.notes}</p>

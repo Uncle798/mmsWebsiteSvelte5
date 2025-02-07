@@ -39,5 +39,10 @@ export const load = (async (event) => {
     })
     const months = arrayOfMonths(startDate, endDate);
     const customers = prisma.user.findMany();
-    return { invoices, invoiceCount, months, customers, searchForm, dateSearchForm };
+    const addresses = prisma.address.findMany({
+        where: {
+            softDelete: false
+        }
+    })
+    return { invoices, invoiceCount, months, customers, searchForm, dateSearchForm, addresses };
 }) satisfies PageServerLoad;

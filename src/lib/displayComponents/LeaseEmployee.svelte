@@ -1,6 +1,7 @@
 <script lang='ts'>
    import type { Lease } from "@prisma/client";
 	import dayjs from "dayjs";
+	import HorizontalDivider from "./HorizontalDivider.svelte";
    interface Props {
       lease: Lease;
       classes?: string;
@@ -9,15 +10,29 @@
    const currencyFormatter = new Intl.NumberFormat('en-US', {style:'currency', currency:'USD'});
 </script>
 
-<div class="m-4 {classes} flex-none">
-   <p>Unit number: <a href="/units/{lease.unitNum}">{lease.unitNum.replace(/^0+/gm,'')}</a></p>
-   <p>Lease effective date {dayjs(lease.leaseEffectiveDate).format('M/D/YYYY')}</p>
+<div class="p-4 {classes} grid grid-cols-2 gap-x-2 items-start">
+   <div class="text-right">Unit number:</div>
+   <div class="font-medium"><a href="/units/{lease.unitNum}">{lease.unitNum.replace(/^0+/gm,'')}</a></div>
+   <HorizontalDivider classes="col-span-2"/>
+   <div class="text-right -indent-2">Lease effective date:</div>
+   <div class="font-medium">{dayjs(lease.leaseEffectiveDate).format('M/D/YYYY')}</div>
+   <HorizontalDivider classes="col-span-2"/>
+   <div class="text-right">Lease price:</div>
+   <div class="font-medium">{currencyFormatter.format(lease.price)}</div>
+   <HorizontalDivider classes="col-span-2"/>
    {#if lease.leaseEnded}
-      <p>Lease end date: {dayjs(lease.leaseEnded).format('M/D/YYYY')}</p>
-      {:else}
-      <p>Current Customer</p>
+      <div class="text-right">Lease end date:</div>
+      <div class="font-medium"> {dayjs(lease.leaseEnded).format('M/D/YYYY')}</div>
+      <HorizontalDivider classes="col-span-2"/>
+   {:else}
+      <div class="font-medium col-span-2 text-center">Current Customer</div>
+      <HorizontalDivider classes="col-span-2"/>
    {/if}
-   <p>Lease price: {currencyFormatter.format(lease.price)}</p>
-   <p>lease EID: {lease.anvilEID}</p>
-   <p>leaseID: <a href="/leases/{lease.leaseId}">{lease.leaseId}</a></p>
+
+   <div class="text-right">lease EID:</div>
+   <div class="truncate font-medium">{lease.anvilEID}</div>
+   <HorizontalDivider classes="col-span-2"/>
+   <div class="text-right">leaseID:</div>
+   <div class="truncate font-medium"><a href="/leases/{lease.leaseId}">{lease.leaseId}</a></div>
+   <HorizontalDivider classes="col-span-2"/>
 </div>

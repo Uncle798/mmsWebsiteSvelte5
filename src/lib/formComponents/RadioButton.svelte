@@ -7,21 +7,22 @@
       constraints: InputConstraint | undefined;
       groupName: string | null | undefined;
       id: string | undefined;
+      classes?: string;
    }
-   let { value = $bindable(), label, errors, constraints, groupName, id }:Props = $props();
+   let { value = $bindable(), label, errors, constraints, groupName, id, classes }:Props = $props();
 </script>
-<div class="flex items-center m-2 ">
-   <label for="radio"><span class="label-text">{label}</span>
-      <input
+<div class="flex mx-2 justify-items-center {classes}">
+   <label for={id}><span class="label-text text-center">{label}</span>
+   <input
       type="radio"
       name={groupName}
       id={id}
-      class="radio"
+      class="radio justify-self-center"
       bind:value={value}
       {...constraints}
-      />
+   />
    </label>
    {#if errors}
-   <span class="invalid">{errors}</span>
+      <span class="invalid">{errors}</span>
    {/if}
 </div>

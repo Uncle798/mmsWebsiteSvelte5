@@ -7,6 +7,7 @@
 
     let { data }: { data: PageData } = $props();
     let registerFormModalOpen = $state(false);
+    let customerSelected = $state(false)
 </script>
 
 <Modal
@@ -21,7 +22,9 @@
 </Modal>
 
 <div transition:fade={{duration:600}}>
-    <button class="btn" type="button" onclick={()=>registerFormModalOpen = true}>Create New Customer</button>
+    {#if !customerSelected}
+        <button class="btn preset-filled-primary-50-950 rounded-xl m-2" type="button" onclick={()=>registerFormModalOpen = true}>Create New Customer</button>
+    {/if}
     <NewPaymentRecordForm 
         data={data.newPaymentRecordForm} 
         invoices={data.invoices} 
@@ -31,5 +34,7 @@
         invoiceForm={data.invoiceForm}
         defaultCustomer={data.defaultCustomer}
         defaultInvoice={data.defaultInvoice}
+        classes='p-2'
+        bind:customerSelected={customerSelected}
     />
 </div>

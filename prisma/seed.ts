@@ -53,9 +53,6 @@ async function deleteAll() {
    await prisma.address.deleteMany().catch((err) =>{
       console.error(err);
    });
-   await prisma.passwordReset.deleteMany().catch((err) =>{
-      console.error(err);
-   });
    await prisma.verification.deleteMany().catch((err) =>{
       console.error(err);
    });
@@ -400,9 +397,9 @@ async function  main (){
       const months:Date[] = arrayOfMonths(lease.leaseEffectiveDate, leaseEndDate);
       let i = 0;
       for await (const month of months) {
-         let deposit = true;
-         if(i !== 0){
-            deposit = false
+         let deposit = false;
+         if(i === 0){
+            deposit = true;
          }
          const invoice = makeInvoice(lease, month, deposit)
          invoices.push(invoice)

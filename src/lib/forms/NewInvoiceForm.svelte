@@ -1,5 +1,4 @@
 <script lang='ts'>
-	import LeaseEmployee from "$lib/displayComponents/LeaseEmployee.svelte";
    import FormMessage from "$lib/formComponents/FormMessage.svelte";
 	import FormSubmitWithProgress from "$lib/formComponents/FormSubmitWithProgress.svelte";
 	import NumberInput from "$lib/formComponents/NumberInput.svelte";
@@ -19,8 +18,9 @@
       customers: PartialUser[];
       leases: Lease[];
       defaultCustomer?: string;
+      classes?: string;
    }
-   let { data, employeeId, customers, leases, defaultCustomer='' }:Props = $props();
+   let { data, employeeId, customers, leases, defaultCustomer='', classes }:Props = $props();
    let { form, errors, message, constraints, enhance, delayed, timeout} = superForm(data, {
       onSubmit({formData}) {
          formData.set('customerId', selectedCustomer[0])
@@ -35,7 +35,9 @@
    }
    const customerComboBoxData:ComboBoxData[] = [];
    const leaseComboBoxData:ComboBoxData[] = $derived.by(() =>{
+      console.log(selectedCustomer[0])
       const customerLeases = leases.filter((lease) => lease.customerId === selectedCustomer[0]);
+      console.log(customerLeases)
       const data:ComboBoxData[]=[]
       customerLeases.forEach((lease) =>{
          const label = lease.unitNum.replace(/^0+/gm,'');
@@ -57,58 +59,74 @@
 </script>
 
 
- 
-<FormMessage message={$message} />
-
-<form action="/forms/newInvoiceForm" method="POST" use:enhance>
-
-   <Combobox
-      data={customerComboBoxData}
-      bind:value={selectedCustomer}
-      label='Select Customer'
-      placeholder='Select...'
-      openOnClick={true}
-      classes=''
-   />
-   {#if leaseComboBoxData.length > 0 }
+<div class={classes}>
+   <FormMessage message={$message} />
+   <form action="/forms/newInvoiceForm" method="POST" use:enhance>
       <Combobox
-         data={leaseComboBoxData.sort()}
-         bind:value={selectedLease}
-         label="Select a unit"
-         placeholder="Select..."
+         data={customerComboBoxData}
+         bind:value={selectedCustomer}
+         label='Select Customer'
+         placeholder='Select...'
          openOnClick={true}
-         onValueChange={(details) =>{
-            const lease = leases.find((lease) => lease.leaseId === details.value[0]);
-            if(lease){
-               $form.invoiceAmount=lease.price
-               const date = dayjs(new Date()).format('M/YYYY')
-               $form.invoiceNotes=`Rent for Unit Number ${lease.unitNum.replace(/^0+/gm,'')} for ${date}`
-            }
-            leaseSelected = true
+         onValueChange={(detail) => {
+            selectedCustomer=detail.value
          }}
       />
-   {/if}
-   {#if leaseSelected}
-   <TextInput
-      bind:value={$form.invoiceNotes}
-      errors={$errors.invoiceNotes}
-      constraints={$constraints.invoiceNotes}
-      label="Invoice notes"
-      name='invoiceNotes'
-   />
-   <NumberInput
-      bind:value={$form.invoiceAmount}
-      errors={$errors.invoiceAmount}
-      constraints={$constraints.invoiceAmount}
-      label='Invoice amount: $'
-      name='invoiceAmount'
-   />
-   <div class="card m-4">
-      <label for="depost">Deposit
-         <Switch name='deposit' bind:checked={$form.deposit} label='Deposit'/>
-      </label>
-   </div>
-   <input type="hidden" name='employeeId' value={employeeId}/>
-   <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} buttonText='Create Invoice'/>
-   {/if}
-</form>
+      {#if leaseComboBoxData.length > 0 }
+         <Combobox
+            data={leaseComboBoxData.sort()}
+            bind:value={selectedLease}
+            label="Select a unit"
+            placeholder="Select..."
+            openOnClick={true}
+            onValueChange={(details) =>{
+               const lease = leases.find((lease) => lease.leaseId === details.value[0]);
+               if(lease){
+                  $form.invoiceAmount=lease.price
+                  const date = dayjs(new Date()).format('MMMM YYYY')
+                  $form.invoiceNotes=`Rent for Unit Number ${lease.unitNum.replace(/^0+/gm,'')} for ${date}`
+               }
+               leaseSelected = true
+            }}
+         />
+      {:else if selectedCustomer[0].length > 0}
+         <TextInput
+            bind:value={$form.invoiceNotes}
+            errors={$errors.invoiceNotes}
+            constraints={$constraints.invoiceNotes}
+            label="Invoice notes"
+            name='invoiceNotes'
+         />
+         <NumberInput
+            bind:value={$form.invoiceAmount}
+            errors={$errors.invoiceAmount}
+            constraints={$constraints.invoiceAmount}
+            label='Invoice amount: $'
+            name='invoiceAmount'
+         />
+         <input type="hidden" name='employeeId' value={employeeId}/>
+         <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} buttonText='Create Invoice'/>
+      {/if}
+      {#if leaseSelected}
+         <TextInput
+            bind:value={$form.invoiceNotes}
+            errors={$errors.invoiceNotes}
+            constraints={$constraints.invoiceNotes}
+            label="Invoice notes"
+            name='invoiceNotes'
+         />
+         <NumberInput
+            bind:value={$form.invoiceAmount}
+            errors={$errors.invoiceAmount}
+            constraints={$constraints.invoiceAmount}
+            label='Invoice amount: $'
+            name='invoiceAmount'
+         />
+         <Switch name='deposit' bind:checked={$form.deposit} label='Deposit'>
+            Deposit
+         </Switch>
+         <input type="hidden" name='employeeId' value={employeeId}/>
+         <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} buttonText='Create Invoice'/>
+      {/if}
+   </form>
+</div>

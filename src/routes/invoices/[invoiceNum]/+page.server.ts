@@ -1,6 +1,6 @@
 import { prisma } from '$lib/server/prisma';
 import type { PageServerLoad } from './$types';
-import { redirect } from '@sveltejs/kit';
+import { fail, redirect } from '@sveltejs/kit';
 
 export const load = (async (event) => {
    if(!event.locals.user?.employee){
@@ -11,10 +11,19 @@ export const load = (async (event) => {
       where: {
          invoiceNum:parseInt(invoiceNum, 10),
       },
-      include: {
-         customer: true
+   })
+   if(!invoice){
+      fail(404)
+   }
+   const customer = await prisma.user.findFirst({
+      where: {
+         id: invoice!.customerId!
       }
    })
-
-    return { invoice };
+   const address = await prisma.address.findFirst({
+      where: {
+         userId: invoice!.customerId!
+      }
+   })
+    return { invoice, address, customer };
 }) satisfies PageServerLoad;

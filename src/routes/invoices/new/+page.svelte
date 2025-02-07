@@ -23,6 +23,6 @@
 </Modal>
 <Header title="New Invoice" />
 <div transition:fade={{duration:600}}>
-    <button class="btn" type="button" onclick={()=>registerFormModalOpen = true}>Create New Customer</button>
-    <NewInvoiceForm data={data.newInvoiceForm} employeeId={data.user?.id} customers={data.customers} leases={data.leases} />
+    <button class="btn preset-filled-primary-50-950 rounded-lg m-2" type="button" onclick={()=>registerFormModalOpen = true}>Create New Customer</button>
+    <NewInvoiceForm data={data.newInvoiceForm} employeeId={data.user?.id} customers={data.customers} leases={data.leases} classes='px-2'/>
 </div>

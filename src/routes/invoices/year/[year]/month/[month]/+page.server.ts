@@ -49,7 +49,12 @@ export const load = (async (event) => {
          ]
       }
    })
+   const addresses = prisma.address.findMany({
+      where:{
+         softDelete: false
+      }
+   })
    const searchForm = await superValidate(zod(searchFormSchema));
    const dateSearchForm = await superValidate(zod(dateSearchFormSchema));
-   return { invoices, customers, invoiceCount, searchForm, dateSearchForm };
+   return { invoices, customers, addresses, invoiceCount, searchForm, dateSearchForm };
 }) satisfies PageServerLoad;

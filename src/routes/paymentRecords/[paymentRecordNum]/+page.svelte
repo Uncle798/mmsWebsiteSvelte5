@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Address from '$lib/displayComponents/Address.svelte';
 	import HorizontalDivider from '$lib/displayComponents/HorizontalDivider.svelte';
 import InvoiceEmployee from '$lib/displayComponents/InvoiceEmployee.svelte';
    import PaymentRecordEmployee from '$lib/displayComponents/PaymentRecordEmployee.svelte';
@@ -13,20 +14,26 @@ import InvoiceEmployee from '$lib/displayComponents/InvoiceEmployee.svelte';
 
 {#if data.paymentRecord }
    <Header title='Payment Record Num: {data.paymentRecord}' />
-   <div class=flex>
-      <PaymentRecordEmployee paymentRecord={data.paymentRecord} classes='w-1/3'/>
-      <VerticalDivider classes=''/>
-      {#if data.customer}
-         <User user={data.customer} classes='w-1/3'/>
-         <VerticalDivider classes='' />
-      {/if}
+   <div class="grid grid-cols-4 gap-1 m-2">
+      <div class="flex flex-col p-2 border-2 dark:border-primary-950 border-primary-50 rounded-lg">
+         <PaymentRecordEmployee paymentRecord={data.paymentRecord} classes=''/>
+         {#if !data.paymentRecord.refunded}
+            <a href='/refundRecords/new?paymentNumber={data.paymentRecord.paymentNumber}' class="btn rounded-lg preset-filled-primary-50-950 m-2">Refund this payment</a>
+         {/if}
+      </div>
+      <div class="flex flex-col p-2 border-2 dark:border-primary-950 border-primary-50 rounded-lg">
+         {#if data.customer}
+            <User user={data.customer} classes=''/>
+            {#if data.address}
+               <Address address={data.address} />
+            {/if}
+         {/if}
+      </div>
       {#if data.invoice}
-         <InvoiceEmployee invoice={data.invoice} classes='w-1/3'/>
+         <InvoiceEmployee invoice={data.invoice} classes='p-2 border-2 dark:border-primary-950 border-primary-50 rounded-lg'/>
       {/if}
       {#if data.refundRecord}
-         <RefundRecordDisplay refundRecord={data.refundRecord} />
+         <RefundRecordDisplay refundRecord={data.refundRecord} classes='p-2 border-2 dark:border-primary-950 border-primary-50 rounded-lg'/>
       {/if}
-
    </div>
-   <HorizontalDivider />
 {/if}

@@ -9,9 +9,8 @@
 	import UnitPricingForm from '$lib/forms/UnitPricingForm.svelte';
 	import LeaseEndForm from '$lib/forms/LeaseEndForm.svelte';
 	import { Modal } from '@skeletonlabs/skeleton-svelte';
-	import HorizontalDivider from '$lib/displayComponents/HorizontalDivider.svelte';
 	import Revenue from '$lib/displayComponents/Revenue.svelte';
-	import VerticalDivider from '$lib/displayComponents/VerticalDivider.svelte';
+	import Address from '$lib/displayComponents/Address.svelte';
 
     let modalOpen = $state(false);
     let currentLeaseId = $state('')
@@ -33,36 +32,43 @@
 {/snippet}
 </Modal>
     {#if unit}
-    <Header title='Unit number: {unit.num}' />
-    <div transition:fade={{duration:600}}>
-        <UnitEmployee {unit} widthClass='w-1/4'/>
-        <Revenue label='Total revenue from this unit' amount={data.totalRevenue} />
-        <UnitNotesForm data={data.unitNotesForm} {unit} widthClass='w-1/4'/>
-        <HorizontalDivider />
-        <UnitPricingForm data={data.unitPricingForm} size={unit.size} oldPrice={unit.advertisedPrice} unitPricingFormModalOpen={modalOpen} />
-        <HorizontalDivider />
-        {#each data.leases as lease}
-            {@const { customer } = lease}
-                <div class="flex">
+        <Header title='Unit number: {unit.num}' />
+        <div transition:fade={{duration:600}} class="m-2">
+            <UnitEmployee {unit} classes=''/>
+            <Revenue label='Total revenue from this unit' amount={data.totalRevenue} />
+            <UnitNotesForm data={data.unitNotesForm} {unit} classes=''/>
+            <UnitPricingForm data={data.unitPricingForm} size={unit.size} oldPrice={unit.advertisedPrice} unitPricingFormModalOpen={modalOpen} />
+            <div class="grid grid-cols-2 gap-y-3 gap-x-1">
+                {#each data.leases as lease}
+                {@const customer = data.customers.find((customer) => customer.id === lease.customerId)}
                     {#if !lease.leaseEnded}
-                        <div class="flex">
-                            <LeaseEmployee {lease} widthClass='w-1/4'/>
+                        <div class="flex flex-col rounded-lg border-2 border-primary-50 dark:border-primary-950">
+                            <LeaseEmployee {lease}/>
                             <button class="btn" onclick={()=>{modalOpen=true; currentLeaseId=lease.leaseId}}>End lease</button>
-                        </div> 
-                        <VerticalDivider heightClass='h-30' />                      
-                        {#if customer}
-                            <User user={customer} widthClass='w-1/4'/>
+                        </div>                 
+                        {#if customer}  
+                        {@const address = data.addresses.find((address) => address.userId === customer.id)}
+                            <div class="flex flex-col p-2 rounded-lg border-2 border-primary-50 dark:border-primary-950">
+                                <User user={customer}/>
+                                {#if address}
+                                    <Address {address} />
+                                {/if}
+                            </div>
                         {/if}
-                        {:else}
-                            <LeaseEmployee {lease} widthClass='w-1/4'/>
-                            <VerticalDivider heightClass='h-30' />
+                    {:else}
+                        <LeaseEmployee {lease} classes='rounded-lg border-2 border-primary-50 dark:border-primary-950'/>
                         {#if customer}
-                            <User user={customer} widthClass='w-1/4'/>
+                        {@const address = data.addresses.find((address) => address.userId === customer.id)}
+                            <div class="flex flex-col p-2 rounded-lg border-2 border-primary-50 dark:border-primary-950">
+                                <User user={customer}/>
+                                {#if address}
+                                    <Address {address} />
+                                {/if}
+                            </div>
                         {/if}
                     {/if}
-                </div>
-                <HorizontalDivider />
-        {/each}
-    </div>
+                {/each}
+            </div>
+        </div>
     {/if}
 {/await}

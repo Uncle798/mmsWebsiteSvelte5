@@ -18,38 +18,31 @@ export const load:PageServerLoad = async (event) =>{
    if(!event.locals.user.employee){
       throw redirect(302, '/units/available')
    }
-   if(event.locals.user.employee){
-      const unitPricingForm = await superValidate(zod(unitPricingFormSchema), {id: 'pricingFrom'});
-      const unitNotesForm = await superValidate(zod(unitNotesFormSchema), {id: 'unitNotesForm'});
-      const leaseEndForm = await superValidate(zod(leaseEndFormSchema));
-      const searchForm = await superValidate(zod(searchFormSchema));
-      const leases =  prisma.lease.findMany({
-         orderBy: {
-            unitNum: 'asc'
-         },
-         where: {
-            leaseEnded: null
-         },
-         include: {
-            customer: true,
-            unit: true,
-         }
-      });
-      const customers = prisma.user.findMany()
-      const units = prisma.unit.findMany({
-         orderBy: {
-            num: 'asc'
-         }
-      });
-      return {
-         units,
-         leases, 
-         customers,
-         unitNotesForm,
-         unitPricingForm,
-         leaseEndForm,
-         searchForm,
+   const unitPricingForm = await superValidate(zod(unitPricingFormSchema), {id: 'pricingFrom'});
+   const unitNotesForm = await superValidate(zod(unitNotesFormSchema), {id: 'unitNotesForm'});
+   const leaseEndForm = await superValidate(zod(leaseEndFormSchema));
+   const searchForm = await superValidate(zod(searchFormSchema));
+   const leases =  prisma.lease.findMany({
+      where: {
+         leaseEnded: null
+      },
+   });
+   const customers = prisma.user.findMany();
+   const addresses = prisma.address.findMany();
+   const units = prisma.unit.findMany({
+      orderBy: {
+         num: 'asc'
       }
+   });
+   return {
+      units,
+      leases, 
+      customers,
+      unitNotesForm,
+      unitPricingForm,
+      leaseEndForm,
+      searchForm,
+      addresses
    }
 }
 

@@ -20,17 +20,15 @@ export const load = (async (event) => {
             nulls: 'first'
          }
       },
-      include: {
-         customer: true,
-      }
    })
    const customers = prisma.user.findMany();
+   const addresses = prisma.address.findMany();
    const firstRefund = await prisma.refundRecord.findFirst({
       orderBy: {
          refundCreated: 'asc'
       }
    })
    const years = arrayOfYears(firstRefund?.refundCreated.getFullYear())
-   return { refunds, searchForm, refundCount, customers, years, dateSearchForm };
+   return { refunds, searchForm, refundCount, customers, years, dateSearchForm, addresses };
 }) satisfies PageServerLoad;
 

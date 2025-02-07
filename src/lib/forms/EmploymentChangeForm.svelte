@@ -9,16 +9,17 @@
       data: SuperValidated<Infer<EmploymentFormSchema>>;
       employeeChecked: boolean;
       adminChecked: boolean;
-      userId: string
+      userId: string;
+      classes?: string;
    }
-   let { data,  employeeChecked=$bindable(false), adminChecked=$bindable(false), userId}:Props = $props();
+   let { data,  employeeChecked=$bindable(false), adminChecked=$bindable(false), userId, classes }:Props = $props();
    let { form, message, errors, constraints, enhance, delayed, timeout, } = superForm(data, {
       warnings:{
          duplicateId: false
       }
    });
 </script>
-<div class="my-2 flex-none">
+<div class="my-2 flex-none {classes}">
    <FormMessage message={$message} />
    <form action="/forms/employmentChangeForm" method="POST" use:enhance>
       <Switch name='employee' bind:checked={employeeChecked}>Employee</Switch>

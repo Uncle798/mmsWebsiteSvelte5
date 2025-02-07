@@ -1,26 +1,39 @@
 <script lang="ts">
    import type { Invoice } from "@prisma/client";
    import dayjs from "dayjs";
+	import HorizontalDivider from "./HorizontalDivider.svelte";
    interface Props {
       invoice:Invoice;
-      classes: string;
+      classes?: string;
    }
    let { invoice, classes }:Props = $props();
    const currencyFormatter = new Intl.NumberFormat('en-US', {style:'currency', currency:'USD'});
 </script>
 
-<div class="m-4 flex-none {classes}">
-   <p><a href="/invoices/{invoice.invoiceNum}"><span class="font-semibold">Invoice number:</span> {invoice.invoiceNum}</a></p>
-   <p><span class="font-semibold">Invoice amount:</span> {currencyFormatter.format(invoice.invoiceAmount)}</p>
-   <p><span class="font-semibold">Created:</span> {dayjs(invoice.invoiceCreated).format('M/D/YYYY')}</p>
-   <p class="break-words"><span class="font-semibold">Lease ID:</span> <a href="/leases/{invoice.leaseId}">{invoice.leaseId}</a></p>
-   <p class=""><span class="font-semibold">Invoice notes:</span> <span class="indent-8">{invoice.invoiceNotes}</span></p>
+<div class="grid grid-cols-2 gap-x-2 {classes}">
+   <div class='text-right'>Invoice number</div> 
+   <div class="font-medium"><a href="/invoices/{invoice.invoiceNum}">{invoice.invoiceNum}</a></div>
+   <HorizontalDivider classes='col-span-2' />
+   <div class='text-right'>Invoice amount</div>
+   <div class="font-medium ">{currencyFormatter.format(invoice.invoiceAmount)}</div>
+   <HorizontalDivider classes='col-span-2' />
+   <div class='text-right'>Created</div> 
+   <div class="font-medium">{dayjs(invoice.invoiceCreated).format('M/D/YYYY')}</div>
+   <HorizontalDivider classes='col-span-2' />
+   <div class='text-right'>Lease ID</div> 
+   <div class="truncate font-medium"><a href="/leases/{invoice.leaseId}">{invoice.leaseId}</a></div>
+   <HorizontalDivider classes='col-span-2' />
+   <div class="text-right">Invoice notes</div> 
+   <div class="pl-4 -indent-4 pr-4 font-medium">{invoice.invoiceNotes}</div>
+   <HorizontalDivider classes='col-span-2' />
    {#if invoice.paymentRecordNum}
-   <p><span class="font-semibold">Payment record num:</span> <a href="/paymentRecords/{invoice.paymentRecordNum}" class="">{invoice.paymentRecordNum}</a></p>
-      {:else}
-      <p><a href="/paymentRecords/new?defaultCustomer={invoice.customerId}&defaultInvoice={invoice.invoiceNum}" class="btn">Make a payment record for this lease</a></p>
+      <div class='text-right'>Payment record num</div> 
+      <div class="font-medium"><a href="/paymentRecords/{invoice.paymentRecordNum}" class="">{invoice.paymentRecordNum}</a></div>
+      <HorizontalDivider classes='col-span-2'/>
+   {:else}
+      <div class='col-span-2 m-2'><a href="/paymentRecords/new?defaultCustomer={invoice.customerId}&defaultInvoice={invoice.invoiceNum}" class="btn preset-filled-primary-50-950 rounded-lg">Make a payment record for this lease</a></div>
    {/if}
    {#if invoice.deposit}
-      Deposit
+      <div class="col-span-2 font-medium text-center">Deposit</div>
    {/if}
 </div>

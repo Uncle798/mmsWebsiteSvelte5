@@ -4,11 +4,12 @@
 	import dayjs from "dayjs";
    interface Props {
       lease: Lease;
+      classes?: string;
    }
-   let { lease }:Props = $props()
+   let { lease, classes }:Props = $props()
 </script>
 
-<div class="m-4 w-1/3 flex-none">
+<div class="p-4 flex-none {classes}">
    <p>Unit number: {lease.unitNum.replace(/^0+/gm, '')}</p>
    <p>Lease effective date: {dayjs(lease.leaseEffectiveDate).format('M/D/YYYY')}</p>
    {#if lease.leaseEnded}

@@ -7,10 +7,8 @@
     import type { StripeElements, Stripe } from '@stripe/stripe-js'
 
     import type { PageData } from './$types';
-	import { goto } from '$app/navigation';
 	import Header from '$lib/Header.svelte';
 	import { fade } from 'svelte/transition';
-
 
     let { data }: { data: PageData } = $props();
 
@@ -35,9 +33,11 @@
             headers: {
                 'content-type': 'applications/json'
             },
-            body:JSON.stringify({ price:data.invoice?.invoiceAmount, stripeId:data.stripeId, })
+            body:JSON.stringify({ customerId:data.customer?.id, invoiceNum:data.invoice?.invoiceNum })
         });
+        console.log(data.invoice?.invoiceNum)
         const clientSecret = await response.json();
+        console.log()
         return clientSecret;
     }
     async function submit() {
@@ -49,11 +49,15 @@
             return;
         }
         elements?.submit();
+        let returnURL = `${PUBLIC_URL}/thanks?invoiceNum=${data.invoice?.invoiceNum}`
+        if(data.newLease){
+            returnURL = `${PUBLIC_URL}/newLease/leaseSent?invoiceNum=${data.invoice?.invoiceNum}`
+        }
         const result = await stripe.confirmPayment({
             elements,
             clientSecret,
             confirmParams:{
-                return_url:`${PUBLIC_URL}/newLease/leaseSent?invoiceNum=${data.invoice?.invoiceNum}`
+                return_url: returnURL
             }
         });
         if(result.error){
@@ -82,9 +86,9 @@ Current time = {currentTime}
                     {/if} -->
                     <PaymentElement />
                     {#if processing}
-                    processing...
+                        <div class="p-4">Processing...</div>
                     {:else}
-                    <button class="btn" onclick={submit}>Pay deposit of ${data.invoice?.invoiceAmount}</button>
+                        <button class="btn preset-filled-primary-50-950 rounded-lg mt-2" onclick={submit}>Pay charge of ${data.invoice?.invoiceAmount}</button>
                     {/if}
                 </Elements>
             </form>

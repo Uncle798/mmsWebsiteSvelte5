@@ -25,5 +25,10 @@ export const load = (async (event) => {
          invoiceNum: paymentRecord?.invoiceNum ? paymentRecord.invoiceNum : undefined
       }
    })
-   return { refundRecord, paymentRecord, invoice };
+   const address = await prisma.address.findFirst({
+      where: {
+         userId: refundRecord?.customerId
+      }
+   })
+   return { refundRecord, paymentRecord, invoice, address };
 }) satisfies PageServerLoad;

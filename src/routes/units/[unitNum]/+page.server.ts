@@ -4,6 +4,7 @@ import type { PageServerLoad } from './$types';
 import { prisma } from '$lib/server/prisma';
 import { superValidate } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
+import type { Address, User } from '@prisma/client';
 import { leaseEndFormSchema, unitNotesFormSchema, unitPricingFormSchema } from '$lib/formSchemas/schemas';
 import dayjs from 'dayjs';
 
@@ -31,12 +32,10 @@ export const load = (async (event) => {
             nulls: 'first'
          }
       },
-      include: {
-         customer: true
-      }
    })
+   const customers:User[] = []
    let totalRevenue: number = 0;
-   leases.forEach((lease) => {
+   for await (const lease of leases) {
       let lengthOfLease:number = 0;
       if(!lease.leaseEnded){
          lengthOfLease = dayjs().diff(lease.leaseEffectiveDate, 'months')
@@ -46,9 +45,28 @@ export const load = (async (event) => {
       for(let i=0; i<lengthOfLease; i++){
          totalRevenue += lease.price
       }
-   })
+      const customer = await prisma.user.findUnique({
+         where: {
+            id: lease.customerId
+         }
+      })
+      if(customer){
+         customers.push(customer)
+      }
+   }
+   const addresses:Address[]=[];
+   for await (const customer of customers){
+      const address = await prisma.address.findFirst({
+         where: {
+            userId: customer.id
+         }
+      })
+      if(address){
+         addresses.push(address)
+      }
+   }
    const unitNotesForm = await superValidate(zod(unitNotesFormSchema));
    const unitPricingForm = await superValidate(zod(unitPricingFormSchema));
    const leaseEndForm = await superValidate(zod(leaseEndFormSchema));
-   return { unit, leases, unitNotesForm, unitPricingForm, leaseEndForm, totalRevenue };
+   return { unit, leases, customers, addresses, unitNotesForm, unitPricingForm, leaseEndForm, totalRevenue };
 }) satisfies PageServerLoad;

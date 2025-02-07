@@ -12,11 +12,13 @@
       data: SuperValidated<Infer<RefundFormSchema>>;
       refundFormModalOpen?: boolean;
       paymentRecord:PaymentRecord;
+      classes?: string;
    }
    let {
       data,
       refundFormModalOpen = $bindable(false),
-      paymentRecord
+      paymentRecord,
+      classes
    }:Props = $props();
    let { form, errors, message, constraints, enhance, delayed, timeout} = superForm(data, {
       onSubmit(input) {
@@ -31,29 +33,30 @@
       $form.notes = `Refund of payment record number: ${paymentRecord.paymentNumber}`
    })
 </script>
+<div class={classes}>
+   <FormMessage message={$message} />
 
-<FormMessage message={$message} />
-
-<form action="/forms/refundForm" method="post" use:enhance>
-   <TextArea 
-      bind:value={$form.notes}
-      errors={$errors.notes}
-      constraints={$constraints.notes}
-      label='Refund Notes'
-      name='notes'
-   />
-   <NumberInput
-      bind:value={$form.amount}
-      errors={$errors.amount}
-      constraints={$constraints.amount}
-      label='Refund amount'
-      name='amount'
-   />
-   <select name="refundType" bind:value={$form.refundType} class="select m-4">
-      {#each ['Stripe', 'Cash', 'Check'] as type}
-         <option value={type.toUpperCase()} selected={type.toUpperCase() === paymentRecord.paymentType}>{type}</option>
-      {/each}
-   </select>
-   <input type="hidden" name="paymentRecordNumber" value={paymentRecord.paymentNumber}>
-   <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} buttonText="Submit Refund"/>
-</form>
+   <form action="/forms/refundForm" method="post" use:enhance>
+      <TextArea 
+         bind:value={$form.notes}
+         errors={$errors.notes}
+         constraints={$constraints.notes}
+         label='Refund Notes'
+         name='notes'
+      />
+      <NumberInput
+         bind:value={$form.amount}
+         errors={$errors.amount}
+         constraints={$constraints.amount}
+         label='Refund amount'
+         name='amount'
+      />
+      <select name="refundType" bind:value={$form.refundType} class="select">
+         {#each ['Stripe', 'Cash', 'Check'] as type}
+            <option value={type.toUpperCase()} selected={type.toUpperCase() === paymentRecord.paymentType}>{type}</option>
+         {/each}
+      </select>
+      <input type="hidden" name="paymentRecordNumber" value={paymentRecord.paymentNumber}>
+      <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} buttonText="Submit Refund"/>
+   </form>
+</div>

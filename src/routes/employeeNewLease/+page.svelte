@@ -39,7 +39,7 @@
 
 
 <Header title="Employee New Lease" />
-<div transition:fade={{duration:600}}>
+<div transition:fade={{duration:600}} class="mx-2">
 {#if !data.customer}
   <div class="mx-4">
     <p><a href="/employeeNewCustomer">Create new customer</a></p>
@@ -89,12 +89,12 @@
     {/snippet}
     {#snippet content()}
         <AddressForm data={data.addressForm} bind:addressModalOpen={addressModalOpen} userId={data.customer?.id}/>
-        <button class="btn mx-4" onclick={()=>addressModalOpen=false}>Close</button>
+        <button class="btn " onclick={()=>addressModalOpen=false}>Close</button>
     {/snippet}
   </Modal>
   {/if}
 {#if data.unit}
-        <UnitEmployee unit={data.unit} />
+        <UnitEmployee unit={data.unit} classes="w-80" />
         <input type="hidden" name="unitNum" value={data.unit.num}>
         {#if data.discount}
             <div class="card p-4" transition:fade={{duration:300}}>
@@ -102,41 +102,52 @@
                 Monthly Rent: ${data.unit.advertisedPrice! - data.discount.amountOff}
             </div>
         {/if}
-    {/if}
-    <div class="flex">
+{/if}
+    <div class="flex flex-col w-80">
       {#if data.unit && data.address}
-      <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} buttonText='The above is correct charge ${data.unit.deposit} deposit'/>
-      <RadioButton
-        value='STRIPE'
-        errors={$errors.paymentType}
-        constraints={$constraints.paymentType}
-        groupName='paymentType'
-        id='STRIPE'
-        label="Stripe"
+      <div class="flex bg-primary-50 dark:bg-primary-950 mt-2 rounded-lg">
+        <RadioButton
+          value='STRIPE'
+          errors={$errors.paymentType}
+          constraints={$constraints.paymentType}
+          groupName='paymentType'
+          id='STRIPE'
+          label="Stripe"
         />
-      
-      <RadioButton
-        value='CASH'
-        errors={$errors.paymentType}
-        constraints={$constraints.paymentType}
-        groupName='paymentType'
-        id='CASH'
-        label='Cash'
-      />
-      <RadioButton
-        value='CHECK'
-        errors={$errors.paymentType}
-        constraints={$constraints.paymentType}
-        groupName="paymentType"
-        id='CHECK'
-        label='Check'
+        <RadioButton
+          value='CASH'
+          errors={$errors.paymentType}
+          constraints={$constraints.paymentType}
+          groupName='paymentType'
+          id='CASH'
+          label='Cash'
+        />
+        <RadioButton
+          value='CHECK'
+          errors={$errors.paymentType}
+          constraints={$constraints.paymentType}
+          groupName="paymentType"
+          id='CHECK'
+          label='Check'
+        />
+      </div>
+      <FormSubmitWithProgress 
+        delayed={$delayed} 
+        timeout={$timeout} 
+        buttonText='The above is correct charge ${data.unit.deposit} deposit'
+        classes=''  
       />
       {/if}
     </div>
   </form>
   {#if !data.discount}
     <div transition:fade={{duration:600}}>
-        <LeaseDiscountForm data={data.leaseDiscountForm} unitNum={data.unit?.num} customerId={data.customer.id}/>
+        <LeaseDiscountForm 
+          data={data.leaseDiscountForm} 
+          unitNum={data.unit?.num} 
+          customerId={data.customer.id} 
+          classes='w-80'
+          />
     </div>
   {/if}
   {/if}

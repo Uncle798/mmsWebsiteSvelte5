@@ -22,12 +22,14 @@
       leases: Lease[];
       defaultCustomer?: string;
       defaultInvoice?: string;
+      classes?: string;
+      customerSelected: boolean;
    }
-   let { data, employeeId, customers, invoices,  invoiceForm, leases, defaultCustomer='', defaultInvoice='' }:Props = $props();
+   let { data, employeeId, customers, invoices,  invoiceForm, leases, defaultCustomer='', defaultInvoice='', classes, customerSelected=$bindable(false) }:Props = $props();
    let { form, errors, message, constraints, enhance, delayed, timeout} = superForm(data, {
       onSubmit({formData}) {
          formData.set('customerId', selectedCustomer[0]);
-         formData.set('invoiceNum', selectedInvoice[0]);
+         formData.set('invoiceNum', selectedInvoice[0])
       },
    });
    let selectedCustomer = $state([defaultCustomer]);
@@ -63,11 +65,11 @@
       if(defaultInvoice){
          const invoice = invoices.find((invoice) => invoice.invoiceNum.toString() === defaultInvoice)
          if(invoice){
-               invoiceSelected = true
-               $form.paymentAmount=invoice.invoiceAmount;
-               $form.paymentNotes=`Payment for invoice number: ${invoice.invoiceNum} ${invoice.invoiceNotes}`
-               $form.deposit=invoice.deposit;
-            }
+            invoiceSelected = true
+            $form.paymentAmount=invoice.invoiceAmount;
+            $form.paymentNotes=`Payment for invoice number: ${invoice.invoiceNum} ${invoice.invoiceNotes}`
+            $form.deposit=invoice.deposit;
+         }
       }
    })
 </script>
@@ -89,78 +91,88 @@
    {/snippet}
 </Modal>
 
-
-<FormMessage message={$message} />
-
-<form action="/forms/newPaymentRecordForm" method="POST" use:enhance>
-   <div class="p-4">
-      <Combobox
-         data={customerComboBoxData}
-         bind:value={selectedCustomer}
-         label='Select Customer'
-         placeholder='Select customer...'
-         openOnClick={true}
-      />
-   </div>
-   <div class="p-4">
-      {#if !invoiceSelected}
-         <button class="btn" onclick={()=>invoiceFormOpen=true} type='button'>Create New Invoice</button>
-      {/if}
-      {#if invoiceComboBoxData.length > 0 }
+<div class={classes}>
+   <FormMessage message={$message} />
+   <form action="/forms/newPaymentRecordForm" method="POST" use:enhance>
+      <div class="">
          <Combobox
-            data={invoiceComboBoxData.sort()}
-            bind:value={selectedInvoice}
-            label="Select an invoice"
-            placeholder="Select..."
+            data={customerComboBoxData}
+            bind:value={selectedCustomer}
+            label='Select Customer'
+            placeholder='Select customer...'
             openOnClick={true}
             onValueChange={(details)=>{
-               const invoice = invoices.find((invoice) => invoice.invoiceNum.toString() === details.value[0])
-               if(invoice){
-                  $form.paymentAmount=invoice.invoiceAmount;
-                  $form.paymentNotes=`Payment for invoice number: ${invoice.invoiceNum}, ${invoice.invoiceNotes}`
+               if(selectedCustomer[0].length > 0){
+                  customerSelected = true;
                }
-               invoiceSelected = true
+               selectedCustomer[0]=details.value[0]
+               selectedInvoice[0]=''
+               invoiceSelected = false
             }}
          />
+      </div>
+      <div class="">
+         {#if !invoiceSelected}
+            <button class="btn" onclick={()=>invoiceFormOpen=true} type='button'>Create New Invoice</button>
+         {/if}
+         {#if invoiceComboBoxData.length > 0 }
+            <Combobox
+               data={invoiceComboBoxData.sort()}
+               bind:value={selectedInvoice}
+               label="Select an invoice"
+               placeholder="Select..."
+               openOnClick={true}
+               onValueChange={(details)=>{
+                  const invoice = invoices.find((invoice) => invoice.invoiceNum.toString() === details.value[0])
+                  if(invoice){
+                     selectedInvoice[0]=invoice.invoiceNum.toString();
+                     $form.paymentAmount=invoice.invoiceAmount;
+                     $form.paymentNotes=`Payment for invoice number: ${invoice.invoiceNum}, ${invoice.invoiceNotes}`
+                     $form.invoiceNum =invoice.invoiceNum;
+                  }
+                  invoiceSelected = true
+               }}
+            />
+         {/if}
+      </div>
+      {#if invoiceSelected}
+         <NumberInput
+            bind:value={$form.paymentAmount}
+            errors={$errors.paymentAmount}
+            constraints={$constraints.paymentAmount}
+            label='Payment amount: $'
+            name='paymentAmount'
+         />
+         <div class="">
+         <label for="paymentType">Payment type
+            <select name="paymentType" id="paymentType" class="select">
+               <option value='CASH'>Cash</option>
+               <option value="CHECK">Check</option>
+               <option value="STRIPE">Credit Card</option>
+            </select>
+         </label>
+         </div>
+         <input type="hidden" name='employeeId' value={employeeId} />
+         <TextInput
+            bind:value={$form.paymentNotes}
+            errors={$errors.paymentNotes}
+            constraints={$constraints.paymentNotes}
+            label='Payment Notes'
+            name='paymentNotes'
+         />
+         <div class="card p-4">
+            <Switch bind:checked={$form.deposit} name='deposit'>
+               Deposit
+            </Switch>
+         </div>
+         <TextInput
+            bind:value={$form.payee}
+            errors={$errors.payee}
+            constraints={$constraints.payee}
+            label='Payee (if different than customer)'
+            name='payee'
+         />
+         <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} />
       {/if}
-   </div>
-   {#if invoiceSelected}
-      <NumberInput
-         bind:value={$form.paymentAmount}
-         errors={$errors.paymentAmount}
-         constraints={$constraints.paymentAmount}
-         label='Payment amount: $'
-         name='paymentAmount'
-      />
-      <div class="p-4">
-      <label for="paymentType">Payment type
-         <select name="paymentType" id="paymentType" class="select">
-            <option value='CASH'>Cash</option>
-            <option value="CHECK">Check</option>
-            <option value="STRIPE">Credit Card</option>
-         </select>
-      </label>
-      </div>
-      <input type="hidden" name='employeeId' value={employeeId} />
-      <TextInput
-         bind:value={$form.paymentNotes}
-         errors={$errors.paymentNotes}
-         constraints={$constraints.paymentNotes}
-         label='Payment Notes'
-         name='paymentNotes'
-      />
-      <div class="card p-4">
-         <Switch bind:checked={$form.deposit} name='deposit'>
-            Deposit
-         </Switch>
-      </div>
-      <TextInput
-         bind:value={$form.payee}
-         errors={$errors.payee}
-         constraints={$constraints.payee}
-         label='Payee (if different than customer)'
-         name='payee'
-      />
-      <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} />
-   {/if}
-</form>
+   </form>
+</div>

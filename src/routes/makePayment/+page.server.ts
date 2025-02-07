@@ -1,13 +1,13 @@
 import { redirect, fail } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { prisma } from '$lib/server/prisma';
-import { qStash } from '$lib/server/qStash';
 
 export const load:PageServerLoad = (async (event) => {
    if(!event.locals.user){
       redirect(302, '/login?toast=unauthorized')
    }
    const invoiceNum = event.url.searchParams.get('invoiceNum');
+   const newLease = event.url.searchParams.get('newLease');
    if(!invoiceNum){
       fail(404)
    }
@@ -24,10 +24,12 @@ export const load:PageServerLoad = (async (event) => {
          userId: invoice.customerId!
       }
    })
-   const stripeId = event.url.searchParams.get('stripeId');
-   const timeLeft = await qStash.getWaiters({
-      eventId: invoice!.leaseId!
+   const customer = await prisma.user.findFirst({
+      where: {
+         id: invoice.customerId!, 
+      }
    })
-   console.log('payDeposit timeLeft', timeLeft);
-   return { invoice, address, stripeId, timeLeft };
+   const stripeId = event.url.searchParams.get('stripeId');
+
+   return { invoice, address, stripeId, customer, newLease };
 })

@@ -1,26 +1,37 @@
 <script lang="ts">
-   import type { RefundRecord } from "@prisma/client";
-   import dayjs from "dayjs";
+	import type { RefundRecord } from '@prisma/client';
+	import dayjs from 'dayjs';
+	import HorizontalDivider from './HorizontalDivider.svelte';
 
-   interface Props {
-      refundRecord: RefundRecord;
-   }
-   let { refundRecord }:Props = $props();
-   const currencyFormatter = new Intl.NumberFormat('en-US', {style:'currency', currency:'USD'});
+	interface Props {
+		refundRecord: RefundRecord;
+		classes?: string;
+	}
+	let { refundRecord, classes }: Props = $props();
+	const currencyFormatter = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
 </script>
 
-<div class="m-4 w-1/3 flex-none">
-   <p>Refund record number: <a href="/refundRecords/{refundRecord.refundNumber}">{refundRecord.refundNumber}</a></p>
-   <p>Refund amount: {currencyFormatter.format(refundRecord.refundAmount)}</p>
-   {#if refundRecord.refundCompleted}
-      <p>Refund completed: {dayjs(refundRecord.refundCompleted).format('M/D/YYYY')}</p>
-      {:else}
-      <p>Refund not completed</p>
-   {/if}
-   <p>Refund type: {refundRecord.refundType.replace(/\w\S*/g, text => text.charAt(0).toUpperCase() + text.substring(1).toLowerCase())}</p>
-   {#if refundRecord.paymentRecordNum}
-      <p>Refund notes: <a href="/paymentRecords/{refundRecord.paymentRecordNum}">{refundRecord.refundNotes}</a></p>
-   {:else}
-      <p>Refund notes: {refundRecord.refundNotes}</p>
-   {/if}
+<div class="grid grid-cols-2 gap-x-2 {classes}">
+	<div class="text-right">Refund record number</div>
+	<div class="font-medium"><a href="/refundRecords/{refundRecord.refundNumber}">{refundRecord.refundNumber}</a></div>
+	<HorizontalDivider classes='col-span-2' />
+	<div class="text-right">Refund amount</div>
+	<div class="font-medium">{currencyFormatter.format(refundRecord.refundAmount)}</div>
+	<HorizontalDivider classes='col-span-2' />
+	{#if refundRecord.refundCompleted}
+		<div class="text-right">Refund completed</div>
+		<div class="font-medium">{dayjs(refundRecord.refundCompleted).format('M/D/YYYY')}</div>
+	{:else}
+		<div class="col-span-2 text-center font-medium">Refund not completed</div>
+	{/if}
+	<HorizontalDivider classes='col-span-2' />
+	<div class="text-right">Refund type</div>
+	<div class="font-medium">{refundRecord.refundType.replace(/\w\S*/g,(text) => text.charAt(0).toUpperCase() + text.substring(1).toLowerCase())}</div>
+	<HorizontalDivider classes='col-span-2' />
+	<div class="text-right">Refund notes</div>
+	{#if refundRecord.paymentRecordNum}
+		<div class="text-left font-medium"><a href="/paymentRecords/{refundRecord.paymentRecordNum}">{refundRecord.refundNotes}</a></div>
+	{:else}
+		<div class="text-left font-medium">{refundRecord.refundNotes}</div>
+	{/if}
 </div>
