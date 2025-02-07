@@ -17,7 +17,7 @@
 	});
 </script>
 
-<div class="p-4 {classes}">
+<div class="{classes}">
 	<form method="POST" use:enhance>
 		<label class="label-text"
 			>Search by {searchType}

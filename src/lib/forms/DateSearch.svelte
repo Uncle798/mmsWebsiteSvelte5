@@ -34,7 +34,7 @@
 	});
 </script>
 
-<div class="m-4 {classes}">
+<div class="{classes}">
 	<form method="POST" use:enhance>
 		<div class="flex items-center space-x-3">
 			<div>
@@ -67,7 +67,7 @@
 					max={maxDate}
 				/>
 				<button
-					class="btn preset-filled-primary-50-950 rounded-lg shadow-lg"
+					class="btn preset-filled-primary-50-950 rounded-lg"
 					type="button"
 					onclick={() => {
 						$form.endDate = undefined;
