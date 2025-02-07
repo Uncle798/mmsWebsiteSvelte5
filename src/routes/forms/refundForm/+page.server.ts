@@ -21,7 +21,6 @@ export const actions: Actions = {
             redirect(302, '/login?toast=employee');
         }
         const formData = await event.request.formData();
-        console.log('refundForm formData', formData);
         const refundForm = await superValidate(formData, zod(refundFormSchema));
         const { success, reset } = await ratelimit.employeeForm.limit(event.locals.user.id)
         if(!success){
@@ -67,7 +66,6 @@ export const actions: Actions = {
             redirect(302, `/refundRecords/${refundRecord.refundNumber}`)
         }
         if(paymentRecord.paymentType === 'CASH' || paymentRecord.paymentType === 'CHECK'){
-            
             const refundRecord = await prisma.refundRecord.create({
                 data: {
                     customerId: paymentRecord.customerId,
@@ -77,6 +75,15 @@ export const actions: Actions = {
                     refundAmount: refundForm.data.amount,
                     refundNotes: refundForm.data.notes,
                     refundCompleted: new Date()
+                }
+            })
+            await prisma.paymentRecord.update({
+                where: {
+                    paymentNumber: paymentRecord.paymentNumber
+                },
+                data: {
+                    refunded: true,
+                    refundNumber: refundRecord.refundNumber
                 }
             })
             redirect(302, `/refundRecords/${refundRecord.refundNumber}`)
