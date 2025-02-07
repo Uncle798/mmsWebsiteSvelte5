@@ -74,19 +74,34 @@
         {:then addresses}         
             {#if paymentRecords.length >0}
                 <div transition:fade={{duration:600}}>
-                    <div class="flex">
-                        <Search bind:search={search} searchType='payment record number' data={data.searchForm}/>      
-                        <DateSearch bind:startDate={startDate} bind:endDate={endDate} {minDate} {maxDate} data={data.dateSearchForm}/>
+                    <div class="flex border-b-2 border-primary-50 dark:border-primary-950 m-2">
+                        <Search 
+                            bind:search={search} 
+                            searchType='payment record number' 
+                            data={data.searchForm}
+                            classes='p-2 w-1/2'
+                        />      
+                        <DateSearch 
+                            bind:startDate={startDate} 
+                            bind:endDate={endDate} 
+                            {minDate} 
+                            {maxDate} 
+                            data={data.dateSearchForm}
+                            classes='p-2'    
+                        />
                     </div>
-                    <Revenue label="Total revenue" amount={totalRevenue(searchedPayments(dateSearchPayments(paymentRecords)))} />
-                    <HorizontalDivider />
-                    <div class="grid grid-cols-2">
+                    <Revenue 
+                        label="Total revenue" 
+                        amount={totalRevenue(searchedPayments(dateSearchPayments(paymentRecords)))} 
+                        classes='border-b-2 border-primary-50 dark:border-primary-95 m-2'    
+                    />
+                    <div class="grid grid-cols-2 border-t-2 border-x-2 border-primary-50 dark:border-primary-950 m-2">
                         {#each slicedSource(dateSearchPayments(searchedPayments(paymentRecords))) as paymentRecord}
                         {@const customer = customers.find((customer) => customer.id === paymentRecord.customerId) }
-                            <PaymentRecordEmployee paymentRecord={paymentRecord} classes="border-e-2 border-b-2 border-primary-950 p-2" />
+                            <PaymentRecordEmployee paymentRecord={paymentRecord} classes="border-e-2 border-b-2 border-primary-50 dark:border-primary-950 p-2" />
                             {#if customer}
                             {@const address = addresses.find((address)=> address.userId === customer.id)}
-                            <div class="flex flex-col border-b-2 border-primary-950">
+                            <div class="flex flex-col border-b-2 border-primary-50 dark:border-primary-950">
                             <User user={customer} classes='mx-2 mt-2'/>
                                 {#if address}
                                     <Address {address} classes='mx-2'/>

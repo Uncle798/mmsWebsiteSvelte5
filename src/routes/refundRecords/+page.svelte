@@ -10,8 +10,6 @@
 	import Revenue from '$lib/displayComponents/Revenue.svelte';
 	import Header from '$lib/Header.svelte';
 	import Placeholder from '$lib/displayComponents/Placeholder.svelte';
-	import HorizontalDivider from '$lib/displayComponents/HorizontalDivider.svelte';
-	import VerticalDivider from '$lib/displayComponents/VerticalDivider.svelte';
 	import Address from '$lib/displayComponents/Address.svelte';
 	let { data }: { data: PageData } = $props();
 	let size = $state(25);
@@ -70,23 +68,37 @@
 		{#await data.addresses}
 			loading addresses
 		{:then addresses} 			
-			<div class="flex">
-				<Search bind:search searchType="Refund records" data={data.searchForm} />
-				<DateSearch bind:endDate bind:startDate data={data.dateSearchForm} {minDate} {maxDate} />
+			<div class="flex mx-2 border-b-2 border-primary-50 dark:border-primary-950 ">
+				<Search
+					bind:search 
+					searchType="Refund records" 
+					data={data.searchForm} 
+					classes='p-2 w-1/2'	
+				/>
+				<DateSearch 
+					bind:endDate 
+					bind:startDate 
+					data={data.dateSearchForm} 
+					{minDate} 
+					{maxDate} 
+					classes='p-2'	
+				/>
 			</div>
-			<HorizontalDivider />
-			<Revenue label="Total refunds" amount={totalRevenue(searchRefunds(dateSearchRefunds(refunds)))}/>
-			<HorizontalDivider />
-			<div class="grid grid-cols-2 ">
+			<Revenue 
+				label="Total refunds" 
+				amount={totalRevenue(searchRefunds(dateSearchRefunds(refunds)))}
+				classes='border-b-2 border-primary-50 dark:border-primary-950 m-2'	
+			/>
+			<div class="grid grid-cols-2 mx-2 gap-y-3 gap-x-1 ">
 				{#each slicedRefunds(searchRefunds(dateSearchRefunds(refunds))) as refund (refund.refundNumber)}
 					{@const customer = customers.find((customer) => customer.id === refund.customerId)}
-						<RefundRecordDisplay refundRecord={refund} classes='border-b border-e'/>
+						<RefundRecordDisplay refundRecord={refund} classes='px-2 pt-2 border-2 rounded-lg border-primary-50 dark:border-primary-950'/>
 						{#if customer}
 						{@const address = addresses.find((address) => address.userId === customer.id)}
-							<div class="flex flex-col border-b-2">
-								<User user={customer} />
+							<div class="flex flex-col rounded-lg border-2 border-primary-50 dark:border-primary-950">
+								<User user={customer} classes='pt-2 pl-2 ' />
 								{#if address}
-									<Address {address} />
+									<Address {address} classes='pl-2'/>
 								{/if}
 							</div>
 						{/if}

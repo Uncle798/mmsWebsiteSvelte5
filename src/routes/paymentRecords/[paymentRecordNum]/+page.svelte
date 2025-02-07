@@ -14,14 +14,14 @@ import InvoiceEmployee from '$lib/displayComponents/InvoiceEmployee.svelte';
 
 {#if data.paymentRecord }
    <Header title='Payment Record Num: {data.paymentRecord}' />
-   <div class="flex border-t-2 dark:border-primary-950 border-primary-50">
-      <div class="flex flex-col p-2 min-w-60 border-b-2 border-e-2 border-primary-950">
+   <div class="grid grid-cols-4 gap-1 m-2">
+      <div class="flex flex-col p-2 border-2 dark:border-primary-950 border-primary-50 rounded-lg">
          <PaymentRecordEmployee paymentRecord={data.paymentRecord} classes=''/>
          {#if !data.paymentRecord.refunded}
             <a href='/refundRecords/new?paymentNumber={data.paymentRecord.paymentNumber}' class="btn rounded-lg preset-filled-primary-50-950 m-2">Refund this payment</a>
          {/if}
       </div>
-      <div class="flex flex-col p-2 min-w-60 border-b-2 border-e-2 border-primary-950">
+      <div class="flex flex-col p-2 border-2 dark:border-primary-950 border-primary-50 rounded-lg">
          {#if data.customer}
             <User user={data.customer} classes=''/>
             {#if data.address}
@@ -30,11 +30,10 @@ import InvoiceEmployee from '$lib/displayComponents/InvoiceEmployee.svelte';
          {/if}
       </div>
       {#if data.invoice}
-         <InvoiceEmployee invoice={data.invoice} classes='p-2 min-w-60 border-b-2 border-e-2 border-primary-950'/>
+         <InvoiceEmployee invoice={data.invoice} classes='p-2 border-2 dark:border-primary-950 border-primary-50 rounded-lg'/>
       {/if}
       {#if data.refundRecord}
-         <RefundRecordDisplay refundRecord={data.refundRecord} classes='p-2 min-w-60 border-b-2 border-primary-950 '/>
+         <RefundRecordDisplay refundRecord={data.refundRecord} classes='p-2 border-2 dark:border-primary-950 border-primary-50 rounded-lg'/>
       {/if}
    </div>
-   <HorizontalDivider />
 {/if}

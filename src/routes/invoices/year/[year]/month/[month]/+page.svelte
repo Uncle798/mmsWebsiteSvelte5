@@ -65,14 +65,16 @@
         {:then addresses}
             {#if invoices.length >0}       
                 <Header title='All invoices' />
-                <div class="flex">
-                    <Search data={data.searchForm} bind:search={search} searchType='invoice number' classes='h-28'/>
-                    <DateSearch data={data.dateSearchForm} bind:startDate={startDate} bind:endDate={endDate} {minDate} {maxDate} classes='h-28'/>
+                <div class="flex m-2 border-b-2 dark:border-primary-950 border-primary-50">
+                    <Search data={data.searchForm} bind:search={search} searchType='invoice number' classes='w-1/2 p-2'/>
+                    <DateSearch data={data.dateSearchForm} bind:startDate={startDate} bind:endDate={endDate} {minDate} {maxDate} classes='w-1/2 p-2'/>
                 </div>
-                <HorizontalDivider />
-                <Revenue label="Total invoiced (not including deposits)" amount={totalRevenue(searchedInvoices(dateSearchedInvoices(invoices)))} />
-                <HorizontalDivider />
-                <div class="grid grid-cols-2 ">
+                <Revenue 
+                    label="Total invoiced (not including deposits)" 
+                    amount={totalRevenue(searchedInvoices(dateSearchedInvoices(invoices)))} 
+                    classes='border-b-2 dark:border-primary-950 border-primary-50 m-2'
+                />
+                <div class="grid grid-cols-2 mx-2 border-y-2 dark:border-primary-950 border-primary-50">
                     {#each  slicedInvoices(searchedInvoices(invoices)) as invoice}  
                     {@const customer = customers.find((customer) => customer.id === invoice.customerId)}  
                         <InvoiceEmployee {invoice} classes='border-e-2 border-b-2 dark:border-primary-950 border-primary-50 px-2' />
