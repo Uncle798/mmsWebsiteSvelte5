@@ -8,7 +8,7 @@
 	import Address from '$lib/displayComponents/Address.svelte';
 	import Header from '$lib/Header.svelte';
 	import { BadgeCheck, } from 'lucide-svelte';
-	import LeaseCustomer from '$lib/displayComponents/LeaseCustomer.svelte';
+	import LeaseCustomer from '$lib/displayComponents/customerViews/LeaseCustomer.svelte';
 	import LeaseEndForm from '$lib/forms/LeaseEndForm.svelte';
 	import { fade } from 'svelte/transition';
     
