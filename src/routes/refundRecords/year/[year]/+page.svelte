@@ -1,5 +1,5 @@
 <script lang="ts">
-	import RefundRecordDisplay from '$lib/displayComponents/RefundRecordDisplay.svelte';
+	import RefundRecordEmployee from '$lib/displayComponents/RefundRecordEmployee.svelte';
 	import User from '$lib/displayComponents/User.svelte';
 	import Search from '$lib/forms/Search.svelte';
     import dayjs from 'dayjs';
@@ -85,7 +85,7 @@
                 <div class="grid grid-cols-2 mx-2 gap-y-3 gap-x-1 ">
                     {#each slicedRefunds(searchRefunds(dateSearchRefunds(refunds))) as refund (refund.refundNumber)}
                         {@const customer = customers.find((customer) => customer.id === refund.customerId)}
-                            <RefundRecordDisplay refundRecord={refund} classes='px-2 pt-2 border-2 rounded-lg border-primary-50 dark:border-primary-95'/>
+                            <RefundRecordEmployee refundRecord={refund} classes='px-2 pt-2 border-2 rounded-lg border-primary-50 dark:border-primary-95'/>
                             {#if customer}
                             {@const address = addresses.find((address) => address.userId === customer.id)}
                                 <div class="flex flex-col rounded-lg border-2 border-primary-50 dark:border-primary-950">

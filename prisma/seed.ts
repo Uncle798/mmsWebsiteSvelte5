@@ -274,6 +274,7 @@ async function makeRefund(paymentRecord:PaymentRecord){
          refundNotes: `Refund of payment record number ${paymentRecord.paymentNumber}.\n${paymentRecord.paymentNotes}`,
          refundCreated: dayjs(paymentRecord.paymentCreated).add(1, 'months').toDate(),
          refundCompleted: dayjs(paymentRecord.paymentCreated).add(1, 'months').toDate(),
+         deposit: paymentRecord.deposit
       }
    })
    await prisma.paymentRecord.update({

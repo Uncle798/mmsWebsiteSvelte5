@@ -51,7 +51,7 @@
 
 <Modal
 	bind:open={menuOpen}
-	triggerBase="btn preset-tonal"
+	triggerBase="btn preset-tonal hover:shadow-xl hover:border-2 border-primary-50 dark:border-primary-950"
 	contentBase="bg-surface-100-900 p-2 space-y-2 shadow-xl w-[325px] h-screen"
 	positionerJustify="justify-start"
 	positionerAlign=""
@@ -63,7 +63,7 @@
 	}} 
 >
 {#snippet trigger()}
-		<Menu class='mx-2' />	
+		<Menu class='mx-2 border-2' />	
 {/snippet}
 {#snippet content()}
 	<article>
@@ -98,3 +98,4 @@
 <ToastProvider placement='top-start'>
 	{@render children()}
 </ToastProvider>
+

@@ -1,7 +1,7 @@
 <script lang="ts">
    import type { Invoice } from "@prisma/client";
    import dayjs from "dayjs";
-	import HorizontalDivider from "./HorizontalDivider.svelte";
+	import HorizontalDivider from "../HorizontalDivider.svelte";
    interface Props {
       invoice:Invoice;
       classes?: string;

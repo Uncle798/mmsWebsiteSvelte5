@@ -8,7 +8,7 @@
 	import Address from '$lib/displayComponents/Address.svelte';
 	import Header from '$lib/Header.svelte';
 	import { BadgeCheck, } from 'lucide-svelte';
-	import LeaseCustomer from '$lib/displayComponents/LeaseCustomer.svelte';
+	import LeaseCustomer from '$lib/displayComponents/customerViews/LeaseCustomer.svelte';
 	import LeaseEndForm from '$lib/forms/LeaseEndForm.svelte';
 	import { fade } from 'svelte/transition';
     
@@ -27,7 +27,7 @@
 </script>
 <Header title='Settings for {data.user?.givenName}' />
 
-<div transition:fade={{duration:600}}>
+<div transition:fade={{duration:600}} class="mx-2">
 
 
 <span class="h1">{data.user?.givenName} {data.user?.familyName}</span>
@@ -36,7 +36,7 @@
 {/if}
 <Modal
     bind:open={nameModalOpen}
-    triggerBase="btn preset-tonal"
+    triggerBase="btn preset-filled-primary-50-950 rounded-lg"
     contentBase="card bg-surface-400-600 p-4 space-y-4 shadow-xl max-w-screen-sm"
     backdropClasses="backdrop-blur-sm"
 >
@@ -52,19 +52,19 @@
 <span class="h4 flex">{data.user?.email}
     {#if data.user?.emailVerified}
     <div class="flex p-1">
-        <BadgeCheck />  
-        <div class=" p-1">
+        <BadgeCheck size='20'/>  
+        <div class="px-1 align-super text-xs">
             Email Verified
         </div>
     </div>
     
     {:else}
-    <button class="btn h6" onclick={()=>emailVerificationModalOpen=true}>Please confirm your email address</button>
+    <button class="btn " onclick={()=>emailVerificationModalOpen=true}>Please confirm your email address</button>
     {/if}
 </span>
 <Modal
     bind:open={emailModalOpen}
-    triggerBase="btn preset-tonal"
+    triggerBase="btn preset-filled-primary-50-950 rounded-lg"
     contentBase="card bg-surface-400-600 p-4 space-y-4 shadow-xl max-w-screen-sm"
     backdropClasses="backdrop-blur-sm"
 >
@@ -77,7 +77,7 @@
         {:else}
             <EmailVerification data={data.emailVerificationForm} bind:emailVerificationModalOpen={emailVerificationModalOpen} redirect='false' bind:emailVerification={emailVerification}/>
             {/if}
-            <button class="btn" onclick={()=>emailModalOpen = false}>Cancel</button>
+            <button class="btn preset-filled-primary-50-950 rounded-lg" onclick={()=>emailModalOpen = false}>Cancel</button>
         {/snippet}
 </Modal>
     
@@ -88,7 +88,7 @@
     >
     {#snippet content()}
         <EmailVerification data={data.emailVerificationForm} bind:emailVerificationModalOpen={emailVerificationModalOpen} redirect='false' bind:emailVerification={emailVerification}/>
-        <button class="btn" onclick={()=>emailVerificationModalOpen = false}>Cancel</button>
+        <button class="btn preset-filled-primary-50-950 rounded-lg" onclick={()=>emailVerificationModalOpen = false}>Cancel</button>
     {/snippet}
 </Modal>
 
@@ -96,12 +96,12 @@
     ...loading address
 {:then address} 
     {#if address}
-        <Address address={address} />
+        <Address address={address} classes='pt-2'/>
     {/if}
     
     <Modal
         bind:open={addressModalOpen}
-        triggerBase="btn preset-tonal"
+        triggerBase="btn preset-filled-primary-50-950 rounded-lg"
         contentBase="card bg-surface-400-600 p-4 space-y-4 shadow-xl max-w-screen-sm"
         backdropClasses="backdrop-blur-sm"
     >
@@ -130,13 +130,13 @@
     >
         {#snippet content()}
             <LeaseEndForm data={data.leaseEndForm} bind:leaseEndModalOpen={leaseEndModalOpen} leaseId={currentLeaseId} customer={data.user?.employee}/>
-            <button class="btn" onclick={()=>leaseEndModalOpen=false}>Cancel</button>
+            <button class="btn preset-filled-primary-50-950 rounded-lg" onclick={()=>leaseEndModalOpen=false}>Cancel</button>
         {/snippet}
     </Modal>
         {#each leases as lease}
             <LeaseCustomer lease={lease} />
             {#if !lease.leaseEnded}
-            <button class="btn preset-tonal p-4" onclick={()=> setCurrentLeaseId(lease.leaseId)}>End Lease</button>
+            <button class="btn preset-filled-primary-50-950 rounded-lg" onclick={()=> setCurrentLeaseId(lease.leaseId)}>End Lease</button>
             {/if}
         {/each}
     {/if}

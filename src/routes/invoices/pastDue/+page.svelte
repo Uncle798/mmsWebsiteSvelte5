@@ -52,45 +52,29 @@
 {#await wrapper}
     <Header title='Loading invoices' />
     Loading {numberFormatter.format(data.invoiceCount)} invoices, 
-    {#if data.years}
-    or select year: 
-    {#each data.years as year}
-    <a href="/invoices/year/{year}" class="btn">{year.toString()},</a>
-    {/each}
-    {/if}
-    or:
-    <a href="/invoices/unpaid" class="btn">Unpaid invoices</a>
-    
-    <Placeholder numCols={1} numRows={2} heightClass='h-10'/>
-    <Placeholder numCols={2} numRows={size} heightClass='h-40'/>
-    {:then invoices}
+    <Placeholder numCols={2} numRows={3} heightClass='h-32'/>
+{:then invoices}
     {#await data.customers}
         <Header title='Loading customers' />
-        <Placeholder numCols={1} numRows={2} heightClass='h-10'/>
-        <Placeholder numCols={2} numRows={size} heightClass='h-40'/>
+        Loading customers...
     {:then customers}
         {#await data.addresses}
-            <Placeholder numCols={1} numRows={2} heightClass='h-10'/>
-            <Placeholder numCols={2} numRows={size} heightClass='h-40'/>
+            Loading addresses...
         {:then addresses}
-            {#if invoices.length >0}
+            {#if invoices.length >0}       
                 <Header title='All invoices' />
-                <div class="flex m-2 border-b-2 dark:border-primary-950 border-primary-50 shadow-xl" transition:fade={{duration:600}}>
-                    <Search data={data.searchForm} bind:search={search} searchType='invoice number' classes='w-1/2 p-2'/>
-                    <DateSearch data={data.dateSearchForm} bind:startDate={startDate} bind:endDate={endDate} {minDate} {maxDate} classes='w-1/2 p-2'/>
+                <div class="grid grid-cols-2 gap-x-1 gap-y-3 m-2">
+                    <Search data={data.searchForm} bind:search={search} searchType='invoice number' classes=''/>
+                    <DateSearch data={data.dateSearchForm} bind:startDate={startDate} bind:endDate={endDate} {minDate} {maxDate} classes=''/>
                 </div>
-                <Revenue 
-                    label="Total invoiced (not including deposits)" 
-                    amount={totalRevenue(searchedInvoices(dateSearchedInvoices(invoices)))} 
-                    classes='border-b-2 dark:border-primary-950 border-primary-50 m-2 drop-shadow-2xl'
-                />
-                <div class="grid grid-cols-2 mx-2 border-y-2 dark:border-primary-950 border-primary-50" transition:fade={{duration:600}}>
+                <Revenue label="Total invoiced (not including deposits)" amount={totalRevenue(searchedInvoices(dateSearchedInvoices(invoices)))} classes='m-2'/>
+                <div class="grid grid-cols-2 gap-x-1 gap-y-3 m-2">
                     {#each  slicedInvoices(searchedInvoices(invoices)) as invoice}  
                     {@const customer = customers.find((customer) => customer.id === invoice.customerId)}  
-                        <InvoiceEmployee {invoice} classes=' border-b-2 dark:border-primary-950 border-primary-50 px-2' />
+                        <InvoiceEmployee {invoice} classes='border-2 rounded-lg dark:border-primary-950 border-primary-50 px-2' />
                         {#if customer}
                         {@const address = addresses.find((address) => address.userId === customer.id)}
-                            <div class="flex flex-col border-b-2 dark:border-primary-950 border-primary-50 px-2 pt-2">
+                            <div class="flex flex-col border-2 rounded-lg dark:border-primary-950 border-primary-50 px-2 pt-2">
                                 <User user={customer} classes=''/>
                                 {#if address}
                                     <Address {address} />

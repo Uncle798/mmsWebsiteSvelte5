@@ -89,7 +89,9 @@ export const load:PageServerLoad = (async (event) => {
             }
          })
          await qStash.notify({eventId:lease!.leaseId})
-         return { packetDetails, customer };
+         return { packetDetails, customer, paymentRecord };
       }
+      return { paymentRecord }
    }
+   return { }
  });

@@ -14,7 +14,7 @@ export const load:PageServerLoad = (async (event) => {
         return{};
     }
     if(event.locals.user.emailVerified){
-        redirect(302, 'accountSettings')
+        redirect(302, '/accountSettings')
     }
     const emailVerificationForm = await superValidate(zod(emailVerificationFormSchema));
     const verification = await prisma.verification.findFirst({

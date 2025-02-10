@@ -54,7 +54,7 @@
 {#await wrapper}
     <Header title='Loading invoices' />
     Loading {numberFormatter.format(data.invoiceCount)} invoices, 
-    <Placeholder />
+    <Placeholder numCols={2} numRows={3} heightClass='h-32'/>
 {:then invoices}
     {#await data.customers}
         <Header title='Loading customers' />
