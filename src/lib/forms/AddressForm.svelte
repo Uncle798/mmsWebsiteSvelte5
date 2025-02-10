@@ -48,7 +48,7 @@
          placeholder='Unit 1'  
          autocomplete='address-line2'
       />
-      <div class="flex">
+      <div class="flex gap-x-2">
       <TextInput
          label='City'
          name='city'
@@ -77,8 +77,8 @@
          autocomplete='postal-code'
       />
       </div>
-      <label for="country" class="label mx-4">Country
-         <select class="select p-4 " name='country' autocomplete="country">
+      <label for="country" class="label">Country
+         <select class="select p-2" name='country' autocomplete="country">
             {#each countries as country}
                {#if country['Alpha-2 code'] === 'US'}
                   <option value={country['Alpha-2 code']} selected>{country.Country}</option>

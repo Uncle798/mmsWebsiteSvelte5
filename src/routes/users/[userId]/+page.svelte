@@ -10,8 +10,9 @@
    import PaymentRecordEmployee from '$lib/displayComponents/PaymentRecordEmployee.svelte';
    import Header from '$lib/Header.svelte';
    import type { Invoice, PaymentRecord } from '@prisma/client';
-	import RefundRecordDisplay from '$lib/displayComponents/RefundRecordDisplay.svelte';
+	import RefundRecordDisplay from '$lib/displayComponents/RefundRecordEmployee.svelte';
 	import Pagination from '$lib/displayComponents/Pagination.svelte';
+	import dayjs from 'dayjs';
    let { data }: { data: PageData } = $props();
    let addressModalOpen = $state(false);
    let leaseEndModalOpen = $state(false);
@@ -62,7 +63,7 @@
    {/snippet}
    {#snippet content()}
       <AddressForm data={data.addressForm} bind:addressModalOpen={addressModalOpen} userId={data.dbUser?.id!}/>
-      <button class="btn preset-filled-primary-50-950 rounded-lg mx-2" onclick={()=>addressModalOpen=false}>Close</button>
+      <button class="btn preset-filled-primary-50-950 rounded-lg" onclick={()=>addressModalOpen=false}>Close</button>
    {/snippet}
    </Modal>
 {:else}
@@ -108,7 +109,12 @@
             <span class="ml-2">Total invoiced: {currencyFormatter.format(totalInvoiced)}</span>
             <span>Total paid: {currencyFormatter.format(totalPaid)}</span>
             {#if difference > 0}
-               <span class="text-red-700 dark:text-green-500">Outstanding balance: {currencyFormatter.format(difference)}</span>
+               <span class="text-red-700 dark:text-red-500">Outstanding balance: {currencyFormatter.format(difference)}</span>
+               {#if dayjs(invoices[0].invoiceCreated).add(1,'month') < dayjs()}
+                  <span class="text-red-700 dark:text-red-500">Due: {dayjs(invoices[0].invoiceCreated).add(1, 'month').format('MMMM D YYYY')}</span>
+               {:else}
+                  <span class="text-green-700 dark:text-green-500">Due: {dayjs(invoices[0].invoiceCreated).add(1, 'month').format('MMMM D YYYY')}</span>
+               {/if}
             {:else if difference < 0 }   
                <span class="text-green-700 dark:text-green-500">Outstanding balance: {currencyFormatter.format(difference)}</span>
             {/if}
@@ -120,9 +126,11 @@
                <InvoiceEmployee invoice={invoice} classes='min-w-1/3 rounded-lg border-2 border-primary-50 dark:border-primary-950'/>
                {#if paymentRecord}
                   <PaymentRecordEmployee paymentRecord={paymentRecord} classes='min-w-1/3 rounded-lg border-2 border-primary-50 dark:border-primary-950'/>
+               {:else}
+                  <div class="min-w-1/3"></div>
                {/if}
                {#if refund}
-                  <RefundRecordDisplay refundRecord={refund} classes='min-w-1/3 rounded-lg border-2 border-primary-50 dark:border-primary-950'/>
+                  <RefundRecordDisplay refundRecord={refund} classes='min-w-1/3 rounded-lg border-2 border-primary-50 dark:border-primary-950 min-h-72'/>
                {:else}
                   <div class="min-w-1/3"></div>
                {/if}

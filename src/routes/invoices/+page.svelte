@@ -63,30 +63,33 @@
     or:
     <a href="/invoices/unpaid" class="btn">Unpaid invoices</a>
     
-    <Placeholder numCols={2} numRows={3} heightClass='h-32'/>
-{:then invoices}
+    <Placeholder numCols={1} numRows={2} heightClass='h-10'/>
+    <Placeholder numCols={2} numRows={size} heightClass='h-40'/>
+    {:then invoices}
     {#await data.customers}
         <Header title='Loading customers' />
-        Loading customers...
+        <Placeholder numCols={1} numRows={2} heightClass='h-10'/>
+        <Placeholder numCols={2} numRows={size} heightClass='h-40'/>
     {:then customers}
         {#await data.addresses}
-            Loading addresses...
+            <Placeholder numCols={1} numRows={2} heightClass='h-10'/>
+            <Placeholder numCols={2} numRows={size} heightClass='h-40'/>
         {:then addresses}
             {#if invoices.length >0}
                 <Header title='All invoices' />
-                <div class="flex m-2 border-b-2 dark:border-primary-950 border-primary-50">
+                <div class="flex m-2 border-b-2 dark:border-primary-950 border-primary-50 shadow-xl" transition:fade={{duration:600}}>
                     <Search data={data.searchForm} bind:search={search} searchType='invoice number' classes='w-1/2 p-2'/>
                     <DateSearch data={data.dateSearchForm} bind:startDate={startDate} bind:endDate={endDate} {minDate} {maxDate} classes='w-1/2 p-2'/>
                 </div>
                 <Revenue 
                     label="Total invoiced (not including deposits)" 
                     amount={totalRevenue(searchedInvoices(dateSearchedInvoices(invoices)))} 
-                    classes='border-b-2 dark:border-primary-950 border-primary-50 m-2'
+                    classes='border-b-2 dark:border-primary-950 border-primary-50 m-2 drop-shadow-2xl'
                 />
-                <div class="grid grid-cols-2 mx-2 border-y-2 dark:border-primary-950 border-primary-50">
+                <div class="grid grid-cols-2 mx-2 border-y-2 dark:border-primary-950 border-primary-50" transition:fade={{duration:600}}>
                     {#each  slicedInvoices(searchedInvoices(invoices)) as invoice}  
                     {@const customer = customers.find((customer) => customer.id === invoice.customerId)}  
-                        <InvoiceEmployee {invoice} classes='border-e-2 border-b-2 dark:border-primary-950 border-primary-50 px-2' />
+                        <InvoiceEmployee {invoice} classes=' border-b-2 dark:border-primary-950 border-primary-50 px-2' />
                         {#if customer}
                         {@const address = addresses.find((address) => address.userId === customer.id)}
                             <div class="flex flex-col border-b-2 dark:border-primary-950 border-primary-50 px-2 pt-2">
