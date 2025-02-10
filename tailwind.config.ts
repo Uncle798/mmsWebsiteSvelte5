@@ -28,8 +28,11 @@ export default {
 				themes.modern,
 				themes.mona,
 				themes.nosh,
+				themes.nouveau,
 				themes.pine,
+				themes.reign,
 				themes.vintage,
+
 			]
 		})
 	]
