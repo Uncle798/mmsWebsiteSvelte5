@@ -1,8 +1,8 @@
 <script lang="ts">
 	import Address from '$lib/displayComponents/Address.svelte';
-	import InvoiceCustomer from '$lib/displayComponents/CustomerViews/InvoiceCustomer.svelte';
-	import PaymentRecordCustomer from '$lib/displayComponents/CustomerViews/PaymentRecordCustomer.svelte';
-	import RefundRecordCustomer from '$lib/displayComponents/CustomerViews/RefundRecordCustomer.svelte';
+	import InvoiceCustomer from '$lib/displayComponents/customerViews/InvoiceCustomer.svelte';
+	import PaymentRecordCustomer from '$lib/displayComponents/customerViews/PaymentRecordCustomer.svelte';
+	import RefundRecordCustomer from '$lib/displayComponents/customerViews/RefundRecordCustomer.svelte';
    import InvoiceEmployee from '$lib/displayComponents/InvoiceEmployee.svelte';
    import PaymentRecordEmployee from '$lib/displayComponents/PaymentRecordEmployee.svelte';
 	import RefundRecordEmployee from '$lib/displayComponents/RefundRecordEmployee.svelte';

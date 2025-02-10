@@ -4,7 +4,7 @@
 
     let { data }: { data: PageData } = $props();
 	import { PUBLIC_ANVIL_EMAIL, PUBLIC_COMPANY_NAME } from '$env/static/public';
-	import PaymentRecordCustomer from '$lib/displayComponents/CustomerViews/PaymentRecordCustomer.svelte';
+	import PaymentRecordCustomer from '$lib/displayComponents/customerViews/PaymentRecordCustomer.svelte';
 </script>
 <Header title='Lease Sent' />
 <div class="mx-2">

@@ -7,7 +7,7 @@
     import { onMount, getContext } from 'svelte';
     import type { ToastContext } from '@skeletonlabs/skeleton-svelte';
     import type { PageData } from './$types';
-	import UnitCustomer from '$lib/displayComponents/CustomerViews/UnitCustomer.svelte';
+	import UnitCustomer from '$lib/displayComponents/customerViews/UnitCustomer.svelte';
 	import User from '$lib/displayComponents/User.svelte';
 	import Checkbox from '$lib/formComponents/Checkbox.svelte';
 	import FormMessage from '$lib/formComponents/FormMessage.svelte';

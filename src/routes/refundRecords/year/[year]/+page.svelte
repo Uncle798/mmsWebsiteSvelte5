@@ -1,5 +1,5 @@
 <script lang="ts">
-	import RefundRecordDisplay from '$lib/displayComponents/RefundRecordDisplay.svelte';
+	import RefundRecordDisplay from '$lib/displayComponents/RefundRecordEmployee.svelte';
 	import User from '$lib/displayComponents/User.svelte';
 	import Search from '$lib/forms/Search.svelte';
     import dayjs from 'dayjs';
