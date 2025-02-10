@@ -1,5 +1,5 @@
 <script lang="ts">
-    import InvoiceCustomer from '$lib/displayComponents/InvoiceCustomer.svelte';
+    import InvoiceCustomer from '$lib/displayComponents/CustomerViews/InvoiceCustomer.svelte';
 import type { PageData } from './$types';
 
     let { data }: { data: PageData } = $props();
