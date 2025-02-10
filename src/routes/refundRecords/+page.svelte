@@ -1,5 +1,5 @@
 <script lang="ts">
-	import RefundRecordDisplay from '$lib/displayComponents/RefundRecordDisplay.svelte';
+	import RefundRecordEmployee from '$lib/displayComponents/RefundRecordEmployee.svelte';
 	import User from '$lib/displayComponents/User.svelte';
 	import Search from '$lib/forms/Search.svelte';
 	import dayjs from 'dayjs';
@@ -11,6 +11,7 @@
 	import Header from '$lib/Header.svelte';
 	import Placeholder from '$lib/displayComponents/Placeholder.svelte';
 	import Address from '$lib/displayComponents/Address.svelte';
+	import { fade } from 'svelte/transition';
 	let { data }: { data: PageData } = $props();
 	let size = $state(25);
 	let pageNum = $state(1);
@@ -21,7 +22,7 @@
 	let minDate = $state<Date>();
 	let wrapper = new Promise<RefundRecord[]>(async (res) => {
 		const refunds = await data.refunds;
-		startDate = dayjs(refunds[0].refundCreated).startOf('year').toDate();
+		startDate = dayjs(refunds[refunds.length-1].refundCreated).startOf('year').toDate();
 		minDate = startDate;
 		maxDate = new Date();
 		endDate = maxDate;
@@ -49,6 +50,16 @@
 		});
 		return totalRevenue;
 	});
+	const refundsNotDeposits = $derived((refunds: RefundRecord[]) => {
+		let totalRevenue: number = 0;
+		refunds.forEach((refund) => {
+			
+			if(!refund.deposit)
+			totalRevenue += refund.refundAmount;
+		});
+		return totalRevenue;
+	});
+	console.log()
 </script>
 
 <Header title="All Refunds" />
@@ -60,15 +71,18 @@
 			<a href="/refundRecords/year/{year}" class="btn">{year.toString()},</a>
 		{/each}
 	{/if}
-	<Placeholder numCols={2} numRows={3} heightClass='h-32'/>
-{:then refunds}
+		<Placeholder numCols={1} numRows={2} heightClass='h-10' />
+		<Placeholder numCols={2} numRows={size} heightClass='h-44'/>
+	{:then refunds}
 	{#await data.customers}
-		loading customers
+		<Placeholder numCols={1} numRows={2} heightClass='h-10' />
+		<Placeholder numCols={2} numRows={size} heightClass='h-44'/>
 	{:then customers}
 		{#await data.addresses}
-			loading addresses
-		{:then addresses} 			
-			<div class="flex mx-2 border-b-2 border-primary-50 dark:border-primary-950 ">
+			<Placeholder numCols={1} numRows={2} heightClass='h-10' />
+			<Placeholder numCols={2} numRows={size} heightClass='h-44'/>
+		{:then addresses}
+			<div class="flex mx-2 border-b-2  border-primary-50 dark:border-primary-950 shadow-lg" transition:fade={{duration:600}}>
 				<Search
 					bind:search 
 					searchType="Refund records" 
@@ -84,24 +98,32 @@
 					classes='p-2'	
 				/>
 			</div>
-			<Revenue 
-				label="Total refunds" 
-				amount={totalRevenue(searchRefunds(dateSearchRefunds(refunds)))}
-				classes='border-b-2 border-primary-50 dark:border-primary-950 m-2'	
-			/>
-			<div class="grid grid-cols-2 mx-2 gap-y-3 gap-x-1 ">
+			<div class="flex border-b-2 border-primary-50 dark:border-primary-950 m-2 shadow-lg">
+				<Revenue 
+					label="Total refunds" 
+					amount={totalRevenue(searchRefunds(dateSearchRefunds(refunds)))}
+					classes='mr-2'	
+				/>
+				<Revenue 
+					label="Refunds not deposits" 
+					amount={refundsNotDeposits(searchRefunds(dateSearchRefunds(refunds)))}
+					classes=''	
+				/>
+
+			</div>
+			<div class="grid grid-cols-2 mx-2 gap-y-3 gap-x-1 shadow-lg">
 				{#each slicedRefunds(searchRefunds(dateSearchRefunds(refunds))) as refund (refund.refundNumber)}
-					{@const customer = customers.find((customer) => customer.id === refund.customerId)}
-						<RefundRecordDisplay refundRecord={refund} classes='px-2 pt-2 border-2 rounded-lg border-primary-50 dark:border-primary-950'/>
-						{#if customer}
-						{@const address = addresses.find((address) => address.userId === customer.id)}
-							<div class="flex flex-col rounded-lg border-2 border-primary-50 dark:border-primary-950">
-								<User user={customer} classes='pt-2 pl-2 ' />
-								{#if address}
-									<Address {address} classes='pl-2'/>
-								{/if}
-							</div>
-						{/if}
+				{@const customer = customers.find((customer) => customer.id === refund.customerId)}
+					<RefundRecordEmployee refundRecord={refund} classes='px-2 pt-2 border-2 rounded-lg border-primary-50 dark:border-primary-950'/>
+					{#if customer}
+					{@const address = addresses.find((address) => address.userId === customer.id)}
+						<div class="flex flex-col rounded-lg border-2 border-primary-50 dark:border-primary-950">
+							<User user={customer} classes='pt-2 pl-2 ' />
+							{#if address}
+								<Address {address} classes='pl-2'/>
+							{/if}
+						</div>
+					{/if}
 				{/each}
 			</div>
 			<Pagination bind:size bind:pageNum label="refund records" array={searchRefunds(dateSearchRefunds(refunds))} />
