@@ -164,6 +164,7 @@ model RefundRecord {
   refundCreated    DateTime        @default(now())
   refundCompleted  DateTime?
   paymentRecordNum Int
+  deposit Boolean @default(false)
   refundType       PaymentType
   paymentRecord    PaymentRecord[]
   customer         User            @relation("customer", fields: [customerId], references: [id])
