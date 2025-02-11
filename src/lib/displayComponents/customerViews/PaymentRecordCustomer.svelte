@@ -15,7 +15,7 @@
 <div class="{classes} grid grid-cols-2 gap-x-2 ">
    <div class="col-span-2 text-center text-sm font-semibold">Payment Record</div>
    <div class="text-right">Number</div> 
-   <div class="text-left align-text-bottom"><a href="/paymentRecords/{paymentRecord.paymentNumber}" class="font-medium text-right">{paymentRecord.paymentNumber}</a></div>
+   <div class="font-medium"><a href="/paymentRecords/{paymentRecord.paymentNumber}" class="">{paymentRecord.paymentNumber}</a></div>
    <HorizontalDivider classes='col-span-2'/>
    <div class="text-right">Amount</div> 
    <div class="font-medium">{currencyFormatter.format(paymentRecord.paymentAmount)}</div>
@@ -36,17 +36,17 @@
    <HorizontalDivider classes='col-span-2' />
    {#if paymentRecord.invoiceNum}
       <div class="text-right">Notes</div>
-      <div class="text-left font-medium"> <a href="/invoices/{paymentRecord.invoiceNum}">{paymentRecord.paymentNotes}</a></div>
+      <div class="font-medium"> <a href="/invoices/{paymentRecord.invoiceNum}">{paymentRecord.paymentNotes}</a></div>
    {:else}
       <div class="text-right">Notes</div>
-      <div class="text-left font-medium">{paymentRecord.paymentNotes}</div>
+      <div class="font-medium">{paymentRecord.paymentNotes}</div>
    {/if}
    {#if paymentRecord.deposit}
       <HorizontalDivider classes='col-span-2' />
-      <div class="col-span-2 text-center px-2 font-medium">Deposit</div>
+      <div class="col-span-2 text-center font-medium">Deposit</div>
    {/if}
    {#if paymentRecord.refunded}
       <HorizontalDivider classes='col-span-2' />
-      <div class="col-span-2 text-center px-2 font-medium">Refunded</div>
+      <div class="col-span-2 text-center font-medium">Refunded</div>
    {/if}
 </div>
