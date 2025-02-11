@@ -1,20 +1,30 @@
 <script lang='ts'>
    import type { Lease } from "@prisma/client";
-   import type { PartialUser } from "$lib/server/partialTypes";
 	import dayjs from "dayjs";
+	import HorizontalDivider from "../HorizontalDivider.svelte";
    interface Props {
       lease: Lease;
       classes?: string;
    }
-   let { lease, classes }:Props = $props()
+   let { lease, classes }:Props = $props();
+   const currencyFormatter = new Intl.NumberFormat('en-US', {style:'currency', currency:'USD'});
 </script>
 
-<div class="p-4 flex-none {classes}">
-   <p>Unit number: {lease.unitNum.replace(/^0+/gm, '')}</p>
-   <p>Lease effective date: {dayjs(lease.leaseEffectiveDate).format('M/D/YYYY')}</p>
+<div class="{classes} grid grid-cols-2 gap-x-2 items-start">
+   <div class="col-span-2 text-center text-sm font-semibold -m-1 -mt-2">Lease</div>
+   <div class="text-right">Unit number:</div>
+   <div class="font-medium"><a href="/units/{lease.unitNum}">{lease.unitNum.replace(/^0+/gm,'')}</a></div>
+   <HorizontalDivider classes="col-span-2"/>
+   <div class="text-right -indent-2">Effective date:</div>
+   <div class="font-medium">{dayjs(lease.leaseEffectiveDate).format('M/D/YYYY')}</div>
+   <HorizontalDivider classes="col-span-2"/>
+   <div class="text-right">Price:</div>
+   <div class="font-medium">{currencyFormatter.format(lease.price)}</div>
+   <HorizontalDivider classes="col-span-2"/>
    {#if lease.leaseEnded}
-      <p>Lease end date: {dayjs(lease.leaseEnded).format('M/D/YYYY')}</p>
-      {:else}
-      <p><a href="/autopay?leaseId={lease.leaseId}">Sign up for auto-pay through Stripe</a></p>
+      <div class="text-right">Lease end date:</div>
+      <div class="font-medium"> {dayjs(lease.leaseEnded).format('M/D/YYYY')}</div>
+      <HorizontalDivider classes="col-span-2"/>
    {/if}
+
 </div>
