@@ -11,6 +11,8 @@
 	import LeaseCustomer from '$lib/displayComponents/customerViews/LeaseCustomer.svelte';
 	import LeaseEndForm from '$lib/forms/LeaseEndForm.svelte';
 	import { fade } from 'svelte/transition';
+	import InvoiceCustomer from '$lib/displayComponents/customerViews/InvoiceCustomer.svelte';
+	import PaymentRecordCustomer from '$lib/displayComponents/customerViews/PaymentRecordCustomer.svelte';
     
     let {data}:{ data: PageData} = $props();
     let addressModalOpen = $state(false);
@@ -134,12 +136,28 @@
         {/snippet}
     </Modal>
         {#each leases as lease}
-            <LeaseCustomer lease={lease} />
+            <LeaseCustomer lease={lease} classes='w-64  pt-4'/>
             {#if !lease.leaseEnded}
-            <button class="btn preset-filled-primary-50-950 rounded-lg" onclick={()=> setCurrentLeaseId(lease.leaseId)}>End Lease</button>
+            <button class="btn preset-filled-primary-50-950 rounded-lg m-2" onclick={()=> setCurrentLeaseId(lease.leaseId)}>End Lease</button>
             {/if}
         {/each}
     {/if}
 {/await}
-
+<div class="grid grid-cols-3 gap-x-1 gap-y-3 py-2">
+    {#await data.invoicesPromise}
+        loading invoices
+    {:then invoices} 
+        {#await data.paymentsPromise}
+            loading payments
+        {:then payments} 
+            {#each invoices as invoice}
+            {@const paymentRecord = payments.find((payment) => payment.invoiceNum === invoice.invoiceNum)}
+            <InvoiceCustomer {invoice} classes="border border-primary-50 dark:border-primary-950 rounded-lg"/>
+            {#if paymentRecord}
+                <PaymentRecordCustomer {paymentRecord} classes="border border-primary-50 dark:border-primary-950 rounded-lg"/>
+            {/if}
+            {/each}
+        {/await}
+    {/await}
+</div>
 </div>
