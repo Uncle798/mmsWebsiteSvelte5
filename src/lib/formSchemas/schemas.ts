@@ -3,7 +3,7 @@ import { z } from "zod"
 export const employmentFormSchema = z.object({
    employee: z.boolean().nullable(),
    admin: z.boolean().nullable(),
-   userId: z.string().min(23).max(30),
+   userId: z.string().cuid2(),
 });
 export type EmploymentFormSchema = typeof employmentFormSchema;
 
@@ -23,7 +23,7 @@ export const unitNotesFormSchema =  z.object({
 export type  UnitNotesFormSchema = typeof unitNotesFormSchema;
 
 export const leaseEndFormSchema = z.object({
-   leaseId: z.string().min(23).max(30),
+   leaseId: z.string().cuid2(),
    customer: z.boolean().nullable(),
 })
 export type LeaseEndFormSchema = typeof leaseEndFormSchema;
@@ -31,36 +31,14 @@ export type LeaseEndFormSchema = typeof leaseEndFormSchema;
 export const newLeaseSchema = z.object({
    unitNum: z.string().min(3).max(9),
    organization: z.boolean(),
-   discountId: z.string().min(23).max(30).optional(),
-   customerId: z.string().min(23).max(30),
+   discountId: z.string().cuid2().optional(),
+   customerId: z.string().cuid2(),
    paymentType: z.enum(['CASH', 'CHECK', 'STRIPE']).optional()
 })
 export type NewLeaseSchema = typeof newLeaseSchema;
 
-export const passwordFormSchema = z.object({
-   password: z.string().min(6, 'Password must be at least 6 characters')
-      .max(255,'Password can\'t be longer than 255 characters'),
-   passwordConfirm: z.string().min(6, 'Password must be at least 6 characters')
-      .max(255,'Password can\'t be longer than 255 characters'),
-})
-.superRefine(({password, passwordConfirm}, context)=>{
-   if(passwordConfirm !== password){
-      context.addIssue({
-         code: 'custom',
-         message: 'Password must match confirm password', 
-         path: ['password']
-      })
-      context.addIssue({
-         code: 'custom',
-         message: 'Password must match confirm password', 
-         path: ['confirmPassword']
-      })
-   }
-});
-export type PasswordFormSchema = typeof passwordFormSchema;
-
 export const paymentRecordSchema = z.object({
-   customerId: z.string(),
+   customerId: z.string().cuid2(),
    invoiceId: z.string().nullable(),
    paymentAmount: z.number(),
    payee: z.string().optional(),
@@ -72,8 +50,6 @@ export type PaymentRecordSchema = typeof paymentRecordSchema
 
 export const loginSchema = z.object({
    email: z.string().email().min(3).max(255).trim(),
-   password: z.string().min(6, 'Password must be at least 6 characters')
-      .max(255,'Password can\'t be longer than 255 characters').trim(),
 });
 export type LoginSchema = typeof loginSchema;
 
@@ -123,10 +99,6 @@ export const registerFormSchema = z.object({
    organizationName: z.string().min(1).max(255).trim().optional(),
    email: z.string().min(5).max(255),
    emailConfirm: z.string().min(5).max(255),
-   // password: z.string().min(6, 'Password must be at least 6 characters')
-   //    .max(255,'Password can\'t be longer than 255 characters'),
-   // passwordConfirm: z.string().min(6, 'Password must be at least 6 characters')
-   //    .max(255,'Password can\'t be longer than 255 characters'),
 }).superRefine(({email, emailConfirm}, context)=>{
    if(emailConfirm !== email){
       context.addIssue({
@@ -167,12 +139,12 @@ export const newDiscountFormSchema = z.object({
 export type NewDiscountFormSchema = typeof newDiscountFormSchema;
 
 export const cuidIdFormSchema = z.object({
-   discountId: z.string().min(23).max(30)
+   cuid2Id: z.string().cuid2()
 });
 export type CuidIdFormSchema = typeof cuidIdFormSchema;
 
 export const newInvoiceFormSchema = z.object({
-   customerId: z.string().min(23).max(30),
+   customerId: z.string().cuid2(),
    invoiceNotes: z.string().nullable(),
    employeeId: z.string().min(23).max(30),
    invoiceAmount: z.number().positive(),
@@ -187,8 +159,8 @@ export const magicLinkFormSchema = z.object({
 export type MagicLinkFormSchema  = typeof magicLinkFormSchema;
 
 export const newPaymentRecordFormSchema = z.object({
-   customerId: z.string().min(23).max(30),
-   employeeId: z.string().min(23).max(30),
+   customerId: z.string().cuid2(),
+   employeeId: z.string().cuid2(),
    invoiceNum: z.number().nullable(),
    paymentAmount: z.number().positive(),
    payee: z.string().nullable().optional(),
