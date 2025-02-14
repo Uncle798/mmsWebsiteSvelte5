@@ -52,7 +52,7 @@
 <Modal
 	bind:open={menuOpen}
 	triggerBase="btn preset-tonal hover:shadow-xl hover:border-2 border-primary-50 dark:border-primary-950"
-	contentBase="bg-surface-100-900 p-2 space-y-2 shadow-xl w-[325px] h-screen"
+	contentBase="bg-surface-100-900 p-2 space-y-2 shadow-xl w-[240px] h-screen"
 	positionerJustify="justify-start"
 	positionerAlign=""
 	positionerPadding=""
@@ -69,26 +69,26 @@
 	<article>
 		<ul>
 			{#each customerLinks as link}
-				<li><a class="btn" href={link.link}>{link.label}</a></li>
+				<li><a class="anchor" href={link.link}>{link.label}</a></li>
 			{/each}
 			{#if data.user?.employee}
 				{#each employeeLinks as employeeLink}
-					<li><a class="btn" href={employeeLink.link}>{employeeLink.label}</a></li>
+					<li><a class="anchor" href={employeeLink.link}>{employeeLink.label}</a></li>
 				{/each}
 			{/if}
 			{#if data.user?.admin}
 				{#each adminLinks as adminLink}
-					<li><a href={adminLink.link} class="btn">{adminLink.label}</a></li>
+					<li><a href={adminLink.link} class="anchor">{adminLink.label}</a></li>
 				{/each}
 			{/if}
-			<div class="card absolute bottom-0 p-4 mb-4">
+			<div class="absolute bottom-0 p-2 mb-4">
 				{#if data.user}
 				<form action="/logout" method="post" use:enhance>
-					<li><button class="btn">Logout</button></li>
+					<li><button class="anchor">Logout</button></li>
 				</form>
-				<li><a class="btn" href="/accountSettings">Settings</a></li>
+				<li><a class="anchor" href="/accountSettings">Settings</a></li>
 				{:else}
-				<li><a class="btn" href="/login">Login</a></li>
+				<li><a class="anchor" href="/login">Login</a></li>
 				{/if}
 			</div>
 		</ul>
