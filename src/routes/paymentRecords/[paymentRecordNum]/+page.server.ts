@@ -122,4 +122,4 @@ export const actions: Actions = {
       const response = await sendPaymentReceipt(customer!, paymentRecord!)
       console.log(response);
    }
-};
+}
