@@ -2,6 +2,7 @@
    import { superForm, type SuperValidated, type Infer } from 'sveltekit-superforms';
    import TextInput from '$lib/formComponents/TextInput.svelte';
    import countries from '$lib/countryCodes.json'
+   import dialCodes from '$lib/dialCodes.json'
 	import { type AddressFormSchema } from '$lib/formSchemas/schemas';
 	import { invalidateAll } from '$app/navigation';
 	import { onMount } from 'svelte';
@@ -88,6 +89,27 @@
             {/each}
          </select>
       </label>
+      <label for="phoneNum1Country">
+         <select class="select" name="phoneNum1Country" autocomplete="tel-country-code">
+            {#each dialCodes as dialCode}
+               {#if dialCode.code === "US"}
+                  <option value={dialCode.code} selected>{dialCode.dial_code}</option>
+               {:else}
+                  <option value={dialCode.code}>{dialCode.dial_code}</option>
+               {/if}
+            {/each}
+         </select>
+      </label>
+      <TextInput
+         bind:value={$form.phoneNum1}
+         errors={$errors.phoneNum1}
+         constraints={$constraints.phoneNum1}
+         label="Phone number:"
+         name='phoneNum1'
+         placeholder="2088826564"
+         autocomplete="tel"
+      />
+
       <FormProgress delayed={$delayed} timeout={$timeout}/>
    </form>
 </div>
