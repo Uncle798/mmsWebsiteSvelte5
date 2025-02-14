@@ -2,15 +2,14 @@
    import LeaseEmployee from '$lib/displayComponents/LeaseEmployee.svelte';
    import UnitEmployee from '$lib/displayComponents/UnitEmployee.svelte';
 	import Header from '$lib/Header.svelte';
-	import { Accordion, Modal, Tabs } from '@skeletonlabs/skeleton-svelte';
+	import { Accordion, Modal } from '@skeletonlabs/skeleton-svelte';
    import type { PageData } from './$types';
 	import UnitPricingForm from '$lib/forms/UnitPricingForm.svelte';
 	import User from '$lib/displayComponents/User.svelte';
 	import { fade, blur } from 'svelte/transition';
-   import type { Invoice } from '@prisma/client';
 	import Revenue from '$lib/displayComponents/Revenue.svelte';
-	import HorizontalDivider from '$lib/displayComponents/HorizontalDivider.svelte';
-	import VerticalDivider from '$lib/displayComponents/VerticalDivider.svelte';
+	import type  { Lease } from '@prisma/client';
+	import Address from '$lib/displayComponents/Address.svelte';
    let { data }: { data: PageData } = $props();
    const currencyFormatter = new Intl.NumberFormat('en-US', {style: 'currency', currency: 'USD'})
    let unitPricingModalOpen = $state(false);
@@ -20,7 +19,14 @@
       unitPricingModalOpen = true
    }
    let sizeMenuOpen = $state(false);
-
+   let leasedAmount = $state(0)
+   const wrapper = new Promise<Lease[]>(async res => {
+      const leases = await data.leases
+      res(leases)
+      leases.forEach((lease) => {
+         leasedAmount += lease.price
+      })
+   })
 </script>
 <Header title='All {data.size.replace(/^0+/gm,'').replace(/0x/gm,'x')} units' />
 <Modal
@@ -30,13 +36,13 @@
 >  
    {#snippet content()}
       <UnitPricingForm data={data.unitPricingForm} bind:unitPricingFormModalOpen={unitPricingModalOpen} size={data.size} oldPrice={currentOldPrice}/>
-      <button class="btn" onclick={()=>unitPricingModalOpen = false}>Close</button>
+      <button class="btn preset-filled-primary-50-950 rounded-lg" onclick={()=>unitPricingModalOpen = false}>Close</button>
    {/snippet}
 
 </Modal>
 
 {#if data.sizes}
-   <button class='btn' onclick={()=>sizeMenuOpen = !sizeMenuOpen}>Select a size</button>
+   <button class='btn preset-filled-primary-50-950 rounded-lg' onclick={()=>sizeMenuOpen = !sizeMenuOpen}>Select a size</button>
    {#if sizeMenuOpen}
    <div transition:fade={{duration:600}}>
       <ul>
@@ -51,22 +57,44 @@
    {/if}
 {/if}
 
-<Revenue label='Total invoiced from all {data.size.replace(/^0/gm,'').replace(/x0/gm, 'x')} units' amount={data.totalInvoiced}/>
-{#each data.units as unit}
-{@const leases = data.leases.filter((lease) => lease.unitNum === unit.num) }
-   <div class="flex w-full">
-      <UnitEmployee {unit} classes='h-36 w-1/3'/>
-      <VerticalDivider classes=''/>
-      {#each leases as lease}
-         {#if !lease.leaseEnded}
-         {@const customer = data.customers.find((customer) => customer.id === lease.customerId)}
-            <LeaseEmployee {lease} classes=' w-1/3'/>
-            {#if customer}
-               <VerticalDivider classes='' />
-               <User user={customer} classes='w-1/3'/>
-            {/if}
-         {/if}
-      {/each}
-   </div>
-   <HorizontalDivider />
-{/each}
+<button class="btn preset-filled-primary-50-950 rounded-lg" onclick={()=>unitPricingModalOpen = true}>Change All {data.size.replace(/^0+/gm, '').replace(/x0/gm,'x')} prices</button>
+<Revenue amount={leasedAmount} label='Current Monthly revenue from {data.size.replace(/^0+/gm, '').replace(/x0/gm,'x')} units'/>
+{#await data.units}
+   Loading units
+{:then units}
+   {#await data.leases}
+      loading leases
+   {:then leases} 
+      {#await data.customers}
+         loading customers
+      {:then customers} 
+         {#await data.addresses}
+            loading addresses
+         {:then addresses}
+            <div class="grid grid-cols-3 gap-y-3 gap-x-1">
+               {#each units as unit}
+               {@const lease = leases.find((lease) => lease.unitNum === unit.num)}
+               {@const customer = customers.find((customer)=> customer.id === lease?.customerId)}
+                     <UnitEmployee {unit} classes="border border-primary-50 dark:border-primary-950 rounded-lg" />
+                  {#if lease}
+                     <LeaseEmployee {lease} classes="border border-primary-50 dark:border-primary-950 rounded-lg"/>
+                  {:else}
+                     <div></div>
+                     {/if}
+                     {#if customer}
+                     {@const address = addresses.find((address) => address.userId === customer.id)}
+                        <div class="border border-primary-50 dark:border-primary-950 rounded-lg p-2">
+                           <User user={customer} classes="" />
+                           {#if address}
+                              <Address {address} />
+                           {/if}
+                        </div>
+                     {:else}
+                        <div></div>
+                     {/if}
+               {/each}
+            </div>
+         {/await}
+      {/await}
+   {/await}
+{/await}
