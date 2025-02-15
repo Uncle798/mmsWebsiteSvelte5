@@ -8,7 +8,7 @@
 
 <RegisterForm data={data.registerForm} formType='employee' redirectTo='employeeNewCustomer'/>
 
-{#if data.user}
-   <User user={data.user} />
+{#if data.customer}
+   <User user={data.customer} />
    <p><a href="/units/available?userId={data.user?.id}" class="btn">Make a new lease for this customer</a></p>
 {/if}
