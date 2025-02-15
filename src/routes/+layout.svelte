@@ -74,9 +74,11 @@
 {#snippet content()}
 	<article>
 		<ul>
-			{#each customerLinks as link}
-				<li><button class="anchor" type="button" onclick={()=>onButtonClick(link.link)}>{link.label}</button></li>
-			{/each}
+			{#if !data.user?.employee}
+				{#each customerLinks as link}
+					<li><button class="anchor" type="button" onclick={()=>onButtonClick(link.link)}>{link.label}</button></li>
+				{/each}		
+			{/if}
 			{#if data.user?.employee}
 				{#each employeeLinks as employeeLink}
 					<li><button class="anchor" type="button" onclick={()=>onButtonClick(employeeLink.link)}>{employeeLink.label}</button></li>
