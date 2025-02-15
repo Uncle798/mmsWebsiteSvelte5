@@ -5,6 +5,7 @@ import { zod } from 'sveltekit-superforms/adapters';
 import { addressFormSchema } from '$lib/formSchemas/schemas';
 import { prisma } from '$lib/server/prisma';
 import { fail, redirect } from '@sveltejs/kit';
+import { DEV_ME_KEY } from '$env/static/private';
 
 export const load:PageServerLoad = (async () => {
    const addressForm = await superValidate(zod(addressFormSchema));
@@ -50,6 +51,19 @@ export const actions: Actions = {
             }
          })
       }
+      const phoneValidResponse = await fetch(`https://api.dev.me/v1-get-phone-details?phone=${addressForm.data.phoneNum1Country}${addressForm.data.phoneNum1}`,
+         {
+            headers: {
+               'Accept': 'application/json',
+               'x-api-key': DEV_ME_KEY
+            }
+         }
+      )
+      const phoneValid = await phoneValidResponse.json()
+      console.log(phoneValid)
+      if(!phoneValid.valid){
+         message(addressForm, 'Phone number not valid')
+      }
       // const response = await fetch(`https://api.radar.io/v1/addresses/validate?city=${addressForm.data.city}&stateCode=${addressForm.data.state}&postalCode=${addressForm.data.postalCode}&addressLabel=${addressForm.data.address1}&unit=${addressForm.data.address2}&countryCode=${addressForm.data.country}`,
       //    {
       //       method: 'GET',
@@ -61,9 +75,13 @@ export const actions: Actions = {
       // const data = await response.json();
       // console.log(data)
       // if(data.result.verificationStatus === 'verified'){
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const {phoneNum1, phoneNum1Country, ...rest} = addressForm.data
          const newAddress = {
             userId,
-            ...addressForm.data
+            phoneNum1:phoneValid.nationalNumber,
+            phoneNum1Country: phoneValid.callingCode,
+            ...rest
          }
          await prisma.address.create({
             data: newAddress
