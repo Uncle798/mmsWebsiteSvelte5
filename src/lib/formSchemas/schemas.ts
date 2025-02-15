@@ -190,3 +190,6 @@ export const dateSearchFormSchema = z.object({
    endDate: z.date().optional()
 });
 export type DateSearchFormSchema = typeof dateSearchFormSchema;
+
+export const blankFormSchema = z.object({});
+export type BlankFormSchema = typeof blankFormSchema
