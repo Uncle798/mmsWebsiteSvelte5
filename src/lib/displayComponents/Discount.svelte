@@ -10,7 +10,7 @@
    let { discount, classes }:Props = $props();
 </script>
 
-<div class="p-4 w-1/3 flex-none">
+<div class="{classes}">
    <p>Code: {discount.code}</p>
    <p>Amount Off: {currencyFormatter.format(discount.amountOff)}</p>
    <p>Notes: {discount.notes}</p>
