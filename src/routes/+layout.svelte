@@ -4,12 +4,13 @@
 	import type { PageData } from './$types';
 	import { Modal } from '@skeletonlabs/skeleton-svelte';
 	import Menu from 'lucide-svelte/icons/menu';
-	import { enhance } from '$app/forms';
+	import { goto } from '$app/navigation';
+	import { superForm } from 'sveltekit-superforms';
 	interface Props {
 		data: PageData,
 		children: import('svelte').Snippet
 	}
-	let { data, children } = $props();
+	let { data, children }:Props = $props();
 	interface Link {
 		link: string;
 		label: string;
@@ -46,7 +47,14 @@
 
 	]
 	let menuOpen = $state(false);
-
+	const { submit, enhance } = superForm(data.logOutForm)
+	function onButtonClick(link:string){
+		goto(link)
+		menuOpen=false
+		if(link === '/logout'){
+			submit()
+		}
+	}
 </script>
 
 <Modal
@@ -58,9 +66,7 @@
 	positionerPadding=""
 	transitionsPositionerIn={{ x: -480, duration: 200 }}
 	transitionsPositionerOut={{ x: -480, duration: 200 }}
-	onclick={()=>{
-		menuOpen=false;
-	}} 
+	closeOnEscape={true}
 >
 {#snippet trigger()}
 		<Menu class='mx-2 border-2' />	
@@ -69,26 +75,25 @@
 	<article>
 		<ul>
 			{#each customerLinks as link}
-				<li><a class="anchor" href={link.link}>{link.label}</a></li>
+				<li><button class="anchor" type="button" onclick={()=>onButtonClick(link.link)}>{link.label}</button></li>
 			{/each}
 			{#if data.user?.employee}
 				{#each employeeLinks as employeeLink}
-					<li><a class="anchor" href={employeeLink.link}>{employeeLink.label}</a></li>
+					<li><button class="anchor" type="button" onclick={()=>onButtonClick(employeeLink.link)}>{employeeLink.label}</button></li>
 				{/each}
 			{/if}
 			{#if data.user?.admin}
 				{#each adminLinks as adminLink}
-					<li><a href={adminLink.link} class="anchor">{adminLink.label}</a></li>
+					<li><button class="anchor" type="button" onclick={()=>onButtonClick(adminLink.link)}>{adminLink.label}</button></li>
 				{/each}
 			{/if}
 			<div class="absolute bottom-0 p-2 mb-4">
 				{#if data.user}
-				<form action="/logout" method="post" use:enhance>
-					<li><button class="anchor">Logout</button></li>
-				</form>
-				<li><a class="anchor" href="/accountSettings">Settings</a></li>
+					<form action="/logout" method="post" use:enhance>
+						<li><button class="anchor" type="button" onclick={()=>onButtonClick("/logout")}>Logout</button></li>
+					</form>
 				{:else}
-				<li><a class="anchor" href="/login">Login</a></li>
+					<li><button class="anchor" type="button" onclick={()=>onButtonClick("/login")}>Login</button></li>
 				{/if}
 			</div>
 		</ul>
