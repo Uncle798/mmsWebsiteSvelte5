@@ -89,27 +89,28 @@
             {/each}
          </select>
       </label>
-      <label for="phoneNum1Country">
-         <select class="select" name="phoneNum1Country" autocomplete="tel-country-code">
-            {#each dialCodes as dialCode}
+      <div class="input-group divide-surface-200-800 grid-cols-[auto_1fr_auto] divide-x mt-2">
+         <label for="phoneNum1Country" class="label-text">Country Code
+            <select class="select" name="phoneNum1Country" autocomplete="tel-country-code">
+               {#each dialCodes as dialCode}
                {#if dialCode.code === "US"}
-                  <option value={dialCode.code} selected>{dialCode.dial_code}</option>
+               <option value={dialCode.dial_code} selected>{dialCode.dial_code} ({dialCode.name})</option>
                {:else}
-                  <option value={dialCode.code}>{dialCode.dial_code}</option>
+               <option value={dialCode.dial_code}>{dialCode.dial_code}</option>
                {/if}
-            {/each}
-         </select>
-      </label>
-      <TextInput
-         bind:value={$form.phoneNum1}
-         errors={$errors.phoneNum1}
-         constraints={$constraints.phoneNum1}
-         label="Phone number:"
-         name='phoneNum1'
-         placeholder="2088826564"
-         autocomplete="tel"
-      />
-
+               {/each}
+            </select>
+         </label>
+         <TextInput
+            bind:value={$form.phoneNum1}
+            errors={$errors.phoneNum1}
+            constraints={$constraints.phoneNum1}
+            label="Phone number:"
+            name='phoneNum1'
+            placeholder="2088826564"
+            autocomplete="tel"
+         />
+      </div>
       <FormProgress delayed={$delayed} timeout={$timeout}/>
    </form>
 </div>
