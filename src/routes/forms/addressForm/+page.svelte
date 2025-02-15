@@ -1,4 +1,4 @@
-<script lang="ts">
+<!-- <script lang="ts">
 	import { PUBLIC_RADAR_TEST } from "$env/static/public";
    import Radar from "radar-sdk-js";
 	import { onMount } from "svelte";
@@ -17,4 +17,4 @@
 
    })
 </script>
-<div id='autocomplete' class="input rounded-lg w-[600px]"></div>
+<div id='autocomplete' class="input rounded-lg w-[600px]"></div> -->
