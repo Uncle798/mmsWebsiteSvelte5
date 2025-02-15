@@ -93,15 +93,15 @@
                     <Revenue 
                         label="Total revenue" 
                         amount={totalRevenue(searchedPayments(dateSearchPayments(paymentRecords)))} 
-                        classes='border-b-2 border-primary-50 dark:border-primary-95 m-2'    
+                        classes='border-b-2 border-primary-50 dark:border-primary-950 m-2'    
                     />
-                    <div class="grid grid-cols-2 border-t-2 border-x-2 border-primary-50 dark:border-primary-950 m-2">
+                    <div class="grid grid-cols-2 gap-y-3 gap-x-1 m-2">
                         {#each slicedSource(dateSearchPayments(searchedPayments(paymentRecords))) as paymentRecord}
                         {@const customer = customers.find((customer) => customer.id === paymentRecord.customerId) }
-                            <PaymentRecordEmployee paymentRecord={paymentRecord} classes="border-e-2 border-b-2 border-primary-50 dark:border-primary-950 p-2" />
+                            <PaymentRecordEmployee paymentRecord={paymentRecord} classes=" rounded-lg border border-primary-50 dark:border-primary-950 p-2" />
                             {#if customer}
                             {@const address = addresses.find((address)=> address.userId === customer.id)}
-                            <div class="flex flex-col border-b-2 border-primary-50 dark:border-primary-950">
+                            <div class="flex flex-col  rounded-lg border border-primary-50 dark:border-primary-950">
                             <User user={customer} classes='mx-2 mt-2'/>
                                 {#if address}
                                     <Address {address} classes='mx-2'/>
