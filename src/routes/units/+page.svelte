@@ -98,23 +98,23 @@
 					<HorizontalDivider />
 					<Revenue label='Current leased monthly revenue' amount={totalRevenue(leases)} />
 					<HorizontalDivider />
-            	<div class="grid container grid-cols-4 px-2 justify-center" transition:fade={{duration:600}}>
+            	<div class="grid container grid-cols-4 p-2 gap-y-3 gap-x-1" transition:fade={{duration:600}}>
                	{#each slicedUnits(filteredUnits(units)) as unit (unit.num)}
                	{@const lease = leases?.find((lease) => lease.unitNum === unit.num)}
-							<div class="border-b border-r border-primary-950 min-w-64 flex flex-col">
+							<div class=" rounded-lg border border-primary-50 dark:border-primary-950  flex flex-col">
 								<UnitEmployee {unit} classes='p-4'/>
 								<button class="btn preset-filled-primary-50-950 rounded-lg mx-2 mb-2" onclick={()=> openModal('unitPricing', unit.advertisedPrice, '', unit.size)}>Change all {unit.size.replace(/^0+/gm,'').replace(/x0/gm,'x')} pricing</button>
 							</div>
 							{#if data.unitNotesForm}
-								<UnitNotesForm data={data.unitNotesForm} {unit} classes='border-b border-r border-primary-950 p-4 min-w-64'/>
+								<UnitNotesForm data={data.unitNotesForm} {unit} classes=' rounded-lg border border-primary-50 dark:border-primary-950 p-4 '/>
 							{/if}
 							{#if lease}
 							{@const customer = customers?.find((customer) => customer.id === lease.customerId)}
-								<div class="min-w-64 flex flex-col border-r border-b border-primary-950">
+								<div class=" flex flex-col rounded-lg border border-primary-50 dark:border-primary-950">
 									<LeaseEmployee {lease} classes=''/>
 									<button class="btn preset-filled-primary-50-950 rounded-lg m-4" onclick={()=>openModal('lease', 0, lease.leaseId)}>End Lease</button>
 								</div>
-								<div class="flex flex-col min-w-64 border-b-2  border-primary-950">
+								<div class="flex flex-col  rounded-lg border border-primary-50 dark:border-primary-950">
 									{#if customer}
 									{@const address = addresses.find((address) => address.userId === customer.id)}
 										<User user={customer} classes='px-4 pt-4'/>
@@ -124,8 +124,8 @@
 									{/if}
 								</div>
 							{:else}
-								<div class="border-b-2 border-primary-950 border-r-2 min-w-64"></div>
-								<div class="border-b-2 border-primary-950 min-w-64"></div>
+								<div class="rounded-lg border border-primary-50 dark:border-primary-950 "></div>
+								<div class="rounded-lg border border-primary-50 dark:border-primary-950 "></div>
 							{/if}
 						{/each}
 					</div>

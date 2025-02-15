@@ -65,20 +65,20 @@
         {:then addresses}
             {#if invoices.length >0}       
                 <Header title='All invoices' />
-                <div class="flex">
-                    <Search data={data.searchForm} bind:search={search} searchType='invoice number' classes='h-28'/>
-                    <DateSearch data={data.dateSearchForm} bind:startDate={startDate} bind:endDate={endDate} {minDate} {maxDate} classes='h-28'/>
+                <div class="flex gap-1">
+                    <Search data={data.searchForm} bind:search={search} searchType='invoice number' classes='w-1/2'/>
+                    <DateSearch data={data.dateSearchForm} bind:startDate={startDate} bind:endDate={endDate} {minDate} {maxDate} classes=""/>
                 </div>
                 <HorizontalDivider />
                 <Revenue label="Total invoiced (not including deposits)" amount={totalRevenue(searchedInvoices(dateSearchedInvoices(invoices)))} />
                 <HorizontalDivider />
-                <div class="grid grid-cols-2 ">
+                <div class="grid grid-cols-2 gap-y-3 gap-x-1 mx-2">
                     {#each  slicedInvoices(searchedInvoices(invoices)) as invoice}  
                     {@const customer = customers.find((customer) => customer.id === invoice.customerId)}  
-                        <InvoiceEmployee {invoice} classes='border-e-2 border-b-2 dark:border-primary-950 border-primary-50 px-2' />
+                        <InvoiceEmployee {invoice} classes='rounded-lg border dark:border-primary-950 border-primary-50 px-2' />
                         {#if customer}
                         {@const address = addresses.find((address) => address.userId === customer.id)}
-                            <div class="flex flex-col border-b-2 dark:border-primary-950 border-primary-50 px-2 pt-2">
+                            <div class="flex flex-col rounded-lg border dark:border-primary-950 border-primary-50 px-2 pt-2">
                                 <User user={customer} classes=''/>
                                 {#if address}
                                     <Address {address} />

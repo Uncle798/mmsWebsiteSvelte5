@@ -84,13 +84,13 @@
                     amount={totalRevenue(searchedInvoices(dateSearchedInvoices(invoices)))} 
                     classes='border-b-2 dark:border-primary-950 border-primary-50 m-2 drop-shadow-2xl'
                 />
-                <div class="grid grid-cols-2 mx-2 border-y-2 dark:border-primary-950 border-primary-50" transition:fade={{duration:600}}>
+                <div class="grid grid-cols-2 mx-2 gap-y-3 gap-x-1" transition:fade={{duration:600}}>
                     {#each  slicedInvoices(searchedInvoices(invoices)) as invoice}  
                     {@const customer = customers.find((customer) => customer.id === invoice.customerId)}  
-                        <InvoiceEmployee {invoice} classes=' border-b-2 dark:border-primary-950 border-primary-50 px-2' />
+                        <InvoiceEmployee {invoice} classes='rounded-lg border dark:border-primary-950 border-primary-50 px-2' />
                         {#if customer}
                         {@const address = addresses.find((address) => address.userId === customer.id)}
-                            <div class="flex flex-col border-b-2 dark:border-primary-950 border-primary-50 px-2 pt-2">
+                            <div class="flex flex-col rounded-lg border dark:border-primary-950 border-primary-50 px-2 pt-2">
                                 <User user={customer} classes=''/>
                                 {#if address}
                                     <Address {address} />

@@ -57,8 +57,7 @@
    {/if}
 {/if}
 
-<button class="btn preset-filled-primary-50-950 rounded-lg" onclick={()=>unitPricingModalOpen = true}>Change All {data.size.replace(/^0+/gm, '').replace(/x0/gm,'x')} prices</button>
-<Revenue amount={leasedAmount} label='Current Monthly revenue from {data.size.replace(/^0+/gm, '').replace(/x0/gm,'x')} units'/>
+<Revenue amount={leasedAmount} label='Current Monthly revenue from {data.size.replace(/^0+/gm, '').replace(/x0/gm,'x')} units' classes='m-2'/>
 {#await data.units}
    Loading units
 {:then units}
@@ -71,6 +70,7 @@
          {#await data.addresses}
             loading addresses
          {:then addresses}
+            <button class="btn preset-filled-primary-50-950 rounded-lg m-2" onclick={()=>openModal(units[0].advertisedPrice)}>Change All {data.size.replace(/^0+/gm, '').replace(/x0/gm,'x')} prices</button>
             <div class="grid grid-cols-3 gap-y-3 gap-x-1">
                {#each units as unit}
                {@const lease = leases.find((lease) => lease.unitNum === unit.num)}
