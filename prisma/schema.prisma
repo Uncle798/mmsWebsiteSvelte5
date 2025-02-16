@@ -79,8 +79,8 @@ model Lease {
   employeeId           String
   addressId            String
   unitNum              String
-  price                Int
-  discount             Int?
+  price                Float
+  discount             Float?
   discountId           String?
   leaseCreatedAt       DateTime      @default(now())
   leaseReturnedAt      DateTime?
@@ -103,7 +103,8 @@ model Lease {
 model DiscountCode {
   discountId      String    @id @unique @default(cuid(2))
   code            String    @unique
-  amountOff       Int
+  amountOff       Float
+  percentage      Boolean   @default(false)
   notes           String?
   discountCreated DateTime  @default(now())
   discountEnded   DateTime?
@@ -121,7 +122,7 @@ model PaymentRecord {
   invoiceNum       Int?
   customerId       String
   unitNum          String?
-  paymentAmount    Int
+  paymentAmount    Float
   employeeId       String?
   payee            String?
   paymentCreated   DateTime      @default(now())
@@ -142,7 +143,7 @@ model Invoice {
   customerId       String?
   employeeId       String?
   leaseId          String?
-  invoiceAmount    Int
+  invoiceAmount    Float
   invoiceCreated   DateTime       @default(now())
   paymentRecordNum Int?           @unique
   invoiceNotes     String?
@@ -158,7 +159,7 @@ model RefundRecord {
   refundNumber     Int             @id @unique @default(autoincrement())
   stripeId         String?         @unique
   customerId       String
-  refundAmount     Int
+  refundAmount     Float
   employeeId       String?
   refundNotes      String?
   refundCreated    DateTime        @default(now())
