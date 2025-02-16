@@ -22,11 +22,13 @@ export const actions: Actions = {
       }
       await prisma.discountCode.update({
          where: {
-            discountId: discountEndForm.data.discountId
+            discountId: discountEndForm.data.cuid2Id
          },
          data: {
             discountEnded: new Date(),
          }
+      }).catch((err) => {
+         console.error(err)
       })
    }
 };
