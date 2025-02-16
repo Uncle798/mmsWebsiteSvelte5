@@ -40,8 +40,8 @@
 		{link: '/refundRecords', label:'Refund Records'},
 		{link: '/refundRecords/new', label:'New Refund'},
 		{link: '/refundRecords/year', label: 'Refunds by year'},
-		{link: '/employeeNewLease', label:'Employee new lease'},
-		{link: '/employeeNewCustomer', label:'Employee new customer'},
+		{link: '/employeeNewLease', label:'New lease'},
+		{link: '/employeeNewCustomer', label:'New customer'},
 	]
 	let adminLinks:Link[] = [
 		{link: '/users', label:'All Users'},
@@ -61,12 +61,12 @@
 <Modal
 	bind:open={menuOpen}
 	triggerBase="btn preset-tonal hover:shadow-xl hover:border-2 border-primary-50 dark:border-primary-950"
-	contentBase="bg-surface-100-900 p-2 space-y-2 shadow-xl w-[240px] h-screen"
+	contentBase="bg-surface-100-900 p-2 space-y-2 shadow-xl w-[280px] h-screen"
 	positionerJustify="justify-start"
 	positionerAlign=""
 	positionerPadding=""
-	transitionsPositionerIn={{ x: -240, duration: 400 }}
-	transitionsPositionerOut={{ x: -240, duration: 400 }}
+	transitionsPositionerIn={{ x: -280, duration: 400 }}
+	transitionsPositionerOut={{ x: -280, duration: 400 }}
 >
 {#snippet trigger()}
 		<Menu class='mx-2 border-2' />	
