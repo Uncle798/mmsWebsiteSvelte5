@@ -12,8 +12,8 @@ export const load = (async (event) => {
    const newDiscountForm = await superValidate(zod(newDiscountFormSchema));
    const discountEndForm = await superValidate(zod(cuidIdFormSchema));
    const discounts = await prisma.discountCode.findMany({
-      include: {
-         leases: true,
+      where: {
+         discountEnded: null
       }
    });
    return { discounts, newDiscountForm, discountEndForm };
