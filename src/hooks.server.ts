@@ -30,5 +30,13 @@ export const handle: Handle = async ({ event, resolve }) => {
    }
    event.locals.session = session;
    event.locals.user = user;
-   return await resolve(event)
+   const theme = event.cookies.get('theme')
+   if(!theme){
+      return await resolve(event)
+   }
+   return await resolve(event, {
+      transformPageChunk: ({html}) => {
+         return html.replace('data-theme=""', `data-theme="${theme}"`)
+      }
+   })
 }
