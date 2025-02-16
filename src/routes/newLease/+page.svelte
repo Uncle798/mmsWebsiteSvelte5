@@ -30,6 +30,7 @@
 
         }
     })
+    const currencyFormatter = new Intl.NumberFormat('en-US', {style: 'currency', currency: 'USD'})
 </script>
 <Header title='New lease'/>
 <div transition:fade={{duration:600}} class="mx-2">
@@ -71,14 +72,19 @@
             <input type="hidden" name="unitNum" value={data.unit.num}>
             {#if data.discount}
                 <div class="py-2" transition:fade={{duration:300}}>
-                    Discount ${data.discount.amountOff}
-                    Monthly Rent: ${data.unit.advertisedPrice! - data.discount.amountOff}
+                    {#if data.discount.percentage}
+                        Discount {data.discount.amountOff}%
+                        Monthly Rent {currencyFormatter.format(data.unit.advertisedPrice * (data.discount.amountOff / 100))}
+                    {:else}
+                        Discount {currencyFormatter.format(data.discount.amountOff)}
+                        Monthly Rent {currencyFormatter.format(data.unit.advertisedPrice - data.discount.amountOff)}
+                    {/if}
                 </div>
             {/if}
         {/if}
         <div class="flex">
             {#if data.unit && data.address}
-            <FormProgress delayed={$delayed} timeout={$timeout} buttonText='The above is correct I would like to pay my deposit'/>
+                <FormProgress delayed={$delayed} timeout={$timeout} buttonText='The above is correct I would like to pay my deposit'/>
             {/if}
         </div>
     </form>

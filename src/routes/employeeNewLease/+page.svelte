@@ -1,20 +1,19 @@
 <script lang="ts">
-  import UnitEmployee from '$lib/displayComponents/UnitEmployee.svelte';
-  import { Combobox, Modal } from '@skeletonlabs/skeleton-svelte';
-  import { superForm } from 'sveltekit-superforms';
-  import User from '$lib/displayComponents/User.svelte';
-  import Address from '$lib/displayComponents/Address.svelte';
-  import AddressForm from '$lib/forms/AddressForm.svelte';
-  import { fade, crossfade, blur } from 'svelte/transition';
-  import Header from '$lib/Header.svelte';
-  import type { PageData } from './$types';
-	import FormSubmitWithProgress from '$lib/formComponents/FormSubmitWithProgress.svelte';
-	import FormMessage from '$lib/formComponents/FormMessage.svelte';
-  import Checkbox from '$lib/formComponents/Checkbox.svelte';
-  import LeaseDiscountForm from '$lib/forms/LeaseDiscountForm.svelte';
-	import { unitNotesFormSchema } from '$lib/formSchemas/schemas';
-	import RadioButton from '$lib/formComponents/RadioButton.svelte';
-	import { Radio } from 'lucide-svelte';
+   import UnitEmployee from '$lib/displayComponents/UnitEmployee.svelte';
+   import { Combobox, Modal } from '@skeletonlabs/skeleton-svelte';
+   import { superForm } from 'sveltekit-superforms';
+   import User from '$lib/displayComponents/User.svelte';
+   import Address from '$lib/displayComponents/Address.svelte';
+   import AddressForm from '$lib/forms/AddressForm.svelte';
+   import { fade, crossfade, blur } from 'svelte/transition';
+   import Header from '$lib/Header.svelte';
+   import type { PageData } from './$types';
+   import FormSubmitWithProgress from '$lib/formComponents/FormSubmitWithProgress.svelte';
+   import FormMessage from '$lib/formComponents/FormMessage.svelte';
+   import Checkbox from '$lib/formComponents/Checkbox.svelte';
+   import LeaseDiscountForm from '$lib/forms/LeaseDiscountForm.svelte';
+   import RadioButton from '$lib/formComponents/RadioButton.svelte';
+
   let { data }: { data: PageData } = $props();
   let addressModalOpen = $state(false)
   let { form, errors, message, constraints, enhance, delayed, timeout} = superForm(data.leaseForm, {
@@ -35,14 +34,15 @@
       }
       customerComboBoxData.push(datum);
   })
+  const currencyFormatter = new Intl.NumberFormat('en-US', {style: 'currency', currency: 'USD'})
 </script>
 
 
 <Header title="Employee New Lease" />
 <div transition:fade={{duration:600}} class="mx-2">
 {#if !data.customer}
-  <div class="mx-4">
-    <p><a href="/employeeNewCustomer">Create new customer</a></p>
+  <div class="m-2">
+    <p><a href="/employeeNewCustomer" class="btn rounded-lg preset-filled-primary-50-950">Create new customer</a></p>
     <form action="/employeeNewLease?/selectCustomer&unitNum={data.unitNum}" method="POST" >
       <Combobox
         data={customerComboBoxData}
@@ -56,7 +56,7 @@
         }}
       />
       <input type="hidden" name="customerId" value={selectedCustomer}>
-      <button class="btn z-0">Choose Customer</button>    
+      <button class="btn preset-filled-primary-50-950 rounded-lg mt-2">Choose Customer</button>    
     </form>
   </div>
 {:else}
@@ -94,14 +94,22 @@
   </Modal>
   {/if}
 {#if data.unit}
-        <UnitEmployee unit={data.unit} classes="w-80" />
-        <input type="hidden" name="unitNum" value={data.unit.num}>
-        {#if data.discount}
-            <div class="card p-4" transition:fade={{duration:300}}>
-                Discount ${data.discount.amountOff}
-                Monthly Rent: ${data.unit.advertisedPrice! - data.discount.amountOff}
-            </div>
-        {/if}
+   <UnitEmployee unit={data.unit} classes="w-80" />
+   <input type="hidden" name="unitNum" value={data.unit.num} />
+   {#if data.discount}
+      <input type='hidden' name='discountId' value={data.discount.discountId} />
+      {#if data.discount.percentage}
+         <div transition:fade={{duration:300}} class="grid grid-cols-2 w-80 gap-x-2">
+            <div class="text-right">Discount</div><div class="text-green-700 dark:text-green-500">{data.discount.amountOff}%</div>
+            <div class="text-right">Monthly Rent</div><div class="text-green-700 dark:text-green-500">{currencyFormatter.format(data.unit.advertisedPrice - (data.unit.advertisedPrice * (data.discount.amountOff / 100)))}</div>
+         </div>
+      {:else}
+         <div class="" transition:fade={{duration:300}}>
+            Discount ${data.discount.amountOff}
+            Monthly Rent: ${data.unit.advertisedPrice! - data.discount.amountOff}
+         </div>
+      {/if}
+   {/if}
 {/if}
     <div class="flex flex-col w-80">
       {#if data.unit && data.address}

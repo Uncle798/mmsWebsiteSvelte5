@@ -108,7 +108,7 @@
          <div>
             <span class="ml-2">Total invoiced: {currencyFormatter.format(totalInvoiced)}</span>
             <span>Total paid: {currencyFormatter.format(totalPaid)}</span>
-            {#if difference > 0}
+            {#if difference < 0}
                <span class="text-red-700 dark:text-red-500">Outstanding balance: {currencyFormatter.format(difference)}</span>
                {#if dayjs(invoices[0].invoiceCreated).add(1,'month') < dayjs()}
                   <span class="text-red-700 dark:text-red-500">Due: {dayjs(invoices[0].invoiceCreated).add(1, 'month').format('MMMM D YYYY')}</span>
@@ -119,23 +119,35 @@
                <span class="text-green-700 dark:text-green-500">Outstanding balance: {currencyFormatter.format(difference)}</span>
             {/if}
          </div>
+         {#if refunds.length > 0}
          <div class="grid grid-cols-3 gap-x-1 gap-y-3 mx-2 ">
-         {#each slicedInvoices(invoices) as invoice}
-         {@const paymentRecord = paymentRecords.find((payment) => payment.invoiceNum === invoice.invoiceNum)}
-         {@const refund = refunds.find((refund) => refund.paymentRecordNum === paymentRecord?.paymentNumber)}
-               <InvoiceEmployee invoice={invoice} classes='min-w-1/3 rounded-lg border-2 border-primary-50 dark:border-primary-950'/>
+            {#each slicedInvoices(invoices) as invoice}
+            {@const paymentRecord = paymentRecords.find((payment) => payment.invoiceNum === invoice.invoiceNum)}
+            {@const refund = refunds.find((refund) => refund.paymentRecordNum === paymentRecord?.paymentNumber)}
+                  <InvoiceEmployee invoice={invoice} classes='rounded-lg border-2 border-primary-50 dark:border-primary-950'/>
+                  {#if paymentRecord}
+                     <PaymentRecordEmployee paymentRecord={paymentRecord} classes='rounded-lg border-2 border-primary-50 dark:border-primary-950'/>
+                  {:else}
+                     <div class="min-w-1/3"></div>
+                  {/if}
+                  {#if refund}
+                     <RefundRecordDisplay refundRecord={refund} classes='rounded-lg border-2 border-primary-50 dark:border-primary-950 min-h-72'/>
+                  {:else}
+                     <div class="min-w-1/3"></div>
+                  {/if}
+                  {/each}
+            </div>
+         {:else}
+            <div class="grid grid-cols-2 gap-x-1 gap-y-3 mx-2">
+            {#each slicedInvoices(invoices) as invoice}
+            {@const paymentRecord = paymentRecords.find((payment) => payment.invoiceNum === invoice.invoiceNum)}
+               <InvoiceEmployee invoice={invoice} classes='rounded-lg border-2 border-primary-50 dark:border-primary-950'/>
                {#if paymentRecord}
-                  <PaymentRecordEmployee paymentRecord={paymentRecord} classes='min-w-1/3 rounded-lg border-2 border-primary-50 dark:border-primary-950'/>
-               {:else}
-                  <div class="min-w-1/3"></div>
+                  <PaymentRecordEmployee paymentRecord={paymentRecord} classes='rounded-lg border-2 border-primary-50 dark:border-primary-950'/>               
                {/if}
-               {#if refund}
-                  <RefundRecordDisplay refundRecord={refund} classes='min-w-1/3 rounded-lg border-2 border-primary-50 dark:border-primary-950 min-h-72'/>
-               {:else}
-                  <div class="min-w-1/3"></div>
-               {/if}
-               {/each}
-         </div>
+            {/each}
+            </div>
+         {/if}
          <Pagination bind:pageNum={pageNum} bind:size={size} label='invoices' array={invoices} />
       {/await}
    {/await}
