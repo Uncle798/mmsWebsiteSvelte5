@@ -22,6 +22,7 @@
 	]
 	let employeeLinks:Link[] = [
 		{link: '/units', label:'Units'},
+		{link: '/units/available', label:'Available Units'},
 		{link: '/units/unavailable', label: 'Unavailable units'},
 		{link: '/units/recentlyMovedOut', label: 'Recently moved out Units'},
 		{link: '/units/size', label: 'Units by size'},
@@ -64,9 +65,8 @@
 	positionerJustify="justify-start"
 	positionerAlign=""
 	positionerPadding=""
-	transitionsPositionerIn={{ x: -480, duration: 200 }}
-	transitionsPositionerOut={{ x: -480, duration: 200 }}
-	closeOnEscape={true}
+	transitionsPositionerIn={{ x: -240, duration: 400 }}
+	transitionsPositionerOut={{ x: -240, duration: 400 }}
 >
 {#snippet trigger()}
 		<Menu class='mx-2 border-2' />	
