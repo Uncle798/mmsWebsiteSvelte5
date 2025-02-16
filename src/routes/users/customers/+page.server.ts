@@ -39,8 +39,18 @@ export const load = (async (event) => {
          unitNum: 'asc'
       }
    })
-   
-   return { customers, leases, userSearchForm, customerCount };
+   const addresses = prisma.address.findMany({
+      where: {
+         user: {
+            customerLeases: {
+               some: {
+                  leaseEnded: null,
+               }
+            }
+         }
+      }
+   })
+   return { customers, leases, userSearchForm, customerCount, addresses };
 }) satisfies PageServerLoad;
 
 export const actions: Actions = {

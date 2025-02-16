@@ -13,6 +13,7 @@
 	import VerticalDivider from '$lib/displayComponents/VerticalDivider.svelte';
 	import Revenue from '$lib/displayComponents/Revenue.svelte';
 	import type { Lease } from '@prisma/client';
+	import Address from '$lib/displayComponents/Address.svelte';
 
     let { data }: { data: PageData } = $props();
     const { customers } = data;
@@ -29,7 +30,9 @@
    let size = $state(25);
    let search = $state('');
    let slicedSource = $derived((s:PartialUser[]) => s.slice((pageNum-1)*size, pageNum*size));
-   let searchedSource = $derived((customers:PartialUser[]) => customers.filter((customer) => customer.familyName?.includes(search)))
+   let searchedSource = $derived((customers:PartialUser[]) => customers.filter((customer) => {
+      return customer.familyName?.includes(search) || customer.givenName?.includes(search)
+   }))
    const totalLeased = $derived((leases:Lease[]) => {
       let totalLeased = 0;
       leases.forEach((lease) => {
@@ -45,19 +48,29 @@
    {#await data.leases}
       loading leases...
    {:then leases} 
-      <div transition:fade={{duration:600}}>
-         <Search search={search} searchType='customer name' data={data.userSearchForm} classes='m-2 border-b-2 border-primary-50 dark:border-primary-950'/>
-         <Revenue label='Current monthly invoiced' amount={totalLeased(leases)} classes='m-2 border-b-2 border-primary-50 dark:border-primary-950'/>
-         <div class="grid grid-cols-2 mx-2 gap-y-3 gap-x-1">
-            {#each slicedSource(searchedSource(customers)) as customer}
-            {@const lease = leases.find((lease) => lease.customerId === customer.id)}
-               <User user={customer} classes='border-2 rounded-lg border-primary-50 dark:border-primary-950 p-2'/>
-               {#if lease}
-                  <LeaseEmployee {lease} classes='border-2 rounded-lg border-primary-50 dark:border-primary-950 p-2'/>
-               {/if}
-            {/each}
+      {#await data.addresses}
+         loading addresses
+      {:then addresses}    
+         <div transition:fade={{duration:600}}>
+            <Search {search} searchType='customer name' data={data.userSearchForm} classes='m-2 border-b-2 border-primary-50 dark:border-primary-950'/>
+            <Revenue label='Current monthly invoiced' amount={totalLeased(leases)} classes='m-2 border-b-2 border-primary-50 dark:border-primary-950'/>
+            <div class="grid grid-cols-2 mx-2 gap-y-3 gap-x-1">
+               {#each slicedSource(searchedSource(customers)) as customer}
+               {@const address = addresses.find((address) => address.userId === customer.id)}
+               {@const lease = leases.find((lease) => lease.customerId === customer.id)}
+                  <div class="border rounded-lg border-primary-50 dark:border-primary-950 p-2">
+                     <User user={customer} classes=''/>
+                     {#if address}
+                        <Address {address} />
+                     {/if}
+                  </div>
+                  {#if lease}
+                     <LeaseEmployee {lease} classes='border rounded-lg border-primary-50 dark:border-primary-950 p-2'/>
+                  {/if}
+               {/each}
+            </div>
+            <Pagination bind:pageNum={pageNum} bind:size={size} label='users' array={searchedSource(customers)}/>
          </div>
-         <Pagination bind:pageNum={pageNum} bind:size={size} label='users' array={searchedSource(customers)}/>
-      </div>
+      {/await}
    {/await}
 {/await}
