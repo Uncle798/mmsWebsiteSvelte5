@@ -14,7 +14,7 @@
 <div transition:fade={{duration:600}} class="mx-2">
     <h3 class="h3">Current Discounts</h3>
 {#each data.discounts as discount}
-    <Discount {discount} classes='border border-primary-50 dark:border-primary-950 w-64 rounded-lg'/>
+    <Discount {discount} classes='border border-primary-50 dark:border-primary-950 min-w-72 rounded-lg'/>
     <DiscountEndForm data={data.discountEndForm} discountId={discount.discountId}/>
 {/each}
     <HorizontalDivider />
