@@ -134,6 +134,7 @@ export type LeaseDiscountFormSchema = typeof leaseDiscountFormSchema;
 export const newDiscountFormSchema = z.object({
    code: z.string().min(8).max(255),
    amountOff: z.number().min(0),
+   percentage: z.boolean(),
    notes: z.string().nullable()
 });
 export type NewDiscountFormSchema = typeof newDiscountFormSchema;
