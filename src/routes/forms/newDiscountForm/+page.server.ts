@@ -27,7 +27,8 @@ export const actions: Actions = {
             code:newDiscountForm.data.code,
             notes: newDiscountForm.data.notes,
             userId: event.locals.user.id,
-            amountOff: newDiscountForm.data.amountOff
+            amountOff: newDiscountForm.data.amountOff,
+            percentage: newDiscountForm.data.percentage,
          }
       })
       return { newDiscountForm };
