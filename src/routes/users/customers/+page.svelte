@@ -29,9 +29,9 @@
    let pageNum = $state(1);
    let size = $state(25);
    let search = $state('');
-   let slicedSource = $derived((s:PartialUser[]) => s.slice((pageNum-1)*size, pageNum*size));
+   let slicedSource = $derived((customers:PartialUser[]) => customers.slice((pageNum-1)*size, pageNum*size));
    let searchedSource = $derived((customers:PartialUser[]) => customers.filter((customer) => {
-      return customer.familyName?.includes(search) || customer.givenName?.includes(search)
+      return customer.familyName?.toLowerCase().includes(search.toLowerCase()) || customer.givenName?.toLowerCase().includes(search.toLowerCase())
    }))
    const totalLeased = $derived((leases:Lease[]) => {
       let totalLeased = 0;
@@ -52,7 +52,7 @@
          loading addresses
       {:then addresses}    
          <div transition:fade={{duration:600}}>
-            <Search {search} searchType='customer name' data={data.userSearchForm} classes='m-2 border-b-2 border-primary-50 dark:border-primary-950'/>
+            <Search bind:search={search} searchType='customer name' data={data.userSearchForm} classes='m-2 border-b-2 border-primary-50 dark:border-primary-950'/>
             <Revenue label='Current monthly invoiced' amount={totalLeased(leases)} classes='m-2 border-b-2 border-primary-50 dark:border-primary-950'/>
             <div class="grid grid-cols-2 mx-2 gap-y-3 gap-x-1">
                {#each slicedSource(searchedSource(customers)) as customer}
