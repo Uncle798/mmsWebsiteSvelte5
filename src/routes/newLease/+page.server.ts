@@ -124,7 +124,11 @@ export const actions:Actions = {
       }
       let price = unit.advertisedPrice;
       if(discount){
-         price = unit.advertisedPrice - discount.amountOff
+         if(discount.percentage){
+            price = unit.advertisedPrice * (discount.amountOff / 100)
+         } else {
+            price = unit.advertisedPrice - discount.amountOff
+         }
       }
       const employee = employees[Math.floor(Math.random()*employees.length)];
       const lease = await prisma.lease.create({
