@@ -30,7 +30,9 @@ export default {
 				themes.nosh,
 				themes.nouveau,
 				themes.pine,
-				themes.reign,
+				themes.rocket,
+				themes.rose,
+				themes.sahara,
 				themes.vintage,
 
 			]

@@ -152,19 +152,26 @@ export const actions: Actions = {
          })
       }
       let price = unit!.advertisedPrice;
+      console.log('discount', discount)
       if(discount){
-         price = unit!.advertisedPrice - discount.amountOff
+         if(discount.percentage){
+            price = unit!.advertisedPrice - (unit.advertisedPrice * (discount.amountOff / 100))
+         } else{
+            price = unit!.advertisedPrice - discount.amountOff
+         }
       }
+      console.log('price', price)
       const lease = await prisma.lease.create({
          data:{
             customerId: customer!.id,
             employeeId: employee!.id,
             unitNum: leaseForm.data.unitNum,
-            price,
+            price: price,
             addressId:address!.addressId,
             leaseEffectiveDate: new Date(),
          }
       })
+      console.log(lease)
       const workflow = await qStash.trigger({
          url: `${PUBLIC_URL}/api/upstash/workflow`,
          body:  {leaseId:lease.leaseId},
