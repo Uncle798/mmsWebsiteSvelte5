@@ -1,31 +1,17 @@
 <script lang="ts">
-    import LeaseEmployee from '$lib/displayComponents/LeaseEmployee.svelte';
-    import User from '$lib/displayComponents/User.svelte';
-	import { superForm } from 'sveltekit-superforms';
-    import type { PageData } from './$types';
-	import Header from '$lib/Header.svelte';
-    import { goto } from '$app/navigation';
-    import type { PartialUser } from '$lib/server/partialTypes';
-    import Pagination from '$lib/displayComponents/Pagination.svelte';
-	import { fade } from 'svelte/transition';
-	import Search from '$lib/forms/Search.svelte';
-	import HorizontalDivider from '$lib/displayComponents/HorizontalDivider.svelte';
-	import VerticalDivider from '$lib/displayComponents/VerticalDivider.svelte';
-	import Revenue from '$lib/displayComponents/Revenue.svelte';
-	import type { Lease } from '@prisma/client';
-	import Address from '$lib/displayComponents/Address.svelte';
+   import LeaseEmployee from '$lib/displayComponents/LeaseEmployee.svelte';
+   import UserEmployee from '$lib/displayComponents/UserEmployee.svelte';
+   import type { PageData } from './$types';
+   import Header from '$lib/Header.svelte';
+   import type { PartialUser } from '$lib/server/partialTypes';
+   import Pagination from '$lib/displayComponents/Pagination.svelte';
+   import { fade } from 'svelte/transition';
+   import Search from '$lib/forms/Search.svelte';
+   import Revenue from '$lib/displayComponents/Revenue.svelte';
+   import type { Lease } from '@prisma/client';
+   import Address from '$lib/displayComponents/Address.svelte';
 
-    let { data }: { data: PageData } = $props();
-    const { customers } = data;
-    let { form, enhance} = superForm(data.userSearchForm, {
-      onSubmit(input) {
-         input.cancel()
-         const search = input.formData.get('search')?.toString();
-         if(search){
-            goto(`/users?search=${search}`)
-         }
-      },
-   });
+   let { data }: { data: PageData } = $props();
    let pageNum = $state(1);
    let size = $state(25);
    let search = $state('');
@@ -59,7 +45,7 @@
                {@const address = addresses.find((address) => address.userId === customer.id)}
                {@const lease = leases.find((lease) => lease.customerId === customer.id)}
                   <div class="border rounded-lg border-primary-50 dark:border-primary-950 p-2">
-                     <User user={customer} classes=''/>
+                     <UserEmployee user={customer} classes=''/>
                      {#if address}
                         <Address {address} />
                      {/if}

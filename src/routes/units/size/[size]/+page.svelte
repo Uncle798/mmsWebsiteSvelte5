@@ -5,7 +5,7 @@
 	import { Accordion, Modal } from '@skeletonlabs/skeleton-svelte';
    import type { PageData } from './$types';
 	import UnitPricingForm from '$lib/forms/UnitPricingForm.svelte';
-	import User from '$lib/displayComponents/User.svelte';
+	import UserEmployee from '$lib/displayComponents/UserEmployee.svelte';
 	import { fade, blur } from 'svelte/transition';
 	import Revenue from '$lib/displayComponents/Revenue.svelte';
 	import type  { Lease } from '@prisma/client';
@@ -84,7 +84,7 @@
                      {#if customer}
                      {@const address = addresses.find((address) => address.userId === customer.id)}
                         <div class="border border-primary-50 dark:border-primary-950 rounded-lg p-2">
-                           <User user={customer} classes="" />
+                           <UserEmployee user={customer} classes="" />
                            {#if address}
                               <Address {address} />
                            {/if}

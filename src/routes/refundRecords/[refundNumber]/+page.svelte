@@ -3,7 +3,7 @@
 	import InvoiceEmployee from '$lib/displayComponents/InvoiceEmployee.svelte';
 	import PaymentRecordEmployee from '$lib/displayComponents/PaymentRecordEmployee.svelte';
     import RefundRecordEmployee from '$lib/displayComponents/RefundRecordEmployee.svelte';
-	import User from '$lib/displayComponents/User.svelte';
+	import UserEmployee from '$lib/displayComponents/UserEmployee.svelte';
 	import Header from '$lib/Header.svelte';
     import type { PageData } from './$types';
 
@@ -16,7 +16,7 @@
         <RefundRecordEmployee refundRecord={data.refundRecord} classes='border-primary-50 border-e-2 dark:border-primary-950'/>
         {#if customer}
             <div class="flex flex-col p-2 border-primary-50 border-e-2 dark:border-primary-950">
-                <User user={customer} classes=''/>
+                <UserEmployee user={customer} classes=''/>
                 {#if data.address}
                     <Address address={data.address} />
                 {/if}

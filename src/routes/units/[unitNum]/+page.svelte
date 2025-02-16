@@ -1,7 +1,7 @@
 <script lang="ts">
     import LeaseEmployee from '$lib/displayComponents/LeaseEmployee.svelte';
     import UnitEmployee from '$lib/displayComponents/UnitEmployee.svelte';
-	import User from '$lib/displayComponents/User.svelte';
+	import UserEmployee from '$lib/displayComponents/UserEmployee.svelte';
 	import Header from '$lib/Header.svelte';
 	import { fade } from 'svelte/transition';
     import type { PageData } from './$types';
@@ -49,7 +49,7 @@
                         {#if customer}  
                         {@const address = data.addresses.find((address) => address.userId === customer.id)}
                             <div class="flex flex-col p-2 rounded-lg border-2 border-primary-50 dark:border-primary-950">
-                                <User user={customer}/>
+                                <UserEmployee user={customer}/>
                                 {#if address}
                                     <Address {address} />
                                 {/if}
@@ -60,7 +60,7 @@
                         {#if customer}
                         {@const address = data.addresses.find((address) => address.userId === customer.id)}
                             <div class="flex flex-col p-2 rounded-lg border-2 border-primary-50 dark:border-primary-950">
-                                <User user={customer}/>
+                                <UserEmployee user={customer}/>
                                 {#if address}
                                     <Address {address} />
                                 {/if}

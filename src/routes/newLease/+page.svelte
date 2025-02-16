@@ -8,7 +8,7 @@
     import type { ToastContext } from '@skeletonlabs/skeleton-svelte';
     import type { PageData } from './$types';
 	import UnitCustomer from '$lib/displayComponents/customerViews/UnitCustomer.svelte';
-	import User from '$lib/displayComponents/User.svelte';
+	import UserEmployee from '$lib/displayComponents/UserEmployee.svelte';
 	import Checkbox from '$lib/formComponents/Checkbox.svelte';
 	import FormMessage from '$lib/formComponents/FormMessage.svelte';
 	import Header from '$lib/Header.svelte';
@@ -35,7 +35,7 @@
 <Header title='New lease'/>
 <div transition:fade={{duration:600}} class="mx-2">
     {#if data.user}
-        <User user={data.user} />
+        <UserEmployee user={data.user} />
     {/if}
     <FormMessage message={$message} />
     <form method="post" use:enhance>

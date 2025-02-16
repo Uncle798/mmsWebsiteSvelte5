@@ -1,10 +1,10 @@
 <script lang="ts">
-    import LeaseEmployee from '$lib/displayComponents/LeaseEmployee.svelte';
-	import User from '$lib/displayComponents/User.svelte';
-import Header from '$lib/Header.svelte';
-import type { PageData } from './$types';
+   import LeaseEmployee from '$lib/displayComponents/LeaseEmployee.svelte';
+   import UserEmployee from '$lib/displayComponents/UserEmployee.svelte';
+   import Header from '$lib/Header.svelte';
+   import type { PageData } from './$types';
 
-    let { data }: { data: PageData } = $props();
+   let { data }: { data: PageData } = $props();
 </script>
 
 <Header title='Lease {data.lease?.leaseId}' />
@@ -13,6 +13,6 @@ import type { PageData } from './$types';
       <LeaseEmployee lease={data.lease} />
    {/if}
    {#if data.customer}
-      <User user={data.customer} />
+      <UserEmployee user={data.customer} />
    {/if}
 </div>

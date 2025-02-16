@@ -4,7 +4,7 @@
 	import Pagination from '$lib/displayComponents/Pagination.svelte';
 	import Placeholder from '$lib/displayComponents/Placeholder.svelte';
 	import UnitEmployee from '$lib/displayComponents/UnitEmployee.svelte';
-	import User from '$lib/displayComponents/User.svelte';
+	import UserEmployee from '$lib/displayComponents/UserEmployee.svelte';
 	import type { PageData } from './$types';
 	import LeaseEndForm from '$lib/forms/LeaseEndForm.svelte';
 	import UnitNotesForm from '$lib/forms/UnitNotesForm.svelte';
@@ -117,7 +117,7 @@
 								<div class="flex flex-col  rounded-lg border border-primary-50 dark:border-primary-950">
 									{#if customer}
 									{@const address = addresses.find((address) => address.userId === customer.id)}
-										<User user={customer} classes='px-4 pt-4'/>
+										<UserEmployee user={customer} classes='px-4 pt-4'/>
 										{#if address}
 											<Address {address} classes='px-4' />
 										{/if}

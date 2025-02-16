@@ -2,7 +2,7 @@
    import UnitEmployee from '$lib/displayComponents/UnitEmployee.svelte';
    import { Combobox, Modal } from '@skeletonlabs/skeleton-svelte';
    import { superForm } from 'sveltekit-superforms';
-   import User from '$lib/displayComponents/User.svelte';
+   import UserEmployee from '$lib/displayComponents/UserEmployee.svelte';
    import Address from '$lib/displayComponents/Address.svelte';
    import AddressForm from '$lib/forms/AddressForm.svelte';
    import { fade, crossfade, blur } from 'svelte/transition';
@@ -63,7 +63,7 @@
 <FormMessage message={$message} />
 <form method="POST" action="/employeeNewLease?/newLease" use:enhance>
   {#if data.customer}
-    <User user={data.customer} />
+    <UserEmployee user={data.customer} />
     <input type="hidden" value={data.customer.id} name='customerId'/>
   {/if}
   {#if data.user?.organizationName}

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { fade } from 'svelte/transition';
     import type { PageData } from './$types';
-	import User from '$lib/displayComponents/User.svelte';
+	import UserEmployee from '$lib/displayComponents/UserEmployee.svelte';
 	import type { Invoice } from '@prisma/client';
     import InvoiceEmployee from '$lib/displayComponents/InvoiceEmployee.svelte';
 	import Header from '$lib/Header.svelte';
@@ -75,7 +75,7 @@
                         {#if customer}
                         {@const address = addresses.find((address) => address.userId === customer.id)}
                             <div class="flex flex-col border-2 rounded-lg dark:border-primary-950 border-primary-50 px-2 pt-2">
-                                <User user={customer} classes=''/>
+                                <UserEmployee user={customer} classes=''/>
                                 {#if address}
                                     <Address {address} />
                                 {/if}

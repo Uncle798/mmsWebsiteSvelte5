@@ -1,6 +1,6 @@
 <script lang="ts">
 	import RefundRecordEmployee from '$lib/displayComponents/RefundRecordEmployee.svelte';
-	import User from '$lib/displayComponents/User.svelte';
+	import UserEmployee from '$lib/displayComponents/UserEmployee.svelte';
 	import Search from '$lib/forms/Search.svelte';
 	import dayjs from 'dayjs';
 	import type { PageData } from './$types';
@@ -118,7 +118,7 @@
 					{#if customer}
 					{@const address = addresses.find((address) => address.userId === customer.id)}
 						<div class="flex flex-col rounded-lg border-2 border-primary-50 dark:border-primary-950">
-							<User user={customer} classes='pt-2 pl-2 ' />
+							<UserEmployee user={customer} classes='pt-2 pl-2 ' />
 							{#if address}
 								<Address {address} classes='pl-2'/>
 							{/if}

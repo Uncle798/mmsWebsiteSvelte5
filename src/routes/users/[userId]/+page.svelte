@@ -4,7 +4,7 @@
    import LeaseEmployee from '$lib/displayComponents/LeaseEmployee.svelte';
    import AddressForm from '$lib/forms/AddressForm.svelte';
    import { Modal } from '@skeletonlabs/skeleton-svelte';
-   import User from '$lib/displayComponents/User.svelte';
+   import UserEmployee from '$lib/displayComponents/UserEmployee.svelte';
    import type { PageData } from './$types';
    import LeaseEndForm from '$lib/forms/LeaseEndForm.svelte';
    import PaymentRecordEmployee from '$lib/displayComponents/PaymentRecordEmployee.svelte';
@@ -46,7 +46,7 @@
 
 {#if data.dbUser}
    <Header title='{data.dbUser.givenName} {data.dbUser.familyName}' />
-   <User user={data.dbUser} classes='px-2 pt-2' />
+   <UserEmployee user={data.dbUser} classes='px-2 pt-2' />
 {:else}
 ...loading user
 {/if}

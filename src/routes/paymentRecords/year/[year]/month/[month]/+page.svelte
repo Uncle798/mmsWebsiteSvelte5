@@ -4,7 +4,7 @@
 	import Header from '$lib/Header.svelte';
 	import PaymentRecordEmployee from '$lib/displayComponents/PaymentRecordEmployee.svelte';
 	import Pagination from '$lib/displayComponents/Pagination.svelte';
-	import User from '$lib/displayComponents/User.svelte';
+	import UserEmployee from '$lib/displayComponents/UserEmployee.svelte';
 	import { fade } from 'svelte/transition';
 	import Search from '$lib/forms/Search.svelte';
 	import Placeholder from '$lib/displayComponents/Placeholder.svelte';
@@ -12,8 +12,6 @@
     import utc from 'dayjs/plugin/utc'
 	import DateSearch from '$lib/forms/DateSearch.svelte';
 	import Revenue from '$lib/displayComponents/Revenue.svelte';
-	import HorizontalDivider from '$lib/displayComponents/HorizontalDivider.svelte';
-	import VerticalDivider from '$lib/displayComponents/VerticalDivider.svelte';
 	import Address from '$lib/displayComponents/Address.svelte';
     dayjs.extend(utc)
     let { data }: { data: PageData } = $props();
@@ -99,7 +97,7 @@
                         {#if customer}
                         {@const address = addresses.find((address)=> address.userId === customer.id)}
                         <div class="flex flex-col border-b-2 border-primary-50 dark:border-primary-950">
-                        <User user={customer} classes='mx-2 mt-2'/>
+                        <UserEmployee user={customer} classes='mx-2 mt-2'/>
                             {#if address}
                                 <Address {address} classes='mx-2'/>
                             {/if}

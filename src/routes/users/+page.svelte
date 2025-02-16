@@ -7,7 +7,6 @@
    import { fade } from 'svelte/transition';
 	import UserAdmin from '$lib/displayComponents/UserAdmin.svelte';
 	import Search from '$lib/forms/Search.svelte';
-	import User from '$lib/displayComponents/User.svelte';
 	import HorizontalDivider from '$lib/displayComponents/HorizontalDivider.svelte';
 	import VerticalDivider from '$lib/displayComponents/VerticalDivider.svelte';
 

@@ -3,7 +3,7 @@
 	import type { Lease } from '@prisma/client';
    import type { PageData } from './$types';
 	import LeaseEmployee from '$lib/displayComponents/LeaseEmployee.svelte';
-   import User from '$lib/displayComponents/User.svelte';
+   import UserEmployee from '$lib/displayComponents/UserEmployee.svelte';
 	import Search from '$lib/forms/Search.svelte';
 	import Pagination from '$lib/displayComponents/Pagination.svelte';
    let { data }: { data: PageData } = $props();
@@ -27,7 +27,7 @@
          <div class="flex">
             <LeaseEmployee lease={lease} />
             {#if customer}
-               <User user={customer} />
+               <UserEmployee user={customer} />
             {/if}
          </div>
       {/each}
