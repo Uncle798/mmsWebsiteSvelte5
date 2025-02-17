@@ -292,9 +292,10 @@ async function makeRefund(paymentRecord:PaymentRecord){
 function makeDiscount(employee:User){
    const discount:PartialDiscount ={
       code: 'Test5Off',
-      notes: 'This is a test discount',
+      notes: 'This is a test amount off discount',
       amountOff: 5,
-      userId: employee.id
+      userId: employee.id,
+      percentage: false
    }
    return discount
 }
