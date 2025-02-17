@@ -171,13 +171,19 @@ export const actions: Actions = {
             leaseEffectiveDate: new Date(),
          }
       })
-      console.log(lease)
-      const workflow = await qStash.trigger({
+      await prisma.unit.update({
+         where: {
+            num: lease.unitNum
+         },
+         data: {
+            leasedPrice: lease.price
+         }
+      })
+      await qStash.trigger({
          url: `${PUBLIC_URL}/api/upstash/workflow`,
          body:  {leaseId:lease.leaseId},
          workflowRunId: lease.leaseId
       })
-      console.log('employeeNewLease workflow: ', workflow)
       const invoice = await prisma.invoice.create({
          data:{
             invoiceAmount: unit!.deposit,
@@ -187,7 +193,6 @@ export const actions: Actions = {
             deposit: true
          }
       })
-      console.log('employeeNewLease formData: ', leaseForm.data)
       if(leaseForm.data.paymentType === 'CASH' || leaseForm.data.paymentType === 'CHECK') {
          const paymentRecord = await prisma.paymentRecord.create({
             data: {
@@ -196,7 +201,16 @@ export const actions: Actions = {
                paymentAmount: invoice.invoiceAmount,
                customerId: invoice.customerId!,
                paymentNotes: 'Payment for invoice ' + invoice.invoiceNum + ', ' + invoice.invoiceNotes,
-               deposit: invoice.deposit 
+               deposit: invoice.deposit,
+               paymentCompleted: new Date()
+            }
+         })
+         await prisma.invoice.update({
+            where: {
+               invoiceNum: invoice.invoiceNum
+            },
+            data: {
+               paymentRecordNum: paymentRecord.paymentNumber
             }
          })
          redirect(302, `/employeeNewLease/leaseSent?paymentNumber=${paymentRecord.paymentNumber}`);
