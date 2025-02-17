@@ -42,7 +42,7 @@ export const load = (async (event) => {
          }
       })
       if(lease?.anvilEID){
-         return { customer, }
+         return { customer, paymentRecord }
       }
       const employee = await prisma.user.findUnique({
          where: {
@@ -74,8 +74,9 @@ export const load = (async (event) => {
             }
          })
          await qStash.notify({eventId:lease!.leaseId})
-         return { packetDetails, customer };
+         return { packetDetails, customer, paymentRecord };
       }
+      return { paymentRecord }
    }
    return { };
 }) satisfies PageServerLoad;
