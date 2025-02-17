@@ -85,6 +85,7 @@ export const partialDiscount = Prisma.validator<Prisma.DiscountCodeDefaultArgs>(
       notes: true,
       userId: true,
       amountOff: true,
+      percentage: true,
    }
 })
 export type PartialDiscount = Prisma.DiscountCodeGetPayload<typeof partialDiscount>
