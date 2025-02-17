@@ -121,8 +121,9 @@
             constraints={$constraints.invoiceAmount}
             label='Invoice amount: $'
             name='invoiceAmount'
+
          />
-         <Switch name='deposit' bind:checked={$form.deposit} label='Deposit'>
+         <Switch name='deposit' bind:checked={$form.deposit} label='Deposit' classes='mt-2'>
             Deposit
          </Switch>
          <input type="hidden" name='employeeId' value={employeeId}/>

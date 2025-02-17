@@ -27,21 +27,20 @@
 {#await data.users}
    ...loading users
 {:then users }
-   <div transition:fade={{duration:600}}>
+   <div transition:fade={{duration:600}} class="m-2">
       <Search data={data.searchForm} bind:search={search} searchType='user' />
-      {#each slicedSource(searchedUsers(users)) as user (user.id)}
-         <div class="flex">
-            <UserAdmin user={user} widthClass='w-1/3' />
-            <VerticalDivider classes='h-30' />
-            <EmploymentChangeForm 
-               data={data.employmentChangeForm} 
-               employeeChecked={user.employee} 
-               adminChecked={user.admin}
-               userId={user.id}
-            />
+      <div class="grid grid-cols-2 gap-y-3 gap-x-1">
+         {#each slicedSource(searchedUsers(users)) as user (user.id)}
+               <UserAdmin {user} classes="rounded-lg border border-primary-50 dark:border-primary-950 p-2"/>
+               <EmploymentChangeForm 
+                  data={data.employmentChangeForm} 
+                  employeeChecked={user.employee} 
+                  adminChecked={user.admin}
+                  userId={user.id}
+                  classes="rounded-lg border border-primary-50 dark:border-primary-950 p-2"
+               />
+            {/each}
          </div>
-         <HorizontalDivider />
-      {/each}
-         <Pagination bind:size={size} bind:pageNum={pageNum} array={searchedUsers(users)} label='users'/>
+      <Pagination bind:size={size} bind:pageNum={pageNum} array={searchedUsers(users)} label='users'/>
    </div>
 {/await}

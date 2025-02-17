@@ -144,13 +144,13 @@
             name='paymentAmount'
          />
          <div class="">
-         <label for="paymentType">Payment type
-            <select name="paymentType" id="paymentType" class="select">
-               <option value='CASH'>Cash</option>
-               <option value="CHECK">Check</option>
-               <option value="STRIPE">Credit Card</option>
-            </select>
-         </label>
+            <label for="paymentType">Payment type
+               <select name="paymentType" id="paymentType" class="select">
+                  <option value='CASH'>Cash</option>
+                  <option value="CHECK">Check</option>
+                  <option value="STRIPE">Credit Card</option>
+               </select>
+            </label>
          </div>
          <input type="hidden" name='employeeId' value={employeeId} />
          <TextInput
