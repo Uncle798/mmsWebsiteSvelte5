@@ -23,14 +23,7 @@
    <div class="text-right">Created</div>
    <div class="font-medium">{dayjs(paymentRecord.paymentCreated).format('M/D/YYYY')}</div>
    <HorizontalDivider classes='col-span-2' />
-   {#if paymentRecord.paymentCompleted && paymentRecord.paymentCompleted.getDate() !== paymentRecord.paymentCreated.getDate()}
-      <div class="text-right">Completed</div>
-      <div class="font-medium">{ dayjs(paymentRecord.paymentCompleted).format('M/D/YYYY')}</div>
-      <HorizontalDivider classes='col-span-2' />
-   {:else if !paymentRecord.paymentCompleted}
-      <div class="col-span-2 text-center">Payment not completed</div>
-      <HorizontalDivider classes='col-span-2' />
-   {/if}
+
    <div class="text-right">Type</div>
    <div class="font-medium">{paymentRecord.paymentType.replace(/\w\S*/g, text => text.charAt(0).toUpperCase() + text.substring(1).toLowerCase())}</div>
    <HorizontalDivider classes='col-span-2' />
