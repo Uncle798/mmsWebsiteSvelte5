@@ -54,7 +54,7 @@
     })
 </script>
 <Header title="Login" />
-<div class="m-2 "transition:fade={{duration:600}}>
+<div class="p-2" transition:fade={{duration:600}}>
     <p class="h2 ">Please enter your email to login </p>
     <div class="h3">
         <FormMessage message={$message} />
@@ -70,5 +70,5 @@
         />
         <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} buttonText='Email me a link to login'/>
     </form>
-    <a href="/register?redirectTo={data.redirectTo}&unitNum={data.unitNum}" class="btn">Register new account</a>
+    <a href="/register?redirectTo={data.redirectTo}&unitNum={data.unitNum}" class="anchor">Register new account</a>
 </div>

@@ -17,5 +17,6 @@
             emailVerificationModalOpen={emailVerificationOpen} 
             redirect={redirectTo}
             emailVerification={false}
+            classes='m-2'
         />
     {/if}

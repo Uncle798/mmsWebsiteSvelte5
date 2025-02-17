@@ -54,7 +54,7 @@
         {:else}
             <Modal
                 bind:open={addressModalOpen}
-                triggerBase="btn preset-tonal"
+                triggerBase="btn rounded-lg preset-filled-primary-50-950 my-2"
                 contentBase="card bg-surface-400-600 p-4 space-y-4 shadow-xl max-w-screen-sm"
                 backdropClasses="backdrop-blur-sm"
             >
@@ -74,7 +74,7 @@
                 <div class="py-2" transition:fade={{duration:300}}>
                     {#if data.discount.percentage}
                         Discount {data.discount.amountOff}%
-                        Monthly Rent {currencyFormatter.format(data.unit.advertisedPrice * (data.discount.amountOff / 100))}
+                        Monthly Rent {currencyFormatter.format(data.unit.advertisedPrice - (data.unit.advertisedPrice * (data.discount.amountOff / 100)))}
                     {:else}
                         Discount {currencyFormatter.format(data.discount.amountOff)}
                         Monthly Rent {currencyFormatter.format(data.unit.advertisedPrice - data.discount.amountOff)}
@@ -90,7 +90,7 @@
     </form>
     {#if !data.discount}
         <div transition:fade={{duration:600}}>
-            <LeaseDiscountForm data={data.leaseDiscountForm} unitNum={data.unitNum} />
+            <LeaseDiscountForm data={data.leaseDiscountForm} unitNum={data.unitNum} classes='w-72'/>
         </div>
     {/if}
 </div>
