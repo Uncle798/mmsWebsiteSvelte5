@@ -45,6 +45,6 @@
    </form>
 
    <form method="POST" action="/register/emailVerification?/resend" >
-      <button class="btn bg-preset-950">Resend email</button>
+      <button class="btn preset-filled-primary-50-950 rounded-lg">Resend email</button>
    </form>
 </div>
