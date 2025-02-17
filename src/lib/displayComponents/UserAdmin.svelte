@@ -1,18 +1,25 @@
 <script lang="ts">
-	import type { PartialUser } from "$lib/server/partialTypes";
+	import type { PartialUser } from '$lib/server/partialTypes';
 
-   interface Props {
-      user: PartialUser
-      widthClass: string;
-   }
-   let { user, widthClass }:Props = $props()
+	interface Props {
+		user: PartialUser;
+		classes?: string;
+	}
+	let { user, classes }: Props = $props();
 </script>
 
-<div class="p-4 {widthClass} flex-none">
-   <p ><a href="/users/{user.id}">{user.givenName} {user.familyName}</a></p>
-   {#if user.organizationName}
-      <p><a href="/users/{user.id}">{user.organizationName}</a></p>
-   {/if}
-   <p>{user.email}</p>
-   <p>Stripe Id: {user.stripeId}</p>
+<div class="{classes}">
+	<div><a href="/users/{user.id}" class="anchor">{user.givenName} {user.familyName}</a></div>
+	{#if user.organizationName}
+		<div>{user.organizationName}</div>
+	{/if}
+	<div class="truncate"><a href="mailto:{user.email}" class="anchor">{user.email}</a></div>
+	<div class="grid grid-cols-2 gap-x-2">
+		<div class="text-right">StripeId: </div><div class="truncate">{user.stripeId}</div>
+		{#if user.admin}
+			<div class="col-span-2 font-medium text-center">Admin</div>
+			{:else if user.employee}	
+			<div class="col-span-2 font-medium text-center">Employee</div>
+		{/if}
+	</div>
 </div>
