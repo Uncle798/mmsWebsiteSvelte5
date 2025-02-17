@@ -3,8 +3,8 @@ import type { PageServerLoad } from './$types';
 import { prisma } from '$lib/server/prisma';
 
 export const load = (async (event) => {
-   if(!event.locals.user?.employee){
-      redirect(302, '/login?toast=employee')
+   if(!event.locals.user){
+      redirect(302, '/login?toast=unauthorized')
    }
    const leaseId = event.params.leaseId
    const lease = await prisma.lease.findUnique({
@@ -12,6 +12,11 @@ export const load = (async (event) => {
          leaseId,
       }
    })
+   console.log('userId', event.locals.user.id);
+   console.log('leaseUserId, ', lease?.customerId);
+   if(!event.locals.user.employee && lease?.customerId !== event.locals.user.id){
+      redirect(302, '/login?toast=employee')
+   }
    const customer = await prisma.user.findUnique({
       where: {
          id: lease?.customerId
