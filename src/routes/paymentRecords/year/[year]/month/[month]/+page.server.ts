@@ -38,10 +38,33 @@ export const load = (async (event) => {
              ]  
          },
     });
-    const customers = prisma.user.findMany();
+    const customers = prisma.user.findMany({
+      where: {
+        paymentMade: {
+          some: {
+            AND:[
+              { paymentCompleted: {gt: startDate} },
+              { paymentCompleted: {lt: endDate} }
+            ]
+          }
+        }
+      }
+    });
     const addresses = prisma.address.findMany({
       where: {
-        softDelete: false,
+        AND: [
+          {softDelete: false},
+          {user: {
+            paymentMade: {
+              some: {
+                AND:[
+                  { paymentCompleted: {gt: startDate} },
+                  { paymentCompleted: {lt: endDate} }
+                ]
+              }
+            }
+          }}
+        ]
       }
     });
     return { paymentRecords, searchForm, paymentRecordCount, customers, dateSearchForm, addresses };

@@ -24,7 +24,7 @@ export const load = (async (event) => {
             paymentCreated: 'asc'
         },
     });
-    const customers = prisma.user.findMany();
+    const customers = prisma.user.findMany({});
     const addresses = prisma.address.findMany({
         where: {
             softDelete: false

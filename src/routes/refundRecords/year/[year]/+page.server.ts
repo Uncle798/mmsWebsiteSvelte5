@@ -37,10 +37,33 @@ export const load = (async (event) => {
          ]
       }
    })
-   const customers = prisma.user.findMany();
+   const customers = prisma.user.findMany({
+      where: {
+         refundReceived: {
+            some: {
+               AND:[
+                  { refundCreated: {gt: startDate } },
+                  { refundCompleted: {lt: endDate } },
+               ]
+            }
+         }
+      }
+   });
    const addresses = prisma.address.findMany({
       where: {
-         softDelete: false,
+         AND: [
+            {softDelete: false},
+            {user: {
+               refundReceived: {
+                  some: {
+                     AND:[
+                        { refundCreated: {gt: startDate } },
+                        { refundCompleted: {lt: endDate } },
+                     ]
+                  }
+               }
+            }}
+         ]
       }
    });
    const months = arrayOfMonths(startDate, endDate)
