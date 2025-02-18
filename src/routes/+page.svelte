@@ -1,24 +1,128 @@
+
 <script lang="ts">
-	import { PUBLIC_COMPANY_NAME } from "$env/static/public";
+	import { PUBLIC_COMPANY_EMAIL, PUBLIC_COMPANY_NAME, PUBLIC_PHONE } from "$env/static/public";
    import PalouseHills from '$lib/Photos/Palouse_hills_northeast_of_Walla_Walla.jpg'
    import Header from "$lib/Header.svelte";
    import type { PageData } from "./$types";
+   import type { Unit } from '@prisma/client'
+	import UnitCustomer from "$lib/displayComponents/customerViews/UnitCustomer.svelte";
+	import { size } from "@skeletonlabs/floating-ui-svelte";
    interface Props {
       data: PageData;
    }
    let { data }: Props = $props();
+   let prices:number[]=[];
+   const wrapper = new Promise<Unit[]>(async res => {
+      const units = await data.units
+      const leases = await data.leases
+      const availableUnits:Unit[] = [];
+      units.forEach((unit) => {
+         const lease = leases.find((lease) => lease.unitNum === unit.num)
+         if(!lease){
+            availableUnits.push(unit);
+         }
+      })
+      availableUnits.forEach((unit) => {
+         if(!prices.find((price) => price === unit.advertisedPrice)){
+            prices.push(unit.advertisedPrice)
+         }
+      })
+      res(availableUnits)
+   })
+   let sizeFilter = $state('');
+   let priceFilter = $state(0);
+   const filterPrice = $derived((units:Unit[]) => units.filter((unit) => {
+      if(priceFilter !== 0){
+         unit.advertisedPrice === priceFilter
+      } else{
+         return unit
+      }
+   }))
+   const filterSize = $derived((units:Unit[]) => units.filter((unit) => unit.size.includes(sizeFilter)))
+   function setSizeFilter(event:Event){
+      const select = event.target as HTMLSelectElement;
+      const size = select.value
+      sizeFilter = size;
+      priceFilter = 0
+   }
+   function setPriceFilter(event:Event){
+      const select = event.target as HTMLSelectElement;
+      const price = select.value
+      priceFilter = parseInt(price, 10);
+      sizeFilter = ''
+   }
+   const currencyFormatter = new Intl.NumberFormat('en-US', {style:'currency', currency:'USD'})
 </script>
 
 <Header title='Home' />
-{#if data.user}
-   Welcome to the {PUBLIC_COMPANY_NAME} home page, {data.user.givenName} 
+{#await wrapper}
+   {#if data.user}
+      Welcome to the {PUBLIC_COMPANY_NAME} home page, {data.user.givenName} 
    {:else}
-   <article>
+      <article class="m-2">
+         <div>
+            <p>
+               Welcome to the {PUBLIC_COMPANY_NAME} home page. Nestled in the hills of the Palouse just outside Moscow off the Troy Highway, {PUBLIC_COMPANY_NAME} is the place to safely and securely store your belongings.
+               Family owned and operated since 1993, {PUBLIC_COMPANY_NAME} . 
+            </p>
+            <p>
+               Contact us at <a href="tel:{PUBLIC_PHONE}" class="anchor">
+                  {
+                  PUBLIC_PHONE.substring(0,1)+'-'+
+                  PUBLIC_PHONE.substring(1,4)+'-'+
+                  PUBLIC_PHONE.substring(4,7)+'-'+
+                  PUBLIC_PHONE.substring(7)
+                  }
+                  </a>, or <a href="mailto:{PUBLIC_COMPANY_EMAIL}" class="anchor">{PUBLIC_COMPANY_EMAIL}</a> the office and gates are open 8:00 am to 8:00 pm.
+            </p>
+         </div>
+      </article>
+      {/if}
+{:then units} 
+      <article class="m-2">
+         <div>
+            <p>
+               Welcome to the {PUBLIC_COMPANY_NAME} home page. Nestled in the hills of the Palouse just outside Moscow off the Troy Highway, {PUBLIC_COMPANY_NAME} is the place to safely and securely store your belongings.
+               Family owned and operated since 1993, {PUBLIC_COMPANY_NAME}. 
+            </p>
+            <p>
+               Contact us at <a href="tel:{PUBLIC_PHONE}" class="anchor">
+                  {
+                  PUBLIC_PHONE.substring(0,1)+'-'+
+                  PUBLIC_PHONE.substring(1,4)+'-'+
+                  PUBLIC_PHONE.substring(4,7)+'-'+
+                  PUBLIC_PHONE.substring(7)
+                  }
+                  </a>, or <a href="mailto:{PUBLIC_COMPANY_EMAIL}" class="anchor">{PUBLIC_COMPANY_EMAIL}</a> the office and gates are open 8:00 am to 8:00 pm.
+            </p>
+         </div>
+      </article>
+   <div class="grid grid-cols-4 gap-1 m-2">
       <div>
-         Welcome to the {PUBLIC_COMPANY_NAME} home page. Nestled in the hills of the Palouse just outside Moscow off the Troy Highway {PUBLIC_COMPANY_NAME} is the place to safely and securely store your belongings.
-         Family owned and operated since 1993, {PUBLIC_COMPANY_NAME} is open from 8:00 a.m. to 8:00 p.m. seven days a week. 
-
+         <label for="priceFilter">Filter by price
+            <select name="priceFilter" id="priceFilter" bind:value={priceFilter} onchange={setPriceFilter} class="select rounded-lg">
+               <option value="0">All prices</option>
+               {#each prices as price}
+                  <option value={price}>{currencyFormatter.format(price)} per month</option>
+               {/each}
+            </select>
+         </label>
       </div>
-   </article>
-{/if}
- <p>See what <a href="/units/available">units we have available</a></p>
+      <div class="h3 text-center col-start-2 col-end-4">Available Units</div>
+      <div class="col-start-4">filter by size: 
+         <select class="select rounded-lg" name='size' bind:value={sizeFilter} onchange={setSizeFilter}>
+            <option value="">All</option>
+            {#each data.sizes as size}
+               <option value={size}>{size.replace(/^0+/gm,'').replace(/x0/gm,'x')}</option>
+            {/each}
+         </select>
+      </div>
+      {#each filterPrice(filterSize(units)) as unit}
+         <div class="flex flex-col border rounded border-primary-50 dark:border-primary-950">
+            <UnitCustomer {unit} classes=''/>
+            <a class="btn preset-filled-primary-50-950 rounded-lg m-2" href="/newLease?unitNum={unit.num}">Rent this Unit</a>
+         </div>
+      {/each}
+   </div>
+{/await}
+      
