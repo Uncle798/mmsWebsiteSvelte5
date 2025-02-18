@@ -18,7 +18,7 @@
       const availableUnits:Unit[] = [];
       units.forEach((unit) => {
          const lease = leases.find((lease) => lease.unitNum === unit.num)
-         if(!lease){
+         if(!lease && !availableUnits.find((u) => u.size === unit.size)){
             availableUnits.push(unit);
          }
       })
@@ -73,7 +73,7 @@
                   PUBLIC_PHONE.substring(4,7)+'-'+
                   PUBLIC_PHONE.substring(7)
                   }
-                  </a>, or <a href="mailto:{PUBLIC_COMPANY_EMAIL}" class="anchor">{PUBLIC_COMPANY_EMAIL}</a> the office and gates are open 8:00 am to 8:00 pm.
+                  </a>, or <a href="mailto:{PUBLIC_COMPANY_EMAIL}" class="anchor">{PUBLIC_COMPANY_EMAIL}</a>, the office and gates are open 8:00 am to 8:00 pm.
             </p>
          </div>
       </article>
@@ -102,7 +102,7 @@
          <label for="priceFilter">Filter by price
             <select name="priceFilter" id="priceFilter" bind:value={priceFilter} onchange={setPriceFilter} class="select rounded-lg">
                <option value="0">All prices</option>
-               {#each prices as price}
+               {#each prices.sort() as price}
                   <option value={price}>{currencyFormatter.format(price)} per month</option>
                {/each}
             </select>
@@ -120,7 +120,7 @@
       {#each filterPrice(filterSize(units)) as unit}
          <div class="flex flex-col border rounded border-primary-50 dark:border-primary-950">
             <UnitCustomer {unit} classes=''/>
-            <a class="btn preset-filled-primary-50-950 rounded-lg m-2" href="/newLease?unitNum={unit.num}">Rent this Unit</a>
+            <a class="btn preset-filled-primary-50-950 rounded-lg m-2 text-wrap" href="/newLease?unitNum={unit.num}">Rent this Unit</a>
          </div>
       {/each}
    </div>
