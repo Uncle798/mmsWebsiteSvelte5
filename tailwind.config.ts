@@ -23,6 +23,7 @@ export default {
 				themes.concord,
 				themes.crimson,
 				themes.fennec,
+				themes.hamlindigo,
 				themes.legacy,
 				themes.mint,
 				themes.modern,
@@ -30,11 +31,15 @@ export default {
 				themes.nosh,
 				themes.nouveau,
 				themes.pine,
+				themes.reign,
 				themes.rocket,
 				themes.rose,
 				themes.sahara,
+				themes.seafoam,
+				themes.terminus,
 				themes.vintage,
-
+				themes.vox,
+				themes.wintry,
 			]
 		})
 	]
