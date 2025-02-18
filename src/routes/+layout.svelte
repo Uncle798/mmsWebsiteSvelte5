@@ -91,6 +91,7 @@
 			{/if}
 			<div class="absolute bottom-0 p-2 mb-4">
 				{#if data.user}
+				<li><a href="/accountSettings" class="anchor">Settings</a></li>
 					<form action="/logout" method="post" use:enhance>
 						<li><button class="anchor" type="button" onclick={()=>onButtonClick("/logout")}>Logout</button></li>
 					</form>
