@@ -15,7 +15,7 @@
    <div class="font-medium">{unit.num.replace(/^0+/gm,'')}</div>
    <HorizontalDivider classes='col-span-2'/>
    <div class="text-right">Size</div>
-   <div class="font-medium"> <a href="/units/size/{unit.size}">{unit.size.replace(/^0+/gm, '').replace(/x0/gm, 'x')}</a></div>
+   <div class="font-medium">{unit.size.replace(/^0+/gm, '').replace(/x0/gm, 'x')}</div>
    <HorizontalDivider classes='col-span-2'/>
    <div class="text-right">Price</div>
    <div class="font-medium">{currencyFormatter.format(unit.advertisedPrice)}</div>
@@ -23,6 +23,6 @@
    <div class="text-right">Deposit</div>
    <div>{currencyFormatter.format(unit.deposit)}</div>
    <HorizontalDivider classes='col-span-2'/>
-   <div class="text-right text-wrap">Approximate Amount of Stuff</div>
+   <div class="text-right text-wrap">Description</div>
    <div>{unit.description}</div>
 </div>
