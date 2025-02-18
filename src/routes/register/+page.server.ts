@@ -10,8 +10,9 @@ import type { PageServerLoad } from "./$types";
 export const load:PageServerLoad = (async (event) =>{
 	const unitNum = event.url.searchParams.get('unitNum');
    const registerForm = await superValidate(zod(registerFormSchema))
-	const redirectTo = event.url.searchParams.get('redirectTo')
-   return { unitNum, registerForm, redirectTo }
+	const redirectTo = event.url.searchParams.get('redirectTo');
+   const toastReason = event.url.searchParams.get('toast')
+   return { unitNum, registerForm, redirectTo, toastReason }
 })
 
 
