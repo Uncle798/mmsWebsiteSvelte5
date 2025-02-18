@@ -99,14 +99,14 @@
       </article>
    <div class="grid grid-cols-4 gap-1 m-2">
       <div>
-         <label for="priceFilter">Filter by price
+         <!-- <label for="priceFilter">Filter by price
             <select name="priceFilter" id="priceFilter" bind:value={priceFilter} onchange={setPriceFilter} class="select rounded-lg">
                <option value="0">All prices</option>
                {#each prices.sort() as price}
                   <option value={price}>{currencyFormatter.format(price)} per month</option>
                {/each}
             </select>
-         </label>
+         </label> -->
       </div>
       <div class="h3 text-center col-start-2 col-end-4">Available Units</div>
       <div class="col-start-4">filter by size: 
