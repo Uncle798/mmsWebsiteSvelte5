@@ -9,6 +9,7 @@
     import type { PageData } from './$types';
 	import Header from '$lib/Header.svelte';
 	import { fade } from 'svelte/transition';
+	import InvoiceCustomer from '$lib/displayComponents/customerViews/InvoiceCustomer.svelte';
 
     let { data }: { data: PageData } = $props();
 
@@ -18,11 +19,11 @@
     let error = null;
     let processing = $state(false);
     let mounted = $state(false);
-    let currentTime = $state(new Date());
+    // let currentTime = $state(new Date());
     onMount(async () =>{
-        const interval = setInterval(() =>{
-            currentTime = new Date();
-        }, 1000)
+        // const interval = setInterval(() =>{
+        //     currentTime = new Date();
+        // }, 1000)
         stripe = await loadStripe(PUBLIC_STRIPE_TEST);
         clientSecret = await createPaymentIntent();
         mounted = true;
@@ -68,7 +69,6 @@
     
 </script>
 <Header title='Pay your deposit'/>
-Current time = {currentTime}
 
 {#if !mounted}
     <div transition:fade={{duration:600}}>
@@ -76,7 +76,7 @@ Current time = {currentTime}
     </div>
     {:else}
     {#if data.invoice}
-        <InvoiceEmployee invoice={data.invoice} />
+        <InvoiceCustomer invoice={data.invoice} />
         <div class="p-4">
             
             <form onsubmit={submit}>
