@@ -63,17 +63,15 @@
          <div>
             <p>
                Welcome to the {PUBLIC_COMPANY_NAME} home page. Nestled in the hills of the Palouse just outside Moscow off the Troy Highway, {PUBLIC_COMPANY_NAME} is the place to safely and securely store your belongings.
-               Family owned and operated since 1993, {PUBLIC_COMPANY_NAME} . 
-            </p>
-            <p>
-               Contact us at <a href="tel:{PUBLIC_PHONE}" class="anchor">
+               Family owned and operated since 1993 you can contact us at 
+               <a href="tel:{PUBLIC_PHONE}" class="anchor">
                   {
                   PUBLIC_PHONE.substring(0,1)+'-'+
                   PUBLIC_PHONE.substring(1,4)+'-'+
                   PUBLIC_PHONE.substring(4,7)+'-'+
                   PUBLIC_PHONE.substring(7)
                   }
-                  </a>, or <a href="mailto:{PUBLIC_COMPANY_EMAIL}" class="anchor">{PUBLIC_COMPANY_EMAIL}</a>, the office and gates are open 8:00 am to 8:00 pm.
+                  </a>, or <a href="mailto:{PUBLIC_COMPANY_EMAIL}" class="anchor">{PUBLIC_COMPANY_EMAIL}</a> the office and gates are open 8:00 am to 8:00 pm.
             </p>
          </div>
       </article>
@@ -83,10 +81,8 @@
          <div>
             <p>
                Welcome to the {PUBLIC_COMPANY_NAME} home page. Nestled in the hills of the Palouse just outside Moscow off the Troy Highway, {PUBLIC_COMPANY_NAME} is the place to safely and securely store your belongings.
-               Family owned and operated since 1993, {PUBLIC_COMPANY_NAME}. 
-            </p>
-            <p>
-               Contact us at <a href="tel:{PUBLIC_PHONE}" class="anchor">
+               Family owned and operated since 1993 you can contact us at 
+               <a href="tel:{PUBLIC_PHONE}" class="anchor">
                   {
                   PUBLIC_PHONE.substring(0,1)+'-'+
                   PUBLIC_PHONE.substring(1,4)+'-'+
