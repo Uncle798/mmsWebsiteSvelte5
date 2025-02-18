@@ -4,8 +4,9 @@
 	import type { PageData } from './$types';
 	import { Modal } from '@skeletonlabs/skeleton-svelte';
 	import Menu from 'lucide-svelte/icons/menu';
-	import { goto } from '$app/navigation';
-	import { superForm } from 'sveltekit-superforms';
+	import { beforeNavigate } from '$app/navigation';
+	import { enhance } from '$app/forms';
+
 	interface Props {
 		data: PageData,
 		children: import('svelte').Snippet
@@ -48,14 +49,10 @@
 
 	]
 	let menuOpen = $state(false);
-	const { submit, enhance } = superForm(data.logOutForm)
-	function onButtonClick(link:string){
-		goto(link)
-		menuOpen=false
-		if(link === '/logout'){
-			submit()
-		}
-	}
+
+	beforeNavigate(() =>{
+		menuOpen = false;
+	})
 </script>
 
 <Modal
@@ -76,27 +73,27 @@
 		<ul>
 			{#if !data.user?.employee}
 				{#each customerLinks as link}
-					<li><button class="anchor" type="button" onclick={()=>onButtonClick(link.link)}>{link.label}</button></li>
+					<li><a class="anchor" href={link.link}>{link.label}</a></li>
 				{/each}		
 			{/if}
 			{#if data.user?.employee}
 				{#each employeeLinks as employeeLink}
-					<li><button class="anchor" type="button" onclick={()=>onButtonClick(employeeLink.link)}>{employeeLink.label}</button></li>
+					<li><a class="anchor" href={employeeLink.link}>{employeeLink.label}</a></li>
 				{/each}
 			{/if}
 			{#if data.user?.admin}
 				{#each adminLinks as adminLink}
-					<li><button class="anchor" type="button" onclick={()=>onButtonClick(adminLink.link)}>{adminLink.label}</button></li>
+					<li><a class="anchor" href={adminLink.link}>{adminLink.label}</a></li>
 				{/each}
 			{/if}
 			<div class="absolute bottom-0 p-2 mb-4">
 				{#if data.user}
 				<li><a href="/accountSettings" class="anchor">Settings</a></li>
 					<form action="/logout" method="post" use:enhance>
-						<li><button class="anchor" type="button" onclick={()=>onButtonClick("/logout")}>Logout</button></li>
+						<li><button class="anchor" type="submit">Logout</button></li>
 					</form>
 				{:else}
-					<li><button class="anchor" type="button" onclick={()=>onButtonClick("/login")}>Login</button></li>
+					<li><a class="anchor" href="/login">Login</a></li>
 				{/if}
 			</div>
 		</ul>
