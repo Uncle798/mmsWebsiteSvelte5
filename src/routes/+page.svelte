@@ -118,7 +118,7 @@
          </select>
       </div>
       {#each filterPrice(filterSize(units)) as unit}
-         <div class="flex flex-col border rounded border-primary-50 dark:border-primary-950">
+         <div class="flex flex-col border rounded-lg border-primary-50 dark:border-primary-950">
             <UnitCustomer {unit} classes=''/>
             <a class="btn preset-filled-primary-50-950 rounded-lg m-2 text-wrap" href="/newLease?unitNum={unit.num}">Rent this Unit</a>
          </div>
