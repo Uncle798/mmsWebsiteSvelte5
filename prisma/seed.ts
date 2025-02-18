@@ -128,8 +128,8 @@ async function createEmployees() {
                   state: faker.location.state({abbreviated: true}),
                   postalCode: faker.location.zipCode(),
                   country: 'US',
-                  phoneNum1: faker.phone.number(),
-                  phoneNum1Country: '+1',
+                  phoneNum1: faker.helpers.fromRegExp('[0-9]{10}'),
+                  phoneNum1Country: '1',
                }
             },
             employee: true,
@@ -151,8 +151,8 @@ async function createEmployees() {
                   state: faker.location.state({abbreviated: true}),
                   postalCode: faker.location.zipCode(),
                   country: 'US',
-                  phoneNum1: faker.phone.number(),
-                  phoneNum1Country: '+1',
+                  phoneNum1: faker.helpers.fromRegExp('[0-9]{10}'),
+                  phoneNum1Country: '1',
                }
             },
             employee: true,
@@ -209,8 +209,8 @@ async function createLease(unit: Unit, leaseStart:Date, leaseEnd: Date | null, r
          state: faker.location.state({abbreviated: true}),
          postalCode: faker.location.zipCode(),
          country: faker.location.countryCode(),
-         phoneNum1: faker.phone.number(),
-         phoneNum1Country: '+1'
+         phoneNum1: faker.helpers.fromRegExp('[0-9]{10}'),
+         phoneNum1Country: '1'
       }
       addresses.push(address);
    });
