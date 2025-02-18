@@ -11,7 +11,7 @@ export const load:PageServerLoad = (async (event) => {
    });
    const units = await prisma.unit.findMany({
       orderBy: {
-         num: 'asc'
+         size: 'asc'
       }, 
       where: {
          unavailable: false
