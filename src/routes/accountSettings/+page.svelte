@@ -13,6 +13,7 @@
 	import { fade } from 'svelte/transition';
 	import InvoiceCustomer from '$lib/displayComponents/customerViews/InvoiceCustomer.svelte';
 	import PaymentRecordCustomer from '$lib/displayComponents/customerViews/PaymentRecordCustomer.svelte';
+	import ThemeSelector from '$lib/displayComponents/ThemeSelector.svelte';
     
     let {data}:{ data: PageData} = $props();
     let addressModalOpen = $state(false);
@@ -161,3 +162,5 @@
     {/await}
 </div>
 </div>
+
+<ThemeSelector />

@@ -8,7 +8,11 @@ export const handle: Handle = async ({ event, resolve }) => {
    if(!token){
       event.locals.user = null;
       event.locals.session = null;
-      return await resolve(event);
+      return await resolve(event, {
+         transformPageChunk: ({html}) => {
+            return html.replace('data-theme=""', `data-theme="hamlindigo"`)
+         }
+      });
    }
    const { session, user } = await validateSessionToken(token);
    if(session){
@@ -30,14 +34,17 @@ export const handle: Handle = async ({ event, resolve }) => {
    }
    event.locals.session = session;
    event.locals.user = user;
-   // const theme = event.cookies.get('theme')
-   // if(!theme){
-   //    return await resolve(event)
-   // }
-   // return await resolve(event, {
-   //    transformPageChunk: ({html}) => {
-   //       return html.replace('data-theme=""', `data-theme="${theme}"`)
-   //    }
-   // })
-   return await resolve(event)
+   const theme = event.cookies.get('theme')
+   if(!theme){
+      return await resolve(event, {
+         transformPageChunk: ({html}) => {
+            return html.replace('data-theme=""', `data-theme="seafoam"`)
+         }
+      })
+   }
+   return await resolve(event, {
+      transformPageChunk: ({html}) => {
+         return html.replace('data-theme=""', `data-theme="${theme}"`)
+      }
+   })
 }
