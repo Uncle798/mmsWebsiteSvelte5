@@ -13,14 +13,14 @@
    })
    function setTheme(event:Event){
       const select = event.target as HTMLSelectElement;
-      const theme = select.value
-      console.log(theme)
+      const theme = select.value;
       if(themeNames.includes(theme)){
          const year = 60*60*24*365
          window.localStorage.setItem('theme', theme);
          document.cookie = `theme=${theme}; max-age=${year}; path=/; SameSite=Lax`
          document.documentElement.setAttribute('data-theme', theme);
          currentTheme=theme
+         
       }
    }
 </script>

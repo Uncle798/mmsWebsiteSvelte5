@@ -33,13 +33,13 @@
 <div transition:fade={{duration:600}} class="mx-2">
 
 
-<span class="h1">{data.user?.givenName} {data.user?.familyName}</span>
+<span class="h1 mt-2">{data.user?.givenName} {data.user?.familyName}</span>
 {#if data.user?.organizationName}
     <span class="h2">{data.user.organizationName}</span>
 {/if}
 <Modal
     bind:open={nameModalOpen}
-    triggerBase="btn preset-filled-primary-50-950 rounded-lg"
+    triggerBase="btn preset-filled-primary-50-950 rounded-lg mt-2"
     contentBase="card bg-surface-400-600 p-4 space-y-4 shadow-xl max-w-screen-sm"
     backdropClasses="backdrop-blur-sm"
 >
@@ -67,7 +67,7 @@
 </span>
 <Modal
     bind:open={emailModalOpen}
-    triggerBase="btn preset-filled-primary-50-950 rounded-lg"
+    triggerBase="btn preset-filled-primary-50-950 rounded-lg text-wrap mt-2"
     contentBase="card bg-surface-400-600 p-4 space-y-4 shadow-xl max-w-screen-sm"
     backdropClasses="backdrop-blur-sm"
 >
