@@ -31,8 +31,6 @@
       <div class='text-right'>Payment number</div> 
       <div class="font-medium"><a class="anchor" href="/paymentRecords/{invoice.paymentRecordNum}">{invoice.paymentRecordNum}</a></div>
       <HorizontalDivider classes='col-span-2'/>
-   {:else}
-      <div class='col-span-2 m-2'><a class="anchor" href="/paymentRecords/new?defaultCustomer={invoice.customerId}&defaultInvoice={invoice.invoiceNum}">Make a payment record for this lease</a></div>
    {/if}
    {#if invoice.deposit}
       <div class="col-span-2 font-medium text-center">Deposit</div>
