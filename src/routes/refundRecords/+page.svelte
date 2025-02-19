@@ -111,19 +111,21 @@
 				/>
 
 			</div>
-			<div class="grid grid-cols-2 mx-2 gap-y-3 gap-x-1 shadow-lg">
+			<div class="grid grid-cols-1 mx-2 gap-3 shadow-lg">
 				{#each slicedRefunds(searchRefunds(dateSearchRefunds(refunds))) as refund (refund.refundNumber)}
 				{@const customer = customers.find((customer) => customer.id === refund.customerId)}
-					<RefundRecordEmployee refundRecord={refund} classes='px-2 pt-2 border-2 rounded-lg border-primary-50 dark:border-primary-950'/>
-					{#if customer}
-					{@const address = addresses.find((address) => address.userId === customer.id)}
-						<div class="flex flex-col rounded-lg border-2 border-primary-50 dark:border-primary-950">
-							<UserEmployee user={customer} classes='pt-2 pl-2 ' />
-							{#if address}
-								<Address {address} classes='pl-2'/>
-							{/if}
-						</div>
-					{/if}
+					<div class="border rounded-lg border-primary-50 dark:border-primary-950 sm:grid sm:grid-cols-2">
+						<RefundRecordEmployee refundRecord={refund} classes='px-2 pt-2 '/>
+						{#if customer}
+						{@const address = addresses.find((address) => address.userId === customer.id)}
+							<div class="flex flex-col">
+								<UserEmployee user={customer} classes='pt-2 pl-2 ' />
+								{#if address}
+									<Address {address} classes='pl-2'/>
+								{/if}
+							</div>
+						{/if}
+					</div>
 				{/each}
 			</div>
 			<Pagination bind:size bind:pageNum label="refund records" array={searchRefunds(dateSearchRefunds(refunds))} />
