@@ -52,7 +52,7 @@
     {/snippet}
 </Modal>
 
-<span class="h4 flex">{data.user?.email}
+<span class="h6 flex">{data.user?.email}
     {#if data.user?.emailVerified}
     <div class="flex p-1">
         <BadgeCheck size='20'/>  
@@ -144,7 +144,7 @@
         {/each}
     {/if}
 {/await}
-<div class="grid grid-cols-3 gap-x-1 gap-y-3 py-2">
+<div class="grid grid-cols-1 gap-x-1 gap-y-3 py-2">
     {#await data.invoicesPromise}
         loading invoices
     {:then invoices} 
@@ -153,10 +153,12 @@
         {:then payments} 
             {#each invoices as invoice}
             {@const paymentRecord = payments.find((payment) => payment.invoiceNum === invoice.invoiceNum)}
-            <InvoiceCustomer {invoice} classes="border border-primary-50 dark:border-primary-950 rounded-lg"/>
-            {#if paymentRecord}
-                <PaymentRecordCustomer {paymentRecord} classes="border border-primary-50 dark:border-primary-950 rounded-lg"/>
-            {/if}
+                <div class="sm:grid sm:grid-cols-2">
+                    <InvoiceCustomer {invoice} classes="border border-primary-50 dark:border-primary-950 rounded-lg"/>
+                    {#if paymentRecord}
+                        <PaymentRecordCustomer {paymentRecord} classes="border border-primary-50 dark:border-primary-950 rounded-lg"/>
+                    {/if}
+                </div>
             {/each}
         {/await}
     {/await}
