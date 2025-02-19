@@ -1,47 +1,58 @@
 <script lang="ts">
-    import Header from '$lib/Header.svelte';
-	import { fade } from 'svelte/transition';
-    import type { PageData } from './$types';
-	import HorizontalDivider from '$lib/displayComponents/HorizontalDivider.svelte';
-    let { data }:{data:PageData} = $props();
-    const currencyFormatter = new Intl.NumberFormat('en-US', {style: 'currency', currency:'USD'})
+   import Header from '$lib/Header.svelte';
+   import { fade } from 'svelte/transition';
+   import type { PageData } from './$types';
+   import HorizontalDivider from '$lib/displayComponents/HorizontalDivider.svelte';
+   import type { Unit } from '@prisma/client';
+	import UnitEmployee from '$lib/displayComponents/UnitEmployee.svelte';
+	import UnitNotesForm from '$lib/forms/UnitNotesForm.svelte';
+	import UnitCustomer from '$lib/displayComponents/customerViews/UnitCustomer.svelte';
+   let { data }:{data:PageData} = $props();
+   const currencyFormatter = new Intl.NumberFormat('en-US', {style: 'currency', currency:'USD'});
+   let lostRevenue = $state(0);
+   const wrapper = new Promise<Unit[]>(async res => {
+      const units = await data.units
+      const leases = await data.leases
+      const availableUnits:Unit[] = [];
+      units.forEach((unit) => {
+         const lease = leases.find((lease) => lease.unitNum === unit.num)
+         if(!lease && !availableUnits.find((u) => u.size === unit.size)){
+            availableUnits.push(unit);
+         }
+      })
+      availableUnits.forEach((unit) => {
+         lostRevenue += unit.advertisedPrice
+      })
+      res(availableUnits)
+   })
 </script>
 <Header title='Available Units' />
-{#if data.lostRevenue}
-    <div class="flex">
-        <span class="m-2">Available: {data.availableUnits.length} of {data.totalUnits}</span>
-        <span class="m-2">Available percentage {Math.round(data.percentAvailable)}%</span>
-        <span class="m-2">Open revenue per month: {currencyFormatter.format(data.lostRevenue)}</span>
-    </div>
-    <HorizontalDivider />
-{/if}
-<div class="table-wrap" transition:fade={{duration:600}}>
-    <table class="table">
-        <caption>Available units.</caption>
-        <thead>
-            <tr>
-                <th>Unit Number</th>
-                <th>Size (WxL in feet)</th>
-                <th>Approximate amount of stuff</th>
-                <th>Price per month</th>
-            </tr>        
-        </thead>
-        <tbody class="hover:[&>tr]:preset-tonal-primary">
-            {#each data.availableUnits as unit}
-                <tr>
-                    {#if data.user?.employee}
-                    <td><a class="btn" href="/employeeNewLease?unitNum={unit.num}&userId={data.userId}">{unit.num.replace(/^0+/gm,'')}</a></td>
-                    <td><a class="btn" href="/employeeNewLease?unitNum={unit.num}&userId={data.userId}">{unit.size.replace(/^0+/gm,'').replace(/x0/gm, 'x')}</a></td>
-                    <td><a class="btn" href="/employeeNewLease?unitNum={unit.num}&userId={data.userId}">{unit.description}</a></td>
-                    <td><a class="btn" href="/employeeNewLease?unitNum={unit.num}&userId={data.userId}">${unit.advertisedPrice}</a></td>
-                    {:else}
-                    <td><a class="btn" href="/newLease?unitNum={unit.num}">{unit.num.replace(/^0+/gm,'')}</a></td>
-                    <td><a class="btn" href="/newLease?unitNum={unit.num}">{unit.size.replace(/^0+/gm,'').replace(/x0/gm, 'x')}</a></td>
-                    <td><a class="btn" href="/newLease?unitNum={unit.num}">{unit.description}</a></td>
-                    <td><a class="btn" href="/newLease?unitNum={unit.num}">${unit.advertisedPrice}</a></td>
-                    {/if}
-                </tr>
-            {/each}
-        </tbody>
-    </table>
-</div>
+{#await wrapper}
+    ...loading available units
+{:then availableUnits}   
+   {#if data.user?.employee}
+      <div class="flex m-2">
+         <span class="m-2">Available: {availableUnits.length} of {data.unitCount}</span>
+         <span class="m-2">Available percentage {Math.round((availableUnits.length*100)/data.unitCount)}%</span>
+         <span class="m-2">Open revenue per month: {currencyFormatter.format(lostRevenue)}</span>
+      </div>
+      <HorizontalDivider />
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 m-1 sm:m-2">
+         {#each availableUnits as unit}
+            <div class="border border-primary-50 dark:border-primary-950 rounded-lg">
+               <UnitEmployee {unit}/>
+               <UnitNotesForm {unit} data={data.unitNotesForm} />
+            </div>
+         {/each}
+      </div>
+      {:else}
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 m-1 sm:m-2">
+         {#each availableUnits as unit}
+            <div class="border border-primary-50 dark:border-primary-950 rounded-lg">
+               <UnitCustomer {unit}/>
+            </div>
+         {/each}
+      </div>
+
+      {/if}
+{/await}
