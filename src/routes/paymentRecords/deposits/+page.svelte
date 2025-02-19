@@ -55,7 +55,7 @@
 {#await data.deposits}
     loading {numberFormatter.format(data.depositCount)} deposits
 {:then deposits} 
-    <div class="flex">
+    <div class="flex m-2">
         <Search bind:search={search} searchType='payment record number' data={data.searchForm} classes='w-1/2'/>
         <Search bind:search={noteSearch} searchType='Payment notes' data={data.searchForm} classes='w-1/2'/>
 

@@ -69,18 +69,19 @@
 {:else}
    ...loading address
 {/if}
-<div class="">
 {#await data.leases}
-   ...loading leases
+...loading leases
 {:then leases}
-      {#each leases as lease}
-         <LeaseEmployee lease={lease} classes='m-2 rounded-lg border-2 border-primary-50 dark:border-primary-950'/>
+   {#each leases as lease}
+      <div class="rounded-lg border-2 border-primary-50 dark:border-primary-950 flex flex-col m-2">
+         <LeaseEmployee lease={lease} classes='m-2'/>
          {#if !lease?.leaseEnded}
             <Modal
                bind:open={leaseEndModalOpen}
-               triggerBase="btn preset-tonal "
+               triggerBase="btn preset-filled-primary-50-950 rounded-lg m-2"
                contentBase="card bg-surface-400-600 p-4 space-y-4 shadow-xl max-w-screen-sm"
                backdropClasses="backdrop-blur-sm"
+               modal={true}
             >  
             {#snippet trigger()}
                End Lease
@@ -90,9 +91,9 @@
             {/snippet}   
             </Modal>
          {/if}
-      {/each}
+      </div>
+   {/each}
 {/await}
-</div>
 <div>
 {#await wrapper}
     <div class='col-span-1'>
@@ -105,9 +106,9 @@
       {#await data.refunds}
          ...loading refunds
       {:then refunds}
-         <div>
-            <span class="ml-2">Total invoiced: {currencyFormatter.format(totalInvoiced)}</span>
-            <span>Total paid: {currencyFormatter.format(totalPaid)}</span>
+         <div class="flex ">
+            <span class="ml-2">Total invoiced (not including deposits): {currencyFormatter.format(totalInvoiced)}</span>
+            <span>Total paid (not including deposits): {currencyFormatter.format(totalPaid)}</span>
             {#if difference < 0}
                <span class="text-red-700 dark:text-red-500">Outstanding balance: {currencyFormatter.format(difference)}</span>
                {#if dayjs(invoices[0].invoiceCreated).add(1,'month') < dayjs()}
