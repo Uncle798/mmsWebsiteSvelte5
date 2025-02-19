@@ -93,7 +93,7 @@
             </p>
          </div>
       </article>
-   <div class="grid grid-cols-4 gap-1 m-2">
+   <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-1 m-2">
       <div>
          <!-- <label for="priceFilter">Filter by price
             <select name="priceFilter" id="priceFilter" bind:value={priceFilter} onchange={setPriceFilter} class="select rounded-lg">
@@ -104,8 +104,8 @@
             </select>
          </label> -->
       </div>
-      <div class="h3 text-center col-start-2 col-end-4">Available Units</div>
-      <div class="col-start-4">filter by size: 
+      <div class="h3 text-center lg:col-start-2 lg:col-end-4 sm:col-span-2 md:col-start-2 md:col-end-2 ">Available Units</div>
+      <div class="col-span-1 sm:col-span-2 md:col-start-2 md:col-span-1 lg:col-start-4">filter by size: 
          <select class="select rounded-lg" name='size' bind:value={sizeFilter} onchange={setSizeFilter}>
             <option value="">All</option>
             {#each data.sizes as size}
