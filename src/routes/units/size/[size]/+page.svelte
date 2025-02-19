@@ -71,27 +71,29 @@
             loading addresses
          {:then addresses}
             <button class="btn preset-filled-primary-50-950 rounded-lg m-2" onclick={()=>openModal(units[0].advertisedPrice)}>Change All {data.size.replace(/^0+/gm, '').replace(/x0/gm,'x')} prices</button>
-            <div class="grid grid-cols-3 gap-y-3 gap-x-1">
+            <div class="grid grid-cols-1 gap-3 m-1 sm:m-2">
                {#each units as unit}
                {@const lease = leases.find((lease) => lease.unitNum === unit.num)}
                {@const customer = customers.find((customer)=> customer.id === lease?.customerId)}
-                     <UnitEmployee {unit} classes="border border-primary-50 dark:border-primary-950 rounded-lg" />
-                  {#if lease}
-                     <LeaseEmployee {lease} classes="border border-primary-50 dark:border-primary-950 rounded-lg"/>
-                  {:else}
+                  <div class="border border-primary-50 dark:border-primary-950 rounded-lg sm:grid sm:grid-cols-3">
+                     <UnitEmployee {unit} classes="" />
+                     {#if lease}
+                     <LeaseEmployee {lease} classes=""/>
+                     {:else}
                      <div></div>
                      {/if}
                      {#if customer}
                      {@const address = addresses.find((address) => address.userId === customer.id)}
-                        <div class="border border-primary-50 dark:border-primary-950 rounded-lg p-2">
-                           <UserEmployee user={customer} classes="" />
-                           {#if address}
-                              <Address {address} />
-                           {/if}
-                        </div>
+                     <div class="p-2">
+                        <UserEmployee user={customer} classes="" />
+                        {#if address}
+                        <Address {address} />
+                        {/if}
+                     </div>
                      {:else}
-                        <div></div>
+                     <div></div>
                      {/if}
+                  </div>
                {/each}
             </div>
          {/await}

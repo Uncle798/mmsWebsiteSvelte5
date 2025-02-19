@@ -97,11 +97,11 @@
                     <div class="grid grid-cols-1 gap-y-3 gap-x-1 m-2">
                         {#each slicedSource(dateSearchPayments(searchedPayments(paymentRecords))) as paymentRecord}
                         {@const customer = customers.find((customer) => customer.id === paymentRecord.customerId) }
-                            <div class=" rounded-lg border-2 border-primary-50 dark:border-primary-950 md:border-0 md:flex md:w-full">
-                                <PaymentRecordEmployee paymentRecord={paymentRecord} classes=" rounded-lg md:border border-primary-50 dark:border-primary-950 p-2 md:w-1/2" />
+                            <div class=" rounded-lg border border-primary-50 dark:border-primary-950  md:flex md:w-full">
+                                <PaymentRecordEmployee paymentRecord={paymentRecord} classes="p-2 md:w-1/2" />
                                 {#if customer}
                                 {@const address = addresses.find((address)=> address.userId === customer.id)}
-                                <div class="flex flex-col md:rounded-lg md:border border-primary-50 dark:border-primary-950 md:w-1/2">
+                                <div class="flex flex-col md:w-1/2">
                                     <UserEmployee user={customer} classes='mx-2 mt-2'/>
                                     {#if address}
                                     <Address {address} classes='mx-2'/>

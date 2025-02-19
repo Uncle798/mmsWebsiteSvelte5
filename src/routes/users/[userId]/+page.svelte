@@ -107,21 +107,21 @@
          ...loading refunds
       {:then refunds}
          <div class="flex ">
-            <span class="ml-2">Total invoiced (not including deposits): {currencyFormatter.format(totalInvoiced)}</span>
-            <span>Total paid (not including deposits): {currencyFormatter.format(totalPaid)}</span>
+            <span class="m-2 mt-0">Total invoiced (not including deposits): {currencyFormatter.format(totalInvoiced)}</span>
+            <span class="m-2 mt-0">Total paid (not including deposits): {currencyFormatter.format(totalPaid)}</span>
             {#if difference < 0}
-               <span class="text-red-700 dark:text-red-500">Outstanding balance: {currencyFormatter.format(difference)}</span>
+               <span class="text-red-700 dark:text-red-500 m-2 mt-0">Outstanding balance: {currencyFormatter.format(difference)}</span>
                {#if dayjs(invoices[0].invoiceCreated).add(1,'month') < dayjs()}
-                  <span class="text-red-700 dark:text-red-500">Due: {dayjs(invoices[0].invoiceCreated).add(1, 'month').format('MMMM D YYYY')}</span>
+                  <span class="text-red-700 dark:text-red-500 m-2 mt-0">Due: {dayjs(invoices[0].invoiceCreated).add(1, 'month').format('MMMM D YYYY')}</span>
                {:else}
-                  <span class="text-green-700 dark:text-green-500">Due: {dayjs(invoices[0].invoiceCreated).add(1, 'month').format('MMMM D YYYY')}</span>
+                  <span class="text-green-700 dark:text-green-500 m-2 mt-0">Due: {dayjs(invoices[0].invoiceCreated).add(1, 'month').format('MMMM D YYYY')}</span>
                {/if}
             {:else if difference < 0 }   
-               <span class="text-green-700 dark:text-green-500">Outstanding balance: {currencyFormatter.format(difference)}</span>
+               <span class="text-green-700 dark:text-green-500 m-2 mt-0">Outstanding balance: {currencyFormatter.format(difference)}</span>
             {/if}
          </div>
          {#if refunds.length > 0}
-         <div class="grid grid-cols-3 gap-x-1 gap-y-3 mx-2 ">
+         <div class="grid grid-cols-1 sm:grid-cols-3 gap-x-1 gap-y-3 mx-2 ">
             {#each slicedInvoices(invoices) as invoice}
             {@const paymentRecord = paymentRecords.find((payment) => payment.invoiceNum === invoice.invoiceNum)}
             {@const refund = refunds.find((refund) => refund.paymentRecordNum === paymentRecord?.paymentNumber)}
@@ -139,9 +139,10 @@
                   {/each}
             </div>
          {:else}
-            <div class="grid grid-cols-2 gap-x-1 gap-y-3 mx-2">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-1 gap-y-3 mx-2">
             {#each slicedInvoices(invoices) as invoice}
             {@const paymentRecord = paymentRecords.find((payment) => payment.invoiceNum === invoice.invoiceNum)}
+
                <InvoiceEmployee invoice={invoice} classes='rounded-lg border-2 border-primary-50 dark:border-primary-950'/>
                {#if paymentRecord}
                   <PaymentRecordEmployee paymentRecord={paymentRecord} classes='rounded-lg border-2 border-primary-50 dark:border-primary-950'/>               

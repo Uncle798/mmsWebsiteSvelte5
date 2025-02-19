@@ -25,16 +25,16 @@
    <div class="truncate font-medium"><a href="/leases/{invoice.leaseId}" class="anchor">{invoice.leaseId}</a></div>
    <HorizontalDivider classes='col-span-2' />
    <div class="text-right">Notes</div> 
-   <div class="pl-4 -indent-4 pr-4 font-medium">{invoice.invoiceNotes}</div>
+   <div class="font-medium">{invoice.invoiceNotes}</div>
    <HorizontalDivider classes='col-span-2' />
    {#if invoice.paymentRecordNum}
       <div class='text-right'>Payment number</div> 
       <div class="font-medium"><a href="/paymentRecords/{invoice.paymentRecordNum}" class="anchor">{invoice.paymentRecordNum}</a></div>
-      <HorizontalDivider classes='col-span-2'/>
    {:else}
       <div class='col-span-2 m-2'><a href="/paymentRecords/new?defaultCustomer={invoice.customerId}&defaultInvoice={invoice.invoiceNum}" class="btn preset-filled-primary-50-950 rounded-lg">Make a payment record for this lease</a></div>
    {/if}
    {#if invoice.deposit}
+      <HorizontalDivider classes='col-span-2'/>
       <div class="col-span-2 font-medium text-center">Deposit</div>
    {/if}
 </div>

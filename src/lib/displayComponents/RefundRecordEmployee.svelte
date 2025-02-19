@@ -14,7 +14,7 @@
 <div class="grid grid-cols-2 gap-x-2 {classes}">
 	<div class="col-span-2 text-center text-sm font-semibold">Refund</div>
 	<div class="text-right">Number</div>
-	<div class="font-medium"><a href="/refundRecords/{refundRecord.refundNumber}">{refundRecord.refundNumber}</a></div>
+	<div class="font-medium"><a href="/refundRecords/{refundRecord.refundNumber}" class="anchor">{refundRecord.refundNumber}</a></div>
 	<HorizontalDivider classes='col-span-2' />
 	<div class="text-right">Amount</div>
 	<div class="font-medium">{currencyFormatter.format(refundRecord.refundAmount)}</div>
