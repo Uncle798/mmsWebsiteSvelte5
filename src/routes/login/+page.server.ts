@@ -6,6 +6,7 @@ import { ratelimit } from '$lib/server/rateLimit';
 import { generateMagicLink } from '$lib/server/authUtils';
 import { prisma } from '$lib/server/prisma';
 import { sendMagicLinkEmail } from '$lib/server/mailtrap';
+import { PUBLIC_COMPANY_EMAIL } from '$env/static/public';
 
 export const load = (async (event) => {
    const magicLinkForm = await superValidate(zod(magicLinkFormSchema))
@@ -42,7 +43,7 @@ export const actions:Actions ={
       } else {
          await sendMagicLinkEmail(magicLink, user.email!);
       }
-      return message(magicLinkForm, 'An email has been sent to log you in. Feel free to close this tab.')
+      return message(magicLinkForm, `An email from ${PUBLIC_COMPANY_EMAIL} to ${user.email} has been sent to log you in, please check your spam folder as it may have ended up there. Feel free to close this tab.`)
    }
 }
 
