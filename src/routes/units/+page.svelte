@@ -98,35 +98,37 @@
 					<HorizontalDivider />
 					<Revenue label='Current leased monthly revenue' amount={totalRevenue(leases)} />
 					<HorizontalDivider />
-            	<div class="grid container grid-cols-4 p-2 gap-y-3 gap-x-1" transition:fade={{duration:600}}>
+            	<div class="grid container grid-cols-1 p-2 gap-y-3 gap-x-1" transition:fade={{duration:600}}>
                	{#each slicedUnits(filteredUnits(units)) as unit (unit.num)}
                	{@const lease = leases?.find((lease) => lease.unitNum === unit.num)}
-							<div class=" rounded-lg border border-primary-50 dark:border-primary-950  flex flex-col">
-								<UnitEmployee {unit} classes='p-4'/>
-								<button class="btn preset-filled-primary-50-950 rounded-lg mx-2 mb-2" onclick={()=> openModal('unitPricing', unit.advertisedPrice, '', unit.size)}>Change all {unit.size.replace(/^0+/gm,'').replace(/x0/gm,'x')} pricing</button>
-							</div>
-							{#if data.unitNotesForm}
-								<UnitNotesForm data={data.unitNotesForm} {unit} classes=' rounded-lg border border-primary-50 dark:border-primary-950 p-4 '/>
-							{/if}
-							{#if lease}
-							{@const customer = customers?.find((customer) => customer.id === lease.customerId)}
-								<div class=" flex flex-col rounded-lg border border-primary-50 dark:border-primary-950">
+							<div class="border-2 border-primary-50 dark:border-primary-950 rounded-lg grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+								<div class="flex flex-col">
+									<UnitEmployee {unit} classes='p-4'/>
+									<button class="btn preset-filled-primary-50-950 rounded-lg mx-2 mb-2" onclick={()=> openModal('unitPricing', unit.advertisedPrice, '', unit.size)}>Change all {unit.size.replace(/^0+/gm,'').replace(/x0/gm,'x')} pricing</button>
+								</div>
+								{#if data.unitNotesForm}
+								<UnitNotesForm data={data.unitNotesForm} {unit} classes=' p-4 '/>
+								{/if}
+								{#if lease}
+								{@const customer = customers?.find((customer) => customer.id === lease.customerId)}
+								<div class="flex flex-col">
 									<LeaseEmployee {lease} classes=''/>
 									<button class="btn preset-filled-primary-50-950 rounded-lg m-4" onclick={()=>openModal('lease', 0, lease.leaseId)}>End Lease</button>
 								</div>
-								<div class="flex flex-col  rounded-lg border border-primary-50 dark:border-primary-950">
+								<div class="flex flex-col">
 									{#if customer}
 									{@const address = addresses.find((address) => address.userId === customer.id)}
-										<UserEmployee user={customer} classes='px-4 pt-4'/>
-										{#if address}
-											<Address {address} classes='px-4' />
-										{/if}
+									<UserEmployee user={customer} classes='px-4 pt-4'/>
+									{#if address}
+									<Address {address} classes='px-4' />
+									{/if}
 									{/if}
 								</div>
-							{:else}
-								<div class="rounded-lg border border-primary-50 dark:border-primary-950 "></div>
-								<div class="rounded-lg border border-primary-50 dark:border-primary-950 "></div>
-							{/if}
+								{:else}
+								<div class=""></div>
+								<div class=""></div>
+								{/if}
+							</div>
 						{/each}
 					</div>
             	<Pagination pageNum={pageNum} size={size} array={filteredUnits(units)} label='units'/>
