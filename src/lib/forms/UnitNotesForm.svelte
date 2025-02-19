@@ -15,7 +15,7 @@
       data: SuperValidated<Infer<UnitNotesFormSchema>>
       unitNotesFormModalOpen?: boolean
       unit:Unit
-      classes: string;
+      classes?: string;
    }
    let { data, unitNotesFormModalOpen, unit, classes }:Props = $props();
 
