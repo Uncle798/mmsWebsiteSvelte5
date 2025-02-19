@@ -1,6 +1,9 @@
 import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { prisma } from '$lib/server/prisma';
+import { superValidate } from 'sveltekit-superforms';
+import { zod } from 'sveltekit-superforms/adapters';
+import { unitNotesFormSchema } from '$lib/formSchemas/schemas';
 
 export const load = (async (event) => {
    if(!event.locals.user?.employee){
@@ -11,5 +14,6 @@ export const load = (async (event) => {
          unavailable: true
       }
    })
-   return { units };
+   const unitNotesForm = await superValidate(zod(unitNotesFormSchema));
+   return { units, unitNotesForm };
 }) satisfies PageServerLoad;
