@@ -1,15 +1,8 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
    import * as themes from '@skeletonlabs/skeleton/themes'
+	import { onMount } from 'svelte';
    const themeNames = Object.keys(themes)
-   let currentTheme = $state(themeNames[0]);
-   $effect(()=>{
-      const theme = window.localStorage.getItem('theme');
-      if(theme && themeNames.includes(theme)){
-         document.documentElement.setAttribute('data-theme', theme);
-         currentTheme=theme
-      }
-   })
+   let currentTheme = $state('');
    function setTheme(event:Event){
       const select = event.target as HTMLSelectElement;
       const theme = select.value;
@@ -22,11 +15,29 @@
          location.reload();
       }
    }
+   onMount(()=>{
+      const cookie = document.cookie
+      console.log(cookie.indexOf('='))
+      const indexOfTheme = cookie.indexOf('theme=');
+      const lastIndexOfSemi = cookie.lastIndexOf(';');
+      let endOfString = undefined;
+      if(lastIndexOfSemi > indexOfTheme){
+         endOfString = cookie.indexOf(';', indexOfTheme);
+      }
+      const docTheme = cookie.substring(indexOfTheme+6, endOfString)
+      console.log(docTheme)
+      if(docTheme){
+         currentTheme = docTheme
+      }
+   })
 </script>
 <div>
    <label for="themeSelect" class="label-text mx-2">Theme Selector
       <select name="themeSelect" id="themeSelect" class="select w-72 m-2" bind:value={currentTheme} onchange={setTheme}>
          {#each themeNames as themeName}
+            {#if themeName === currentTheme}
+               <option value={themeName} class="capitalize" selected>{themeName}</option>
+            {/if}
             <option value={themeName} class="capitalize">{themeName}</option>
          {/each}
       </select>
