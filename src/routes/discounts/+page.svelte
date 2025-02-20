@@ -11,7 +11,7 @@
 
 </script>
 <Header title="Discounts" />
-<div transition:fade={{duration:600}} class="mx-2">
+<div transition:fade={{duration:600}} class="mx-2 mt-10">
     <h3 class="h3">Current Discounts</h3>
 {#each data.discounts as discount}
     <Discount {discount} classes='border border-primary-50 dark:border-primary-950 min-w-72 rounded-lg'/>
