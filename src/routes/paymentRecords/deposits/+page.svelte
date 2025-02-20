@@ -55,17 +55,15 @@
 {#await data.deposits}
     loading {numberFormatter.format(data.depositCount)} deposits
 {:then deposits} 
-    <div class="flex m-2">
-        <Search bind:search={search} searchType='payment record number' data={data.searchForm} classes='w-1/2'/>
-        <Search bind:search={noteSearch} searchType='Payment notes' data={data.searchForm} classes='w-1/2'/>
-
+    <div class="flex flex-col sm:flex-row m-2 mt-4">
+        <Search bind:search={search} searchType='payment record number' data={data.searchForm} classes='sm:w-1/2'/>
+        <Search bind:search={noteSearch} searchType='Payment notes' data={data.searchForm} classes='sm:w-1/2'/>
     </div>
     <HorizontalDivider />
-    <Revenue amount={totalRevenue(searchedPaymentRecords(deposits))} label='Amount of deposits: ' />
-    <HorizontalDivider />
-    <div class="flex flex-col">
+    <Revenue amount={totalRevenue(searchedPaymentRecords(deposits))} label='Amount of deposits:' classes='mx-2 ' />
+    <div class="flex flex-col gap-3">
         {#each slicedSource(searchedPaymentRecords(searchByNotes(deposits))) as deposit}
-        <div class="flex flex-col border-y-2 dark:border-primary-950 border-primary-50">
+        <div class="flex flex-col border-2 dark:border-primary-950 border-primary-50 rounded-lg mx-1 sm:mx-2">
             <PaymentRecordEmployee paymentRecord={deposit} classes='px-2'/>
             <button type="button" class="btn rounded-lg preset-filled-primary-50-950 m-2" onclick={() => refundModal(deposit)}>Refund this deposit</button>
         </div>

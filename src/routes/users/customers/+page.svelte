@@ -37,7 +37,7 @@
       {#await data.addresses}
          loading addresses
       {:then addresses}    
-         <div transition:fade={{duration:600}}>
+         <div transition:fade={{duration:600}} class="mt-10">
             <Search bind:search={search} searchType='customer name' data={data.userSearchForm} classes='m-2 border-b-2 border-primary-50 dark:border-primary-950'/>
             <Revenue label='Current monthly invoiced' amount={totalLeased(leases)} classes='m-2 border-b-2 border-primary-50 dark:border-primary-950'/>
             <div class="grid grid-cols-1 mx-2 gap-y-3 gap-x-1">

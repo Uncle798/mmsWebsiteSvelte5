@@ -27,7 +27,7 @@
 {#await data.users}
    ...loading {data.userCount} users
 {:then users }
-   <div transition:fade={{duration:600}} class="m-2">
+   <div transition:fade={{duration:600}} class="m-2 mt-10">
       <Search data={data.searchForm} bind:search={search} searchType='user' />
       <div class="grid grid-cols-1 gap-y-3 gap-x-1">
          {#each slicedSource(searchedUsers(users)) as user (user.id)}
@@ -38,7 +38,7 @@
                   employeeChecked={user.employee} 
                   adminChecked={user.admin}
                   userId={user.id}
-                  classes=" p-2"
+                  classes=" p-2 flex flex-col sm:flex-row"
                />
             </div>
          {/each}

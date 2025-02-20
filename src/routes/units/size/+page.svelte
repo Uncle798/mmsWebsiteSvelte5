@@ -7,7 +7,7 @@
 {#await data.sizes}
    loading units
    {:then sizes} 
-   <div class="flex">
+   <div class="flex mt-10">
       Please select size:
       <VerticalDivider classes='h-10' />
       {#each sizes as size}

@@ -38,34 +38,38 @@
             <Revenue label='Total revenue from this unit' amount={data.totalRevenue} />
             <UnitNotesForm data={data.unitNotesForm} {unit} classes=''/>
             <UnitPricingForm data={data.unitPricingForm} size={unit.size} oldPrice={unit.advertisedPrice} unitPricingFormModalOpen={modalOpen} />
-            <div class="grid grid-cols-2 gap-y-3 gap-x-1">
+            <div class="grid grid-cols-1 gap-y-3 gap-x-1">
                 {#each data.leases as lease}
                 {@const customer = data.customers.find((customer) => customer.id === lease.customerId)}
                     {#if !lease.leaseEnded}
-                        <div class="flex flex-col rounded-lg border-2 border-primary-50 dark:border-primary-950">
-                            <LeaseEmployee {lease}/>
-                            <button class="btn" onclick={()=>{modalOpen=true; currentLeaseId=lease.leaseId}}>End lease</button>
-                        </div>                 
-                        {#if customer}  
-                        {@const address = data.addresses.find((address) => address.userId === customer.id)}
-                            <div class="flex flex-col p-2 rounded-lg border-2 border-primary-50 dark:border-primary-950">
+                        <div class="rounded-lg border-2 border-primary-50 dark:border-primary-950">
+                            <div class="flex flex-col ">
+                                <LeaseEmployee {lease}/>
+                                <button class="btn" onclick={()=>{modalOpen=true; currentLeaseId=lease.leaseId}}>End lease</button>
+                            </div>                 
+                            {#if customer}  
+                            {@const address = data.addresses.find((address) => address.userId === customer.id)}
+                            <div class="flex flex-col p-2">
                                 <UserEmployee user={customer}/>
                                 {#if address}
-                                    <Address {address} />
+                                <Address {address} />
                                 {/if}
                             </div>
-                        {/if}
+                            {/if}
+                        </div>
                     {:else}
-                        <LeaseEmployee {lease} classes='rounded-lg border-2 border-primary-50 dark:border-primary-950'/>
-                        {#if customer}
-                        {@const address = data.addresses.find((address) => address.userId === customer.id)}
-                            <div class="flex flex-col p-2 rounded-lg border-2 border-primary-50 dark:border-primary-950">
-                                <UserEmployee user={customer}/>
-                                {#if address}
-                                    <Address {address} />
-                                {/if}
-                            </div>
-                        {/if}
+                        <div class="rounded-lg border-2 border-primary-50 dark:border-primary-950">
+                            <LeaseEmployee {lease} classes=''/>
+                            {#if customer}
+                            {@const address = data.addresses.find((address) => address.userId === customer.id)}
+                                <div class="flex flex-col sm:p-2 px-2 ">
+                                    <UserEmployee user={customer}/>
+                                    {#if address}
+                                        <Address {address} />
+                                    {/if}
+                                </div>
+                            {/if}
+                        </div>
                     {/if}
                 {/each}
             </div>

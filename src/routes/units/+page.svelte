@@ -94,11 +94,11 @@
 				loading addresses
 			{:then addresses} 
             {#if units}
-					<Search {search} searchType='Unit number' data={data.searchForm} />
+					<Search {search} searchType='Unit number' data={data.searchForm} classes='mx-1 sm:mx-2 mt-2' />
 					<HorizontalDivider />
-					<Revenue label='Current leased monthly revenue' amount={totalRevenue(leases)} />
+					<Revenue label='Current leased monthly revenue' amount={totalRevenue(leases)} classes='mx-2'/>
 					<HorizontalDivider />
-            	<div class="grid container grid-cols-1 p-2 gap-y-3 gap-x-1" transition:fade={{duration:600}}>
+            	<div class="grid container grid-cols-1 sm:m-2 m-1 gap-y-3 gap-x-1" transition:fade={{duration:600}}>
                	{#each slicedUnits(filteredUnits(units)) as unit (unit.num)}
                	{@const lease = leases?.find((lease) => lease.unitNum === unit.num)}
 							<div class="border-2 border-primary-50 dark:border-primary-950 rounded-lg grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">

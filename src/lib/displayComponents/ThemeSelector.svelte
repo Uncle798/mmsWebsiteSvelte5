@@ -37,8 +37,9 @@
          {#each themeNames as themeName}
             {#if themeName === currentTheme}
                <option value={themeName} class="capitalize" selected>{themeName}</option>
+            {:else}
+               <option value={themeName} class="capitalize">{themeName}</option>
             {/if}
-            <option value={themeName} class="capitalize">{themeName}</option>
          {/each}
       </select>
    </label>

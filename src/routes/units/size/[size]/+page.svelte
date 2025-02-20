@@ -40,22 +40,25 @@
    {/snippet}
 
 </Modal>
-
-{#if data.sizes}
-   <button class='btn preset-filled-primary-50-950 rounded-lg' onclick={()=>sizeMenuOpen = !sizeMenuOpen}>Select a size</button>
-   {#if sizeMenuOpen}
-   <div transition:fade={{duration:600}}>
-      <ul>
-         {#each data.sizes as size}
-         <li>
-            <a href="/units/size/{size}" class="btn">{size.replace(/^0+/gm, '').replace(/x0/gm,'x')}</a>
-         </li>
-         {/each}
-         <li><button class="btn" onclick={()=>sizeMenuOpen=false}>Close menu</button></li>
-      </ul>
-   </div>
+<div class="m-2 mt-4">
+   {#if data.sizes}
+      <button class='btn preset-filled-primary-50-950 rounded-lg' onclick={()=>sizeMenuOpen = !sizeMenuOpen}>Select a size</button>
+      {#if sizeMenuOpen}
+      <div transition:fade={{duration:600}}>
+         <ul>
+            {#each data.sizes as size}
+               {#if size !== 'ours'}          
+                  <li>
+                     <a href="/units/size/{size}" class="anchor">{size.replace(/^0+/gm, '').replace(/x0/gm,'x')}</a>
+                  </li>
+               {/if}
+            {/each}
+            <li><button class="anchor" onclick={()=>sizeMenuOpen=false}>Close menu</button></li>
+         </ul>
+      </div>
+      {/if}
    {/if}
-{/if}
+</div>
 
 <Revenue amount={leasedAmount} label='Current Monthly revenue from {data.size.replace(/^0+/gm, '').replace(/x0/gm,'x')} units' classes='m-2'/>
 {#await data.units}
@@ -75,23 +78,23 @@
                {#each units as unit}
                {@const lease = leases.find((lease) => lease.unitNum === unit.num)}
                {@const customer = customers.find((customer)=> customer.id === lease?.customerId)}
-                  <div class="border border-primary-50 dark:border-primary-950 rounded-lg sm:grid sm:grid-cols-3">
+                  <div class="border-2 border-primary-50 dark:border-primary-950 rounded-lg sm:grid sm:grid-cols-3">
                      <UnitEmployee {unit} classes="" />
                      {#if lease}
-                     <LeaseEmployee {lease} classes=""/>
+                        <LeaseEmployee {lease} classes=""/>
                      {:else}
-                     <div></div>
+                        <div></div>
                      {/if}
                      {#if customer}
                      {@const address = addresses.find((address) => address.userId === customer.id)}
-                     <div class="p-2">
-                        <UserEmployee user={customer} classes="" />
-                        {#if address}
-                        <Address {address} />
-                        {/if}
-                     </div>
+                        <div class="p-2">
+                           <UserEmployee user={customer} classes="" />
+                           {#if address}
+                              <Address {address} />
+                           {/if}
+                        </div>
                      {:else}
-                     <div></div>
+                        <div></div>
                      {/if}
                   </div>
                {/each}

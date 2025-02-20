@@ -23,7 +23,7 @@
 
 <div transition:fade={{duration:600}}>
     {#if !customerSelected}
-        <button class="btn preset-filled-primary-50-950 rounded-xl m-2" type="button" onclick={()=>registerFormModalOpen = true}>Create New Customer</button>
+        <button class="btn preset-filled-primary-50-950 rounded-lg mx-1 sm:mx-2 mt-4" type="button" onclick={()=>registerFormModalOpen = true}>Create New Customer</button>
     {/if}
     <NewPaymentRecordForm 
         data={data.newPaymentRecordForm} 
@@ -34,7 +34,7 @@
         invoiceForm={data.invoiceForm}
         defaultCustomer={data.defaultCustomer}
         defaultInvoice={data.defaultInvoice}
-        classes='p-2'
+        classes='sm:m-2 m-1'
         bind:customerSelected={customerSelected}
     />
 </div>

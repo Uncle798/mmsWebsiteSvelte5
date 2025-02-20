@@ -56,14 +56,16 @@
 
 <Header title='Payment Records' />
 {#await wrapper}
-    loading {numberFormatter.format(data.paymentRecordCount)} payment records
-    {#if data.years}
-        or select year: 
-        {#each data.years as year}
-            <a href='/paymentRecords/year/{year}' class="btn">{year}</a>
-        {/each}
-    {/if}
-    <Placeholder numCols={2} numRows={3} heightClass='h-32'/>
+    <div class="mt-10">
+        loading {numberFormatter.format(data.paymentRecordCount)} payment records
+        {#if data.years}
+            or select year: 
+            {#each data.years as year}
+                <a href='/paymentRecords/year/{year}' class="btn">{year}</a>
+            {/each}
+        {/if}
+        <Placeholder numCols={2} numRows={3} heightClass='h-32'/>
+    </div>
 {:then paymentRecords} 
     {#await data.customers}
         loading customers
@@ -72,8 +74,8 @@
             loading contacts
         {:then addresses}         
             {#if paymentRecords.length >0}
-                <div transition:fade={{duration:600}}>
-                    <div class="flex border-b-2 border-primary-50 dark:border-primary-950 m-2">
+                <div transition:fade={{duration:600}} class='mt-8'>
+                    <div class="flex border-b-2 border-primary-50 dark:border-primary-950  mx-1 sm:mx-2">
                         <Search 
                             bind:search={search} 
                             searchType='payment record number' 

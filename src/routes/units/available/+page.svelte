@@ -31,22 +31,22 @@
     ...loading available units
 {:then availableUnits}   
    {#if data.user?.employee}
-      <div class="flex m-2">
+      <div class="flex sticky top-8 dark:bg-tertiary-950 bg-tertiary-50 rounded-lg">
          <span class="m-2">Available: {availableUnits.length} of {data.unitCount}</span>
          <span class="m-2">Available percentage {Math.round((availableUnits.length*100)/data.unitCount)}%</span>
          <span class="m-2">Open revenue per month: {currencyFormatter.format(lostRevenue)}</span>
       </div>
-      <HorizontalDivider />
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 m-1 sm:m-2">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 m-1 sm:m-2 mt-10">
          {#each availableUnits as unit}
-            <div class="border border-primary-50 dark:border-primary-950 rounded-lg">
+            <div class="border-2 border-primary-50 dark:border-primary-950 rounded-lg">
                <UnitEmployee {unit}/>
-               <UnitNotesForm {unit} data={data.unitNotesForm} />
+               <UnitNotesForm {unit} data={data.unitNotesForm} classes='mx-2' />
             </div>
          {/each}
       </div>
       {:else}
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 m-1 sm:m-2">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 m-1 sm:m-2 mt-10">
+         <span>Available Units</span>
          {#each availableUnits as unit}
             <div class="border border-primary-50 dark:border-primary-950 rounded-lg">
                <UnitCustomer {unit}/>

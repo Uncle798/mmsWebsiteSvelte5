@@ -15,8 +15,8 @@
 {#if data.user?.employee}
    {#if data.paymentRecord }
    <Header title='Payment Record Num: {data.paymentRecord}' />
-   <div class="grid grid-cols-4 gap-1 m-2">
-      <div class="flex flex-col p-2 border-2 dark:border-primary-950 border-primary-50 rounded-lg">
+   <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-1 mx-2 mt-10 border-2 dark:border-primary-950 border-primary-50 rounded-lg">
+      <div class="flex flex-col p-2">
          <PaymentRecordEmployee paymentRecord={data.paymentRecord} classes=''/>
          {#if !data.paymentRecord.refunded}
             <a href='/refundRecords/new?paymentNumber={data.paymentRecord.paymentNumber}' class="btn rounded-lg preset-filled-primary-50-950 m-2">Refund this payment</a>
@@ -26,7 +26,7 @@
             <button type="submit" class="btn rounded-lg preset-filled-primary-50-950 m-2">Email receipt</button>
          </form>
       </div>
-      <div class="flex flex-col p-2 border-2 dark:border-primary-950 border-primary-50 rounded-lg">
+      <div class="flex flex-col p-2">
          {#if data.customer}
             <UserEmployee user={data.customer} classes=''/>
             {#if data.address}
@@ -35,18 +35,18 @@
          {/if}
       </div>
       {#if data.invoice}
-         <InvoiceEmployee invoice={data.invoice} classes='p-2 border-2 dark:border-primary-950 border-primary-50 rounded-lg'/>
+         <InvoiceEmployee invoice={data.invoice} classes='p-2'/>
       {/if}
       {#if data.refundRecord}
-         <RefundRecordEmployee refundRecord={data.refundRecord} classes='p-2 border-2 dark:border-primary-950 border-primary-50 rounded-lg'/>
+         <RefundRecordEmployee refundRecord={data.refundRecord} classes='p-2 '/>
       {/if}
    </div>
    {/if}
    {:else}
    {#if data.paymentRecord}
       <Header title='Payment Record Num: {data.paymentRecord}' />
-      <div class="grid grid-cols-4 gap-1 m-2">
-         <div class="flex flex-col p-2 border-2 dark:border-primary-950 border-primary-50 rounded-lg">
+      <div class="grid grid-cols-4 gap-1 sm:m-2 m-1">
+         <div class="flex flex-col border-2 dark:border-primary-950 border-primary-50 rounded-lg">
             <PaymentRecordCustomer paymentRecord={data.paymentRecord} classes=''/>
             <form method="POST">
                <input type="hidden" value={data.paymentRecord.paymentNumber} name='paymentRecordNumber' />

@@ -19,7 +19,7 @@
       }
    });
 </script>
-<div class="my-2 flex-none {classes}">
+<div class="my-2 {classes}">
    <FormMessage message={$message} />
    <form action="/forms/employmentChangeForm" method="POST" use:enhance>
       <Switch name='employee' bind:checked={employeeChecked}>Employee</Switch>

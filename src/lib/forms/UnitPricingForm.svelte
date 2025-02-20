@@ -44,7 +44,7 @@
       <Switch
          bind:checked={$form.changeDeposit}
          name='changeDeposit'
-         classes='p-4'
+         classes='my-2'
       >
          Change the deposit as well
       </Switch>

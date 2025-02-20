@@ -113,7 +113,7 @@
       </div>
       <div class="">
          {#if !invoiceSelected}
-            <button class="btn" onclick={()=>invoiceFormOpen=true} type='button'>Create New Invoice</button>
+            <button class="btn preset-filled-primary-50-950 rounded-lg my-2" onclick={()=>invoiceFormOpen=true} type='button'>Create New Invoice</button>
          {/if}
          {#if invoiceComboBoxData.length > 0 }
             <Combobox

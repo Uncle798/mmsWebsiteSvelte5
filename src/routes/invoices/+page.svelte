@@ -51,15 +51,18 @@
 </script>
 {#await wrapper}
     <Header title='Loading invoices' />
-    Loading {numberFormatter.format(data.invoiceCount)} invoices, 
-    {#if data.years}
-    or select year: 
-    {#each data.years as year}
-    <a href="/invoices/year/{year}" class="btn">{year.toString()},</a>
-    {/each}
-    {/if}
-    or:
-    <a href="/invoices/unpaid" class="btn">Unpaid invoices</a>
+    <div class="mt-10">
+
+        Loading {numberFormatter.format(data.invoiceCount)} invoices, 
+        {#if data.years}
+            or select year: 
+            {#each data.years as year}
+                <a href="/invoices/year/{year}" class="anchor">{year.toString()},</a>
+            {/each}
+        {/if}
+        or:
+        <a href="/invoices/unpaid" class="anchor">Unpaid invoices</a>
+    </div>
     
     <Placeholder numCols={1} numRows={2} heightClass='h-10'/>
     <Placeholder numCols={2} numRows={size} heightClass='h-40'/>
@@ -75,7 +78,7 @@
         {:then addresses}
             {#if invoices.length >0}
                 <Header title='All invoices' />
-                <div class="flex m-2 border-b-2 dark:border-primary-950 border-primary-50 shadow-xl" transition:fade={{duration:600}}>
+                <div class="flex m-1 sm:m-2 border-b-2 dark:border-primary-950 border-primary-50 mt-8" transition:fade={{duration:600}}>
                     <Search data={data.searchForm} bind:search={search} searchType='invoice number' classes='w-1/2 p-2'/>
                     <DateSearch data={data.dateSearchForm} bind:startDate={startDate} bind:endDate={endDate} {minDate} {maxDate} classes='w-1/2 p-2'/>
                 </div>
@@ -84,10 +87,10 @@
                     amount={totalRevenue(searchedInvoices(dateSearchedInvoices(invoices)))} 
                     classes='border-b-2 dark:border-primary-950 border-primary-50 m-2 drop-shadow-2xl'
                 />
-                <div class="grid grid-cols-1 mx-2 gap-3" transition:fade={{duration:600}}>
+                <div class="grid grid-cols-1 sm:mx-2 mx-1 gap-3" transition:fade={{duration:600}}>
                     {#each  slicedInvoices(searchedInvoices(invoices)) as invoice}  
                     {@const customer = customers.find((customer) => customer.id === invoice.customerId)}
-                        <div class="sm:grid sm:grid-cols-2 border border-primary-50 dark:border-primary-950 rounded-lg">
+                        <div class="sm:grid sm:grid-cols-2 border-2 border-primary-50 dark:border-primary-950 rounded-lg">
                             <InvoiceEmployee {invoice} classes=' px-2' />
                             {#if customer}
                             {@const address = addresses.find((address) => address.userId === customer.id)}

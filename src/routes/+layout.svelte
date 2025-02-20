@@ -6,6 +6,7 @@
 	import Menu from 'lucide-svelte/icons/menu';
 	import { beforeNavigate } from '$app/navigation';
 	import { enhance } from '$app/forms';
+	import { PUBLIC_COMPANY_NAME } from '$env/static/public';
 
 	interface Props {
 		data: PageData,
@@ -57,7 +58,7 @@
 
 <Modal
 	bind:open={menuOpen}
-	triggerBase="btn preset-tonal hover:shadow-xl hover:border-2 border-primary-50 dark:border-primary-950"
+	triggerBase="btn bg-primary-50 dark:bg-primary-950 hover:shadow-xl hover:border-2 border-secondary-50 dark:border-secondary-950 fixed top-0 z-50"
 	contentBase="bg-surface-100-900 p-2 space-y-2 shadow-xl w-[280px] h-screen"
 	positionerJustify="justify-start"
 	positionerAlign=""
@@ -66,7 +67,7 @@
 	transitionsPositionerOut={{ x: -280, duration: 400 }}
 >
 {#snippet trigger()}
-		<Menu class='mx-2 border-2' />	
+		<Menu class='mx-2 border-2 ' />	
 {/snippet}
 {#snippet content()}
 	<article>
@@ -100,7 +101,10 @@
 	</article>
 {/snippet}
 </Modal>
-<ToastProvider placement='top-start'>
-	{@render children()}
-</ToastProvider>
+<div class=" bg-tertiary-50 dark:bg-tertiary-950 fixed top-0 w-full h-9 text-center font-bold p-2">{PUBLIC_COMPANY_NAME}</div>
+<div>
+	<ToastProvider placement='top-start'>
+		{@render children()}
+	</ToastProvider>
+</div>
 
