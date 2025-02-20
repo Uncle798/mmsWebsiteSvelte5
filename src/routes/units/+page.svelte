@@ -13,7 +13,7 @@
 	import { fade } from 'svelte/transition';
 	import type { Lease, Unit } from '@prisma/client';
 	import Search from '$lib/forms/Search.svelte';
-	import Address from '$lib/displayComponents/Address.svelte';
+	import Address from '$lib/displayComponents/AddressEmployee.svelte';
 	import HorizontalDivider from '$lib/displayComponents/HorizontalDivider.svelte';
 	import Revenue from '$lib/displayComponents/Revenue.svelte';
 	let { data }: { data: PageData } = $props();
@@ -94,7 +94,7 @@
 				loading addresses
 			{:then addresses} 
             {#if units}
-					<Search {search} searchType='Unit number' data={data.searchForm} classes='mx-1 sm:mx-2 mt-2' />
+					<Search {search} searchType='Unit number' data={data.searchForm} classes='mx-1 sm:mx-2 mt-10' />
 					<HorizontalDivider />
 					<Revenue label='Current leased monthly revenue' amount={totalRevenue(leases)} classes='mx-2'/>
 					<HorizontalDivider />
@@ -107,26 +107,26 @@
 									<button class="btn preset-filled-primary-50-950 rounded-lg mx-2 mb-2" onclick={()=> openModal('unitPricing', unit.advertisedPrice, '', unit.size)}>Change all {unit.size.replace(/^0+/gm,'').replace(/x0/gm,'x')} pricing</button>
 								</div>
 								{#if data.unitNotesForm}
-								<UnitNotesForm data={data.unitNotesForm} {unit} classes=' p-4 '/>
+									<UnitNotesForm data={data.unitNotesForm} {unit} classes=' p-4 '/>
 								{/if}
 								{#if lease}
 								{@const customer = customers?.find((customer) => customer.id === lease.customerId)}
-								<div class="flex flex-col">
-									<LeaseEmployee {lease} classes=''/>
-									<button class="btn preset-filled-primary-50-950 rounded-lg m-4" onclick={()=>openModal('lease', 0, lease.leaseId)}>End Lease</button>
-								</div>
-								<div class="flex flex-col">
-									{#if customer}
-									{@const address = addresses.find((address) => address.userId === customer.id)}
-									<UserEmployee user={customer} classes='px-4 pt-4'/>
-									{#if address}
-									<Address {address} classes='px-4' />
-									{/if}
-									{/if}
-								</div>
-								{:else}
-								<div class=""></div>
-								<div class=""></div>
+									<div class="flex flex-col">
+										<LeaseEmployee {lease} classes=''/>
+										<button class="btn preset-filled-primary-50-950 rounded-lg m-4" onclick={()=>openModal('lease', 0, lease.leaseId)}>End Lease</button>
+									</div>
+									<div class="flex flex-col">
+										{#if customer}
+										{@const address = addresses.find((address) => address.userId === customer.id)}
+										<UserEmployee user={customer} classes='px-4 pt-4'/>
+										{#if address}
+										<Address {address} classes='px-4' />
+										{/if}
+										{/if}
+									</div>
+									{:else}
+									<div class=""></div>
+									<div class=""></div>
 								{/if}
 							</div>
 						{/each}

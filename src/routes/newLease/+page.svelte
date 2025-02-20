@@ -1,5 +1,5 @@
 <script lang="ts">
-    import Address from '$lib/displayComponents/Address.svelte';
+    import AddressCustomer from '$lib/displayComponents/customerViews/AddressCustomer.svelte';
     import AddressForm from '../../lib/forms/AddressForm.svelte'
     import { Modal, } from '@skeletonlabs/skeleton-svelte';
     import FormProgress from '$lib/formComponents/FormSubmitWithProgress.svelte';
@@ -8,12 +8,12 @@
     import type { ToastContext } from '@skeletonlabs/skeleton-svelte';
     import type { PageData } from './$types';
 	import UnitCustomer from '$lib/displayComponents/customerViews/UnitCustomer.svelte';
-	import UserEmployee from '$lib/displayComponents/UserEmployee.svelte';
 	import Checkbox from '$lib/formComponents/Checkbox.svelte';
 	import FormMessage from '$lib/formComponents/FormMessage.svelte';
 	import Header from '$lib/Header.svelte';
 	import LeaseDiscountForm from '$lib/forms/LeaseDiscountForm.svelte';
 	import { fade, crossfade, blur } from 'svelte/transition';
+	import UserCustomer from '$lib/displayComponents/customerViews/UserCustomer.svelte';
     
     let { data }: {data:PageData} = $props();
     let { form, message, errors, constraints, enhance, delayed, timeout } = superForm(data.leaseForm);
@@ -33,9 +33,9 @@
     const currencyFormatter = new Intl.NumberFormat('en-US', {style: 'currency', currency: 'USD'})
 </script>
 <Header title='New lease'/>
-<div transition:fade={{duration:600}} class="mx-2">
+<div transition:fade={{duration:600}} class="mx-2 mt-10">
     {#if data.user}
-        <UserEmployee user={data.user} />
+        <UserCustomer user={data.user} />
     {/if}
     <FormMessage message={$message} />
     <form method="post" use:enhance>
@@ -50,7 +50,7 @@
             />
         {/if}
         {#if data.address}
-            <Address address={data.address} />
+            <AddressCustomer address={data.address} />
         {:else}
             <Modal
                 bind:open={addressModalOpen}

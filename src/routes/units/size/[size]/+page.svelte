@@ -9,7 +9,7 @@
 	import { fade, blur } from 'svelte/transition';
 	import Revenue from '$lib/displayComponents/Revenue.svelte';
 	import type  { Lease } from '@prisma/client';
-	import Address from '$lib/displayComponents/Address.svelte';
+	import Address from '$lib/displayComponents/AddressEmployee.svelte';
    let { data }: { data: PageData } = $props();
    const currencyFormatter = new Intl.NumberFormat('en-US', {style: 'currency', currency: 'USD'})
    let unitPricingModalOpen = $state(false);

@@ -71,13 +71,13 @@
 <Header title='Pay your deposit'/>
 
 {#if !mounted}
-    <div transition:fade={{duration:600}}>
+    <div transition:fade={{duration:600}} class="mt-10">
         ...loading
     </div>
     {:else}
     {#if data.invoice}
-        <InvoiceCustomer invoice={data.invoice} />
-        <div class="p-4">
+        <InvoiceCustomer invoice={data.invoice} classes='mx-1 sm:mx-2 mt-10'/>
+        <div class="mx-1 sm:mx-2">
             
             <form onsubmit={submit}>
                 <Elements {stripe} clientSecret={clientSecret} bind:elements >

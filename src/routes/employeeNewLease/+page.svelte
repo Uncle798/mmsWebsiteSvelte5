@@ -3,7 +3,7 @@
    import { Combobox, Modal } from '@skeletonlabs/skeleton-svelte';
    import { superForm } from 'sveltekit-superforms';
    import UserEmployee from '$lib/displayComponents/UserEmployee.svelte';
-   import Address from '$lib/displayComponents/Address.svelte';
+   import Address from '$lib/displayComponents/AddressEmployee.svelte';
    import AddressForm from '$lib/forms/AddressForm.svelte';
    import { fade, crossfade, blur } from 'svelte/transition';
    import Header from '$lib/Header.svelte';

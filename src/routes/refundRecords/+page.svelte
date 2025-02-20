@@ -10,7 +10,7 @@
 	import Revenue from '$lib/displayComponents/Revenue.svelte';
 	import Header from '$lib/Header.svelte';
 	import Placeholder from '$lib/displayComponents/Placeholder.svelte';
-	import Address from '$lib/displayComponents/Address.svelte';
+	import Address from '$lib/displayComponents/AddressEmployee.svelte';
 	import { fade } from 'svelte/transition';
 	let { data }: { data: PageData } = $props();
 	let size = $state(25);

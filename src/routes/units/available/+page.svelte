@@ -36,7 +36,7 @@
          <span class="m-2">Available percentage {Math.round((availableUnits.length*100)/data.unitCount)}%</span>
          <span class="m-2">Open revenue per month: {currencyFormatter.format(lostRevenue)}</span>
       </div>
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 m-1 sm:m-2 mt-10">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 m-1 sm:m-2 pt-10">
          {#each availableUnits as unit}
             <div class="border-2 border-primary-50 dark:border-primary-950 rounded-lg">
                <UnitEmployee {unit}/>

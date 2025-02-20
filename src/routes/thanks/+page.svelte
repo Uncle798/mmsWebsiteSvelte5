@@ -2,7 +2,7 @@
     import type { PageData } from './$types';
     import Header from '$lib/Header.svelte';
     import UserEmployee from '$lib/displayComponents/UserEmployee.svelte';
-    import Address from '$lib/displayComponents/Address.svelte';
+    import Address from '$lib/displayComponents/AddressEmployee.svelte';
 	import PaymentRecordEmployee from '$lib/displayComponents/PaymentRecordEmployee.svelte';
     let { data }: { data: PageData } = $props();
 </script>

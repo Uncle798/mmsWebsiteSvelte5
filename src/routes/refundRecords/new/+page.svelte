@@ -39,16 +39,12 @@
                 }
             })
         }
+        res(paymentRecords)
     })
-    let { form, errors, message, constraints, enhance, delayed, timeout} = superForm(data.searchForm, {
-        onSubmit({formData}) {
-            
-        },
-    });
 </script>
 
 {#if data.paymentRecord}
-    <PaymentRecordEmployee paymentRecord={data.paymentRecord} classes='p-2'/>
+    <PaymentRecordEmployee paymentRecord={data.paymentRecord} classes='mt-10'/>
     <HorizontalDivider />   
     <NewRefundForm data={data.refundForm} paymentRecord={data.paymentRecord} classes='p-2'/>
 {/if}

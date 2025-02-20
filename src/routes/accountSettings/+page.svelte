@@ -5,7 +5,7 @@
     import NameForm from '$lib/forms/NameChangeForm.svelte';
     import EmailForm from '$lib/forms/EmailChangeForm.svelte';
     import EmailVerification from '$lib/forms/EmailVerificationForm.svelte'
-	import Address from '$lib/displayComponents/Address.svelte';
+	import Address from '$lib/displayComponents/AddressEmployee.svelte';
 	import Header from '$lib/Header.svelte';
 	import { BadgeCheck, } from 'lucide-svelte';
 	import LeaseCustomer from '$lib/displayComponents/customerViews/LeaseCustomer.svelte';

@@ -9,7 +9,7 @@
 	import Pagination from '$lib/displayComponents/Pagination.svelte';
 	import Revenue from '$lib/displayComponents/Revenue.svelte';
 	import Header from '$lib/Header.svelte';
-    import Address from '$lib/displayComponents/Address.svelte';
+    import Address from '$lib/displayComponents/AddressEmployee.svelte';
     
     let { data }: { data: PageData } = $props();
     let size = $state(25)

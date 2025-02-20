@@ -7,6 +7,7 @@
    import type { Unit } from '@prisma/client'
 	import UnitCustomer from "$lib/displayComponents/customerViews/UnitCustomer.svelte";
 	import { size } from "@skeletonlabs/floating-ui-svelte";
+	import { fade } from "svelte/transition";
    interface Props {
       data: PageData;
    }
@@ -59,7 +60,7 @@
    {#if data.user}
       Welcome to the {PUBLIC_COMPANY_NAME} home page, {data.user.givenName} 
    {:else}
-      <article class="m-2">
+      <article class="m-2 mt-10">
          <div>
             <p>
                Welcome to the {PUBLIC_COMPANY_NAME} home page. Nestled in the hills of the Palouse just outside Moscow off the Troy Highway, {PUBLIC_COMPANY_NAME} is the place to safely and securely store your belongings.
@@ -77,7 +78,7 @@
       </article>
       {/if}
 {:then units} 
-      <article class="m-2">
+      <article class="m-2 mt-10" transition:fade={{duration:600}}>
          <div>
             <p>
                Welcome to the {PUBLIC_COMPANY_NAME} home page. Nestled in the hills of the Palouse just outside Moscow off the Troy Highway, {PUBLIC_COMPANY_NAME} is the place to safely and securely store your belongings.

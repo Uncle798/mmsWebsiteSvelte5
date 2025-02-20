@@ -9,7 +9,7 @@
    import Search from '$lib/forms/Search.svelte';
    import Revenue from '$lib/displayComponents/Revenue.svelte';
    import type { Lease } from '@prisma/client';
-   import Address from '$lib/displayComponents/Address.svelte';
+   import Address from '$lib/displayComponents/AddressEmployee.svelte';
 
    let { data }: { data: PageData } = $props();
    let pageNum = $state(1);

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Address from '$lib/displayComponents/Address.svelte';
+	import Address from '$lib/displayComponents/AddressEmployee.svelte';
 	import HorizontalDivider from '$lib/displayComponents/HorizontalDivider.svelte';
 	import InvoiceEmployee from '$lib/displayComponents/InvoiceEmployee.svelte';
 	import PaymentRecordEmployee from '$lib/displayComponents/PaymentRecordEmployee.svelte';

@@ -10,7 +10,7 @@
 	import LeaseEndForm from '$lib/forms/LeaseEndForm.svelte';
 	import { Modal } from '@skeletonlabs/skeleton-svelte';
 	import Revenue from '$lib/displayComponents/Revenue.svelte';
-	import Address from '$lib/displayComponents/Address.svelte';
+	import Address from '$lib/displayComponents/AddressEmployee.svelte';
 
     let modalOpen = $state(false);
     let currentLeaseId = $state('')
