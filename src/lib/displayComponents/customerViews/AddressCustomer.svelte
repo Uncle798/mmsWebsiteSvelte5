@@ -5,7 +5,7 @@
       classes?: string;
    }
    let { address = $bindable(), classes }:Props = $props()
-   const formattedPhone = address.phoneNum1.substring(0,3) + '.' + address.phoneNum1.substring(3,6) + '.' + address.phoneNum1.substring(6,10);
+   const formattedPhone =  + address.phoneNum1Country + ' (' + address.phoneNum1.substring(0,3) + ') ' + address.phoneNum1.substring(3,6) + '-' + address.phoneNum1.substring(6,10);
 </script>
 
 <div class="{classes}">

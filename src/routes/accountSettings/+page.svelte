@@ -5,7 +5,7 @@
     import NameForm from '$lib/forms/NameChangeForm.svelte';
     import EmailForm from '$lib/forms/EmailChangeForm.svelte';
     import EmailVerification from '$lib/forms/EmailVerificationForm.svelte'
-	import Address from '$lib/displayComponents/AddressEmployee.svelte';
+	import AddressCustomer from '$lib/displayComponents/customerViews/AddressCustomer.svelte';
 	import Header from '$lib/Header.svelte';
 	import { BadgeCheck, } from 'lucide-svelte';
 	import LeaseCustomer from '$lib/displayComponents/customerViews/LeaseCustomer.svelte';
@@ -60,7 +60,7 @@
         </div>
         
         {:else}
-        <button class="btn " onclick={()=>emailVerificationModalOpen=true}>Please confirm your email address</button>
+        <button class="btn preset-filled-primary-50-950 text-wrap h-20 sm:h-8" onclick={()=>emailVerificationModalOpen=true}>Please confirm your email address</button>
         {/if}
     </span>
     <Modal
@@ -73,13 +73,9 @@
             Change email address
         {/snippet}
         {#snippet content()}
-            {#if !emailVerification}
-                <EmailForm data={data.emailForm} bind:emailModalOpen={emailModalOpen} bind:emailVerification={emailVerification} />
-            {:else}
-                <EmailVerification data={data.emailVerificationForm} bind:emailVerificationModalOpen={emailVerificationModalOpen} redirect='false' bind:emailVerification={emailVerification}/>
-                {/if}
-                <button class="btn preset-filled-primary-50-950 rounded-lg" onclick={()=>emailModalOpen = false}>Cancel</button>
-            {/snippet}
+            <EmailForm data={data.emailForm} bind:emailModalOpen={emailModalOpen} bind:emailVerification={emailVerification} />
+            <button class="btn preset-filled-primary-50-950 rounded-lg" onclick={()=>emailModalOpen = false}>Cancel</button>
+        {/snippet}
     </Modal>
         
     <Modal
@@ -97,7 +93,7 @@
         ...loading address
     {:then address} 
         {#if address}
-            <Address address={address} classes='pt-2'/>
+            <AddressCustomer {address} classes='pt-2'/>
         {/if}
         
         <Modal
