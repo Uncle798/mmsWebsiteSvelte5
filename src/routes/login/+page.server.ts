@@ -43,7 +43,7 @@ export const actions:Actions ={
       } else {
          await sendMagicLinkEmail(magicLink, user.email!);
       }
-      return message(magicLinkForm, `An email from ${PUBLIC_COMPANY_EMAIL} to ${user.email} has been sent to log you in, please check your spam folder as it may have ended up there. Feel free to close this tab.`)
+      return message(magicLinkForm, `An email from ${PUBLIC_COMPANY_EMAIL} has been sent to log you in, please check your spam folder as it may have ended up there. Feel free to close this tab.`)
    }
 }
 
