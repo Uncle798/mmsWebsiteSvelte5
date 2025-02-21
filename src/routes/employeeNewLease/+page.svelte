@@ -39,10 +39,11 @@
 
 
 <Header title="Employee New Lease" />
-<div transition:fade={{duration:600}} class="mx-2">
+<div transition:fade={{duration:600}} class="mx-2 mt-10">
 {#if !data.customer}
   <div class="m-2">
     <p><a href="/employeeNewCustomer" class="btn rounded-lg preset-filled-primary-50-950">Create new customer</a></p>
+    Renting unit {data.unitNum.replace(/^0/gm,'').replace(/x0/gm, 'x')}
     <form action="/employeeNewLease?/selectCustomer&unitNum={data.unitNum}" method="POST" >
       <Combobox
         data={customerComboBoxData}
@@ -148,15 +149,15 @@
       {/if}
     </div>
   </form>
-  {#if !data.discount}
-    <div transition:fade={{duration:600}}>
-        <LeaseDiscountForm 
-          data={data.leaseDiscountForm} 
-          unitNum={data.unit?.num} 
-          customerId={data.customer.id} 
-          classes='w-80'
-          />
-    </div>
-  {/if}
+    {#if !data.discount}
+      <div transition:fade={{duration:600}}>
+          <LeaseDiscountForm 
+            data={data.leaseDiscountForm} 
+            unitNum={data.unit?.num} 
+            customerId={data.customer.id} 
+            classes='w-80'
+            />
+      </div>
+    {/if}
   {/if}
 </div>
