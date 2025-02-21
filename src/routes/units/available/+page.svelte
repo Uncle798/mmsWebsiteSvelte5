@@ -48,8 +48,8 @@
          {/each}
       </div>
       {:else}
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 m-1 sm:m-2 mt-10">
-         <span>Available Units</span>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 m-1 sm:m-2 pt-8">
+         <span class="sm:col-span-2 h2 text-center">Available Units</span>
          {#each availableUnits as unit}
             <div class="border border-primary-50 dark:border-primary-950 rounded-lg">
                <UnitCustomer {unit}/>
