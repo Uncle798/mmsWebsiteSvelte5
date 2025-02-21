@@ -2,13 +2,13 @@ import Anvil from "@anvilco/anvil";
 import { PUBLIC_COMPANY_NAME } from '$env/static/public';
 import { ANVIL_API_KEY } from "$env/static/private";
 import type { PartialUser } from "./partialTypes";
-import type { Lease, Unit } from "@prisma/client/edge";
+import type { Address, Lease, Unit } from "@prisma/client/edge";
 
 export const anvilClient = new Anvil({apiKey:ANVIL_API_KEY});
 
 export const leaseTemplateId = '3ABabYkvU2ySORZ7RKrw'
 
-export function getPersonalPacketVariables(customer:PartialUser, lease:Lease, unit:Unit, employee:PartialUser){
+export function getPersonalPacketVariables(customer:PartialUser, lease:Lease, unit:Unit, employee:PartialUser, address:Address){
    return {
       isDraft: false,
       isTest: true,
@@ -30,7 +30,15 @@ export function getPersonalPacketVariables(customer:PartialUser, lease:Lease, un
                   'leaseEffectiveDate': lease.leaseEffectiveDate,
                   'unitNum': unit.num.replace(/^0+/gm,''),
                   'size': unit.size.replace(/^0+/gm,'').replace(/x0/gm,'x'),
-                  'price': lease.price
+                  'price': lease.price,
+                  'address':{
+                     "street1": address.address1,
+                     "street2": address.address2,
+                     "city": address.city,
+                     'state': address.state,
+                     'zip': address.postalCode,
+                     'country': address.country
+                  }
                }
             }
          }
@@ -72,7 +80,7 @@ export function getPersonalPacketVariables(customer:PartialUser, lease:Lease, un
       ]
    }
 }
-export function getOrganizationalPacketVariables(customer:PartialUser, lease:Lease, unit:Unit, employee:PartialUser){
+export function getOrganizationalPacketVariables(customer:PartialUser, lease:Lease, unit:Unit, employee:PartialUser, address:Address){
    return {
       isDraft: false,
       isTest: true,
@@ -95,7 +103,15 @@ export function getOrganizationalPacketVariables(customer:PartialUser, lease:Lea
                   'leaseEffectiveDate': lease.leaseEffectiveDate,
                   'unitNum': unit.num.replace(/^0+/gm,''),
                   'size': unit.size,
-                  'price': lease.price
+                  'price': lease.price,
+                  'address':{
+                     "street1": address.address1,
+                     "street2": address.address2,
+                     "city": address.city,
+                     'state': address.state,
+                     'zip': address.postalCode,
+                     'country': address.country
+                  }
                }
             }
          }
