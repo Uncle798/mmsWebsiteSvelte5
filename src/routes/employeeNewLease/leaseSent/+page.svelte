@@ -3,11 +3,25 @@
     import { PUBLIC_ANVIL_EMAIL, PUBLIC_COMPANY_NAME } from '$env/static/public';
     import type { PageData } from './$types';
 	import PaymentRecordEmployee from '$lib/displayComponents/PaymentRecordEmployee.svelte';
+	import UserEmployee from '$lib/displayComponents/UserEmployee.svelte';
+	import AddressEmployee from '$lib/displayComponents/AddressEmployee.svelte';
 
     let { data }: { data: PageData } = $props();
 </script>
 <Header title='Lease Sent' />
-<div class='m-2'>Your lease has been sent to {data.customer?.email} from {PUBLIC_ANVIL_EMAIL}.  Leases are valid when both parties have signed. {PUBLIC_COMPANY_NAME} will sign your lease during normal business hours.</div>
+<div class='m-2 mt-10'>
+   The lease has been sent to {data.customer?.email}. Please check {data.user?.email} and sign the lease.
+</div>
 {#if data.paymentRecord}
-    <PaymentRecordEmployee paymentRecord={data.paymentRecord} classes='w-72 m-2 rounded-lg border border-primary-50 dark:border-primary-950'/>
+   <div class="flex flex-col sm:flex-row rounded-lg border-2 border-primary-50 dark:border-primary-950 m-1 sm:m-2">
+      <PaymentRecordEmployee paymentRecord={data.paymentRecord} classes='w-72 m-2'/>
+      {#if data.customer}
+         <div class="">
+               <UserEmployee user={data.customer} />
+               {#if data.address}
+               <AddressEmployee address={data.address} />
+            {/if}
+         </div> 
+      {/if}
+   </div>
 {/if}
