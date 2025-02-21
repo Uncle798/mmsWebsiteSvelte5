@@ -40,9 +40,14 @@ export const load = (async (event) => {
          where: {
             id: paymentRecord.customerId
          }
+      });
+      const address = await prisma.address.findUnique({
+         where: {
+            addressId: lease?.addressId
+         }
       })
       if(lease?.anvilEID){
-         return { customer, paymentRecord }
+         return { customer, paymentRecord, address }
       }
       const employee = await prisma.user.findUnique({
          where: {
@@ -51,9 +56,9 @@ export const load = (async (event) => {
       });
       let variables = {}
       if(customer?.organizationName){
-         variables = getOrganizationalPacketVariables( customer, lease!, unit!, employee!)
+         variables = getOrganizationalPacketVariables( customer, lease!, unit!, employee!, address!)
       } else {
-         variables = getPersonalPacketVariables( customer!, lease!, unit!, employee!)
+         variables = getPersonalPacketVariables( customer!, lease!, unit!, employee!, address!)
       }
       const { data, errors } = await anvilClient.createEtchPacket({variables})
       if (errors) {
@@ -74,9 +79,9 @@ export const load = (async (event) => {
             }
          })
          await qStash.notify({eventId:lease!.leaseId})
-         return { packetDetails, customer, paymentRecord };
+         return { packetDetails, customer, paymentRecord, address };
       }
-      return { paymentRecord }
+      return { paymentRecord, customer, address }
    }
    return { };
 }) satisfies PageServerLoad;

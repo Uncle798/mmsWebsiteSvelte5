@@ -62,11 +62,19 @@ export const load:PageServerLoad = (async (event) => {
             ]
          }
       })
+      const address = await prisma.address.findUnique({
+         where: {
+            addressId: lease?.addressId
+         }
+      });
+      if(!address){
+         fail(400)
+      }
       let variables ={};
       if(customer?.organizationName){
-         variables = getOrganizationalPacketVariables( customer!, lease!, unit!, employee! );
+         variables = getOrganizationalPacketVariables( customer!, lease!, unit!, employee!, address! );
       } else {
-         variables = getPersonalPacketVariables( customer!, lease!, unit!, employee! );
+         variables = getPersonalPacketVariables( customer!, lease!, unit!, employee!, address!);
       }
       const { data, errors } = await anvilClient.createEtchPacket({
          variables
