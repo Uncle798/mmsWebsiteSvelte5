@@ -81,8 +81,8 @@
       <article class="m-2 mt-10" transition:fade={{duration:600}}>
          <div>
             <p>
-               Welcome to the {PUBLIC_COMPANY_NAME} home page. Nestled in the hills of the Palouse just outside Moscow off the Troy Highway, {PUBLIC_COMPANY_NAME} is the place to safely and securely store your belongings.
-               Family owned and operated since 1993 you can contact us at 
+               Welcome to the {PUBLIC_COMPANY_NAME} home page. Nestled in the hills of the Palouse just outside Moscow off the Troy Highway, {PUBLIC_COMPANY_NAME} is the place to safely and securely store your belongings.</p>
+               <p>Family owned and operated since 1993 you can contact us at 
                <a href="tel:{PUBLIC_PHONE}" class="anchor">
                   {
                   PUBLIC_PHONE.substring(0,1)+'-'+

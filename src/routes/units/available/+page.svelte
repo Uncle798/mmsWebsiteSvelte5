@@ -47,9 +47,9 @@
             </div>
          {/each}
       </div>
-      {:else}
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 m-1 sm:m-2 pt-8">
-         <span class="sm:col-span-2 lg:col-span-3 h2 text-center">Available Units</span>
+   {:else}
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 m-1 sm:m-2 pt-8">
+         <span class="sm:col-span-2 md:col-span-3 lg:col-span-4  h2 text-center">Available Units</span>
          {#each availableUnits as unit}
             <div class="border border-primary-50 dark:border-primary-950 rounded-lg">
                <UnitCustomer {unit}/>
@@ -59,6 +59,5 @@
             </div>
          {/each}
       </div>
-
-      {/if}
+   {/if}
 {/await}

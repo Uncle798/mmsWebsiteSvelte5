@@ -35,7 +35,9 @@
 </script>
 <Header title="Sign up for auto pay" />
 {#if !mounted}
-    ...loading
+    <div class="mt-10">
+        ...loading 
+    </div>
     {:else}
-    <div bind:this={wrapper}></div>
+    <div bind:this={wrapper} class="mt-10"></div>
 {/if}
