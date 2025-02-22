@@ -4,7 +4,6 @@ import { stripe } from '$lib/server/stripe';
 import type { RequestHandler } from './$types';
 
 export const POST: RequestHandler = async (event) => {
-   console.log(event.locals.user)
    const body = await event.request.json();
    const{ userId, leaseId } = body;
    if(!userId){
@@ -34,7 +33,7 @@ export const POST: RequestHandler = async (event) => {
       customer: customer?.stripeId ? customer.stripeId : undefined,
       mode: 'subscription',
       ui_mode: 'embedded',
-      return_url: `${PUBLIC_URL}/thanks`,
+      return_url: `${PUBLIC_URL}/thanks?customerId=${customer.id}`,
       line_items: [
          {
             price_data: {
@@ -47,22 +46,16 @@ export const POST: RequestHandler = async (event) => {
                   name: `monthly rent for unit number ${lease.unitNum.replace(/^0+/gm,'')}`,
                   metadata: {
                      leaseId: lease.leaseId,
+                     customerId: customer.id,
                   }
                }
             },
             quantity: 1,
          }
       ],
-      
-   })
-   const updatedLease = await prisma.lease.update({
-      where: {
-         leaseId: lease.leaseId
-      },
-      data: {
-         stripeSubscriptionId: session.subscription?.toString(),
+      metadata: {
+         customerId: customer.id
       }
    })
-   console.log(updatedLease);
    return new Response(JSON.stringify(session.client_secret), { status: 200 });
 };

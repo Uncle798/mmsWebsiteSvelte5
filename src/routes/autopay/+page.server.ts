@@ -11,14 +11,14 @@ export const load = (async (event) => {
    if(!leaseId){
       fail(404)
    }
-   const customer = await prisma.user.findUnique({
-      where: {
-         id: event.locals.user.id
-      }
-   })
    const lease = await prisma.lease.findUnique({
       where: {
          leaseId:leaseId!
+      }
+   })
+   const customer = await prisma.user.findUnique({
+      where: {
+         id: lease?.customerId
       }
    })
    return { customer, lease, redirectTo };
