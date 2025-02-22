@@ -50,8 +50,7 @@
 		"tsx": "^4.19.3",
 		"typescript": "^5.7.3",
 		"typescript-eslint": "^8.24.1",
-		"vite": "^5.4.14",
-		"zod": "^3.24.2"
+		"vite": "^5.4.14"
 	},
 	"dependencies": {
 		"@anvilco/anvil": "^3.3.1",
@@ -69,6 +68,7 @@
 		"dotenv": "^16.4.7",
 		"dropbox": "^10.34.0",
 		"lucide-svelte": "^0.454.0",
-		"mailtrap": "^3.4.0"
+		"mailtrap": "^3.4.0",
+		"zod": "^3.24.2"
 	}
 }
