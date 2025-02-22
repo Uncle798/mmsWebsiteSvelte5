@@ -128,6 +128,7 @@ export const actions: Actions = {
       })
       if(currentLease){
          message(leaseForm, 'That unit is already leased');
+         return{}
       }
       const address = await prisma.address.findFirst({
          where: {
