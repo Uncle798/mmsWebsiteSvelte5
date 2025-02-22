@@ -8,11 +8,5 @@ export default defineConfig({
 			'relative-oryx-endlessly.ngrok-free.app'
 		]
 	},
-	build:{
-		rollupOptions:{
-			external: [
-				'zod'
-			]
-		}
-	}
+
 });
