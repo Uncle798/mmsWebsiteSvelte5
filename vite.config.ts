@@ -7,5 +7,12 @@ export default defineConfig({
 		allowedHosts: [
 			'relative-oryx-endlessly.ngrok-free.app'
 		]
+	},
+	build:{
+		rollupOptions:{
+			external: [
+				'zod'
+			]
+		}
 	}
 });
