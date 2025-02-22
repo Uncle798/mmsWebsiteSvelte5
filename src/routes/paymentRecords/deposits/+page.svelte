@@ -53,9 +53,11 @@
 </Modal>
 
 {#await data.deposits}
-    loading {numberFormatter.format(data.depositCount)} deposits
+    <div class="mt-12">
+        loading {numberFormatter.format(data.depositCount)} deposits
+    </div>
 {:then deposits} 
-    <div class="flex flex-col sm:flex-row m-2 mt-4">
+    <div class="flex flex-col sm:flex-row m-2 mt-12">
         <Search bind:search={search} searchType='payment record number' data={data.searchForm} classes='sm:w-1/2'/>
         <Search bind:search={noteSearch} searchType='Payment notes' data={data.searchForm} classes='sm:w-1/2'/>
     </div>
