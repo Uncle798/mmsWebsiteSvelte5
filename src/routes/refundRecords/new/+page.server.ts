@@ -33,7 +33,7 @@ export const load = (async (event) => {
             },
             {
                deposit: true
-            }
+            },
          ]
       },
       orderBy: {
