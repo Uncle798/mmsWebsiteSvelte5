@@ -8,6 +8,6 @@
    let { amount, label, classes}:Props = $props()
    const currencyFormatter = new Intl.NumberFormat('en-US', {style:'currency', currency:'USD'});
 </script>
-<div class="flex gap-2 {classes}">
+<div class="flex gap-1 {classes}">
    <div class="">{label}:</div><div class="font-medium">{currencyFormatter.format(amount)}</div>
 </div>

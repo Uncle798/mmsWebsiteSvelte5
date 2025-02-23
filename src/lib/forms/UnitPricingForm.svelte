@@ -33,13 +33,14 @@
 <div class={classes}>
    <FormMessage message={$message} />
    <form action="/forms/unitPricingForm" method="POST" use:enhance>
-      <p class="p-4">Change all {size.replace(/^0+/gm,'').replace(/x0/gm,'x')} units from ${oldPrice} to </p>
+      <p class="">Change all {size.replace(/^0+/gm,'').replace(/x0/gm,'x')} units from ${oldPrice} to </p>
       <NumberInput
          bind:value={$form.price}
          errors={$errors.price}
          constraints={$constraints.price}
-         label='new price $'
+         label='New price $'
          name='price'
+         classes='w-32'
       />
       <Switch
          bind:checked={$form.changeDeposit}
