@@ -30,12 +30,11 @@
    });
    onMount(()=>{
       $form.amount = paymentRecord.paymentAmount;
-      $form.notes = `Refund of payment record number: ${paymentRecord.paymentNumber}`
+      $form.notes = `Refund of payment record number: ${paymentRecord.paymentNumber}, ${paymentRecord.paymentNotes}`
    })
 </script>
-<div class={classes}>
+<div class="{classes} flex flex-col gap-2">
    <FormMessage message={$message} />
-
    <form action="/forms/refundForm" method="post" use:enhance>
       <TextArea 
          bind:value={$form.notes}
@@ -51,11 +50,13 @@
          label='Refund amount'
          name='amount'
       />
-      <select name="refundType" bind:value={$form.refundType} class="select">
-         {#each ['Stripe', 'Cash', 'Check'] as type}
-            <option value={type.toUpperCase()} selected={type.toUpperCase() === paymentRecord.paymentType}>{type}</option>
-         {/each}
-      </select>
+      <label for="refundType" class="label-text">Refund Type
+         <select name="refundType" bind:value={$form.refundType} class="select mt-2">
+            {#each ['Stripe', 'Cash', 'Check'] as type}
+               <option value={type.toUpperCase()} selected={type.toUpperCase() === paymentRecord.paymentType}>{type}</option>
+            {/each}
+         </select>
+      </label>
       <input type="hidden" name="paymentRecordNumber" value={paymentRecord.paymentNumber}>
       <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} buttonText="Submit Refund"/>
    </form>
