@@ -18,7 +18,6 @@
    let { form, errors, constraints, message, enhance, delayed, timeout} = superForm(data, {
       onUpdated(){
          registerFormModalOpen=false;
-         invalidateAll();
       }
    })
 </script>
