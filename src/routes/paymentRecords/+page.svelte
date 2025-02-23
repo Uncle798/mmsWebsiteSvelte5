@@ -13,6 +13,8 @@
 	import DateSearch from '$lib/forms/DateSearch.svelte';
 	import Revenue from '$lib/displayComponents/Revenue.svelte';  
 	import Address from '$lib/displayComponents/AddressEmployee.svelte';
+    import RefundForm from '$lib/forms/NewRefundForm.svelte'
+    import { Modal } from '@skeletonlabs/skeleton-svelte';
     dayjs.extend(utc)
     let { data }: { data: PageData } = $props();
     let pageNum = $state(1);
@@ -22,6 +24,8 @@
     let endDate = $state<Date>(new Date());
     let maxDate = $state<Date>();
     let minDate = $state<Date>();
+    let modalOpen = $state(false);
+    let currentPaymentRecord = $state<PaymentRecord>({} as PaymentRecord)
     let wrapper = new Promise<PaymentRecord[]>(async res => {
         const paymentRecords = await data.paymentRecords
         res(paymentRecords)
@@ -54,72 +58,92 @@
         }
         return totalRevenue;
     })
+    function refundModal(paymentRecord:PaymentRecord){
+        currentPaymentRecord = paymentRecord;
+        modalOpen = true
+    }
 </script>
+<Modal
+   bind:open={modalOpen}
+   contentBase="card bg-surface-400-600 p-4 space-y-4 shadow-xl"
+   backdropClasses=""
+   modal={true}
+>  
+{#snippet content()}
+   <RefundForm data={data.refundForm} paymentRecord={currentPaymentRecord}/>
+   <button class="btn rounded-lg preset-filled-primary-50-950" onclick={()=>modalOpen = false}>Close</button>
+{/snippet}
 
+</Modal>
 <Header title='Payment Records' />
 {#await wrapper}
-    <div class="mt-10">
-        loading {numberFormatter.format(data.paymentRecordCount)} payment records
-        {#if data.years}
-            or select year: 
-            {#each data.years as year}
-                <a href='/paymentRecords/year/{year}' class="btn">{year}</a>
-            {/each}
-        {/if}
-        <Placeholder numCols={2} numRows={3} heightClass='h-32'/>
-    </div>
+   <div class="mt-2">
+      loading {numberFormatter.format(data.paymentRecordCount)} payment records
+      {#if data.years}
+         or select year: 
+         {#each data.years as year}
+               <a href='/paymentRecords/year/{year}' class="btn">{year}</a>
+         {/each}
+      {/if}
+      <Placeholder numCols={2} numRows={3} heightClass='h-32'/>
+   </div>
 {:then paymentRecords} 
-    {#await data.customers}
-        loading customers
-    {:then customers} 
-        {#await data.addresses}
-            loading contacts
-        {:then addresses}         
-            {#if paymentRecords.length >0}
-                <div transition:fade={{duration:600}} class='mt-8'>
-                    <div class="flex border-b-2 border-primary-50 dark:border-primary-950  mx-1 sm:mx-2">
-                        <Search 
-                            bind:search={search} 
-                            searchType='payment record number' 
-                            data={data.searchForm}
-                            classes='p-2 w-1/2'
-                        />      
-                        <DateSearch 
-                            bind:startDate={startDate} 
-                            bind:endDate={endDate} 
-                            {minDate} 
-                            {maxDate} 
-                            data={data.dateSearchForm}
-                            classes='p-2 flex flex-col md:grid md:grid-cols-2'    
-                        />
-                    </div>
-                    <Revenue 
-                        label="Total revenue" 
-                        amount={totalRevenue(searchedPayments(dateSearchPayments(paymentRecords)))} 
-                        classes='border-b-2 border-primary-50 dark:border-primary-950 m-2'    
-                    />
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-y-3 gap-x-1 m-2">
-                        {#each slicedSource(dateSearchPayments(searchedPayments(paymentRecords))) as paymentRecord}
-                        {@const customer = customers.find((customer) => customer.id === paymentRecord.customerId) }
-                            <div class=" rounded-lg border border-primary-50 dark:border-primary-950  md:flex md:w-full">
-                                <PaymentRecordEmployee paymentRecord={paymentRecord} classes="p-2 md:w-1/2" />
-                                {#if customer}
-                                {@const address = addresses.find((address)=> address.userId === customer.id)}
-                                    <div class="flex flex-col md:w-1/2">
-                                        <UserEmployee user={customer} classes='mx-2 mt-2'/>
-                                        {#if address}
-                                        <Address {address} classes='mx-2'/>
-                                        {/if}
-                                    </div>
-                                {/if}
-                            </div>
-                        {/each}
-                    </div>
-                    <Pagination bind:size={size} bind:pageNum={pageNum} array={searchedPayments(paymentRecords)} label='payment records'/>
-                </div>
-            {:else}
-                No payment records from that year
-            {/if}
-        {/await}
-    {/await}
+   {#await data.customers}
+      loading customers
+   {:then customers} 
+      {#await data.addresses}
+         loading contacts
+      {:then addresses}         
+         {#if paymentRecords.length >0}
+            <div transition:fade={{duration:600}} class=''>
+               <div class="flex border-b-2 border-primary-50 dark:border-primary-950  mx-1 sm:mx-2">
+                  <Search 
+                     bind:search={search} 
+                     searchType='payment record number' 
+                     data={data.searchForm}
+                     classes='p-2 w-1/2'
+                  />      
+                  <DateSearch 
+                     bind:startDate={startDate} 
+                     bind:endDate={endDate} 
+                     {minDate} 
+                     {maxDate} 
+                     data={data.dateSearchForm}
+                     classes='p-2 flex flex-col md:grid md:grid-cols-2'    
+                  />
+               </div>
+               <Revenue 
+                  label="Total revenue" 
+                  amount={totalRevenue(searchedPayments(dateSearchPayments(paymentRecords)))} 
+                  classes='border-b-2 border-primary-50 dark:border-primary-950 m-2'    
+               />
+               <div class="grid grid-cols-1 lg:grid-cols-2 gap-y-3 gap-x-1 m-2">
+                  {#each slicedSource(dateSearchPayments(searchedPayments(paymentRecords))) as paymentRecord}
+                  {@const customer = customers.find((customer) => customer.id === paymentRecord.customerId) }
+                     <div class=" rounded-lg border border-primary-50 dark:border-primary-950  md:flex md:w-full">
+                        <div>
+                           <PaymentRecordEmployee paymentRecord={paymentRecord} classes="p-2 md:w-1/2" />
+                           {#if !paymentRecord.refunded}
+                                 <button type="button" class="btn rounded-lg preset-filled-primary-50-950 m-2" onclick={() => refundModal(paymentRecord)}>Refund this payment</button>
+                           {/if}
+                        </div>
+                        {#if customer}
+                        {@const address = addresses.find((address)=> address.userId === customer.id)}
+                           <div class="flex flex-col md:w-1/2">
+                              <UserEmployee user={customer} classes='mx-2 mt-2'/>
+                              {#if address}
+                                 <Address {address} classes='mx-2'/>
+                              {/if}
+                           </div>
+                        {/if}
+                     </div>
+                  {/each}
+               </div>
+               <Pagination bind:size={size} bind:pageNum={pageNum} array={searchedPayments(paymentRecords)} label='payment records'/>
+            </div>
+         {:else}
+            No payment records from that year
+         {/if}
+      {/await}
+   {/await}
 {/await}
