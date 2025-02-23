@@ -34,7 +34,9 @@
     })
     const numberFormatter = new Intl.NumberFormat('en-US');
     let slicedSource = $derived((paymentRecords:PaymentRecord[]) => paymentRecords.slice((pageNum -1) * size, pageNum*size));
-    let searchedPayments = $derived((paymentRecords:PaymentRecord[]) => paymentRecords.filter((paymentRecord) => paymentRecord.paymentNumber.toString().includes(search) ))
+    let searchedPayments = $derived((paymentRecords:PaymentRecord[]) => {
+        return paymentRecords.filter((paymentRecord) => paymentRecord.paymentNumber.toString().includes(search)) || paymentRecords.filter((paymentRecord) => paymentRecord.paymentNotes!.includes(search));
+    })
     let dateSearchPayments = $derived((paymentRecords:PaymentRecord[]) => paymentRecords.filter((paymentRecord) => {
         if(!startDate || !endDate){
             return
@@ -96,19 +98,19 @@
                         amount={totalRevenue(searchedPayments(dateSearchPayments(paymentRecords)))} 
                         classes='border-b-2 border-primary-50 dark:border-primary-950 m-2'    
                     />
-                    <div class="grid grid-cols-1 gap-y-3 gap-x-1 m-2">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-y-3 gap-x-1 m-2">
                         {#each slicedSource(dateSearchPayments(searchedPayments(paymentRecords))) as paymentRecord}
                         {@const customer = customers.find((customer) => customer.id === paymentRecord.customerId) }
                             <div class=" rounded-lg border border-primary-50 dark:border-primary-950  md:flex md:w-full">
                                 <PaymentRecordEmployee paymentRecord={paymentRecord} classes="p-2 md:w-1/2" />
                                 {#if customer}
                                 {@const address = addresses.find((address)=> address.userId === customer.id)}
-                                <div class="flex flex-col md:w-1/2">
-                                    <UserEmployee user={customer} classes='mx-2 mt-2'/>
-                                    {#if address}
-                                    <Address {address} classes='mx-2'/>
-                                    {/if}
-                                </div>
+                                    <div class="flex flex-col md:w-1/2">
+                                        <UserEmployee user={customer} classes='mx-2 mt-2'/>
+                                        {#if address}
+                                        <Address {address} classes='mx-2'/>
+                                        {/if}
+                                    </div>
                                 {/if}
                             </div>
                         {/each}

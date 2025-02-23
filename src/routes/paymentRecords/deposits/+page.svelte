@@ -42,12 +42,13 @@
 <Header title='Deposits' />
 <Modal
    bind:open={refundModalOpen}
-   contentBase="card bg-surface-400-600 p-4 space-y-4 shadow-xl max-w-screen-sm"
+   contentBase="card bg-surface-400-600 p-4 space-y-4 shadow-xl"
    backdropClasses=""
+   modal={true}
 >  
 {#snippet content()}
    <RefundForm data={data.refundForm} paymentRecord={paymentRecord}/>
-   <button class="btn" onclick={()=>refundModalOpen = false}>Close</button>
+   <button class="btn rounded-lg preset-filled-primary-50-950" onclick={()=>refundModalOpen = false}>Close</button>
 {/snippet}
 
 </Modal>
@@ -63,12 +64,12 @@
     </div>
     <HorizontalDivider />
     <Revenue amount={totalRevenue(searchedPaymentRecords(deposits))} label='Amount of deposits:' classes='mx-2 ' />
-    <div class="flex flex-col gap-3">
+    <div class="grid grid-cols-1 sm:grid-cols-2 md: gap-3">
         {#each slicedSource(searchedPaymentRecords(searchByNotes(deposits))) as deposit}
-        <div class="flex flex-col border-2 dark:border-primary-950 border-primary-50 rounded-lg mx-1 sm:mx-2">
-            <PaymentRecordEmployee paymentRecord={deposit} classes='px-2'/>
-            <button type="button" class="btn rounded-lg preset-filled-primary-50-950 m-2" onclick={() => refundModal(deposit)}>Refund this deposit</button>
-        </div>
+            <div class="flex flex-col border-2 dark:border-primary-950 border-primary-50 rounded-lg mx-1 sm:mx-2">
+                <PaymentRecordEmployee paymentRecord={deposit} classes='px-2'/>
+                <button type="button" class="btn rounded-lg preset-filled-primary-50-950 m-2" onclick={() => refundModal(deposit)}>Refund this deposit</button>
+            </div>
         {/each}
         <Pagination pageNum={pageNum} size={size} array={searchedPaymentRecords(deposits)} label='invoices'/>
     </div>
