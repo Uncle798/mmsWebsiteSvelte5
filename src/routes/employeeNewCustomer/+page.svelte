@@ -6,7 +6,7 @@
    let { data }: { data: PageData } = $props();
 </script>
 
-<RegisterForm data={data.registerForm} formType='employee' redirectTo='employeeNewCustomer'/>
+<RegisterForm data={data.registerForm} formType='employee' redirectTo='employeeNewCustomer' classes='mt-10 m-1 sm:m-2' />
 
 {#if data.customer}
    <UserEmployee user={data.customer} />
