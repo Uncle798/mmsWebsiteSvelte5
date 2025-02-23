@@ -7,6 +7,7 @@
 	import { beforeNavigate } from '$app/navigation';
 	import { enhance } from '$app/forms';
 	import { PUBLIC_COMPANY_NAME } from '$env/static/public';
+	import { XCircleIcon } from 'lucide-svelte';
 
 	interface Props {
 		data: PageData,
@@ -59,7 +60,7 @@
 <Modal
 	bind:open={menuOpen}
 	triggerBase="btn bg-primary-50 dark:bg-primary-950 hover:shadow-xl hover:border-2 border-secondary-50 dark:border-secondary-950 fixed top-0 z-50"
-	contentBase="bg-surface-100-900 p-2 space-y-2 shadow-xl w-[280px] h-screen"
+	contentBase="bg-surface-100-900 p-2 space-y-2 shadow-xl w-[240px] h-screen"
 	positionerJustify="justify-start"
 	positionerAlign=""
 	positionerPadding=""
@@ -70,7 +71,7 @@
 		<Menu class='mx-2 border-2 ' />	
 {/snippet}
 {#snippet content()}
-	<article>
+	<article class="">
 		<ul>
 			{#if !data.user?.employee}
 				{#each customerLinks as link}
@@ -98,6 +99,7 @@
 				{/if}
 			</div>
 		</ul>
+		<button class="absolute top-1 left-[205px] btn-icon" onclick={()=>menuOpen=false}><XCircleIcon /></button>
 	</article>
 {/snippet}
 </Modal>
