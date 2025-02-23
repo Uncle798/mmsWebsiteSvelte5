@@ -33,9 +33,9 @@
 </Modal>
     {#if unit}
         <Header title='Unit number: {unit.num}' />
-        <div transition:fade={{duration:600}} class="m-2">
+        <Revenue label='Total revenue from this unit' amount={data.totalRevenue} classes="flex sticky top-9 dark:bg-tertiary-950 bg-tertiary-50 rounded-lg w-full"/>
+        <div transition:fade={{duration:600}} class="m-1 sm:m-2 pt-2">
             <UnitEmployee {unit} classes=''/>
-            <Revenue label='Total revenue from this unit' amount={data.totalRevenue} />
             <UnitNotesForm data={data.unitNotesForm} {unit} classes=''/>
             <UnitPricingForm data={data.unitPricingForm} size={unit.size} oldPrice={unit.advertisedPrice} unitPricingFormModalOpen={modalOpen} />
             <div class="grid grid-cols-1 gap-y-3 gap-x-1">

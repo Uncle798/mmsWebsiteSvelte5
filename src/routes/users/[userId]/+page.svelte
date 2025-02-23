@@ -88,6 +88,7 @@
             {/snippet}
             {#snippet content()}
                <LeaseEndForm data={data.leaseEndForm} leaseId={lease.leaseId} leaseEndModalOpen={leaseEndModalOpen}/>
+               <button class="btn preset-filled-primary-50-950 rounded-lg m-2" onclick={()=>leaseEndModalOpen=false}>Cancel</button>
             {/snippet}   
             </Modal>
          {/if}
@@ -121,7 +122,7 @@
             {/if}
          </div>
          {#if refunds.length > 0}
-         <div class="grid grid-cols-1 sm:grid-cols-3 gap-x-1 gap-y-3 mx-2 ">
+         <div class="grid grid-cols-1 lg:grid-cols-3 gap-x-1 gap-y-3 mx-2 ">
             {#each slicedInvoices(invoices) as invoice}
             {@const paymentRecord = paymentRecords.find((payment) => payment.invoiceNum === invoice.invoiceNum)}
             {@const refund = refunds.find((refund) => refund.paymentRecordNum === paymentRecord?.paymentNumber)}
