@@ -5,17 +5,19 @@
       size: number;
       array: unknown[];
       label: string;
+      classes?: string;
    }
    let {
       pageNum = $bindable(1),
       size = $bindable(25),
       array = $bindable(),
-      label
+      label,
+      classes
    }:Props = $props()
    let slicedSource = $derived((source:[]) => source.slice((pageNum-1)*size, pageNum*size));
 </script>
 
-<footer class="flex w-full m-2 gap-1">
+<footer class="flex w-full m-2 gap-1 {classes}">
    {#if array.length > size}  
       <select name="size" id="size" class="select w-1/2 rounded-lg" bind:value={size}>
          {#each [5,10,25,50] as v}

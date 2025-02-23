@@ -10,22 +10,29 @@
       placeholder?:string | undefined;
       name: string | null | undefined;
       autocomplete?: FullAutoFill;
+      classes?: string;
    }
    let { value = $bindable(), label, errors, constraints, placeholder, name, autocomplete,...others }:Props = $props()
 </script>
-<label class="label">
-   {#if label}<span class="label-text">{label}</span><br />{/if}
-   <textarea
-      class="input"
-      name={name}
-      bind:value={value}
-      aria-invalid={errors ? 'true' : undefined}
-      placeholder={placeholder}
-      autocomplete={autocomplete}
-      {...constraints}
-      {...others}
-   >
-   {value}
-   </textarea>
- </label>
- {#if errors}<span class="invalid">{errors}</span>{/if}
+<div class="">
+   
+   <label class="label">
+      {#if label}
+         <span class="label-text">{label}</span><br />
+      {/if}
+      <textarea
+         class="input rounded-none"
+         rows="5"
+         name={name}
+         bind:value={value}
+         aria-invalid={errors ? 'true' : undefined}
+         placeholder={placeholder}
+         autocomplete={autocomplete}
+         {...constraints}
+         {...others}
+      >
+         {value}
+      </textarea>
+   </label>
+   {#if errors}<span class="invalid">{errors}</span>{/if}
+</div>
