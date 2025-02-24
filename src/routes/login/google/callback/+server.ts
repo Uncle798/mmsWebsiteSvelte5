@@ -26,7 +26,6 @@ export const GET: RequestHandler = async (event) => {
       return new Response('Please restart the process', {status: 400});
    }
    const claims = decodeIdToken(tokens.idToken());
-   console.log(claims);
    const claimsParser = new ObjectParser(claims);
    const email = claimsParser.getString('email');
    const googleId = claimsParser.getString('sub');

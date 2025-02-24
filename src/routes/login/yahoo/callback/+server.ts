@@ -26,6 +26,7 @@ export const GET: RequestHandler = async (event) => {
    const claims = decodeIdToken(tokens.idToken());
    const claimsParser = new ObjectParser(claims);
    const email = claimsParser.getString('email');
+   console.log('claims', claims)
    const yahooId = claimsParser.getString('sub');
    const givenName = claimsParser.getString('given_name');
    const familyName = claimsParser.getString('family_name');
