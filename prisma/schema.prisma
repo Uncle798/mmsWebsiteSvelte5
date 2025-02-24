@@ -20,6 +20,8 @@ model User {
   admin                Boolean         @default(false)
   stripeId             String?
   archive              Boolean         @default(false)
+  googleId             String?
+  yahooId              String?
   address              Address[]
   customerInvoices     Invoice[]       @relation("customer")
   employeeInvoices     Invoice[]       @relation("employee")
