@@ -70,5 +70,10 @@
         />
         <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} buttonText='Email me a link to login'/>
     </form>
-    <a href="/register?redirectTo={data.redirectTo}&unitNum={data.unitNum}" class="anchor">Register new account</a>
+    <div class="flex flex-col">
+        <a href="/login/google" class="anchor">Sign in with Google</a>
+        <a href="/login/yahoo" class="anchor">Sign in with Yahoo!</a>
+
+        <a href="/register?redirectTo={data.redirectTo}&unitNum={data.unitNum}" class="anchor">Register new account</a>
+    </div>
 </div>
