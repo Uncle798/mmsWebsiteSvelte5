@@ -117,13 +117,13 @@
             backdropClasses="backdrop-blur-sm"
         >
             {#snippet content()}
-                <LeaseEndForm data={data.leaseEndForm} bind:leaseEndModalOpen={leaseEndModalOpen} leaseId={currentLeaseId} customer={data.user?.employee}/>
+                <LeaseEndForm data={data.leaseEndForm} bind:leaseEndModalOpen={leaseEndModalOpen} leaseId={currentLeaseId} customer={true}/>
                 <button class="btn preset-filled-primary-50-950 rounded-lg" onclick={()=>leaseEndModalOpen=false}>Cancel</button>
             {/snippet}
         </Modal>
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
             {#each leases as lease}
-                <div>
+                <div class="border-2 rounded-lg border-primary-50 dark:border-primary-950">
                     <LeaseCustomer lease={lease} classes='w-64'/>
                     {#if !lease.leaseEnded}
                         <button class="btn preset-filled-primary-50-950 rounded-lg m-2" onclick={()=> setCurrentLeaseId(lease.leaseId)}>End Lease</button>
