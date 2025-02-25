@@ -48,7 +48,7 @@ export const POST: RequestHandler = async (event) => {
                      id: lease!.customerId
                   }
                })
-               const date = dayjs(lease?.leaseReturnedAt).format('M/D/YYYY')
+               const date = dayjs(lease?.leaseEffectiveDate).format('M/D/YYYY')
                const invoice = await prisma.invoice.create({
                   data: {
                      customerId: lease?.customerId,
