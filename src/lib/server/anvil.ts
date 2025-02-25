@@ -46,7 +46,7 @@ export function getPersonalPacketVariables(customer:PartialUser, lease:Lease, un
       signers: [
          {
             id: 'customer', 
-            name: `${customer.givenName}, ${customer.familyName}`,
+            name: `${customer.givenName} ${customer.familyName}`,
             email: customer.email,
             signerType: 'email',
             fields: [
