@@ -31,6 +31,7 @@
    onMount(()=>{
       $form.amount = paymentRecord.paymentAmount;
       $form.notes = `Refund of payment record number: ${paymentRecord.paymentNumber}, ${paymentRecord.paymentNotes}`
+      $form.refundType = paymentRecord.paymentType;
    })
 </script>
 <div class="{classes} flex flex-col gap-2">
@@ -53,7 +54,8 @@
       <label for="refundType" class="label-text">Refund Type
          <select name="refundType" bind:value={$form.refundType} class="select mt-2">
             {#each ['Stripe', 'Cash', 'Check'] as type}
-               <option value={type.toUpperCase()} selected={type.toUpperCase() === paymentRecord.paymentType}>{type}</option>
+
+                  <option value={type.toUpperCase()}>{type}</option>
             {/each}
          </select>
       </label>
