@@ -272,7 +272,7 @@ export const actions: Actions = {
          }
       })
 
-      redirect(303, `/makePayment?invoiceNum=${invoice.invoiceNum}&stripeId=${stripeId}`)
+      redirect(303, `/makePayment?invoiceNum=${invoice.invoiceNum}&stripeId=${stripeId}&newLease=true`)
    },
    selectCustomer: async (event ) => {
       if(!event.locals.user?.employee){
