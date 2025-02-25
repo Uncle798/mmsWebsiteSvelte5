@@ -9,6 +9,7 @@
 	import { invalidateAll } from "$app/navigation";
 	import { onMount } from "svelte";
 	import type { Unit } from "@prisma/client";
+	import TextArea from "$lib/formComponents/TextArea.svelte";
 
    
    interface Props {
@@ -38,7 +39,7 @@
 <div class="{classes} flex flex-col">
    <FormMessage message={$message} />
    <form action="/forms/unitNotesForm" method="POST" use:enhance>
-      <TextInput
+      <TextArea
          bind:value={$form.notes}
          errors={$errors.notes}
          constraints={$constraints.notes}
