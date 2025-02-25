@@ -93,8 +93,8 @@ export const load = (async (event) => {
 
 export const actions: Actions = {
    default: async (event) => {
-      if(!event.locals.user?.employee){
-         redirect(302, '/login?toast=employee')
+      if(!event.locals.user){
+         redirect(302, '/login?toast=unauthorized')
       }
       const formData = await event.request.formData()
       const form = await superValidate(formData, zod(paymentRecordDeleteSchema));
@@ -121,5 +121,6 @@ export const actions: Actions = {
       }
       const response = await sendPaymentReceipt(customer!, paymentRecord!)
       console.log(response);
+      return {form}
    }
 }
