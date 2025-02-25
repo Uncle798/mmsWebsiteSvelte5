@@ -52,7 +52,7 @@ export async function sendPaymentReceipt(customer:User, paymentRecord:PaymentRec
       from: sender,
       to: [{email: customer.email!}],
       subject: `${PUBLIC_COMPANY_NAME} receipt number ${paymentRecord.paymentNumber}`,
-      html: `Hello ${customer.givenName} <br/>Please visit <a href="${PUBLIC_URL}/paymentRecords/${paymentRecord.paymentNumber}>Record number ${paymentRecord.paymentNumber}</a> to view your receipt.`,
+      html: `Hello ${customer.givenName} <br/>Please visit <a href="${PUBLIC_URL}/paymentRecords/${paymentRecord.paymentNumber}">Record number ${paymentRecord.paymentNumber}</a> to view your receipt.`,
    })
    return response
 }
