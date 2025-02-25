@@ -5,7 +5,7 @@ import type { RequestHandler } from '@sveltejs/kit';
 export const POST:RequestHandler = async (event) => {
    const body = await event.request.json();
    console.log('body', body)
-   const { customerId, invoiceNum } = body;
+   const { customerId, invoiceNum, subscription } = body;
    if(!invoiceNum){
       return new Response(JSON.stringify('Invoice not provided'), { status:400 });
    }
