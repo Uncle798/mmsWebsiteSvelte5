@@ -12,8 +12,6 @@ export const load = (async (event) => {
          leaseId,
       }
    })
-   console.log('userId', event.locals.user.id);
-   console.log('leaseUserId, ', lease?.customerId);
    if(!event.locals.user.employee && lease?.customerId !== event.locals.user.id){
       redirect(302, '/login?toast=employee')
    }

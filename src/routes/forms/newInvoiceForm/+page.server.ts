@@ -22,7 +22,6 @@ export const actions: Actions = {
      if(!newInvoiceForm.valid){
         return message(newInvoiceForm, 'Unable to process')
      }
-     console.log(newInvoiceForm);
      const invoice = await prisma.invoice.create({
          data: {
              invoiceAmount: newInvoiceForm.data.invoiceAmount,
