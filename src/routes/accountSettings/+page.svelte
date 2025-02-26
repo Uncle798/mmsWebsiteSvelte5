@@ -15,6 +15,8 @@
 	import PaymentRecordCustomer from '$lib/displayComponents/customerViews/PaymentRecordCustomer.svelte';
 	import ThemeSelector from '$lib/displayComponents/ThemeSelector.svelte';
 	import UserCustomer from '$lib/displayComponents/customerViews/UserCustomer.svelte';
+	import { superForm } from 'sveltekit-superforms';
+	import FormSubmitWithProgress from '$lib/formComponents/FormSubmitWithProgress.svelte';
     
     let {data}:{ data: PageData} = $props();
     let addressModalOpen = $state(false);
@@ -28,11 +30,12 @@
         currentLeaseId = leaseId;
         leaseEndModalOpen = true;
     }
+    let { form, enhance, delayed, timeout } = superForm(data.autoPayForm)
 </script>
 <Header title='Settings for {data.user?.givenName}' />
 
 <div transition:fade={{duration:600}} class="mx-2 mt-9">
-    <div class="flex flex-row gap-3">
+    <div class="flex flex-col sm:flex-row gap-3">
         <div>
             {#if data.user}
                 <UserCustomer user={data.user}/>
@@ -40,7 +43,7 @@
             {#if data.user?.emailVerified}
                 <BadgeCheck size='20' />
             {:else}
-                <button class="btn preset-filled-primary-50-950 text-wrap h-20 sm:h-8" onclick={()=>emailVerificationModalOpen=true}>Please confirm your email address</button>
+                <button class="btn preset-filled-primary-50-950 text-wrap h-fit" onclick={()=>emailVerificationModalOpen=true}>Please confirm your email address</button>
                 <Modal
                     bind:open={emailVerificationModalOpen}
                     contentBase="card bg-surface-400-600 p-4 space-y-4 shadow-xl max-w-screen-sm"
@@ -126,9 +129,12 @@
                 <div class="border-2 rounded-lg border-primary-50 dark:border-primary-950">
                     <LeaseCustomer lease={lease} classes='w-64'/>
                     {#if !lease.leaseEnded}
-                        <button class="btn preset-filled-primary-50-950 rounded-lg m-2" onclick={()=> setCurrentLeaseId(lease.leaseId)}>End Lease</button>
+                        <button class="btn preset-filled-primary-50-950 rounded-lg m-1 sm:m-2" onclick={()=> setCurrentLeaseId(lease.leaseId)}>End Lease</button>
                         {#if !lease.stripeSubscriptionId}
-                            <a class="btn preset-filled-primary-50-950 rounded-lg m-2" href="/autopay?leaseId={lease.leaseId}">Sign Up for Autopay</a>
+                            <form method="POST" use:enhance>
+                                <input type="hidden" name="cuid2Id" id="cuid2Id" value={lease.leaseId}>
+                                <FormSubmitWithProgress delayed={$delayed}  timeout={$timeout} buttonText='Sign up for Auto pay' classes='mx-1 sm:mx-2'/>
+                            </form>
                         {:else}
                             Thanks for auto-paying!
                         {/if}
