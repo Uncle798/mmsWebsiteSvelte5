@@ -12,7 +12,7 @@ export const GET: RequestHandler = async (event) => {
    const code = event.url.searchParams.get('code');
    const state = event.url.searchParams.get('state');
    if(code === null || storedState === null || state === null){
-      new Response('Please restart the process something is null', {status: 400})
+      new Response(JSON.stringify('Please restart the process something is null'), {status: 400})
    }
    if(storedState !== state) {
       return new Response('Please restart the process state does not equal stored state', {status: 400});
