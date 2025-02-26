@@ -100,14 +100,15 @@
 </Modal>
 <Header title='Payment Records' />
 {#await wrapper}
-   <div class="mt-4">
+   <div class="mt-10 mx-1 sm:mx-2">
       loading {numberFormatter.format(data.paymentRecordCount)} payment records
       {#if data.years}
          <label for="selectYear" class="label-text"> 
                or select year:
-               <select name="selectYear" id="selectYear" class="select" bind:value={currentYear} onchange={onSelect}>
+               <select name="selectYear" id="selectYear" class="select mx-2" bind:value={currentYear} onchange={onSelect}>
+                  <option value="">Select year...</option>
                   {#each data.years as year}
-                  <option value={year}>{year}</option>
+                     <option value={year}>{year}</option>
                   {/each}
                </select> 
          </label>
@@ -122,15 +123,15 @@
          loading contacts
       {:then addresses}         
          {#if paymentRecords.length >0}
-            <div class=" bg-tertiary-50 dark:bg-tertiary-950 w-full rounded-b-lg p-2">
-            <Revenue 
-               label="Total revenue" 
-               amount={totalRevenue(searchedPayments(dateSearchPayments(paymentRecords)))} 
-               classes='mt-2'    
-            />
-            </div>
-            <div transition:fade={{duration:600}} class=''>
-               <div class="flex border-b-2 border-primary-50 dark:border-primary-950  mx-1 sm:mx-2">
+         <div transition:fade={{duration:600}} class=''>
+               <div class=" bg-tertiary-50 dark:bg-tertiary-950 w-full rounded-b-lg fixed top-8">
+               <Revenue 
+                  label="Total revenue" 
+                  amount={totalRevenue(searchedPayments(dateSearchPayments(paymentRecords)))} 
+                  classes='m-2'    
+               />
+               </div>
+               <div class="flex border-b-2 border-primary-50 dark:border-primary-950  mx-1 sm:mx-2 mt-10">
                   <Search 
                      bind:search={search} 
                      searchType='payment record number' 

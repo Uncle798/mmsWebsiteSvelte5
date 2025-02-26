@@ -52,18 +52,28 @@
         }
         return totalRevenue;
     })
+    let currentMonth = $state('')
 </script>
 
 <Header title='Payment Records' />
 {#await wrapper}
-    loading {numberFormatter.format(data.paymentRecordCount)} payment records
-    {#if data.months}
-        or select month: 
-        {#each data.months as month}
-            <a href='/paymentRecords/year/{month.getFullYear()}/month/{month.getMonth()}' class="btn">{dayjs(month).format('MMMM')}</a>
-        {/each}
-    {/if}
-    <Placeholder numCols={2} numRows={3} heightClass='h-32'/>
+    <div class="mt-10">
+        loading {numberFormatter.format(data.paymentRecordCount)} payment records
+        {#if data.months}
+            <label for="selectMonth">
+                or select month: 
+                <select class="select" name='selectMonth' bind:value={currentMonth}>
+                    {#each data.months as month}
+                        <option value={month}>{dayjs(month).format('MMMM YYYY')}</option>
+                    {/each}
+                </select>
+            </label>
+            {#each data.months as month}
+                <a href='/paymentRecords/year/{month.getFullYear()}/month/{month.getMonth()}' class="btn">{dayjs(month).format('MMMM')}</a>
+            {/each}
+        {/if}
+        <Placeholder numCols={2} numRows={3} heightClass='h-32'/>
+    </div>
 {:then paymentRecords} 
     {#await data.customers}
         loading customers
@@ -73,46 +83,51 @@
         {:then addresses}         
             {#if paymentRecords.length >0}
                 <div transition:fade={{duration:600}}>
-                    <div class="flex border-b-2 border-primary-50 dark:border-primary-950 m-2">
-                        <Search 
-                            bind:search={search} 
-                            searchType='payment record number' 
-                            data={data.searchForm}
-                            classes='p-2 w-1/2'
-                        />      
-                        <DateSearch 
-                            bind:startDate={startDate} 
-                            bind:endDate={endDate} 
-                            {minDate} 
-                            {maxDate} 
-                            data={data.dateSearchForm}
-                            classes='p-2 flex flex-col md:grid md:grid-cols-2'    
+                        <Revenue 
+                            label="Total revenue" 
+                            amount={totalRevenue(searchedPayments(dateSearchPayments(paymentRecords)))} 
+                            classes=' 
+                            absolute top-8 left-0 p-2
+                            bg-tertiary-50 dark:bg-tertiary-950
+                            w-full
+                            rounded-b-lg
+                            '    
                         />
-                    </div>
-                    <Revenue 
-                        label="Total revenue" 
-                        amount={totalRevenue(searchedPayments(dateSearchPayments(paymentRecords)))} 
-                        classes='border-b-2 border-primary-50 dark:border-primary-950 m-2'    
-                    />
-                    <div class="grid grid-cols-1 gap-y-3 gap-x-1 m-2">
-                        {#each slicedSource(dateSearchPayments(searchedPayments(paymentRecords))) as paymentRecord}
-                        {@const customer = customers.find((customer) => customer.id === paymentRecord.customerId) }
-                            <div class=" rounded-lg border border-primary-50 dark:border-primary-950  md:flex md:w-full">
-                                <PaymentRecordEmployee paymentRecord={paymentRecord} classes="p-2 md:w-1/2" />
-                                {#if customer}
-                                {@const address = addresses.find((address)=> address.userId === customer.id)}
-                                <div class="flex flex-col md:w-1/2">
-                                    <UserEmployee user={customer} classes='mx-2 mt-2'/>
-                                    {#if address}
-                                    <Address {address} classes='mx-2'/>
+                        <div class="flex border-b-2 border-primary-50 dark:border-primary-950 m-2 mt-16">
+                            <Search 
+                                bind:search={search} 
+                                searchType='payment record number' 
+                                data={data.searchForm}
+                                classes='p-2 w-1/2'
+                            />      
+                            <DateSearch 
+                                bind:startDate={startDate} 
+                                bind:endDate={endDate} 
+                                {minDate} 
+                                {maxDate} 
+                                data={data.dateSearchForm}
+                                classes='p-2 flex flex-col md:grid md:grid-cols-2'    
+                            />
+                        </div>
+                        <div class="grid grid-cols-1 gap-y-3 gap-x-1 m-2">
+                            {#each slicedSource(dateSearchPayments(searchedPayments(paymentRecords))) as paymentRecord}
+                            {@const customer = customers.find((customer) => customer.id === paymentRecord.customerId) }
+                                <div class=" rounded-lg border border-primary-50 dark:border-primary-950  md:flex md:w-full">
+                                    <PaymentRecordEmployee paymentRecord={paymentRecord} classes="p-2 md:w-1/2" />
+                                    {#if customer}
+                                    {@const address = addresses.find((address)=> address.userId === customer.id)}
+                                    <div class="flex flex-col md:w-1/2">
+                                        <UserEmployee user={customer} classes='mx-2 mt-2'/>
+                                        {#if address}
+                                        <Address {address} classes='mx-2'/>
+                                        {/if}
+                                    </div>
                                     {/if}
                                 </div>
-                                {/if}
-                            </div>
-                        {/each}
+                            {/each}
+                        </div>
+                        <Pagination bind:size={size} bind:pageNum={pageNum} array={searchedPayments(paymentRecords)} label='payment records'/>
                     </div>
-                    <Pagination bind:size={size} bind:pageNum={pageNum} array={searchedPayments(paymentRecords)} label='payment records'/>
-                </div>
             {:else}
                 No payment records from that year
             {/if}

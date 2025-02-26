@@ -56,7 +56,9 @@
 
 <Header title='Payment Records' />
 {#await wrapper}
-    Loading {numberFormatter.format(data.paymentRecordCount)} payment records...
+    <div class="mt-10ss">
+        Loading {numberFormatter.format(data.paymentRecordCount)} payment records...
+    </div>
     <Placeholder numCols={2} numRows={3} heightClass='h-32'/>
     {:then paymentRecords} 
     {#await data.customers}
@@ -69,27 +71,31 @@
         {:then addresses}         
             {#if paymentRecords.length >0}
                 <div transition:fade={{duration:600}}>
-                    <div class="flex border-b-2 border-primary-50 dark:border-primary-950 m-2">
-                        <Search 
-                            bind:search={search} 
-                            searchType='payment record number' 
-                            data={data.searchForm}
-                            classes='p-2 w-1/2'
-                        />      
-                        <DateSearch 
-                            bind:startDate={startDate} 
-                            bind:endDate={endDate} 
-                            {minDate} 
-                            {maxDate} 
-                            data={data.dateSearchForm}
-                            classes='p-2 flex flex-col md:grid md:grid-cols-2'    
+                    <div class=" bg-tertiary-50 dark:bg-tertiary-950 w-full rounded-b-lg p-2 fixed">
+                        <Revenue 
+                           label="Total revenue" 
+                           amount={totalRevenue(searchedPayments(dateSearchPayments(paymentRecords)))} 
+                           classes='mt-2'    
                         />
-                    </div>
-                    <Revenue 
-                        label="Total revenue" 
-                        amount={totalRevenue(searchedPayments(dateSearchPayments(paymentRecords)))} 
-                        classes='border-b-2 border-primary-50 dark:border-primary-950 m-2'    
-                    />
+                        </div>
+                        <div transition:fade={{duration:600}} class=''>
+                           <div class="flex border-b-2 border-primary-50 dark:border-primary-950  mx-1 sm:mx-2 mt-10">
+                              <Search 
+                                 bind:search={search} 
+                                 searchType='payment record number' 
+                                 data={data.searchForm}
+                                 classes='p-2 w-1/2'
+                              />      
+                              <DateSearch 
+                                 bind:startDate={startDate} 
+                                 bind:endDate={endDate} 
+                                 {minDate} 
+                                 {maxDate} 
+                                 data={data.dateSearchForm}
+                                 classes='p-2 flex flex-col md:grid md:grid-cols-2'    
+                              />
+                           </div>
+            
                     <div class="grid grid-cols-1 gap-y-3 gap-x-1 m-2">
                         {#each slicedSource(dateSearchPayments(searchedPayments(paymentRecords))) as paymentRecord}
                         {@const customer = customers.find((customer) => customer.id === paymentRecord.customerId) }
@@ -109,6 +115,7 @@
                     </div>
                     <Pagination bind:size={size} bind:pageNum={pageNum} array={searchedPayments(paymentRecords)} label='payment records'/>
                 </div>
+            </div>
             {:else}
                 No payment records from that month
             {/if}
