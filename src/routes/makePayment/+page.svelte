@@ -34,9 +34,8 @@
             headers: {
                 'content-type': 'applications/json'
             },
-            body:JSON.stringify({ customerId:data.customer?.id, invoiceNum:data.invoice?.invoiceNum })
+            body:JSON.stringify({ customerId:data.customer?.id, invoiceNum:data.invoice?.invoiceNum, subscription:data.subscription })
         });
-        console.log(data.invoice?.invoiceNum)
         const clientSecret = await response.json();
         console.log()
         return clientSecret;

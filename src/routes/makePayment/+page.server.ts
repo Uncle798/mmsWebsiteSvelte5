@@ -1,4 +1,4 @@
-import { redirect, fail } from '@sveltejs/kit';
+import { redirect,  error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { prisma } from '$lib/server/prisma';
 
@@ -8,22 +8,19 @@ export const load:PageServerLoad = (async (event) => {
    }
    const invoiceNum = event.url.searchParams.get('invoiceNum');
    const newLease = event.url.searchParams.get('newLease');
+   const subscription = event.url.searchParams.get('subscription')
    if(!invoiceNum){
-      fail(404)
+      throw error(400, 'No invoice number provided')
    }
    const invoice = await prisma.invoice.findUnique({
       where: {
          invoiceNum:parseInt(invoiceNum!, 10),
       }
    })
+   console.log(invoice);
    if(!invoice){
-      return fail(404)
+      throw error(400, 'No invoice found')
    }
-   const address = await prisma.address.findFirst({
-      where: {
-         userId: invoice.customerId!
-      }
-   })
    const customer = await prisma.user.findFirst({
       where: {
          id: invoice.customerId!, 
@@ -31,5 +28,5 @@ export const load:PageServerLoad = (async (event) => {
    })
    const stripeId = event.url.searchParams.get('stripeId');
 
-   return { invoice, address, stripeId, customer, newLease };
+   return { invoice, stripeId, customer, newLease, subscription };
 })

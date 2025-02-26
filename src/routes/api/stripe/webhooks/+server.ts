@@ -127,7 +127,7 @@ export const POST: RequestHandler = async (event) => {
                console.log(paymentIntent);
                const handlePaymentIntent = async (intent:typeof paymentIntent)=> {
                   try {                
-                     const paymentRecord = await prisma.paymentRecord.update({
+                     await prisma.paymentRecord.update({
                         where: {
                            stripeId: intent.id,
                         },
@@ -136,7 +136,6 @@ export const POST: RequestHandler = async (event) => {
                            paymentAmount: intent.amount_received / 100,
                         }
                      })
-                     console.log('payment_intent.succeeded ' + paymentRecord?.paymentCompleted)
                   } catch (error) {
                      console.error(error)
                   }
