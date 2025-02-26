@@ -1,8 +1,23 @@
 import { sveltekit } from '@sveltejs/kit/vite';
+import tailwindcss from '@tailwindcss/vite';
 import { defineConfig } from 'vite';
 
+import { readdirSync, readFileSync } from 'fs';
+import { join } from 'path';
+
+const modulePath = 'node_modules/@skeletonlabs/skeleton/dist/themes';
+const files = readdirSync(modulePath);
+const fileContents = files.map(file => {
+	return {
+		name: file,
+		content: readFileSync(join(modulePath, file), 'utf-8')
+	}
+})
 export default defineConfig({
-	plugins: [sveltekit()],
+	plugins: [
+		tailwindcss(),
+		sveltekit(),
+	],
 	server: {
 		allowedHosts: [
 			'relative-oryx-endlessly.ngrok-free.app'
@@ -14,5 +29,8 @@ export default defineConfig({
 				'zod'
 			]
 		}
+	},
+	define: {
+		THEMES: fileContents
 	}
 });
