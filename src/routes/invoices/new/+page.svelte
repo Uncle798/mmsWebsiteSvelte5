@@ -13,8 +13,8 @@
 
 <Modal
    bind:open={registerFormModalOpen}
-   contentBase="card bg-surface-400-600 p-4 space-y-4 shadow-xl max-w-screen-sm"
-   backdropClasses="backdrop-blur-sm"
+   contentBase="card bg-surface-400-600 p-4 space-y-4 shadow-xl max-w-(--breakpoint-sm)"
+   backdropClasses="backdrop-blur-xs"
 >
     {#snippet content()}
         <RegisterForm data={data.registerForm} registerFormModalOpen={registerFormModalOpen} formType='employee'/>

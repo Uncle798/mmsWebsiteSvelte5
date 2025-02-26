@@ -55,8 +55,8 @@
             <Modal
                 bind:open={addressModalOpen}
                 triggerBase="btn rounded-lg preset-filled-primary-50-950 my-2"
-                contentBase="card bg-surface-400-600 p-4 space-y-4 shadow-xl max-w-screen-sm"
-                backdropClasses="backdrop-blur-sm"
+                contentBase="card bg-surface-400-600 p-4 space-y-4 shadow-xl max-w-(--breakpoint-sm)"
+                backdropClasses="backdrop-blur-xs"
             >
             {#snippet trigger()}
                 Add address
