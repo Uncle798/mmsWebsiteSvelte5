@@ -46,8 +46,8 @@
                 <button class="btn preset-filled-primary-50-950 text-wrap h-fit" onclick={()=>emailVerificationModalOpen=true}>Please confirm your email address</button>
                 <Modal
                     bind:open={emailVerificationModalOpen}
-                    contentBase="card bg-surface-400-600 p-4 space-y-4 shadow-xl max-w-screen-sm"
-                    backdropClasses="backdrop-blur-sm"
+                    contentBase="card bg-surface-400-600 p-4 space-y-4 shadow-xl max-w-(--breakpoint-sm)"
+                    backdropClasses="backdrop-blur-xs"
                 >
                     {#snippet content()}
                         <EmailVerification data={data.emailVerificationForm} bind:emailVerificationModalOpen={emailVerificationModalOpen} redirect='false' bind:emailVerification={emailVerification}/>
@@ -63,8 +63,8 @@
     </div>
     <Modal
         bind:open={nameModalOpen}
-        contentBase="card bg-surface-400-600 p-4 space-y-4 shadow-xl max-w-screen-sm"
-        backdropClasses="backdrop-blur-sm"
+        contentBase="card bg-surface-400-600 p-4 space-y-4 shadow-xl max-w-(--breakpoint-sm)"
+        backdropClasses="backdrop-blur-xs"
     >
         {#snippet content()}
             <NameForm data={data.nameForm} bind:nameModalOpen={nameModalOpen} />
@@ -74,8 +74,8 @@
 
     <Modal
         bind:open={emailModalOpen}
-        contentBase="card bg-surface-400-600 p-4 space-y-4 shadow-xl max-w-screen-sm"
-        backdropClasses="backdrop-blur-sm"
+        contentBase="card bg-surface-400-600 p-4 space-y-4 shadow-xl max-w-(--breakpoint-sm)"
+        backdropClasses="backdrop-blur-xs"
     >
         {#snippet content()}
             <EmailForm data={data.emailForm} bind:emailModalOpen={emailModalOpen} bind:emailVerification={emailVerification} />
@@ -92,8 +92,8 @@
             <Modal
                 bind:open={addressModalOpen}
                 triggerBase="btn preset-filled-primary-50-950 rounded-lg"
-                contentBase="card bg-surface-400-600 p-4 space-y-4 shadow-xl max-w-screen-sm"
-                backdropClasses="backdrop-blur-sm"
+                contentBase="card bg-surface-400-600 p-4 space-y-4 shadow-xl max-w-(--breakpoint-sm)"
+                backdropClasses="backdrop-blur-xs"
             >
                 {#snippet trigger()}
                     {#if address}
@@ -116,8 +116,8 @@
         {#if leases}
         <Modal 
             bind:open={leaseEndModalOpen}
-            contentBase="card bg-surface-400-600 p-4 space-y-4 shadow-xl max-w-screen-sm"
-            backdropClasses="backdrop-blur-sm"
+            contentBase="card bg-surface-400-600 p-4 space-y-4 shadow-xl max-w-(--breakpoint-sm)"
+            backdropClasses="backdrop-blur-xs"
         >
             {#snippet content()}
                 <LeaseEndForm data={data.leaseEndForm} bind:leaseEndModalOpen={leaseEndModalOpen} leaseId={currentLeaseId} customer={true}/>

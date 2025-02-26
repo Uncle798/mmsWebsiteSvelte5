@@ -15,6 +15,10 @@ declare global {
 		// interface PageState {}
 		// interface Platform {}
 	}
+	const THEMES: {
+		name: string,
+		content: string
+	}[];
 }
 
 export {};
