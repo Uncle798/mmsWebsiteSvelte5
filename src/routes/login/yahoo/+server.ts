@@ -18,5 +18,4 @@ export const GET: RequestHandler = async (event) => {
          Location: url.toString()
       }
    });
-   console.log('url', url)
 };
