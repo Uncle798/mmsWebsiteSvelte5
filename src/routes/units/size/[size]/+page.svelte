@@ -93,22 +93,23 @@
 </div>
 {:then units}
    {#if units.length > 0 }
-      <div class="flex sticky top-9 dark:bg-tertiary-950 bg-tertiary-50 rounded-lg w-full h-20">
-         <Revenue amount={leasedAmount} label='Current Monthly revenue from {data.size.replace(/^0+/gm, '').replace(/x0/gm,'x')} units' classes='ml-16 sm:ml-32 w-48 sm:w-auto'/>
-         <span class="m-1 sm:m-2 ">Available: {availableUnits.length} of {numUnits}</span>
-         <span class="m-1 sm:m-2 collapse sm:visible">Available percentage {Math.round((availableUnits.length*100)/numUnits)}%</span>
-         <span class="m-2 sm:m-2 collapse sm:visible">Open revenue per month: {currencyFormatter.format(lostRevenue)}</span>
+      <div class="flex sticky top-9 dark:bg-tertiary-950 bg-tertiary-50 rounded-b-lg w-full h-24 sm:h-16">
+         <Revenue amount={leasedAmount} label='Current revenue from {data.size.replace(/^0+/gm, '').replace(/x0/gm,'x')} units' classes='ml-16 sm:ml-32 sm:w-auto flex flex-col md:flex-row w-1/3'/>
+         <div class="flex flex-col sm:flex-row">
+            <span class="mx-1 sm:mx-2 ">Available: {availableUnits.length} of {numUnits} ({Math.round((availableUnits.length*100)/numUnits)}%)</span>
+            <span class="mx-1 sm:mx-2 ">Open revenue: {currencyFormatter.format(lostRevenue)}</span>
+         </div>
       </div>
-      <button class="btn preset-filled-primary-50-950 rounded-lg relative mt-4 mx-1 sm:mx-2" onclick={()=>openModal(units[0].advertisedPrice)}>Change All {data.size.replace(/^0+/gm, '').replace(/x0/gm,'x')} prices</button>
+      <button class="btn preset-filled-primary-50-950 rounded-lg  mx-1 sm:mx-2 mt-10" onclick={()=>openModal(units[0].advertisedPrice)}>Change All {data.size.replace(/^0+/gm, '').replace(/x0/gm,'x')} prices</button>
    {:else}
       <div class="relative top-16 mx-2">
          Unit size not found
       </div>
    {/if}
    {#await data.leases}
-   <div class="relative m-1 sm:m-2 mt-4">
-      Loading leases
-   </div>
+      <div class="relative m-1 sm:m-2 mt-4">
+         Loading leases
+      </div>
    {:then leases} 
    {#await data.customers}
       <div class="relative m-1 sm:m-2 mt-4">

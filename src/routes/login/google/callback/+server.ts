@@ -13,17 +13,17 @@ export const GET: RequestHandler = async (event) => {
    const code = event.url.searchParams.get('code');
    const state = event.url.searchParams.get('state');
    if(storedState === null || codeVerifier === null || code === null || state === null) {
-      return new Response('Please restart the process', { status: 400});
+      return new Response('Please restart the process something is null', { status: 400});
    }
    if(storedState !== state) {
-      return new Response('Please restart the process', {status: 400});
+      return new Response('Please restart the process state doesn\'t equal stored state', {status: 400});
    }
    let tokens:OAuth2Tokens;
    try {
       tokens = await googleOAuth.validateAuthorizationCode(code, codeVerifier);  
    } catch (error) {
       console.error(error);
-      return new Response('Please restart the process', {status: 400});
+      return new Response('Please restart the process tokens invalid', {status: 400});
    }
    const claims = decodeIdToken(tokens.idToken());
    const claimsParser = new ObjectParser(claims);

@@ -50,7 +50,6 @@
             bind:value={selectedCustomer}
             label='Select a customer'
             placeholder='Select...'
-            positionerZIndex='z-10'
             openOnClick={true}
             onValueChange={(details) => {
                selectedCustomer = details.value
