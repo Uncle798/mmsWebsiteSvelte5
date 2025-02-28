@@ -9,7 +9,7 @@ const modulePath = 'node_modules/@skeletonlabs/skeleton/dist/themes';
 const files = readdirSync(modulePath);
 const fileContents = files.map(file => {
 	return {
-		name: file,
+		name: file.substring(0,file.indexOf('.')),
 		content: readFileSync(join(modulePath, file), 'utf-8')
 	}
 })
