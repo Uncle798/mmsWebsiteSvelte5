@@ -37,7 +37,7 @@
             body:JSON.stringify({ customerId:data.customer?.id, invoiceNum:data.invoice?.invoiceNum, subscription:data.subscription })
         });
         const clientSecret = await response.json();
-        console.log()
+        console.log(clientSecret)
         return clientSecret;
     }
     async function submit() {
@@ -53,13 +53,24 @@
         if(data.newLease){
             returnURL = `${PUBLIC_URL}/newLease/leaseSent?invoiceNum=${data.invoice?.invoiceNum}`
         }
-        const result = await stripe.confirmPayment({
-            elements,
-            clientSecret,
-            confirmParams:{
-                return_url: returnURL
-            }
-        });
+        let result;
+        if(data.subscription){
+            result = await stripe.confirmSetup({
+                elements,
+                clientSecret,
+                confirmParams: {
+                    return_url: returnURL
+                }
+            })
+        } else {
+            result = await stripe.confirmPayment({
+                elements,
+                clientSecret,
+                confirmParams:{
+                    return_url: returnURL
+                }
+            });
+        }
         if(result.error){
             error = result.error;
             processing = false;
