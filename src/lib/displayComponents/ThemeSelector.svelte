@@ -1,50 +1,53 @@
 <script lang="ts">
+	import { Combobox } from '@skeletonlabs/skeleton-svelte';
 	import { onMount } from 'svelte';
    
-   let currentTheme = $state('');
-   function setTheme(event:Event){
-      const select = event.target as HTMLSelectElement;
-      const theme = select.value;
-      
-      const themeNames:string[] = [];
-      THEMES.forEach((theme) =>{
-         themeNames.push(theme.name.substring(0, theme.name.indexOf('.')))
-      })
-      console.log(theme)
-      if(themeNames.includes(theme)){
+   let currentTheme = $state(['']);
+   interface ComboBoxData {
+      label: string;
+      value: string;
+   }
+
+   const themeNames:string[] = [];
+   const themeComboboxData:ComboBoxData[] =[]
+   THEMES.forEach((theme) =>{
+         themeNames.push(theme.name)
+         themeComboboxData.push({
+            label:theme.name.charAt(0).toUpperCase() + theme.name.substring(1), 
+            value:theme.name
+         })
+   });
+   function setTheme(themeName:string){
+      if(themeNames.includes(themeName)){
          const year = 60*60*24*365;
          const thisPage = window.location.pathname;
-         document.cookie = `theme=${theme}; max-age=${year}; path=/; SameSite=Lax`
-         document.documentElement.setAttribute('data-theme', theme);
-         currentTheme=theme;
+         document.cookie = `theme=${themeName}; max-age=${year}; path=/; SameSite=Lax`
+         document.documentElement.setAttribute('data-theme', themeName);
+         currentTheme[0]=themeName;
       }
    }
    onMount(()=>{
       const cookie = document.cookie
-      console.log(cookie.indexOf('='))
       const indexOfTheme = cookie.indexOf('theme=');
       const lastIndexOfSemi = cookie.lastIndexOf(';');
-      let endOfString = undefined;
+      let endOfString = 0;
       if(lastIndexOfSemi > indexOfTheme){
          endOfString = cookie.indexOf(';', indexOfTheme);
       }
       const docTheme = cookie.substring(indexOfTheme+6, endOfString)
-      console.log(docTheme)
       if(docTheme){
-         currentTheme = docTheme
+         currentTheme[0] = docTheme
       }
    })
+
+
 </script>
-<div>
-   <label for="themeSelect" class="label-text mx-2">Theme Selector
-      <select name="themeSelect" id="themeSelect" class="select w-72 m-2" bind:value={currentTheme} onchange={setTheme}>
-         {#each THEMES as theme}
-            {#if theme.name === currentTheme}
-               <option value={theme.name.substring(0, theme.name.indexOf('.'))} class="capitalize" selected>{theme.name.substring(0, theme.name.indexOf('.'))}</option>
-            {:else}
-               <option value={theme.name.substring(0, theme.name.indexOf('.'))} class="capitalize">{theme.name.substring(0, theme.name.indexOf('.'))}</option>
-            {/if}
-         {/each}
-      </select>
-   </label>
-</div>
+<Combobox
+   data={themeComboboxData}
+   bind:value={currentTheme}
+   label='Select Theme'
+   placeholder='Select Theme...'
+   openOnClick={true}
+   onValueChange={(details) =>setTheme(details.value[0])}
+   labelClasses='m-1 sm:m-2'
+/>
