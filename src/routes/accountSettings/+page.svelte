@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Modal } from '@skeletonlabs/skeleton-svelte';
+    import { Modal, ProgressRing } from '@skeletonlabs/skeleton-svelte';
     import type { PageData } from './$types';
     import AddressForm from '$lib/forms/AddressForm.svelte';
     import NameForm from '$lib/forms/NameChangeForm.svelte';
@@ -30,7 +30,11 @@
         currentLeaseId = leaseId;
         leaseEndModalOpen = true;
     }
-    let { form, enhance, delayed, timeout } = superForm(data.autoPayForm)
+    function autoPaySignUp(leaseId:string){
+        currentLeaseId = leaseId;
+        submit()
+    } 
+    let { form, enhance, submit } = superForm(data.autoPayForm)
 </script>
 <Header title='Settings for {data.user?.givenName}' />
 
@@ -131,9 +135,14 @@
                     {#if !lease.leaseEnded}
                         <button class="btn preset-filled-primary-50-950 rounded-lg m-1 sm:m-2" onclick={()=> setCurrentLeaseId(lease.leaseId)}>End Lease</button>
                         {#if !lease.stripeSubscriptionId}
-                            <form method="POST" use:enhance>
-                                <input type="hidden" name="cuid2Id" id="cuid2Id" value={lease.leaseId}>
-                                <FormSubmitWithProgress delayed={$delayed}  timeout={$timeout} buttonText='Sign up for Auto pay' classes='mx-1 sm:mx-2'/>
+                        <form method="POST" use:enhance>
+                            <input type="hidden" name="cuid2Id" id="cuid2Id" value={lease.leaseId}>
+                            <div class="flex">
+                                <button type="button" class='btn preset-filled-primary-50-950 rounded-lg m-1 sm:m-2' onclick={()=>autoPaySignUp(lease.leaseId)}>Sign up for auto pay</button>
+                                {#if currentLeaseId === lease.leaseId}                                
+                                <ProgressRing value={null} size="size-8" strokeWidth="6px" meterStroke="stroke-secondary-600-400" trackStroke="stroke-secondary-50-950" classes='ml-2' />
+                                {/if}
+                            </div>
                             </form>
                         {:else}
                             Thanks for auto-paying!
