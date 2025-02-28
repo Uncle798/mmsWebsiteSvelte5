@@ -2,6 +2,7 @@ import { stripe } from '$lib/server/stripe';
 import { prisma } from '$lib/server/prisma';
 import type { RequestHandler } from '@sveltejs/kit';
 import { PUBLIC_COMPANY_NAME } from '$env/static/public';
+import dayjs from 'dayjs';
 
 export const POST:RequestHandler = async (event) => {
    const body = await event.request.json();
@@ -49,24 +50,70 @@ export const POST:RequestHandler = async (event) => {
       if(!lease){
          new Response(JSON.stringify('Lease not found'), {status: 404})
       }
+      let subscriptionStartDate = dayjs(lease?.leaseEffectiveDate).add(1,'month');
+      const invoices = await prisma.invoice.findMany({
+         where: {
+            AND:[
+               {leaseId: lease?.leaseId},
+               {deposit: false},
+               {invoiceNotes: {
+                  contains: 'rent'
+               }}             
+            ]
+         },
+         orderBy: {
+            invoiceCreated: 'desc'
+         },
+         take: 1,
+
+      })
+      if(invoices[0]){
+         if(invoices[0].paymentRecordNum){
+            subscriptionStartDate = dayjs(invoice.invoiceCreated).add(2, 'month');
+         } else {
+            subscriptionStartDate = dayjs(invoices[0].invoiceCreated).add(1, 'month');
+         }
+      }
+      console.log('subscriptionStartDate', subscriptionStartDate.toDate())
       const price = await stripe.prices.create({
          currency: 'usd',
          product_data:{
             name: `Monthly Rent for unit ${lease?.unitNum.replace(/^0+/gm,'')}`,
-            statement_descriptor: `${PUBLIC_COMPANY_NAME}`
+            statement_descriptor: `${PUBLIC_COMPANY_NAME}`,
+            
          },
-         unit_amount_decimal: lease!.price.toFixed(2)
+         unit_amount_decimal: lease!.price.toFixed(2),
+         recurring: {
+            interval: 'month',
+            interval_count: 1,
+         },
+         tax_behavior: 'inclusive',
+         
       })
       try {         
-         const stripeSubscription = await stripe.subscriptions.create({
+         const stripeSubscription = await stripe.subscriptionSchedules.create({
             customer: customer.stripeId!,
-            currency: 'usd',
-            description: `Monthly Rent for unit ${lease?.unitNum}`,
+            start_date: subscriptionStartDate.unix(),
+            end_behavior: 'release',
             metadata: {
                leaseId: lease!.leaseId
             },
-            items: [
-               price,
+            default_settings: {
+               description: `Monthly Rent for unit ${lease?.unitNum.replace(/^0+/gm, '')}`,
+            },
+            phases: [
+               {
+                  items: [
+                     {
+                        price: price.id,
+                        quantity: 1,
+                        metadata: {
+                           leaseId: lease!.leaseId
+                        }
+                     },
+                  ],
+                  iterations: 1,
+               }
             ]
          })
          lease = await prisma.lease.update({
@@ -77,32 +124,32 @@ export const POST:RequestHandler = async (event) => {
                stripeSubscriptionId: stripeSubscription.id
             }
          })
-         console.log('lease', lease)
+         console.log('subscription: ', stripeSubscription)
          const setupIntent = await stripe.setupIntents.create({
             customer: customer.stripeId ? customer.stripeId : undefined,
-            description: stripeSubscription.description ? stripeSubscription.description : undefined,
+            description: stripeSubscription.default_settings.description ? stripeSubscription.default_settings.description : undefined,
          })
-         console.log(setupIntent);
-         return new Response(JSON.stringify(setupIntent.client_secret), {status: 200})
+         return new Response(JSON.stringify({client_secret: setupIntent.client_secret, startDate: subscriptionStartDate} ), {status: 200})
       } catch (error) {
          console.error(error)
       }
-   }
-
-   console.log(invoice)
-   const paymentIntent = await stripe.paymentIntents.create({
-      amount: invoice.invoiceAmount * 100,
-      currency: 'usd',
-      automatic_payment_methods: {
-         enabled: true,
-      },
-      metadata:{
-         invoiceNum,
-         customerId: invoice.customerId,
-      },
-      setup_future_usage: 'off_session',
-      customer: stripeId ? stripeId : undefined,
-      description: invoice.invoiceNotes!,
-   })
-   return new Response(JSON.stringify(paymentIntent.client_secret), {status:200});
+   } else{
+         console.log(invoice)
+         const paymentIntent = await stripe.paymentIntents.create({
+            amount: invoice.invoiceAmount * 100,
+            currency: 'usd',
+            automatic_payment_methods: {
+               enabled: true,
+            },
+            metadata:{
+               invoiceNum,
+               customerId: invoice.customerId,
+            },
+            setup_future_usage: 'off_session',
+            customer: stripeId ? stripeId : undefined,
+            description: invoice.invoiceNotes!,
+         })
+         return new Response(JSON.stringify(paymentIntent.client_secret), {status:200});
+      }
+      return new Response(null, {status:200});
 }
