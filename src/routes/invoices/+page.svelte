@@ -78,15 +78,16 @@
         {:then addresses}
             {#if invoices.length >0}
                 <Header title='All invoices' />
-                <div class="flex m-1 sm:m-2 border-b-2 dark:border-primary-950 border-primary-50 mt-8" transition:fade={{duration:600}}>
-                    <Search data={data.searchForm} bind:search={search} searchType='invoice number' classes='w-1/2 p-2'/>
-                    <DateSearch data={data.dateSearchForm} bind:startDate={startDate} bind:endDate={endDate} {minDate} {maxDate} classes='w-1/2 p-2'/>
-                </div>
                 <Revenue 
                     label="Total invoiced (not including deposits)" 
                     amount={totalRevenue(searchedInvoices(dateSearchedInvoices(invoices)))} 
-                    classes='border-b-2 dark:border-primary-950 border-primary-50 m-2 drop-shadow-2xl'
+                    classes='bg-tertiary-50 dark:bg-tertiary-950 w-full rounded-b-lg fixed top-8 p-2'
                 />
+                <div class="flex m-1 sm:m-2 border-b-2 dark:border-primary-950 border-primary-50 pt-24 sm:pt-10" transition:fade={{duration:600}}>
+                    <Search data={data.searchForm} bind:search={search} searchType='invoice number' classes='w-1/2 p-2'/>
+                    <DateSearch data={data.dateSearchForm} bind:startDate={startDate} bind:endDate={endDate} {minDate} {maxDate} classes='w-1/2 p-2'/>
+                </div>
+
                 <div class="grid grid-cols-1 sm:mx-2 mx-1 gap-3" transition:fade={{duration:600}}>
                     {#each  slicedInvoices(searchedInvoices(invoices)) as invoice}  
                     {@const customer = customers.find((customer) => customer.id === invoice.customerId)}
