@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
 	import { Modal } from '@skeletonlabs/skeleton-svelte';
    import { XCircleIcon } from 'lucide-svelte';
    import type { PageData } from './$types';
