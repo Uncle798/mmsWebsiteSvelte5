@@ -43,7 +43,7 @@
    {#if !data.customer}
       <div class="m-2">
          <a href="/employeeNewCustomer" class="btn rounded-lg preset-filled-primary-50-950">Create new customer</a>
-         Renting unit {data.unitNum.replace(/^0/gm,'').replace(/x0/gm, 'x')}
+         Renting unit {data.unitNum.replace(/^0+/gm,'').replace(/x0/gm, 'x')}
          <form action="/employeeNewLease?/selectCustomer&unitNum={data.unitNum}" method="POST" >
             <Combobox
             data={customerComboBoxData}
