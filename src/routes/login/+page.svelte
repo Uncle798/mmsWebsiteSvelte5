@@ -56,7 +56,7 @@
 <Header title="Login" />
 <div class="m-2 mt-9" transition:fade={{duration:600}}>
     <p class="h2 ">Please enter your email to login </p>
-    <div class="h6">
+    <div class="h4">
         <FormMessage message={$message} />
     </div>
     
@@ -73,7 +73,6 @@
     <div class="flex flex-col">
         <a href="/login/google" class="anchor">Sign in with Google</a>
         <a href="/login/yahoo" class="anchor">Sign in with Yahoo!</a>
-
         <a href="/register?redirectTo={data.redirectTo}&unitNum={data.unitNum}" class="anchor">Register new account</a>
     </div>
 </div>

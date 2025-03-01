@@ -83,7 +83,7 @@
                     amount={totalRevenue(searchedInvoices(dateSearchedInvoices(invoices)))} 
                     classes='bg-tertiary-50 dark:bg-tertiary-950 w-full rounded-b-lg fixed top-8 p-2'
                 />
-                <div class="flex m-1 sm:m-2 border-b-2 dark:border-primary-950 border-primary-50 pt-24 sm:pt-10" transition:fade={{duration:600}}>
+                <div class="flex mx-1 sm:mx-2 border-b-2 dark:border-primary-950 border-primary-50 mt-16" transition:fade={{duration:600}}>
                     <Search data={data.searchForm} bind:search={search} searchType='invoice number' classes='w-1/2 p-2'/>
                     <DateSearch data={data.dateSearchForm} bind:startDate={startDate} bind:endDate={endDate} {minDate} {maxDate} classes='w-1/2 p-2'/>
                 </div>

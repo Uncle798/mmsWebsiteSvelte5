@@ -27,7 +27,7 @@
 	})
 </script>
 <Header title='Register a new account' />
-<div class="m-2" transition:fade={{duration:600}}>
+<div class="m-2 mt-10" transition:fade={{duration:600}}>
    <RegisterForm data={data.registerForm} formType='customer'/>
    <a href="/login?redirectTo={data.redirectTo}&unitNum={data.unitNum}" class="anchor">Already have an account? Login here.</a>
 </div>

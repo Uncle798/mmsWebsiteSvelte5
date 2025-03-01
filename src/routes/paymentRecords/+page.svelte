@@ -131,7 +131,7 @@
                   classes='m-2'    
                />
                </div>
-               <div class="flex border-b-2 border-primary-50 dark:border-primary-950  mx-1 sm:mx-2 mt-10">
+               <div class="flex border-b-2 border-primary-50 dark:border-primary-950  mx-1 sm:mx-2 mt-16">
                   <Search 
                      bind:search={search} 
                      searchType='payment record number' 
@@ -149,7 +149,7 @@
                </div>
 
                <div class="grid grid-cols-1 lg:grid-cols-2 gap-y-3 gap-x-1 m-2">
-                  <button onclick={()=>sortBy = !sortBy} class="anchor col-span-full">Sort by date {sortBy ? 'starting last' : 'starting first'}</button>
+                  <button onclick={()=>sortBy = !sortBy} class="anchor col-span-full">Sort by date {sortBy ? 'starting earliest' : 'starting latest'}</button>
                   {#each slicedSource(dateSearchPayments(searchedPayments(sortedByDate(paymentRecords)))) as paymentRecord}
                   {@const customer = customers.find((customer) => customer.id === paymentRecord.customerId) }
                      <div class=" rounded-lg border border-primary-50 dark:border-primary-950  md:flex md:w-full">

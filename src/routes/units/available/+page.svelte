@@ -61,7 +61,7 @@
             <div class="border-2 border-primary-50 dark:border-primary-950 rounded-lg">
                <UnitEmployee {unit}/>
                <div class="text-center sm:col-span-2">
-                  <a href="/employeeNewLease?unitNum={unit.num}" class="anchor">Rent this unit</a>
+                  <a href="/employeeNewLease?unitNum={unit.num}" class="btn preset-filled-primary-50-950 rounded-lg m-2 text-wrap">Rent this unit</a>
                </div>
                <UnitNotesForm {unit} data={data.unitNotesForm} classes='mx-2' />
             </div>
@@ -84,7 +84,7 @@
             <div class="border border-primary-50 dark:border-primary-950 rounded-lg">
                <UnitCustomer {unit}/>
                <div class="text-center sm:col-span-2">
-                  <a href="/newLease?unitNum={unit.num}" class="anchor">Rent this unit</a>
+                  <a href="/newLease?unitNum={unit.num}" class="btn preset-filled-primary-50-950 rounded-lg m-2 text-wrap">Rent this unit</a>
                </div>
             </div>
          {/each}

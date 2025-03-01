@@ -107,7 +107,7 @@
                     {/if}
                 {/snippet}
                 {#snippet content()}
-                    <AddressForm data={data.addressForm} bind:addressModalOpen={addressModalOpen} userId={data.user?.id!}/>
+                    <AddressForm data={data.addressForm} bind:addressModalOpen={addressModalOpen} userId={data.user?.id!} classes=''/>
                     <button class="btn" onclick={()=>addressModalOpen=false}>Close</button>
                 {/snippet}
             </Modal>
