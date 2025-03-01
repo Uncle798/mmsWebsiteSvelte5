@@ -49,7 +49,7 @@
          placeholder='Unit 1'  
          autocomplete='address-line2'
       />
-      <div class="flex gap-x-2">
+      <div class="flex flex-col sm:flex-row gap-x-2">
       <TextInput
          label='City'
          name='city'
@@ -90,26 +90,27 @@
          </select>
       </label>
       <div class="input-group divide-surface-200-800 grid-cols-[auto_1fr_auto] divide-x mt-2">
-         <label for="phoneNum1Country" class="label-text">Country Code
-            <select class="select" name="phoneNum1Country" autocomplete="tel-country-code">
+         <div class="ig-cell preset-tonal">Country Code:</div>
+            <select class="ig-select truncate w-32 sm:w-48" name="phoneNum1Country" autocomplete="tel-country-code">
                {#each dialCodes as dialCode}
-               {#if dialCode.code === "US"}
-               <option value={dialCode.dial_code} selected>{dialCode.dial_code} ({dialCode.name})</option>
-               {:else}
-               <option value={dialCode.dial_code}>{dialCode.dial_code}</option>
-               {/if}
+                  {#if dialCode.code === "US"}
+                     <option value={dialCode.dial_code} selected>{dialCode.dial_code} ({dialCode.name})</option>
+                  {:else}
+                     <option value={dialCode.dial_code}>{dialCode.dial_code} ({dialCode.name})</option>
+                  {/if}
                {/each}
             </select>
-         </label>
-         <TextInput
-            bind:value={$form.phoneNum1}
-            errors={$errors.phoneNum1}
-            constraints={$constraints.phoneNum1}
-            label="Phone number:"
-            name='phoneNum1'
-            placeholder="2088826564"
-            autocomplete="tel"
-         />
+            <div class="ig-cell ">Phone number:
+
+               <input 
+                  type="text" 
+                  name="phoneNum1" 
+                  id="phoneNum1"
+                  class="ig-input"
+                  bind:value={$form.phoneNum1}
+                  placeholder="2088826564"
+               />
+            </div>
       </div>
       <FormProgress delayed={$delayed} timeout={$timeout}/>
    </form>
