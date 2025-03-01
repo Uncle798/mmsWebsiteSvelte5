@@ -165,7 +165,7 @@ export const actions:Actions = {
       const existingStripeCustomer = await stripe.customers.search({
          query: `email:'${customer.email}'`
       })
-      let stripeId:string =  existingStripeCustomer.data[0].id;
+      let stripeId:string = '';
       if(existingStripeCustomer.data.length === 0){
          const stripeCustomer = await stripe.customers.create({
             name: name,
@@ -184,6 +184,7 @@ export const actions:Actions = {
                customerId: customer.id
             }
          })
+         
          stripeId = stripeCustomer.id
          prisma.user.update({
             where: {
@@ -194,6 +195,7 @@ export const actions:Actions = {
             }
          })
       } else {
+         stripeId = existingStripeCustomer.data[0].id
          const stripeCustomer = await stripe.customers.update(existingStripeCustomer.data[0].id, {
             name: name,
             address: {
