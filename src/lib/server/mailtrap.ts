@@ -24,7 +24,6 @@ export async function sendVerificationEmail(verificationCode:string, email:strin
 }
 
 export async function sendMagicLinkEmail(magicLink:string, email:string) {
-
    const response = await mailtrap.send({
       from:sender,
       to: [{email}],
@@ -34,6 +33,7 @@ export async function sendMagicLinkEmail(magicLink:string, email:string) {
    }).catch((err) =>{
       console.error(err);
    })
+   console.log(response)
    return response;
 }
 
