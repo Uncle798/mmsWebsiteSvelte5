@@ -21,7 +21,6 @@
 	let customerLinks:Link[] =[
 		{link: '/', label: 'Home'},
 		{link: '/units/available', label:'Available Units'},
-		{link: '/newLease', label: 'New lease'},
 	]
 	let employeeLinks:Link[] = [
 		{link: '/units', label:'Units'},
@@ -39,9 +38,7 @@
 		{link: '/paymentRecords/deposits', label: 'Deposits'},
 		{link: '/paymentRecords/incomplete', label:'Incomplete Payment Records'},
 		{link: '/paymentRecords/year', label: 'Payment Records by year'},
-		{link: '/paymentRecords/new', label:'New Payment Record'},
 		{link: '/refundRecords', label:'Refund Records'},
-		{link: '/refundRecords/new', label:'New Refund'},
 		{link: '/refundRecords/year', label: 'Refunds by year'},
 		{link: '/employeeNewLease', label:'New lease'},
 		{link: '/employeeNewCustomer', label:'New customer'},
@@ -88,7 +85,7 @@
 					<li><a class="anchor" href={adminLink.link}>{adminLink.label}</a></li>
 				{/each}
 			{/if}
-			<div class="absolute bottom-0 p-2 mb-4">
+			<div class="absolute bottom-0 m-1 sm:m-2 mb-2">
 				{#if data.user}
 				<li><a href="/accountSettings" class="anchor">Settings</a></li>
 					<form action="/logout" method="post" use:enhance>
@@ -103,10 +100,9 @@
 	</article>
 {/snippet}
 </Modal>
-<div class=" bg-tertiary-50 dark:bg-tertiary-950 fixed top-0 w-full h-9 text-center font-bold p-2">{PUBLIC_COMPANY_NAME}</div>
-<div>
+<div class=" bg-tertiary-50 dark:bg-tertiary-950 fixed top-0 right-0 left-0 h-9 text-center font-bold p-2">{PUBLIC_COMPANY_NAME}</div>
+
 	<ToastProvider placement='top-start'>
 		{@render children()}
 	</ToastProvider>
-</div>
 
