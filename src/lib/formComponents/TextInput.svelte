@@ -10,12 +10,13 @@
       placeholder?:string | undefined;
       name: string | null | undefined;
       autocomplete?: FullAutoFill;
+      classes?: string;
    }
-   let { value = $bindable(), label, errors, constraints, placeholder, name, autocomplete,...others }:Props = $props()
+   let { value = $bindable(), label, errors, constraints, placeholder, name, autocomplete, classes, ...others }:Props = $props()
 </script>
-<div class="">
+<div class={classes}>
 <label class="label">
-   {#if label}<span class="label-text">{label}</span><br />{/if}
+   {#if label}<span class="label-text">{label}</span>{/if}
    <input
       type="text"
       class="input"
