@@ -144,6 +144,7 @@ export const POST:RequestHandler = async (event) => {
             metadata:{
                invoiceNum,
                customerId: invoice.customerId,
+               deposit: invoice.deposit ? 'true' : 'false',
             },
             setup_future_usage: 'off_session',
             customer: stripeId ? stripeId : undefined,
