@@ -1,9 +1,10 @@
 import { PUBLIC_COMPANY_NAME, PUBLIC_URL } from "$env/static/public";
 import type { Invoice, PaymentRecord, User } from "@prisma/client";
 import { MailtrapClient } from "mailtrap";
-import type { PartialUser } from "./partialTypes";
+import dayjs from "dayjs";
 
 const token = process.env.MAILTRAP_TOKEN!;
+const currencyFormatter = new Intl.NumberFormat('en-us', {style: 'currency', currency:'USD'})
 export const mailtrap = new MailtrapClient({token})
 
 const sender = {
@@ -36,23 +37,34 @@ export async function sendMagicLinkEmail(magicLink:string, email:string) {
    return response;
 }
 
-export async function sendInvoiceEmail(invoice:Invoice, customer:PartialUser) {
-   const response = await mailtrap.send({
-      from: sender,
-      to: [{email: customer.email!}],
-      subject: `Invoice ${invoice.invoiceNum} from ${PUBLIC_COMPANY_NAME}`,
-      html: `Hello ${customer.givenName} <br/>Please pay $${invoice.invoiceAmount} for ${invoice.invoiceNotes} to pay please visit \
-      <a href="${PUBLIC_URL}/invoices/pay?invoiceNum=${invoice.invoiceNum}>Pay invoice </a>`
-   })
-   return response
-}
-
 export async function sendPaymentReceipt(customer:User, paymentRecord:PaymentRecord) {
    const response = await mailtrap.send({
       from: sender,
       to: [{email: customer.email!}],
       subject: `${PUBLIC_COMPANY_NAME} receipt number ${paymentRecord.paymentNumber}`,
       html: `Hello ${customer.givenName} <br/>Please visit <a href="${PUBLIC_URL}/paymentRecords/${paymentRecord.paymentNumber}">Record number ${paymentRecord.paymentNumber}</a> to view your receipt.`,
+   })
+   return response
+}
+
+export async function sendInvoice(invoice:Invoice, customer:User) {
+   const response = await mailtrap.send({
+      from: sender,
+      to: [{email: customer.email!}],
+      subject: `${PUBLIC_COMPANY_NAME} invoice number: ${invoice.invoiceNum}`,
+      html: `Hello ${customer.givenName} <br/>Please visit <a href="${PUBLIC_URL}/invoices/${invoice.invoiceNum}">Invoice number ${invoice.invoiceNum}\
+      to view your invoice from ${PUBLIC_COMPANY_NAME}. This invoice is due ${dayjs(invoice.invoiceCreated).add(1, 'month').format('M/D/YYYY')}`
+   })
+   return response
+}
+
+export async function sendStatusEmail(admin:User, invoiceCount:number, totalInvoice:number, emptyUnits:number) {
+   const response = await mailtrap.send({
+      from: sender,
+      to: [{email: admin.email!}],
+      subject: `${PUBLIC_COMPANY_NAME} Daily email`,
+      html: `Hello ${admin.givenName}<br/> ${invoiceCount} invoices were created this morning totaling ${currencyFormatter.format(totalInvoice)}.\
+      There are ${emptyUnits} empty units as of this morning. <br/>`
    })
    return response
 }
