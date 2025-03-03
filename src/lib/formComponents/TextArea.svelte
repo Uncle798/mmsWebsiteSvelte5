@@ -11,18 +11,19 @@
       name: string | null | undefined;
       autocomplete?: FullAutoFill;
       classes?: string;
+      rows?: number | null;
    }
-   let { value = $bindable(), label, errors, constraints, placeholder, name, autocomplete,...others }:Props = $props()
+   let { value = $bindable(), label, errors, constraints, placeholder, name, autocomplete, rows, ...others }:Props = $props()
 </script>
 <div class="">
    
-   <label class="label">
+   <label class="label label-text">
       {#if label}
-         <span class="label-text">{label}</span><br />
+         <span class="">{label}</span>
       {/if}
       <textarea
-         class="input rounded-none"
-         rows="5"
+         class="input rounded-none h-auto"
+         rows={rows}
          name={name}
          bind:value={value}
          aria-invalid={errors ? 'true' : undefined}
