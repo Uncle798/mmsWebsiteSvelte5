@@ -21,7 +21,7 @@
     {/snippet}
 </Modal>
 
-<div transition:fade={{duration:600}}>
+<div transition:fade={{duration:600}} class="mt-8">
     {#if !customerSelected}
         <button class="btn preset-filled-primary-50-950 rounded-lg mx-1 sm:mx-2 mt-4" type="button" onclick={()=>registerFormModalOpen = true}>Create New Customer</button>
     {/if}
