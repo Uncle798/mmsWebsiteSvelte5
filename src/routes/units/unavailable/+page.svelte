@@ -12,7 +12,6 @@
       const select = event.target as HTMLSelectElement;
       const size = select.value
       sizeFilter = size;
-      console.log(sizeFilter)
    }
    let lostRevenue = $state(0);
    data.units.forEach((unit) => {

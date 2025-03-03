@@ -59,7 +59,6 @@ export const actions: Actions = {
          redirect(302, '/login?toast=employee')
       }
       const formData = await event.request.formData();
-      console.log('refundRecords/new formData: ', formData);
       const searchForm = await superValidate(formData, zod(searchFormSchema));
       const { success, reset } = await ratelimit.employeeForm.limit(event.locals.user.id);
       if(!success){

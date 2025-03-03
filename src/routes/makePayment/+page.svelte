@@ -35,8 +35,7 @@
             },
             body:JSON.stringify({ customerId:data.customer?.id, invoiceNum:data.invoice?.invoiceNum, subscription:data.subscription })
         });
-        const clientSecret = await response.json();
-        console.log(clientSecret)
+        const {clientSecret} = await response.json();
         return clientSecret;
     }
     async function submit() {

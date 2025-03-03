@@ -15,7 +15,7 @@ async function main() {
    if(prices.data.length === 0){
       pricingData.forEach(async (price) => {
          if(price.size !== 'ours') {
-            const stripPrice = await stripe.prices.create({
+            await stripe.prices.create({
                currency: 'usd',
                unit_amount: price.price * 100,
                product_data:{
@@ -28,7 +28,6 @@ async function main() {
                   interval: 'month'
                }
             })
-            console.log('stripe price: ', stripPrice)
          }
       })
    }

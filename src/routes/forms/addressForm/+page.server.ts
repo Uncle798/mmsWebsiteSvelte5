@@ -23,7 +23,6 @@ export const actions: Actions = {
          return fail(400, {message: 'User not specified'})
       }
       const formData = await event.request.formData();
-      console.log(formData);
       const addressForm = await superValidate(formData, zod(addressFormSchema));
       const { success, reset } = await ratelimit.customerForm.limit(event.locals.user.id)
 		if(!success) {
@@ -60,21 +59,9 @@ export const actions: Actions = {
          }
       )
       const phoneValid = await phoneValidResponse.json()
-      console.log(phoneValid)
       if(!phoneValid.valid){
          message(addressForm, 'Phone number not valid')
       }
-      // const response = await fetch(`https://api.radar.io/v1/addresses/validate?city=${addressForm.data.city}&stateCode=${addressForm.data.state}&postalCode=${addressForm.data.postalCode}&addressLabel=${addressForm.data.address1}&unit=${addressForm.data.address2}&countryCode=${addressForm.data.country}`,
-      //    {
-      //       method: 'GET',
-      //       headers: {
-      //          Authorization: RADAR_SECRET_TEST
-      //       }
-      //    }
-      // )
-      // const data = await response.json();
-      // console.log(data)
-      // if(data.result.verificationStatus === 'verified'){
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const {phoneNum1, phoneNum1Country, ...rest} = addressForm.data
          const newAddress = {

@@ -101,8 +101,6 @@ export const actions: Actions = {
       if(!form.valid){
          message(form, 'Not a valid form')
       }
-      console.log(form)
-
       const paymentRecord = await prisma.paymentRecord.findUnique({
          where: {
             paymentNumber: form.data.paymentRecordNumber
@@ -120,7 +118,6 @@ export const actions: Actions = {
          message(form, 'Customer not found')
       }
       const response = await sendPaymentReceipt(customer!, paymentRecord!)
-      console.log(response);
       return {form}
    }
 }

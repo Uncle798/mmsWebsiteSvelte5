@@ -31,7 +31,6 @@
     let slicedRefunds = $derived((refunds:RefundRecord[]) => refunds.slice((pageNum-1)*size, pageNum*size))
     let searchRefunds = $derived((refunds:RefundRecord[]) => refunds.filter((refund) => refund.refundNumber.toString().includes(search)))
     let dateSearchRefunds = $derived((refunds:RefundRecord[]) => refunds.filter((refund) => {
-        console.log('dateSearchRefunds', startDate)
         if(!startDate || !endDate){
             return
         }

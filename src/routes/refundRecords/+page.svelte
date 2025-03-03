@@ -59,7 +59,6 @@
 		});
 		return totalRevenue;
 	});
-	console.log()
 </script>
 
 <Header title="All Refunds" />

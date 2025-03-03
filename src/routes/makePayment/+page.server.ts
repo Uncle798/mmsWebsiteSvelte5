@@ -17,7 +17,6 @@ export const load:PageServerLoad = (async (event) => {
          invoiceNum:parseInt(invoiceNum!, 10),
       }
    })
-   console.log(invoice);
    if(!invoice){
       throw error(400, 'No invoice found')
    }

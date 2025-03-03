@@ -153,7 +153,6 @@ export const actions: Actions = {
          })
       }
       let price = unit!.advertisedPrice;
-      console.log('discount', discount)
       if(discount){
          if(discount.percentage){
             price = unit!.advertisedPrice - (unit.advertisedPrice * (discount.amountOff / 100))
@@ -161,7 +160,6 @@ export const actions: Actions = {
             price = unit!.advertisedPrice - discount.amountOff
          }
       }
-      console.log('price', price)
       const lease = await prisma.lease.create({
          data:{
             customerId: customer!.id,

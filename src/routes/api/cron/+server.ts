@@ -73,7 +73,7 @@ export const GET: RequestHandler = async ({request}) => {
          }
       })
       for await(const admin of admins){
-         await sendStatusEmail(admin, invoices.length, totalInvoiced, unitCount - fullUnits)
+         await sendStatusEmail(admin, invoices.length, totalInvoiced, (unitCount - fullUnits))
       }
    }
    handleRequest(request)

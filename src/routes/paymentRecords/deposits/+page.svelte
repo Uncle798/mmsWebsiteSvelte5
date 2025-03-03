@@ -54,10 +54,8 @@
         const records:PaymentRecord[] = []
         users.forEach((user) => {
             const userRecords = paymentRecords.filter((paymentRecord) => {
-                console.log(paymentRecord.customerId)
                 return paymentRecord.customerId === user.id
             })
-            console.log(userRecords)
             userRecords.forEach((record) => {
                 records.push(record);
             })

@@ -33,7 +33,6 @@ export async function sendMagicLinkEmail(magicLink:string, email:string) {
    }).catch((err) =>{
       console.error(err);
    })
-   console.log(response)
    return response;
 }
 

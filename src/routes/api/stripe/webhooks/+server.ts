@@ -96,7 +96,7 @@ export const POST: RequestHandler = async (event) => {
                            }
                         })
                      } catch (error) {
-                        console.log(error)
+                        console.error(error)
                      }
                      await stripe.paymentIntents.update(intent.id, {
                         metadata: {
@@ -110,21 +110,18 @@ export const POST: RequestHandler = async (event) => {
             }
             case 'customer.subscription.created': {
                const subscription = stripeEvent.data.object;
-               console.log('subscription', subscription.items);
                const handleSubscription = async (s: typeof subscription)=>{
                   const customer = await prisma.user.findFirst({
                      where: {
                         stripeId: s.customer.toString()
                      }
                   })
-                  console.log(customer)
                }
                handleSubscription(subscription);
                return new Response(JSON.stringify('ok'), {status:200})
             }
             case 'payment_intent.succeeded':{
                const paymentIntent = stripeEvent.data.object;
-               console.log(paymentIntent);
                const handlePaymentIntent = async (intent:typeof paymentIntent)=> {
                   try {                
                      await prisma.paymentRecord.update({
@@ -146,7 +143,6 @@ export const POST: RequestHandler = async (event) => {
             }
             case 'charge.succeeded': {
                const charge = stripeEvent.data.object;
-               console.log('stripe webhooks charge succeeded', charge)
                const handleCharge = async (c: typeof charge) =>{
                   try {                     
                      await prisma.paymentRecord.update({
@@ -179,7 +175,6 @@ export const POST: RequestHandler = async (event) => {
                   })
                }
                handleRefund(refund);
-               console.log('stripe webhooks refund failed', refund)
                return new Response(JSON.stringify('ok'), {status: 200}); 
             }
             case 'refund.created': {
@@ -208,7 +203,6 @@ export const POST: RequestHandler = async (event) => {
                   }
                }
                handleRefund(refund);
-               console.log('stripe webhooks refund created', refund);
 
                return new Response(JSON.stringify('ok'), {status: 200}); 
             }

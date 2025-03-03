@@ -31,7 +31,6 @@
       const select = event.target as HTMLSelectElement;
       const size = select.value
       sizeFilter = size;
-      console.log(sizeFilter)
    }
 </script>
 <Header title='Available Units' />

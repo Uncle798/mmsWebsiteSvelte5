@@ -6,7 +6,6 @@ import dayjs from 'dayjs';
 
 export const POST:RequestHandler = async (event) => {
    const body = await event.request.json();
-   console.log('body', body)
    const { customerId, invoiceNum, subscription, } = body;
    if(!invoiceNum){
       return new Response(JSON.stringify('Invoice not provided'), { status:400 });
@@ -74,7 +73,6 @@ export const POST:RequestHandler = async (event) => {
             subscriptionStartDate = dayjs(invoices[0].invoiceCreated).add(1, 'month');
          }
       }
-      console.log('subscriptionStartDate', subscriptionStartDate.toDate())
       const price = await stripe.prices.create({
          currency: 'usd',
          product_data:{
@@ -124,7 +122,6 @@ export const POST:RequestHandler = async (event) => {
                stripeSubscriptionId: stripeSubscription.id
             }
          })
-         console.log('subscription: ', stripeSubscription)
          const setupIntent = await stripe.setupIntents.create({
             customer: customer.stripeId ? customer.stripeId : undefined,
             description: stripeSubscription.default_settings.description ? stripeSubscription.default_settings.description : undefined,
@@ -134,7 +131,6 @@ export const POST:RequestHandler = async (event) => {
          console.error(error)
       }
    } else{
-         console.log(invoice)
          const paymentIntent = await stripe.paymentIntents.create({
             amount: invoice.invoiceAmount * 100,
             currency: 'usd',

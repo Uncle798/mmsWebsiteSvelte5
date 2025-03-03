@@ -35,9 +35,7 @@
    }
    const customerComboBoxData:ComboBoxData[] = [];
    const leaseComboBoxData:ComboBoxData[] = $derived.by(() =>{
-      console.log(selectedCustomer[0])
       const customerLeases = leases.filter((lease) => lease.customerId === selectedCustomer[0]);
-      console.log(customerLeases)
       const data:ComboBoxData[]=[]
       customerLeases.forEach((lease) =>{
          const label = lease.unitNum.replace(/^0+/gm,'');
