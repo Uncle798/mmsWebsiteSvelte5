@@ -12,6 +12,7 @@
    import type { Invoice } from "@prisma/client";
 	import NewInvoiceForm from "./NewInvoiceForm.svelte";
 	import { onMount } from "svelte";
+	import TextArea from "$lib/formComponents/TextArea.svelte";
 
    interface Props {
       data: SuperValidated<Infer<NewPaymentRecordFormSchema>>;
@@ -144,7 +145,7 @@
             name='paymentAmount'
          />
          <div class="">
-            <label for="paymentType">Payment type
+            <label for="paymentType" class="label-text">Payment type
                <select name="paymentType" id="paymentType" class="select">
                   <option value='CASH'>Cash</option>
                   <option value="CHECK">Check</option>
@@ -153,12 +154,13 @@
             </label>
          </div>
          <input type="hidden" name='employeeId' value={employeeId} />
-         <TextInput
+         <TextArea
             bind:value={$form.paymentNotes}
             errors={$errors.paymentNotes}
             constraints={$constraints.paymentNotes}
             label='Payment Notes'
             name='paymentNotes'
+            rows={2}
          />
          <div class="card p-4">
             <Switch bind:checked={$form.deposit} name='deposit'>
