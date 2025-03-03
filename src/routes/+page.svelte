@@ -58,26 +58,31 @@
 
 <Header title='Home' />
 {#await wrapper}
-   {#if data.user}
-      Welcome to the {PUBLIC_COMPANY_NAME} home page, {data.user.givenName} 
-   {:else}
-      <article class="m-2 mt-10">
-         <div>
-            <p>
-               Welcome to the {PUBLIC_COMPANY_NAME} home page. Nestled in the hills of the Palouse just outside Moscow off the Troy Highway, {PUBLIC_COMPANY_NAME} is the place to safely and securely store your belongings.
-            </p>
-            <p>
-               Family owned and operated since 1993 you can contact us at 
-               <a href="tel:{PUBLIC_PHONE}" class="anchor">{ formattedPhone }</a>, or <a href="mailto:{PUBLIC_COMPANY_EMAIL}" class="anchor">{PUBLIC_COMPANY_EMAIL}</a> the office and gates are open 8:00 am to 8:00 pm.
-            </p>
-         </div>
-      </article>
-      {/if}
+   <article class="m-2 mt-10" transition:fade={{duration:600}}>
+      <div>
+         <p>
+            {#if data.user}
+               Welcome to the {PUBLIC_COMPANY_NAME} home page {data.user.givenName}!
+            {:else}
+               Welcome to the {PUBLIC_COMPANY_NAME} home page!
+            {/if}
+            Nestled in the hills of the Palouse just outside Moscow off the Troy Highway, {PUBLIC_COMPANY_NAME} is the place to safely and securely store your belongings.</p>
+            <p>Family owned and operated since 1993 you can contact us at 
+            <a href="tel:{PUBLIC_PHONE}" class="anchor">
+               { formattedPhone }</a>, or <a href="mailto:{PUBLIC_COMPANY_EMAIL}" class="anchor">{PUBLIC_COMPANY_EMAIL}</a> the office and gates are open 8:00 am to 8:00 pm.
+         </p>
+      </div>
+   </article>
 {:then units} 
       <article class="m-2 mt-10" transition:fade={{duration:600}}>
          <div>
             <p>
-               Welcome to the {PUBLIC_COMPANY_NAME} home page. Nestled in the hills of the Palouse just outside Moscow off the Troy Highway, {PUBLIC_COMPANY_NAME} is the place to safely and securely store your belongings.</p>
+               {#if data.user}
+                  Welcome to the {PUBLIC_COMPANY_NAME} home page {data.user.givenName}!
+               {:else}
+                  Welcome to the {PUBLIC_COMPANY_NAME} home page!
+               {/if}
+               Nestled in the hills of the Palouse just outside Moscow off the Troy Highway, {PUBLIC_COMPANY_NAME} is the place to safely and securely store your belongings.</p>
                <p>Family owned and operated since 1993 you can contact us at 
                <a href="tel:{PUBLIC_PHONE}" class="anchor">
                   { formattedPhone }</a>, or <a href="mailto:{PUBLIC_COMPANY_EMAIL}" class="anchor">{PUBLIC_COMPANY_EMAIL}</a> the office and gates are open 8:00 am to 8:00 pm.
@@ -85,24 +90,16 @@
          </div>
       </article>
    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-1 m-2">
-      <div>
-         <!-- <label for="priceFilter">Filter by price
-            <select name="priceFilter" id="priceFilter" bind:value={priceFilter} onchange={setPriceFilter} class="select rounded-lg">
-               <option value="0">All prices</option>
-               {#each prices.sort() as price}
-                  <option value={price}>{currencyFormatter.format(price)} per month</option>
+      <div class="h3 text-center lg:col-start-2 lg:col-end-4 sm:col-span-2 md:col-start-2 md:col-end-3 ">Available Units</div>
+      <div class="col-span-1 sm:col-span-2 md:col-start-3 md:col-span-1 lg:col-start-4">
+         <label for="size" class="label-text">Filter by size: 
+            <select class="select rounded-lg" name='size' id='size' bind:value={sizeFilter} onchange={setSizeFilter}>
+               <option value="">All</option>
+               {#each data.sizes as size}
+                  <option value={size}>{size.replace(/^0+/gm,'').replace(/x0/gm,'x')}</option>
                {/each}
             </select>
-         </label> -->
-      </div>
-      <div class="h3 text-center lg:col-start-2 lg:col-end-4 sm:col-span-2 md:col-start-2 md:col-end-3 ">Available Units</div>
-      <div class="col-span-1 sm:col-span-2 md:col-start-3 md:col-span-1 lg:col-start-4">filter by size: 
-         <select class="select rounded-lg" name='size' bind:value={sizeFilter} onchange={setSizeFilter}>
-            <option value="">All</option>
-            {#each data.sizes as size}
-               <option value={size}>{size.replace(/^0+/gm,'').replace(/x0/gm,'x')}</option>
-            {/each}
-         </select>
+         </label>
       </div>
       {#each filterPrice(filterSize(units)) as unit}
          <div class="flex flex-col border rounded-lg border-primary-50 dark:border-primary-950">
