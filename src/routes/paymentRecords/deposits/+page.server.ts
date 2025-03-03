@@ -25,6 +25,32 @@ export const load = (async (event) => {
          paymentCreated: 'desc'
       }
    });
+   const customers = prisma.user.findMany({
+      where: {
+         paymentMade: {
+            some: {
+               AND: [
+                  { deposit: true },
+                  { refunded: false }
+               ]
+            }
+         }
+      }
+   })
+   const addresses = prisma.address.findMany({
+      where: {
+         user: {
+            paymentMade: {
+               some: {
+                  AND: [
+                     { deposit: true }, 
+                     { refunded: false}
+                  ]
+               }
+            }
+         }
+      }
+   })
    const depositCount = await prisma.paymentRecord.count({
       where: {
          AND: [
@@ -37,5 +63,5 @@ export const load = (async (event) => {
          ]
       },
    })
-   return { deposits, refundForm, searchForm, depositCount, };
+   return { deposits, refundForm, searchForm, depositCount, customers, addresses };
 }) satisfies PageServerLoad;
