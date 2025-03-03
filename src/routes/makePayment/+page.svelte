@@ -1,7 +1,6 @@
 <script lang="ts">
-    import { PUBLIC_COMPANY_NAME, PUBLIC_STRIPE_TEST, PUBLIC_URL } from '$env/static/public';
-    import InvoiceEmployee from '$lib/displayComponents/InvoiceEmployee.svelte';
-    import { Elements, PaymentElement, LinkAuthenticationElement, Address, } from 'svelte-stripe';
+    import { PUBLIC_STRIPE_TEST, PUBLIC_URL } from '$env/static/public';
+    import { Elements, PaymentElement, } from 'svelte-stripe';
     import { onMount } from 'svelte';
     import { loadStripe } from '@stripe/stripe-js'
     import type { StripeElements, Stripe } from '@stripe/stripe-js'
@@ -78,7 +77,7 @@
     }
     
 </script>
-<Header title='Pay your deposit'/>
+<Header title='Make a Payment'/>
 
 {#if !mounted}
     <div transition:fade={{duration:600}} class="mt-10">
