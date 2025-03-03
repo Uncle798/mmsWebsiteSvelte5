@@ -14,7 +14,7 @@
 </script>
 <div class="{classes}">
    <label class="label">
-      {#if label}<span class="label-text">{label}</span><br />{/if}
+      {#if label}<span class="label-text">{label}</span>{/if}
       <input
          type="number"
          class="input"
