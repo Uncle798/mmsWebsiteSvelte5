@@ -45,7 +45,10 @@
                 <UserCustomer user={data.user}/>
             {/if}
             {#if data.user?.emailVerified}
-                <BadgeCheck size='20' />
+            <div class="flex ">
+                Email Verified
+                <BadgeCheck size='20' color='green' class='mx-1'/>
+            </div>
             {:else}
                 <button class="btn preset-filled-primary-50-950 text-wrap h-fit" onclick={()=>emailVerificationModalOpen=true}>Please confirm your email address</button>
                 <Modal
