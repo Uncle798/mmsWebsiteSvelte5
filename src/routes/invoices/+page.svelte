@@ -2,7 +2,7 @@
 	import { fade } from 'svelte/transition';
     import type { PageData } from './$types';
 	import UserEmployee from '$lib/displayComponents/UserEmployee.svelte';
-	import type { Invoice } from '@prisma/client';
+	import type { Invoice, User } from '@prisma/client';
     import InvoiceEmployee from '$lib/displayComponents/InvoiceEmployee.svelte';
 	import Header from '$lib/Header.svelte';
     import Pagination from '$lib/displayComponents/Pagination.svelte';
@@ -13,6 +13,8 @@
     import utc from 'dayjs/plugin/utc'
 	import Revenue from '$lib/displayComponents/Revenue.svelte';
 	import Address from '$lib/displayComponents/AddressEmployee.svelte';
+	import { Combobox } from '@skeletonlabs/skeleton-svelte';
+	import { goto } from '$app/navigation';
     dayjs.extend(utc)
     let { data }: { data: PageData } = $props();
     let pageNum = $state(1);
@@ -31,6 +33,28 @@
         maxDate = endDate;
         res(invoices)
     })
+    let customers:User[] = [];
+    const userWrapper = new Promise<User[]>(async res => {
+        customers = await data.customers
+        res(customers)
+    })
+    let nameSearch = $state('');
+    let currentUsers = $derived((users:User[]) => users.filter((user) => {
+        return user.givenName?.toLowerCase().includes(nameSearch.toLowerCase()) || user.familyName?.toLowerCase().includes(nameSearch.toLowerCase())
+    }))
+    const searchByUser = $derived((invoices:Invoice[]) => {
+        const users = currentUsers(customers);
+        const customerInvoices:Invoice[] = [];
+        users.forEach((user)=>{
+            const userInvoices = invoices.filter((invoice) => {
+                return invoice.customerId === user.id
+            })
+            userInvoices.forEach((invoice) => {
+                customerInvoices.push(invoice)
+            })
+        })
+        return customerInvoices
+    })
     let slicedInvoices = $derived((invoices:Invoice[]) => invoices.slice((pageNum-1)*size, pageNum*size));
     let searchedInvoices = $derived((invoices:Invoice[]) => invoices.filter((invoice) => invoice.invoiceNum.toString().includes(search)));
     let dateSearchedInvoices = $derived((invoices:Invoice[]) => invoices.filter((invoice) => {
@@ -48,32 +72,47 @@
         })
         return totalRevenue
     })
+    let yearSelect = $state(['']);
+    interface ComboboxData {
+        label: string;
+        value: string;
+    }
+    let yearComboboxData:ComboboxData[] = [
+        {label:'Unpaid Invoices', value: 'unpaid'},
+    ]
+    data.years.forEach((year) => {
+        yearComboboxData.push({label:year.toString(), value: year.toString()})
+    })
+
 </script>
 {#await wrapper}
     <Header title='Loading invoices' />
-    <div class="mt-10">
-
+    <div class="bg-tertiary-50 dark:bg-tertiary-950 w-full rounded-b-lg fixed top-8 p-2">Total invoiced (not including deposits):</div>
+    <div class="mt-20 mx-1 sm:mx-2" transition:fade={{duration:600}}>
         Loading {numberFormatter.format(data.invoiceCount)} invoices, 
-        {#if data.years}
-            or select year: 
-            {#each data.years as year}
-                <a href="/invoices/year/{year}" class="anchor">{year.toString()},</a>
-            {/each}
-        {/if}
-        or:
-        <a href="/invoices/unpaid" class="anchor">Unpaid invoices</a>
+        <Combobox
+            data={yearComboboxData}
+            bind:value={yearSelect}
+            label='or select year'
+            placeholder='Select year...'
+            openOnClick={true}
+            onValueChange={(details) => {
+                goto(`/invoices/${details.value[0]}`)
+            }}
+            classes='mx-1 sm:mx-2'
+        />
+        <Placeholder numCols={4} numRows={1} heightClass='h-10'/>
+        <Placeholder numCols={2} numRows={size} heightClass='h-40'/>
     </div>
     
-    <Placeholder numCols={1} numRows={2} heightClass='h-10'/>
-    <Placeholder numCols={2} numRows={size} heightClass='h-40'/>
     {:then invoices}
     {#await data.customers}
         <Header title='Loading customers' />
-        <Placeholder numCols={1} numRows={2} heightClass='h-10'/>
+        <Placeholder numCols={4} numRows={1} heightClass='h-10'/>
         <Placeholder numCols={2} numRows={size} heightClass='h-40'/>
     {:then customers}
         {#await data.addresses}
-            <Placeholder numCols={1} numRows={2} heightClass='h-10'/>
+            <Placeholder numCols={4} numRows={1} heightClass='h-10'/>
             <Placeholder numCols={2} numRows={size} heightClass='h-40'/>
         {:then addresses}
             {#if invoices.length >0}
@@ -83,13 +122,15 @@
                     amount={totalRevenue(searchedInvoices(dateSearchedInvoices(invoices)))} 
                     classes='bg-tertiary-50 dark:bg-tertiary-950 w-full rounded-b-lg fixed top-8 p-2'
                 />
+
                 <div class="flex mx-1 sm:mx-2 border-b-2 dark:border-primary-950 border-primary-50 mt-16" transition:fade={{duration:600}}>
                     <Search data={data.searchForm} bind:search={search} searchType='invoice number' classes='w-1/2 p-2'/>
+                    <Search data={data.searchForm} bind:search={nameSearch} searchType='Customer' classes='w-1/2 p-2'/>
                     <DateSearch data={data.dateSearchForm} bind:startDate={startDate} bind:endDate={endDate} {minDate} {maxDate} classes='w-1/2 p-2'/>
                 </div>
 
                 <div class="grid grid-cols-1 sm:mx-2 mx-1 gap-3" transition:fade={{duration:600}}>
-                    {#each  slicedInvoices(searchedInvoices(invoices)) as invoice}  
+                    {#each  slicedInvoices(searchedInvoices(searchByUser(invoices))) as invoice}  
                     {@const customer = customers.find((customer) => customer.id === invoice.customerId)}
                         <div class="sm:grid sm:grid-cols-2 border-2 border-primary-50 dark:border-primary-950 rounded-lg">
                             <InvoiceEmployee {invoice} classes=' px-2' />
@@ -105,7 +146,7 @@
                         </div>
                     {/each}
                 </div>
-                <Pagination bind:pageNum={pageNum} bind:size={size} array={searchedInvoices(invoices)} label='invoices' />
+                <Pagination bind:pageNum={pageNum} bind:size={size} array={searchedInvoices(searchByUser(invoices))} label='invoices' />
             {/if}
         {/await}
     {/await}
