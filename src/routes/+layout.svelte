@@ -32,6 +32,7 @@
 		{link: '/users/customers', label: 'Customers'},
 		{link: '/invoices', label: 'Invoices'},
 		{link: '/invoices/unpaid', label: 'Unpaid invoices'},
+		{link: '/invoices/pastDue', label: 'Past due invoices'},
 		{link: '/invoices/year', label: 'Invoices by year'},
 		{link: '/invoices/new', label: 'New Invoice'},
 		{link: '/paymentRecords', label: 'Payment Records'},
