@@ -98,7 +98,7 @@
         {/if}
             <Modal
                 bind:open={addressModalOpen}
-                triggerBase="btn preset-filled-primary-50-950 rounded-lg"
+                triggerBase="btn preset-filled-primary-50-950 rounded-lg mb-2"
                 contentBase="card bg-surface-400-600 p-4 space-y-4 shadow-xl max-w-(--breakpoint-sm)"
                 backdropClasses="backdrop-blur-xs"
             >
@@ -156,19 +156,19 @@
         </div>
         {/if}
     {/await}
-    <div class="grid grid-cols-1 gap-x-1 gap-y-3 py-2 mt-10">
+    <div class="grid grid-cols-1 gap-x-1 gap-y-3 py-2">
         {#await data.invoicesPromise}
             loading invoices
         {:then invoices} 
             {#await data.paymentsPromise}
                 loading payments
             {:then payments} 
-                <div class="sm:grid sm:grid-cols-2 gap-x-1 gap-y-3">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-1 gap-y-3">
                     {#each invoices as invoice}
                     {@const paymentRecord = payments.find((payment) => payment.invoiceNum === invoice.invoiceNum)}
-                        <InvoiceCustomer {invoice} classes="border border-primary-50 dark:border-primary-950 rounded-lg"/>
+                        <InvoiceCustomer {invoice} classes="border-2 border-primary-50 dark:border-primary-950 rounded-lg"/>
                         {#if paymentRecord}
-                            <PaymentRecordCustomer {paymentRecord} classes="border border-primary-50 dark:border-primary-950 rounded-lg"/>
+                            <PaymentRecordCustomer {paymentRecord} classes="border-2 border-primary-50 dark:border-primary-950 rounded-lg"/>
                         {/if}
                     {/each}
                 </div>

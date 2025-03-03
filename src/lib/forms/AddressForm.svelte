@@ -90,18 +90,23 @@
          </select>
       </label>
       <div class="input-group divide-surface-200-800 grid-cols-[auto_1fr_auto] divide-x mt-2">
-         <div class="ig-cell preset-tonal">Country Code:</div>
-            <select class="ig-select truncate w-32 sm:w-48" name="phoneNum1Country" autocomplete="tel-country-code">
-               {#each dialCodes as dialCode}
-                  {#if dialCode.code === "US"}
-                     <option value={dialCode.dial_code} selected>{dialCode.dial_code} ({dialCode.name})</option>
-                  {:else}
-                     <option value={dialCode.dial_code}>{dialCode.dial_code} ({dialCode.name})</option>
-                  {/if}
-               {/each}
-            </select>
-            <div class="ig-cell ">Phone number:
-
+         <div class="ig-cell preset-tonal w-28 sm:w-48">
+            <label for="phoneNum1Country" class="label-text">
+               Country Code:
+               <select class="ig-select truncate w-24 sm:w-44" name="phoneNum1Country" id="phoneNum1Country" autocomplete="tel-country-code">
+                  {#each dialCodes as dialCode}
+                     {#if dialCode.code === "US"}
+                        <option value={dialCode.dial_code} selected>{dialCode.dial_code} ({dialCode.name})</option>
+                     {:else}
+                        <option value={dialCode.dial_code}>{dialCode.dial_code} ({dialCode.name})</option>
+                     {/if}
+                  {/each}
+               </select>
+            </label>
+         </div>
+         <div class="ig-cell w-48 sm:w-auto">
+            <label for="phoneNum1" class="label-text">
+               Phone number:
                <input 
                   type="text" 
                   name="phoneNum1" 
@@ -109,8 +114,10 @@
                   class="ig-input"
                   bind:value={$form.phoneNum1}
                   placeholder="2088826564"
+                  autocomplete="tel"
                />
-            </div>
+            </label>
+         </div>
       </div>
       <FormProgress delayed={$delayed} timeout={$timeout}/>
    </form>
