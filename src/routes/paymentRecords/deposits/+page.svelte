@@ -40,8 +40,9 @@
         return totalRevenue;
     })
     let customers:User[]
-    let wrapper = new Promise<User[]>(async res => {
+    let userWrapper = new Promise<User[]>(async res => {
         customers =  await data.customers
+        res(customers)
     })
     let nameSearch = $state('')
     let currentUsers = $derived((users:User[]) => users.filter((user) => {
@@ -83,7 +84,7 @@
         loading {numberFormatter.format(data.depositCount)} deposits
     </div>
 {:then deposits} 
-    {#await data.customers}
+    {#await userWrapper}
         <div class="mt-12">
             loading customers
         </div>
