@@ -42,12 +42,15 @@
 
 
 </script>
-<Combobox
-   data={themeComboboxData}
-   bind:value={currentTheme}
-   label='Select Theme'
-   placeholder='Select Theme...'
-   openOnClick={true}
-   onValueChange={(details) =>setTheme(details.value[0])}
-   labelClasses='m-1 sm:m-2'
-/>
+<div class="mx-1 sm:mx-2">
+
+   <Combobox
+      data={themeComboboxData}
+      bind:value={currentTheme}
+      label='Select Theme:'
+      placeholder='Select Theme...'
+      openOnClick={true}
+      onValueChange={(details) =>setTheme(details.value[0])}
+   />
+   
+</div>
