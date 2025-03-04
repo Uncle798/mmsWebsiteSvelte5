@@ -33,8 +33,8 @@
 </Modal>
     {#if unit}
         <Header title='Unit number: {unit.num}' />
-        <Revenue label='Total revenue from this unit' amount={data.totalRevenue} classes="flex sticky top-9 dark:bg-tertiary-950 bg-tertiary-50 rounded-lg w-full"/>
-        <div transition:fade={{duration:600}} class="m-1 sm:m-2 pt-2">
+        <Revenue label='Total revenue from this unit' amount={data.totalRevenue} classes="flex sticky top-9 dark:bg-tertiary-950 bg-tertiary-50 rounded-b-lg w-full p-2"/>
+        <div transition:fade={{duration:600}} class="m-1 sm:m-2 pt-8">
             <UnitEmployee {unit} classes=''/>
             <UnitNotesForm data={data.unitNotesForm} {unit} classes=''/>
             <UnitPricingForm data={data.unitPricingForm} size={unit.size} oldPrice={unit.advertisedPrice} unitPricingFormModalOpen={modalOpen} />
@@ -45,7 +45,7 @@
                         <div class="rounded-lg border-2 border-primary-50 dark:border-primary-950">
                             <div class="flex flex-col ">
                                 <LeaseEmployee {lease}/>
-                                <button class="btn" onclick={()=>{modalOpen=true; currentLeaseId=lease.leaseId}}>End lease</button>
+                                <button class="btn rounded-lg preset-filled-primary-50-950 mx-2" onclick={()=>{modalOpen=true; currentLeaseId=lease.leaseId}}>End lease</button>
                             </div>                 
                             {#if customer}  
                             {@const address = data.addresses.find((address) => address.userId === customer.id)}
