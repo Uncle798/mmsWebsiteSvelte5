@@ -18,7 +18,6 @@ export const GET: RequestHandler = async ({request}) => {
       });
       const todaysLeases:Lease[] =[];
       leases.forEach((lease) => {
-         console.log(lease.leaseEffectiveDate.getDate())
          if(lease.leaseEffectiveDate.getDate() === new Date().getDate()){
             todaysLeases.push(lease)
          }
@@ -52,28 +51,32 @@ export const GET: RequestHandler = async ({request}) => {
          invoices.push(invoice);
          totalInvoiced += invoice.invoiceAmount
       }
-      console.log("number of invoices", invoices.length)
       for await(const invoice of invoices){
          // const customer = customers.find((customer) => customer.id === invoice.customerId)
          await sendInvoice(invoice, customer!)
       }
-      const fullUnits = await prisma.unit.count({
+      const availableUnits = await prisma.unit.count({
          where: {
-            lease: {
-               some: {
-                  leaseEnded: null
-               }
-            }
+            AND: [
+               { unavailable: false },
+               { size: {
+                  not: 'ours' 
+               }},
+               { lease: {
+                  none: {
+                     leaseEnded: null
+                  }
+               }}
+            ]
          }
       })
-      const unitCount = await prisma.unit.count();
       const admins = await prisma.user.findMany({
          where: {
             admin: true
          }
       })
       for await(const admin of admins){
-         await sendStatusEmail(admin, invoices.length, totalInvoiced, (unitCount - fullUnits))
+         await sendStatusEmail(admin, invoices.length, totalInvoiced, availableUnits)
       }
    }
    handleRequest(request)
