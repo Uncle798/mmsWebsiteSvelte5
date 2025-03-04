@@ -85,7 +85,6 @@ export const load = (async (event) => {
             })
          }
          return { paymentRecord, customer, invoice, refundRecord, address };
-
       }
    }
    return {}
@@ -117,7 +116,7 @@ export const actions: Actions = {
       if(!customer){
          message(form, 'Customer not found')
       }
-      const response = await sendPaymentReceipt(customer!, paymentRecord!)
+      await sendPaymentReceipt(customer!, paymentRecord!)
       return {form}
    }
 }
