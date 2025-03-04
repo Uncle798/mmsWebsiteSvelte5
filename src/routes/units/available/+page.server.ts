@@ -8,19 +8,21 @@ import pricingData from '$lib/server/pricingData';
 export const load:PageServerLoad = (async (event) => {
    const userId = event.url.searchParams.get('userId');
    const unitNotesForm = await superValidate(zod(unitNotesFormSchema));
-   const leases = prisma.lease.findMany({
+   const availableUnits = prisma.unit.findMany({
       where: {
-         leaseEnded: null
+         AND: [
+            { unavailable: false },
+            { size: {
+               not: 'ours' 
+            }},
+            { lease: {
+               none: {
+                  leaseEnded: null
+               }
+            }}
+         ]
       }
-   });
-   const units = prisma.unit.findMany({
-      orderBy: {
-         num: 'asc'
-      }, 
-      where: {
-         unavailable: false
-      },
-   });
+   })
    const unitCount = await prisma.unit.count();
    const sizes:string[] = []
    pricingData.forEach((datum) => {
@@ -28,5 +30,5 @@ export const load:PageServerLoad = (async (event) => {
          sizes.push(datum.size)
       }
    })
-   return { units, leases, userId, unitCount, unitNotesForm, sizes }; 
+   return { availableUnits, userId, unitCount, unitNotesForm, sizes }; 
 }) 

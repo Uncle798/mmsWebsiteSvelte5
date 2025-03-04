@@ -2,7 +2,6 @@
    import Header from '$lib/Header.svelte';
    import { fade } from 'svelte/transition';
    import type { PageData } from './$types';
-   import HorizontalDivider from '$lib/displayComponents/HorizontalDivider.svelte';
    import type { Unit } from '@prisma/client';
 	import UnitEmployee from '$lib/displayComponents/UnitEmployee.svelte';
 	import UnitNotesForm from '$lib/forms/UnitNotesForm.svelte';
@@ -10,21 +9,6 @@
    let { data }:{data:PageData} = $props();
    const currencyFormatter = new Intl.NumberFormat('en-US', {style: 'currency', currency:'USD'});
    let lostRevenue = $state(0);
-   const wrapper = new Promise<Unit[]>(async res => {
-      const units = await data.units
-      const leases = await data.leases
-      const availableUnits:Unit[] = [];
-      units.forEach((unit) => {
-         const lease = leases.find((lease) => lease.unitNum === unit.num)
-         if(!lease && !availableUnits.find((u) => u.size === unit.size)){
-            availableUnits.push(unit);
-         }
-      })
-      availableUnits.forEach((unit) => {
-         lostRevenue += unit.advertisedPrice
-      })
-      res(availableUnits)
-   })
    let sizeFilter = $state('');
    const filterSize = $derived((units:Unit[]) => units.filter((unit) => unit.size.includes(sizeFilter)))
    function setSizeFilter(event:Event){
@@ -34,7 +18,7 @@
    }
 </script>
 <Header title='Available Units' />
-{#await wrapper}
+{#await data.availableUnits}
    <div class="mt-10">
       ...loading available units
    </div>
