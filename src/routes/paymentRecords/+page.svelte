@@ -14,7 +14,7 @@
    import Revenue from '$lib/displayComponents/Revenue.svelte';  
    import Address from '$lib/displayComponents/AddressEmployee.svelte';
    import RefundForm from '$lib/forms/NewRefundForm.svelte'
-   import { Modal } from '@skeletonlabs/skeleton-svelte';
+   import { Combobox, Modal } from '@skeletonlabs/skeleton-svelte';
    import { goto } from '$app/navigation';
    dayjs.extend(utc)
    let { data }: { data: PageData } = $props();
@@ -79,12 +79,17 @@
       currentPaymentRecord = paymentRecord;
       modalOpen = true
    }
-   let currentYear = $state('');
-   function onSelect(event:Event){
-      const select = event.target as HTMLSelectElement;
-      const year = select.value;
-      goto(`/paymentRecords/year/${year}`);
-   }
+   let yearSelect = $state(['']);
+    interface ComboboxData {
+        label: string;
+        value: string;
+    }
+    let yearComboboxData:ComboboxData[] = [
+        {label:'Unpaid Invoices', value: 'unpaid'},
+    ]
+    data.years.forEach((year) => {
+        yearComboboxData.push({label:year.toString(), value: year.toString()})
+    })
 </script>
 <Modal
    bind:open={modalOpen}
@@ -103,17 +108,20 @@
    <div class="mt-10 mx-1 sm:mx-2">
       loading {numberFormatter.format(data.paymentRecordCount)} payment records
       {#if data.years}
-         <label for="selectYear" class="label-text"> 
-               or select year:
-               <select name="selectYear" id="selectYear" class="select mx-2" bind:value={currentYear} onchange={onSelect}>
-                  <option value="">Select year...</option>
-                  {#each data.years as year}
-                     <option value={year}>{year}</option>
-                  {/each}
-               </select> 
-         </label>
+         <Combobox
+            data={yearComboboxData}
+            bind:value={yearSelect}
+            label='or select year'
+            placeholder='Select year ...'
+            openOnChange={true}
+            onValueChange={(details) => {
+               goto(`/paymentRecords/year/${details.value[0]}`)
+            }}
+            zIndex='50'
+         />
       {/if}
-      <Placeholder numCols={2} numRows={3} heightClass='h-32'/>
+      <Placeholder numCols={3} numRows={1} heightClass='h-10' classes="z-0"/>
+      <Placeholder numCols={2} numRows={size} heightClass='h-32' classes='z-0'/>
    </div>
 {:then paymentRecords} 
    {#await data.customers}
