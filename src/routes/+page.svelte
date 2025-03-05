@@ -8,27 +8,22 @@
 	import UnitCustomer from "$lib/displayComponents/customerViews/UnitCustomer.svelte";
 	import { size } from "@skeletonlabs/floating-ui-svelte";
 	import { fade } from "svelte/transition";
+	import Placeholder from "$lib/displayComponents/Placeholder.svelte";
    interface Props {
       data: PageData;
    }
    let { data }: Props = $props();
    let prices:number[]=[];
    const wrapper = new Promise<Unit[]>(async res => {
-      const units = await data.units
-      const leases = await data.leases
-      const availableUnits:Unit[] = [];
-      units.forEach((unit) => {
-         const lease = leases.find((lease) => lease.unitNum === unit.num)
-         if(!lease && !availableUnits.find((u) => u.size === unit.size)){
-            availableUnits.push(unit);
-         }
+      const allAvailableUnits = await data.availableUnits;
+      const shownUnits:Unit[] = []
+      allAvailableUnits.forEach((unit) => {
+         const alreadyAdded = shownUnits.find((u) => unit.size === u.size)
+         if(!alreadyAdded){
+            shownUnits.push(unit)
+         } 
       })
-      availableUnits.forEach((unit) => {
-         if(!prices.find((price) => price === unit.advertisedPrice)){
-            prices.push(unit.advertisedPrice)
-         }
-      })
-      res(availableUnits)
+      res(shownUnits);
    })
    let sizeFilter = $state('');
    let priceFilter = $state(0);
@@ -46,18 +41,11 @@
       sizeFilter = size;
       priceFilter = 0
    }
-   function setPriceFilter(event:Event){
-      const select = event.target as HTMLSelectElement;
-      const price = select.value
-      priceFilter = parseInt(price, 10);
-      sizeFilter = ''
-   }
-   const currencyFormatter = new Intl.NumberFormat('en-US', {style:'currency', currency:'USD'});
    const formattedPhone = PUBLIC_PHONE.substring(0,1) +'-'+ PUBLIC_PHONE.substring(1,4)+'-'+PUBLIC_PHONE.substring(4,7)+'-'+PUBLIC_PHONE.substring(7)
 </script>
 
 <Header title='Home' />
-{#await wrapper}
+<!-- {#await wrapper}
    <article class="m-2 mt-10" transition:fade={{duration:600}}>
       <div>
          <p>
@@ -74,7 +62,7 @@
       </div>
    </article>
 {:then units} 
-      <article class="m-2 mt-10" transition:fade={{duration:600}}>
+      <article class="m-2 mt-10">
          <div>
             <p>
                {#if data.user}
@@ -89,8 +77,8 @@
             </p>
          </div>
       </article>
-   <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-1 m-2">
-      <div class="h3 text-center lg:col-start-2 lg:col-end-4 sm:col-span-2 md:col-start-2 md:col-end-3 ">Available Units</div>
+   <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-1 m-2" transition:fade={{duration:600}}>
+      <h1 class="h3 text-center lg:col-start-2 lg:col-end-4 sm:col-span-2 md:col-start-2 md:col-end-3 ">Available Units</h1>
       <div class="col-span-1 sm:col-span-2 md:col-start-3 md:col-span-1 lg:col-start-4">
          <label for="size" class="label-text">Filter by size: 
             <select class="select rounded-lg" name='size' id='size' bind:value={sizeFilter} onchange={setSizeFilter}>
@@ -108,5 +96,5 @@
          </div>
       {/each}
    </div>
-{/await}
-      
+{/await} -->
+      <Placeholder numCols={3} numRows={1} heightClass='h-10' classes='mt-10 z-0'/>
