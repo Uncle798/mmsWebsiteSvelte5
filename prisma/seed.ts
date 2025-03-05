@@ -360,7 +360,7 @@ async function  main (){
          if(lengthOfLease < 3) {
             lengthOfLease = 3;
          }
-         leaseEnd = leaseStart.add(lengthOfLease, 'months');
+         leaseEnd = leaseStart.add(lengthOfLease, 'months').add(1,'day');
       } 
    }
    for (const lease of leases){
