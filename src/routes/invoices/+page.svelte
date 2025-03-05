@@ -97,7 +97,7 @@
             placeholder='Select year...'
             openOnClick={true}
             onValueChange={(details) => {
-                goto(`/invoices/${details.value[0]}`)
+                goto(`/invoices/year/${details.value[0]}`)
             }}
             classes='mx-1 sm:mx-2'
         />
