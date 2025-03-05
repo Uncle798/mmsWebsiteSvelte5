@@ -4,6 +4,7 @@ import type { PageServerLoad, Actions } from './$types';
 import { superValidate,  } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
 import { addressFormSchema, cuidIdFormSchema, emailFormSchema, emailVerificationFormSchema, leaseEndFormSchema, nameFormSchema, } from '$lib/formSchemas/schemas';
+import dayjs from 'dayjs';
 
 export const load:PageServerLoad = (async (event) => {
    if(!event.locals.user){
@@ -64,15 +65,32 @@ export const actions: Actions = {
          }
       });
       if(lease){
-         const invoice = await prisma.invoice.create({
+         let autoPayFirstDue:Date = new Date();
+         const invoice = await prisma.invoice.findFirst({
+            where: {
+               AND: [
+                  { customerId: lease.customerId },
+                  { deposit: false },
+                  { paymentRecordNum: null}
+               ]
+            },
+            orderBy: {
+               invoiceCreated: 'asc'
+            },
+         })
+         if(invoice){
+            autoPayFirstDue = dayjs(invoice.invoiceCreated).add(1, 'month').toDate()
+         }
+         const autoPayInvoice = await prisma.invoice.create({
             data: {
+               customerId: lease.customerId,
                leaseId: lease.leaseId,
                invoiceAmount: lease.price,
-               customerId: lease.customerId,
-               invoiceNotes: `Auto pay sign up`
+               invoiceCreated: autoPayFirstDue,
+               invoiceNotes: `Auto-payment for unit ${lease.unitNum}`
             }
          })
-         redirect(302, `/makePayment?invoiceNum=${invoice.invoiceNum}&subscription=true`)
+         redirect(302, `/makePayment?invoiceNum=${autoPayInvoice.invoiceNum}&subscription=true`)
       }
    }
 };
