@@ -6,7 +6,7 @@
 	import Menu from 'lucide-svelte/icons/menu';
 	import { beforeNavigate } from '$app/navigation';
 	import { enhance } from '$app/forms';
-	import { PUBLIC_COMPANY_NAME } from '$env/static/public';
+	import { PUBLIC_ADDRESS1, PUBLIC_COMPANY_NAME, PUBLIC_PHONE } from '$env/static/public';
 	import { XCircleIcon } from 'lucide-svelte';
 
 	interface Props {
@@ -20,7 +20,6 @@
 	}
 	let customerLinks:Link[] =[
 		{link: '/', label: 'Home'},
-		{link: '/units/available', label:'Available Units'},
 	]
 	let employeeLinks:Link[] = [
 		{link: '/units', label:'Units'},
@@ -45,6 +44,7 @@
 		{link: '/employeeNewCustomer', label:'New customer'},
 	]
 	let adminLinks:Link[] = [
+		{link: '/', label: 'Home'},
 		{link: '/users', label:'All Users'},
 
 	]
@@ -53,6 +53,7 @@
 	beforeNavigate(() =>{
 		menuOpen = false;
 	})
+	const formattedPhone = PUBLIC_PHONE.substring(0,1) +'-'+ PUBLIC_PHONE.substring(1,4)+'-'+PUBLIC_PHONE.substring(4,7)+'-'+PUBLIC_PHONE.substring(7)
 </script>
 
 <Modal
@@ -107,3 +108,8 @@
 		{@render children()}
 	</ToastProvider>
 
+{#if !data.user?.employee}
+	<footer class="bg-tertiary-50 dark:bg-tertiary-950 fixed bottom-0 right-0 left-0 px-2 h-20 sm:h-12 lg:h-7 pt-1">
+		Open 7 days a week from 8:00 am to 8:00 pm we're located at {PUBLIC_ADDRESS1} Moscow ID 83843. Call us at <a href="tel:+{PUBLIC_PHONE}" class="anchor">{formattedPhone}</a>
+	</footer>
+{/if}
