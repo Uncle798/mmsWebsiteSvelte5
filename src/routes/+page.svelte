@@ -4,11 +4,12 @@
    import PalouseHills from '$lib/Photos/Palouse_hills_northeast_of_Walla_Walla.jpg'
    import Header from "$lib/Header.svelte";
    import type { PageData } from "./$types";
-   import type { Unit } from '@prisma/client'
+   import type { Address, Unit } from '@prisma/client'
 	import UnitCustomer from "$lib/displayComponents/customerViews/UnitCustomer.svelte";
-	import { size } from "@skeletonlabs/floating-ui-svelte";
 	import { fade } from "svelte/transition";
 	import Placeholder from "$lib/displayComponents/Placeholder.svelte";
+	import AddressCustomer from "$lib/displayComponents/customerViews/AddressCustomer.svelte";
+	import type { PartialAddress } from "$lib/server/partialTypes";
    interface Props {
       data: PageData;
    }
@@ -42,11 +43,12 @@
       priceFilter = 0
    }
    const formattedPhone = PUBLIC_PHONE.substring(0,1) +'-'+ PUBLIC_PHONE.substring(1,4)+'-'+PUBLIC_PHONE.substring(4,7)+'-'+PUBLIC_PHONE.substring(7)
+
 </script>
 
 <Header title='Home' />
-<!-- {#await wrapper}
-   <article class="m-2 mt-10" transition:fade={{duration:600}}>
+{#await wrapper}
+   <article class="m-2 mt-10">
       <div>
          <p>
             {#if data.user}
@@ -61,6 +63,9 @@
          </p>
       </div>
    </article>
+   <div in:fade={{duration:600}}>
+      <Placeholder numCols={4} numRows={4} heightClass='h-24' classes='z-0'/>
+   </div>
 {:then units} 
       <article class="m-2 mt-10">
          <div>
@@ -77,7 +82,7 @@
             </p>
          </div>
       </article>
-   <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-1 m-2" transition:fade={{duration:600}}>
+   <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-1 mx-2 mb-24 sm:mb-14 lg:mb-9" in:fade={{duration:600}}>
       <h1 class="h3 text-center lg:col-start-2 lg:col-end-4 sm:col-span-2 md:col-start-2 md:col-end-3 ">Available Units</h1>
       <div class="col-span-1 sm:col-span-2 md:col-start-3 md:col-span-1 lg:col-start-4">
          <label for="size" class="label-text">Filter by size: 
@@ -96,5 +101,4 @@
          </div>
       {/each}
    </div>
-{/await} -->
-      <Placeholder numCols={3} numRows={1} heightClass='h-10' classes='mt-10 z-0'/>
+{/await}
