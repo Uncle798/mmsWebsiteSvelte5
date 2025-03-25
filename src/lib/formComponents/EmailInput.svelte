@@ -16,7 +16,7 @@
    <input
       type="email"
       name={name}
-      class="input"
+      class="input truncate"
       bind:value={value}
       aria-invalid={errors ? 'true' : undefined}
       placeholder={placeholder}
