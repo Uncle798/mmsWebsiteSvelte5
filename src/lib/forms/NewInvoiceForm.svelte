@@ -11,6 +11,7 @@
 
    import { Combobox, Modal, Switch } from "@skeletonlabs/skeleton-svelte";
 	import dayjs from "dayjs";
+	import TextArea from "$lib/formComponents/TextArea.svelte";
 
    interface Props {
       data: SuperValidated<Infer<NewInvoiceFormSchema>>;
@@ -88,12 +89,13 @@
             }}
          />
       {:else if selectedCustomer[0].length > 0}
-         <TextInput
+         <TextArea
             bind:value={$form.invoiceNotes}
             errors={$errors.invoiceNotes}
             constraints={$constraints.invoiceNotes}
             label="Invoice notes"
             name='invoiceNotes'
+            rows={2}
          />
          <NumberInput
             bind:value={$form.invoiceAmount}
