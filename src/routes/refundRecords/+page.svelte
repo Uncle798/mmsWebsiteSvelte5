@@ -4,7 +4,7 @@
 	import Search from '$lib/forms/Search.svelte';
 	import dayjs from 'dayjs';
 	import type { PageData } from './$types';
-	import type { RefundRecord } from '@prisma/client';
+	import type { RefundRecord, User } from '@prisma/client';
 	import DateSearch from '$lib/forms/DateSearch.svelte';
 	import Pagination from '$lib/displayComponents/Pagination.svelte';
 	import Revenue from '$lib/displayComponents/Revenue.svelte';
@@ -28,6 +28,11 @@
 		endDate = maxDate;
 		res(refunds);
 	});
+	let customers:User[]
+	const customerWrapper = new Promise<User[]>(async res => {
+		customers = await data.customers
+		res(customers)
+	}) 
 	const numberFormatter = new Intl.NumberFormat('en-US');
 	let slicedRefunds = $derived((refunds: RefundRecord[]) =>
 		refunds.slice((pageNum - 1) * size, pageNum * size)
@@ -59,6 +64,23 @@
 		});
 		return totalRevenue;
 	});
+	let nameSearch = $state('')
+	const currentUsers = $derived((users:User[]) => users.filter((user) => {
+		return user.givenName?.toLowerCase().includes(nameSearch.toLowerCase()) || user.familyName?.toLowerCase().includes(nameSearch.toLowerCase())
+	}))
+	const searchByUser = $derived((refunds:RefundRecord[]) => {
+		const users = currentUsers(customers);
+		const returnedRefunds:RefundRecord[] =[]
+		users.forEach((user) => {
+			const userRefunds = refunds.filter((record) => {
+				return record.customerId === user.id
+			});
+			userRefunds.forEach((record) => {
+				returnedRefunds.push(record);
+			})
+		});
+		return returnedRefunds;
+	})
 </script>
 
 <Header title="All Refunds" />
@@ -73,7 +95,7 @@
 		<Placeholder numCols={1} numRows={2} heightClass='h-10' />
 		<Placeholder numCols={2} numRows={size} heightClass='h-44'/>
 	{:then refunds}
-	{#await data.customers}
+	{#await customerWrapper}
 		<Placeholder numCols={1} numRows={2} heightClass='h-10' />
 		<Placeholder numCols={2} numRows={size} heightClass='h-44'/>
 	{:then customers}
@@ -81,12 +103,31 @@
 			<Placeholder numCols={1} numRows={2} heightClass='h-10' />
 			<Placeholder numCols={2} numRows={size} heightClass='h-44'/>
 		{:then addresses}
-			<div class="flex mx-2 border-b-2  border-primary-50 dark:border-primary-950 shadow-lg" transition:fade={{duration:600}}>
+		<div class=" bg-tertiary-50 dark:bg-tertiary-950 w-full rounded-b-lg fixed top-9 p-2 flex flex-col sm:flex-row z-50">
+			<Revenue 
+				label="Total refunds" 
+				amount={totalRevenue(searchRefunds(dateSearchRefunds(refunds)))}
+				classes='mr-2'	
+			/>
+			<Revenue 
+				label="Refunds not deposits" 
+				amount={refundsNotDeposits(searchRefunds(dateSearchRefunds(refunds)))}
+				classes=''	
+			/>
+
+		</div>
+			<div class="flex mx-2 mt-18 border-b-2  border-primary-50 dark:border-primary-950 shadow-lg" transition:fade={{duration:600}}>
 				<Search
-					bind:search 
-					searchType="Refund records" 
+					bind:search={search}
+					searchType="refund records" 
 					data={data.searchForm} 
-					classes='p-2 w-1/2'	
+					classes='p-2 '	
+				/>
+				<Search
+					bind:search={nameSearch} 
+					searchType="user name" 
+					data={data.searchForm} 
+					classes='p-2 '	
 				/>
 				<DateSearch 
 					bind:endDate 
@@ -97,21 +138,9 @@
 					classes='p-2'	
 				/>
 			</div>
-			<div class="flex border-b-2 border-primary-50 dark:border-primary-950 m-2 shadow-lg">
-				<Revenue 
-					label="Total refunds" 
-					amount={totalRevenue(searchRefunds(dateSearchRefunds(refunds)))}
-					classes='mr-2'	
-				/>
-				<Revenue 
-					label="Refunds not deposits" 
-					amount={refundsNotDeposits(searchRefunds(dateSearchRefunds(refunds)))}
-					classes=''	
-				/>
 
-			</div>
 			<div class="grid grid-cols-1 mx-2 gap-3 shadow-lg">
-				{#each slicedRefunds(searchRefunds(dateSearchRefunds(refunds))) as refund (refund.refundNumber)}
+				{#each slicedRefunds(searchRefunds(dateSearchRefunds(searchByUser(refunds)))) as refund (refund.refundNumber)}
 				{@const customer = customers.find((customer) => customer.id === refund.customerId)}
 					<div class="border rounded-lg border-primary-50 dark:border-primary-950 sm:grid sm:grid-cols-2">
 						<RefundRecordEmployee refundRecord={refund} classes='px-2 pt-2 '/>
@@ -127,7 +156,7 @@
 					</div>
 				{/each}
 			</div>
-			<Pagination bind:size bind:pageNum label="refund records" array={searchRefunds(dateSearchRefunds(refunds))} />
+			<Pagination bind:size bind:pageNum label="refund records" array={searchRefunds(dateSearchRefunds(searchByUser(refunds)))} />
 		{/await}
 	{/await}
 {/await}
