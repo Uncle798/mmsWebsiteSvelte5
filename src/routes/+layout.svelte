@@ -109,7 +109,7 @@
 	</ToastProvider>
 
 {#if !data.user?.employee}
-	<footer class="bg-tertiary-50 dark:bg-tertiary-950 fixed bottom-0 right-0 left-0 px-2 h-20 sm:h-12 lg:h-7 pt-1">
+	<footer class="bg-tertiary-50 dark:bg-tertiary-950 fixed bottom-0 right-0 left-0 px-2 h-20 sm:h-12 lg:h-7">
 		Open 7 days a week from 8:00 am to 8:00 pm we're located at {PUBLIC_ADDRESS1} Moscow ID 83843. Call us at <a href="tel:+{PUBLIC_PHONE}" class="anchor">{formattedPhone}</a>
 	</footer>
 {/if}

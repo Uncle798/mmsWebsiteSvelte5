@@ -18,7 +18,7 @@
 {#if data.refundRecord}
     {@const customer = data.refundRecord.customer}
     <Header title='Refund Record number: {data.refundRecord.refundNumber}' />
-    <div class="m-2 mt-10 border border-primary-50 dark:border-primary-950 rounded-lg grid grid-cols-1 lg:grid-cols-2">
+    <div class="m-2 mt-10 border border-primary-50 dark:border-primary-950 rounded-lg grid grid-cols-1 lg:grid-cols-2 mb-22 sm:mb-14 lg:mb-9">
         <div class="mb-2 sm:grid sm:grid-cols-2">
             {#if data.user?.employee}
                 <RefundRecordEmployee refundRecord={data.refundRecord} classes=''/>

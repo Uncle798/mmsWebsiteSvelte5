@@ -38,7 +38,7 @@
 </script>
 <Header title='Settings for {data.user?.givenName}' />
 
-<div transition:fade={{duration:600}} class="mx-2 mt-9">
+<div transition:fade={{duration:600}} class="mx-2 mt-9 mb-24 sm:mb-14 lg:mb-9">
     <div class="flex flex-col sm:flex-row gap-3">
         <div>
             {#if data.user}
@@ -175,6 +175,5 @@
             {/await}
         {/await}
     </div>
+    <ThemeSelector />
 </div>
-
-<ThemeSelector />

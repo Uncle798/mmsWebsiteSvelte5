@@ -22,7 +22,7 @@
     {/snippet}
 </Modal>
 <Header title="New Invoice" />
-<div transition:fade={{duration:600}}>
+<div transition:fade={{duration:600}} class="mt-10 mb-24 sm:mb-14 lg:mb-9">
     <button class="btn preset-filled-primary-50-950 rounded-lg m-2" type="button" onclick={()=>registerFormModalOpen = true}>Create New Customer</button>
     <NewInvoiceForm data={data.newInvoiceForm} employeeId={data.user?.id} customers={data.customers} leases={data.leases} classes='px-2'/>
 </div>

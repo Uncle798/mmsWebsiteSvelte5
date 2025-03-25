@@ -98,7 +98,7 @@
                 <Search bind:search={noteSearch} searchType='Payment notes' data={data.searchForm} classes='sm:w-1/3'/>
                 <Search bind:search={nameSearch} searchType='By user' data={data.searchForm} classes='sm:w-1/3'/>
             </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 md: gap-3">
+            <div class="grid grid-cols-1 sm:grid-cols-2 md: gap-3 mb-24 sm:mb-14 lg:mb-9">
                 {#each slicedSource(searchedPaymentRecords(searchByNotes(searchByUser(deposits)))) as deposit}
                 {@const user = customers.find((customer) => customer.id === deposit.customerId)}
                     <div class="flex flex-col border-2 dark:border-primary-950 border-primary-50 rounded-lg mx-1 sm:mx-2">

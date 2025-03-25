@@ -131,7 +131,7 @@
          loading contacts
       {:then addresses}         
          {#if paymentRecords.length >0}
-         <div transition:fade={{duration:600}} class=''>
+         <div transition:fade={{duration:600}} class='mb-24 sm:mb-14 lg:mb-9'>
                <div class=" bg-tertiary-50 dark:bg-tertiary-950 w-full rounded-b-lg fixed top-8">
                <Revenue 
                   label="Total revenue" 
