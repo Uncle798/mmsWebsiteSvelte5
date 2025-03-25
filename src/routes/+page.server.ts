@@ -26,5 +26,6 @@ export const load:PageServerLoad = (async () => {
          sizes.push(datum.size)
       }
    })
-   return { availableUnits, sizes }
+
+   return { availableUnits, sizes, }
 })
