@@ -57,7 +57,7 @@
 </script>
 
 <Modal
-	open={menuOpen}
+	bind:open={menuOpen}
 	triggerBase="btn bg-primary-50 dark:bg-primary-950 hover:shadow-xl hover:border-2 border-secondary-50 dark:border-secondary-950 fixed top-0 z-50"
 	contentBase="bg-surface-100-900 p-2 space-y-2 shadow-xl w-[240px] h-screen"
 	positionerJustify="justify-start"
@@ -98,7 +98,7 @@
 				{/if}
 			</div>
 		</ul>
-		<button class="absolute top-1 left-[205px] btn-icon" onclick={()=>menuOpen=false}><XCircleIcon /></button>
+		<button class="absolute top-1 left-[205px] btn-icon" onclick={()=>{menuOpen=false}}><XCircleIcon /></button>
 	</article>
 {/snippet}
 </Modal>
