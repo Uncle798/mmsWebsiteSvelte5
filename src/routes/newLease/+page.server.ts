@@ -86,7 +86,6 @@ export const actions:Actions = {
       if(!unit){
          return fail(404, {message: 'Unit not found'})
       }
-
       const currentLease = await prisma.lease.findFirst({
          where:{
             AND:[

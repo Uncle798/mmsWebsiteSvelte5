@@ -7,6 +7,7 @@ import dayjs from 'dayjs';
 export const POST:RequestHandler = async (event) => {
    const body = await event.request.json();
    const { customerId, invoiceNum, subscription, } = body;
+   console.log(body)
    if(!invoiceNum){
       return new Response(JSON.stringify('Invoice not provided'), { status:400 });
    }
@@ -88,49 +89,6 @@ export const POST:RequestHandler = async (event) => {
          tax_behavior: 'inclusive',
          
       })
-      try {         
-         const stripeSubscription = await stripe.subscriptionSchedules.create({
-            customer: customer.stripeId!,
-            start_date: subscriptionStartDate.unix(),
-            end_behavior: 'release',
-            metadata: {
-               leaseId: lease!.leaseId
-            },
-            default_settings: {
-               description: `Monthly Rent for unit ${lease?.unitNum.replace(/^0+/gm, '')}`,
-            },
-            phases: [
-               {
-                  items: [
-                     {
-                        price: price.id,
-                        quantity: 1,
-                        metadata: {
-                           leaseId: lease!.leaseId
-                        }
-                     },
-                  ],
-                  iterations: 1,
-               }
-            ]
-         })
-         lease = await prisma.lease.update({
-            where:{
-               leaseId: lease!.leaseId
-            },
-            data: {
-               stripeSubscriptionId: stripeSubscription.id
-            }
-         })
-         const setupIntent = await stripe.setupIntents.create({
-            customer: customer.stripeId ? customer.stripeId : undefined,
-            description: stripeSubscription.default_settings.description ? stripeSubscription.default_settings.description : undefined,
-         })
-         return new Response(JSON.stringify({client_secret: setupIntent.client_secret, startDate: subscriptionStartDate} ), {status: 200})
-      } catch (error) {
-         console.error(error)
-      }
-   } else{
          const paymentIntent = await stripe.paymentIntents.create({
             amount: invoice.invoiceAmount * 100,
             currency: 'usd',
