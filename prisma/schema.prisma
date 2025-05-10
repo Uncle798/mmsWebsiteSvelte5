@@ -142,7 +142,7 @@ model PaymentRecord {
 
 model Invoice {
   invoiceNum       Int            @id @unique @default(autoincrement())
-  customerId       String?
+  customerId       String
   employeeId       String?
   leaseId          String?
   invoiceAmount    Float
