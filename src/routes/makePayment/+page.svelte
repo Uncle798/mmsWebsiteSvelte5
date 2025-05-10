@@ -3,7 +3,7 @@
     import { Elements, PaymentElement, } from 'svelte-stripe';
     import { onMount } from 'svelte';
     import { loadStripe } from '@stripe/stripe-js'
-    import type { StripeElements, Stripe } from '@stripe/stripe-js'
+    import type { StripeElements, Stripe, StripeEmbeddedCheckout } from '@stripe/stripe-js'
 
     import type { PageData } from './$types';
 	import Header from '$lib/Header.svelte';
@@ -14,19 +14,36 @@
 
     let stripe:Stripe | null = $state(null);
     let clientSecret: string = $state('');
-    let elements:StripeElements | undefined = $state();
-    let error = null;
-    let processing = $state(false);
+    let wrapper:string | HTMLElement = $state('');
     let mounted = $state(false);
-    // let currentTime = $state(new Date());
+    let checkoutElement = $state<StripeEmbeddedCheckout>();
     onMount(async () =>{
-        // const interval = setInterval(() =>{
-        //     currentTime = new Date();
-        // }, 1000)
+
         stripe = await loadStripe(PUBLIC_STRIPE_TEST);
-        clientSecret = await createPaymentIntent();
+        clientSecret = await createCheckout();
+        stripe?.initEmbeddedCheckout({clientSecret}).then((element) => {
+
+            checkoutElement = element;
+            console.log(checkoutElement)
+            checkoutElement.mount(wrapper)
+        })
         mounted = true;
     })
+    async function createCheckout() {
+        const response = await fetch(`/api/stripe/checkoutSession`, {
+            method: 'POST',
+            headers: {
+                'content-type' : 'applications/json'
+            },
+            body: JSON.stringify({ 
+                invoiceNum: data.invoice.invoiceNum, 
+                subscription: data.subscription
+            })
+        })
+        const body = await response.json();
+        console.log(body)
+        return body;
+    }
     async function createPaymentIntent() {
         const response = await fetch(`/api/stripe/paymentIntent?invoiceNum=${data.invoice?.invoiceNum}`, {
             method: 'POST',
@@ -38,68 +55,13 @@
         const {clientSecret} = await response.json();
         return clientSecret;
     }
-    async function submit() {
-        if(processing){
-            return;
-        }
-        processing = true;
-        if(!stripe){
-            return;
-        }
-        elements?.submit();
-        let returnURL = `${PUBLIC_URL}/thanks?invoiceNum=${data.invoice?.invoiceNum}`
-        if(data.newLease){
-            returnURL = `${PUBLIC_URL}/newLease/leaseSent?invoiceNum=${data.invoice?.invoiceNum}`
-        }
-        let result;
-        if(data.subscription){
-            result = await stripe.confirmSetup({
-                elements,
-                clientSecret,
-                confirmParams: {
-                    return_url: returnURL
-                }
-            })
-        } else {
-            result = await stripe.confirmPayment({
-                elements,
-                clientSecret,
-                confirmParams:{
-                    return_url: returnURL
-                }
-            });
-        }
-        if(result.error){
-            error = result.error;
-            processing = false;
-        } 
-    }
-    
 </script>
 <Header title='Make a Payment'/>
 
 {#if !mounted}
-    <div transition:fade={{duration:600}} class="mt-10">
+    <div transition:fade={{duration:600}} class="mt-10 m-2">
         ...loading
     </div>
     {:else}
-    {#if data.invoice}
-        <InvoiceCustomer invoice={data.invoice} classes='mx-1 sm:mx-2 mt-10'/>
-        <div class="mx-1 sm:mx-2">
-            
-            <form onsubmit={submit}>
-                <Elements {stripe} clientSecret={clientSecret} bind:elements >
-                    <!-- {#if data.user?.email}
-                    <LinkAuthenticationElement defaultValues={{email:data.user.email}} />
-                    {/if} -->
-                    <PaymentElement />
-                    {#if processing}
-                        <div class="p-4">Processing...</div>
-                    {:else}
-                        <button class="btn preset-filled-primary-50-950 rounded-lg mt-2" onclick={submit}>Pay charge of ${data.invoice?.invoiceAmount}</button>
-                    {/if}
-                </Elements>
-            </form>
-        </div>
-    {/if}
+    <div bind:this={wrapper} class="mt-10 m-2"></div>
 {/if}
