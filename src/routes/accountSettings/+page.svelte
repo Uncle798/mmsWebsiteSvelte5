@@ -116,7 +116,13 @@
             </Modal>
         {/await}
     </div>
-
+    {#await data.stripeAccountSession}
+        ...loading Stripe Account Link
+    {:then stripeAccountSession} 
+        <div class="my-2">
+            <a href={stripeAccountSession?.url} class='anchor'>Manage your payments here.</a>
+        </div>
+    {/await}
     {#await data.leasesPromise}
         ...loading leases
     {:then leases}
@@ -138,14 +144,14 @@
                     {#if !lease.leaseEnded}
                         <button class="btn preset-filled-primary-50-950 rounded-lg m-1 sm:m-2" onclick={()=> setCurrentLeaseId(lease.leaseId)}>End Lease</button>
                         {#if !lease.stripeSubscriptionId}
-                        <form method="POST" use:enhance>
-                            <input type="hidden" name="cuid2Id" id="cuid2Id" value={lease.leaseId}>
-                            <div class="flex">
-                                <button type="button" class='btn preset-filled-primary-50-950 rounded-lg m-1 sm:m-2' onclick={()=>autoPaySignUp(lease.leaseId)}>Sign up for auto pay</button>
-                                {#if currentLeaseId === lease.leaseId}                                
-                                <ProgressRing value={null} size="size-8" strokeWidth="6px" meterStroke="stroke-secondary-600-400" trackStroke="stroke-secondary-50-950" classes='ml-2' />
-                                {/if}
-                            </div>
+                            <form method="POST" use:enhance>
+                                <input type="hidden" name="cuid2Id" id="cuid2Id" value={lease.leaseId}>
+                                <div class="flex">
+                                    <button type="button" class='btn preset-filled-primary-50-950 rounded-lg m-1 sm:m-2' onclick={()=>autoPaySignUp(lease.leaseId)}>Sign up for auto pay</button>
+                                    {#if currentLeaseId === lease.leaseId}                                
+                                        <ProgressRing value={null} size="size-8" strokeWidth="6px" meterStroke="stroke-secondary-600-400" trackStroke="stroke-secondary-50-950" classes='ml-2' />
+                                    {/if}
+                                </div>
                             </form>
                         {:else}
                             Thanks for auto-paying!
