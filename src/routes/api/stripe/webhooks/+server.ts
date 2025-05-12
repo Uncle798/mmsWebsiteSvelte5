@@ -2,7 +2,7 @@ import { STRIPE_SIGNING_SECRET } from '$env/static/private';
 import { stripe } from '$lib/server/stripe';
 import { prisma } from '$lib/server/prisma';
 import type { RequestHandler } from './$types'; 
-import type { Invoice, PaymentRecord, User } from '@prisma/client';
+import type { Invoice, Lease, PaymentRecord, User } from '@prisma/client';
 
 export const POST: RequestHandler = async (event) => {
    if(STRIPE_SIGNING_SECRET){
@@ -111,11 +111,24 @@ export const POST: RequestHandler = async (event) => {
             case 'customer.subscription.created': {
                const subscription = stripeEvent.data.object;
                const handleSubscription = async (s: typeof subscription)=>{
-                  const customer = await prisma.user.findFirst({
-                     where: {
-                        stripeId: s.customer.toString()
-                     }
-                  })
+                  let lease: Lease | null = null
+                  if(s.metadata.leaseId){
+                     lease = await prisma.lease.findFirst({
+                        where: {
+                           leaseId: s.metadata.leaseId
+                        }
+                     })
+                  }
+                  if(lease){
+                     await prisma.lease.update({
+                        where: {
+                           leaseId: lease.leaseId
+                        },
+                        data: {
+                           stripeSubscriptionId: s.id
+                        }
+                     })
+                  }
                }
                handleSubscription(subscription);
                return new Response(JSON.stringify('ok'), {status:200})
@@ -139,7 +152,6 @@ export const POST: RequestHandler = async (event) => {
                }
                handlePaymentIntent(paymentIntent);
                return new Response(JSON.stringify('ok'), {status: 200});
-
             }
             case 'charge.succeeded': {
                const charge = stripeEvent.data.object;
