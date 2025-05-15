@@ -51,11 +51,7 @@
    <article class="m-2 mt-10">
       <div>
          <p>
-            {#if data.user}
-               Welcome to the {PUBLIC_COMPANY_NAME} home page {data.user.givenName}!
-            {:else}
-               Welcome to the {PUBLIC_COMPANY_NAME} home page!
-            {/if}
+            Thank you for visiting Moscow Mini Storage!
             Nestled in the hills of the Palouse just outside Moscow off the Troy Highway, {PUBLIC_COMPANY_NAME} is the place to safely and securely store your belongings.</p>
             <p>Family owned and operated since 1993 you can contact us at 
             <a href="tel:{PUBLIC_PHONE}" class="anchor">
@@ -83,7 +79,7 @@
          </div>
       </article>
    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-1 mx-2 mb-24 sm:mb-14 lg:mb-9" in:fade={{duration:600}}>
-      <h1 class="h3 text-center lg:col-start-2 lg:col-end-4 sm:col-span-2 md:col-start-2 md:col-end-3 ">Available Units</h1>
+      <h3 class="h3 text-center lg:col-start-2 lg:col-end-4 sm:col-span-2 md:col-start-2 md:col-end-3 ">Available Units</h3>
       <div class="col-span-1 sm:col-span-2 md:col-start-3 md:col-span-1 lg:col-start-4">
          <label for="size" class="label-text">Filter by size: 
             <select class="select rounded-lg" name='size' id='size' bind:value={sizeFilter} onchange={setSizeFilter}>

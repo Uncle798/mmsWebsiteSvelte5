@@ -62,7 +62,7 @@ export const POST: RequestHandler = async (event) => {
                   },
                   unit_amount: lease!.price * 100, 
                   product_data: {
-                     name: `monthly rent for unit number ${lease.unitNum.replace(/^0+/gm,'')}`,
+                     name: `Monthly rent for unit number ${lease.unitNum.replace(/^0+/gm,'')}`,
                      metadata: {
                         leaseId: lease.leaseId,
                         customerId: customer.id,
