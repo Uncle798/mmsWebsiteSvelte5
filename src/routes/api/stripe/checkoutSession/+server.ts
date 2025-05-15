@@ -25,13 +25,14 @@ export const POST: RequestHandler = async (event) => {
    if(!customer){
       return new Response(JSON.stringify('Customer not found'), { status:404 });
    }
+   console.log(customer)
    const previousSessions = await stripe.checkout.sessions.list({
       customer: customer.stripeId ? customer.stripeId : undefined
    })
    if(previousSessions){
-      previousSessions.data.forEach((datum) => {
-         if(datum.status === 'open')
-         stripe.checkout.sessions.expire(datum.id)
+      previousSessions.data.forEach((session) => {
+         if(session.status === 'open')
+         stripe.checkout.sessions.expire(session.id)
       })
    }
    if(subscription){  
