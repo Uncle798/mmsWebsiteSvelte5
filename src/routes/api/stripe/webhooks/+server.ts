@@ -130,7 +130,57 @@ export const POST: RequestHandler = async (event) => {
                return new Response(JSON.stringify('ok'), {status: 200});
             }
             case 'payment_intent.canceled': {
-               
+               const paymentIntent = stripeEvent.data.object;
+               const handlePaymentIntent = async (intent: typeof paymentIntent) => {
+                  const invoice = await prisma.invoice.findUnique({
+                     where: {
+                        invoiceNum: parseInt(intent.metadata.invoiceNum, 10),
+                     }
+                  });
+                  if(invoice){
+                     if(invoice.paymentRecordNum){
+                        const paymentRecord = await prisma.paymentRecord.findUnique({
+                           where: {
+                              paymentNumber: invoice.paymentRecordNum
+                           }
+                        })
+                        if(paymentRecord){
+                           await prisma.paymentRecord.delete({
+                              where: {
+                                 paymentNumber: paymentRecord.paymentNumber
+                              }
+                           })
+                        }
+                     }
+                     await prisma.invoice.delete({
+                        where: {
+                           invoiceNum: invoice.invoiceNum
+                        }
+                     })
+                     if(invoice.leaseId){
+                        const leaseInvoices = await prisma.invoice.findMany({
+                           where: {
+                              leaseId: invoice.leaseId
+                           }
+                        })
+                        if(!leaseInvoices){
+                           const lease = await prisma.lease.findUnique({
+                              where: {
+                                 leaseId: invoice.leaseId
+                              }
+                           })
+                           if(lease){
+                              await prisma.lease.delete({
+                                 where: {
+                                    leaseId: lease.leaseId
+                                 }
+                              })
+                           }
+                        }
+                     }
+                  }
+               }
+               handlePaymentIntent(paymentIntent);
                return new Response(JSON.stringify('ok'), {status:200});
             }
             case 'customer.subscription.created': {
