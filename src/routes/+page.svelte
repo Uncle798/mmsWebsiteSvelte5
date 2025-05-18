@@ -14,7 +14,6 @@
       data: PageData;
    }
    let { data }: Props = $props();
-   let prices:number[]=[];
    const wrapper = new Promise<Unit[]>(async res => {
       const allAvailableUnits = await data.availableUnits;
       const shownUnits:Unit[] = []
@@ -27,20 +26,11 @@
       res(shownUnits);
    })
    let sizeFilter = $state('');
-   let priceFilter = $state(0);
-   const filterPrice = $derived((units:Unit[]) => units.filter((unit) => {
-      if(priceFilter !== 0){
-         unit.advertisedPrice === priceFilter
-      } else{
-         return unit
-      }
-   }))
    const filterSize = $derived((units:Unit[]) => units.filter((unit) => unit.size.includes(sizeFilter)))
    function setSizeFilter(event:Event){
       const select = event.target as HTMLSelectElement;
       const size = select.value
       sizeFilter = size;
-      priceFilter = 0
    }
    const formattedPhone = PUBLIC_PHONE.substring(0,1) +'-'+ PUBLIC_PHONE.substring(1,4)+'-'+PUBLIC_PHONE.substring(4,7)+'-'+PUBLIC_PHONE.substring(7)
 
@@ -66,11 +56,7 @@
       <article class="m-2 mt-10">
          <div>
             <p>
-               {#if data.user}
-                  Welcome to the {PUBLIC_COMPANY_NAME} home page {data.user.givenName}!
-               {:else}
-                  Welcome to the {PUBLIC_COMPANY_NAME} home page!
-               {/if}
+               Thank you for visiting Moscow Mini Storage!
                Nestled in the hills of the Palouse just outside Moscow off the Troy Highway, {PUBLIC_COMPANY_NAME} is the place to safely and securely store your belongings.</p>
                <p>Family owned and operated since 1993 you can contact us at 
                <a href="tel:{PUBLIC_PHONE}" class="anchor">
@@ -90,10 +76,10 @@
             </select>
          </label>
       </div>
-      {#each filterPrice(filterSize(units)) as unit}
-         <div class="flex flex-col border rounded-lg border-primary-50 dark:border-primary-950">
-            <UnitCustomer {unit} classes=''/>
-            <a class="btn preset-filled-primary-50-950 rounded-lg m-2 text-wrap" href="/newLease?unitNum={unit.num}">Rent this Unit</a>
+      {#each filterSize(units) as unit}
+         <div class="flex flex-col border rounded-lg border-primary-50 dark:border-primary-950 justify-between">
+            <UnitCustomer {unit}/>
+            <a class="btn preset-filled-primary-50-950 m-2" href="/newLease?unitNum={unit.num}">Rent this Unit</a>
          </div>
       {/each}
    </div>
