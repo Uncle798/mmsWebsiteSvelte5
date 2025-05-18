@@ -220,7 +220,7 @@ export const actions:Actions = {
             stripeId
          }
       })
-      qStash.trigger({
+       await qStash.trigger({
          url: `${PUBLIC_URL}/api/upstash/workflow`,
          body:  { leaseId:lease.leaseId },
          workflowRunId: lease.leaseId

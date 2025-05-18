@@ -8,46 +8,23 @@ export const load:PageServerLoad = (async (event) => {
    if(!event.locals.user){
       redirect(302, '/login?toast=unauthorized')
    }
-   const invoiceNum = event.url.searchParams.get('invoiceNum');
-   if(invoiceNum){
-      const invoice = await prisma.invoice.findUnique({
-         where: {
-            invoiceNum:parseInt(invoiceNum, 10),
-         }
-      })
-      if(!invoice){
-         return fail(404, { message: "Invoice not found"});
-      }
-
-      const paymentRecord = await prisma.paymentRecord.create({
-         data: {
-            paymentAmount: invoice.invoiceAmount,
-            invoiceNum: invoice.invoiceNum,
-            customerId: invoice.customerId || '',
-            paymentType: 'STRIPE',
-            paymentNotes: `Payment for invoice number: ${invoice.invoiceNum},\n${invoice.invoiceNotes}`
-         }
-      })
-      await prisma.invoice.update({
-         where: {
-            invoiceNum: invoice.invoiceNum
-         },
-         data: {
-            paymentRecordNum: paymentRecord.paymentNumber
-         }
-      })
+   const leaseId = event.url.searchParams.get('leaseId');
+   if(leaseId){
       const lease = await prisma.lease.findUnique({
          where: {
-            leaseId: invoice!.leaseId!,
+            leaseId: leaseId,
          }
       })
+      if(!lease){
+         return {}
+      }
       const customer = await prisma.user.findUnique({
          where:{
-            id: invoice!.customerId!,
+            id: lease.customerId!,
          }
       })
-      if(lease?.anvilEID){
-         return { customer, }
+      if(lease.anvilEID){
+         return { customer, lease}
       }
       const unit = await prisma.unit.findUnique({
          where:{
@@ -96,10 +73,17 @@ export const load:PageServerLoad = (async (event) => {
                anvilEID 
             }
          })
-         await qStash.notify({eventId:lease!.leaseId})
+         await qStash.notify({eventId:lease.leaseId});
+         const paymentRecord = await prisma.paymentRecord.findFirst({
+            where: {
+               invoice: {
+                  leaseId: lease.leaseId
+               }
+            }
+         })
          return { packetDetails, customer, paymentRecord };
       }
-      return { paymentRecord }
+      return {};
    }
-   return { }
+   return { };
  });

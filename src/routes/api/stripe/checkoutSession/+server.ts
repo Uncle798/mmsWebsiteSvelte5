@@ -80,14 +80,17 @@ export const POST: RequestHandler = async (event) => {
       })
       return new Response(JSON.stringify(session.client_secret), { status: 200 });
    } else {
-
+      let returnUrl = `${PUBLIC_URL}/thanks?customerId=${customer.id}`;
+      if(newLease){
+         returnUrl = `${PUBLIC_URL}/newLease/leaseSent?leaseId=${leaseId}`
+      }
       const session = await stripe.checkout.sessions.create({
          currency: 'usd',
          customer: customer.stripeId ? customer.stripeId : undefined,
          mode: 'payment',
          ui_mode: 'embedded',
          expires_at: newLease ? dayjs().add(30, 'minute').unix() : undefined, 
-         return_url: `${PUBLIC_URL}/thanks?customerId=${customer.id}`,
+         return_url: returnUrl,
          line_items: [
             {
                price_data: {

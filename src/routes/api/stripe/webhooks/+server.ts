@@ -42,93 +42,121 @@ export const POST: RequestHandler = async (event) => {
                handleSessionExpire(session);
                return new Response(JSON.stringify('ok'), {status: 200});
             }
-            case 'payment_intent.created': {
-               const paymentIntent = stripeEvent.data.object;
-               const handlePaymentIntent = async (intent:typeof paymentIntent)=> {
-                  let invoice:Invoice | null = null
-                  const customerId = intent.customer?.toString()
-                  let customer:User | null = null 
-                  try {
-                     customer = await prisma.user.findFirst({
+            case 'checkout.session.completed': {
+               const checkoutSession = stripeEvent.data.object;
+               console.log(checkoutSession)
+               const handleSession = async (session: typeof checkoutSession) => {
+                  if(session.metadata?.invoiceNum){
+                     const invoice = await prisma.invoice.findUnique({
                         where: {
-                           stripeId: customerId
+                           invoiceNum: parseInt(session.metadata.invoiceNum, 10)
                         }
                      })
-                  } catch (error) {
-                     console.error(error)
-                  }
-                  if(!customer){
-                     return;
-                  }
-                  if(intent.metadata.invoiceNum){
-                     try {                        
-                        invoice = await prisma.invoice.findUnique({
-                           where: {
-                              invoiceNum: parseInt(intent.metadata.invoiceNum, 10),
-                           }
-                        });
-                     } catch (error) {
-                        console.error(error)
-                     }
-                  } else {
-                     try {
-                        invoice = await prisma.invoice.create({
+                     if(invoice){
+                        const paymentRecord = await prisma.paymentRecord.create({
                            data: {
-                              invoiceAmount: intent.amount,
-                              customerId: customer?.id,
-                              invoiceNotes: intent.description,
-                              stripeId: intent.invoice?.toString()
+                              paymentAmount: session.amount_total ? session.amount_total : 0,
+                              customerId: invoice.customerId,
+                              invoiceNum: invoice.invoiceNum,
+                              paymentType: 'STRIPE',
+                              paymentNotes: `Payment for invoice number ${invoice.invoiceNum}, ${invoice.invoiceNotes}`
                            }
                         })
-                     } catch (error) {
-                        console.error(error)
+                        console.log(paymentRecord);
                      }
-                     await stripe.paymentIntents.update(paymentIntent.id, {
-                        metadata: { 
-                           invoiceNum: invoice?.invoiceNum ? invoice.invoiceNum : null
-                        }
-                     })
-                  }
-                  let paymentRecord:PaymentRecord | null = null
-                  try {                     
-                     paymentRecord = await prisma.paymentRecord.create({
-                        data: {
-                           invoiceNum: invoice!.invoiceNum,
-                           customerId: customer!.id,
-                           paymentAmount: intent.amount / 100,
-                           paymentType: 'STRIPE',
-                           stripeId: intent.id,
-                           unitNum: intent.metadata.unitNum,
-                           paymentNotes: `Payment for invoice number: ${invoice?.invoiceNum}, ${invoice?.invoiceNotes}`,
-                           deposit: invoice?.deposit,
-                        }
-                     })
-                  } catch (error) {
-                     console.error(error)
-                  }
-                  if(paymentRecord){
-                     try {
-                        await prisma.invoice.update({
-                           where: {
-                              invoiceNum: invoice?.invoiceNum
-                           },
-                           data: {
-                              paymentRecordNum: paymentRecord.paymentNumber
-                           }
-                        })
-                     } catch (error) {
-                        console.error(error)
-                     }
-                     await stripe.paymentIntents.update(intent.id, {
-                        metadata: {
-                           paymentNum: paymentRecord.paymentNumber
-                        }
-                     })
                   }
                }
-               handlePaymentIntent(paymentIntent);
-               return new Response(JSON.stringify('ok'), {status: 200});
+               handleSession(checkoutSession)
+               return new Response(JSON.stringify('ok'), {status:200})
             }
+            // case 'payment_intent.created': {
+            //    const paymentIntent = stripeEvent.data.object;
+            //    console.log(paymentIntent)
+            //    const handlePaymentIntent = async (intent:typeof paymentIntent)=> {
+            //       let invoice:Invoice | null = null
+            //       const customerId = intent.customer?.toString()
+            //       let customer:User | null = null 
+            //       try {
+            //          customer = await prisma.user.findFirst({
+            //             where: {
+            //                stripeId: customerId
+            //             }
+            //          })
+            //       } catch (error) {
+            //          console.error(error)
+            //       }
+            //       if(!customer){
+            //          return;
+            //       }
+            //       if(intent.metadata.invoiceNum){
+            //          try {                        
+            //             invoice = await prisma.invoice.findUnique({
+            //                where: {
+            //                   invoiceNum: parseInt(intent.metadata.invoiceNum, 10),
+            //                }
+            //             });
+            //          } catch (error) {
+            //             console.error(error)
+            //          }
+            //       } else {
+            //          try {
+            //             invoice = await prisma.invoice.create({
+            //                data: {
+            //                   invoiceAmount: intent.amount,
+            //                   customerId: customer?.id,
+            //                   invoiceNotes: intent.description,
+            //                   stripeId: intent.invoice?.toString()
+            //                }
+            //             })
+            //          } catch (error) {
+            //             console.error(error)
+            //          }
+            //          await stripe.paymentIntents.update(paymentIntent.id, {
+            //             metadata: { 
+            //                invoiceNum: invoice?.invoiceNum ? invoice.invoiceNum : null
+            //             }
+            //          })
+            //       }
+            //       let paymentRecord:PaymentRecord | null = null
+            //       try {                     
+            //          paymentRecord = await prisma.paymentRecord.create({
+            //             data: {
+            //                invoiceNum: invoice!.invoiceNum,
+            //                customerId: customer!.id,
+            //                paymentAmount: intent.amount / 100,
+            //                paymentType: 'STRIPE',
+            //                stripeId: intent.id,
+            //                unitNum: intent.metadata.unitNum,
+            //                paymentNotes: `Payment for invoice number: ${invoice?.invoiceNum}, ${invoice?.invoiceNotes}`,
+            //                deposit: invoice?.deposit,
+            //             }
+            //          })
+            //       } catch (error) {
+            //          console.error(error)
+            //       }
+            //       if(paymentRecord){
+            //          try {
+            //             await prisma.invoice.update({
+            //                where: {
+            //                   invoiceNum: invoice?.invoiceNum
+            //                },
+            //                data: {
+            //                   paymentRecordNum: paymentRecord.paymentNumber
+            //                }
+            //             })
+            //          } catch (error) {
+            //             console.error(error)
+            //          }
+            //          await stripe.paymentIntents.update(intent.id, {
+            //             metadata: {
+            //                paymentNum: paymentRecord.paymentNumber
+            //             }
+            //          })
+            //       }
+            //    }
+            //    handlePaymentIntent(paymentIntent);
+            //    return new Response(JSON.stringify('ok'), {status: 200});
+            // }
             case 'payment_intent.canceled': {
                const paymentIntent = stripeEvent.data.object;
                const handlePaymentIntent = async (intent: typeof paymentIntent) => {
@@ -211,16 +239,23 @@ export const POST: RequestHandler = async (event) => {
             case 'payment_intent.succeeded':{
                const paymentIntent = stripeEvent.data.object;
                const handlePaymentIntent = async (intent:typeof paymentIntent)=> {
-                  try {                
-                     await prisma.paymentRecord.update({
+                  try {     
+                     const invoice = await prisma.invoice.findUnique({
                         where: {
-                           stripeId: intent.id,
-                        },
-                        data: {
-                           paymentCompleted: new Date,
-                           paymentAmount: intent.amount_received / 100,
+                           stripeId: paymentIntent.id
                         }
                      })
+                     if(invoice){
+                        await prisma.paymentRecord.create({
+                           data: {
+                              invoiceNum: invoice?.invoiceNum,
+                              customerId: invoice?.customerId,
+                              paymentType: 'STRIPE',
+                              paymentCompleted: new Date,
+                              paymentAmount: intent.amount_received / 100,
+                           }
+                        })
+                     }
                   } catch (error) {
                      console.error(error)
                   }
@@ -231,19 +266,38 @@ export const POST: RequestHandler = async (event) => {
             case 'charge.succeeded': {
                const charge = stripeEvent.data.object;
                const handleCharge = async (c: typeof charge) =>{
-                  try {                     
-                     await prisma.paymentRecord.update({
+                  if(c.payment_intent){
+                     const invoice = await prisma.invoice.findFirst({
                         where: {
-                           stripeId: c.payment_intent?.toString()
-                        },
-                        data:{
-                           paymentCompleted: new Date(),
+                           stripeId: c.payment_intent.toString()
                         }
                      })
-                  } catch (error) {
-                     console.error(error)
+                     try {    
+                        const customer = await prisma.user.findFirst({
+                           where: {
+                              stripeId: c.customer?.toString()
+                           }
+                        });
+                        if(!customer){
+                           return;
+                        }
+                        
+                        const paymentRecord = await prisma.paymentRecord.create({
+                           data:{
+                              paymentCompleted: new Date(),
+                              paymentAmount: c.amount / 100,
+                              stripeId: c.id,
+                              invoiceNum: invoice?.invoiceNum,
+                              customerId: customer.id,
+                              paymentType: 'STRIPE',
+                              paymentNotes: `Payment for invoice number ${invoice?.invoiceNum}, ${invoice?.invoiceNotes}`
+                           }
+                        })
+                        console.log(paymentRecord)
+                     } catch (error) {
+                        console.error(error)
+                     }  
                   }
-
                }
                handleCharge(charge);
                return new Response(JSON.stringify('ok'), {status: 200})

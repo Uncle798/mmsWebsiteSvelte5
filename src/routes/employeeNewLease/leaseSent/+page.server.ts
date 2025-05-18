@@ -8,47 +8,31 @@ export const load = (async (event) => {
    if(!event.locals.user?.employee){
       redirect(302, '/login?toast=employee');
    }
-   const paymentNumber = event.url.searchParams.get('paymentNumber');
-   if(paymentNumber){
-      const paymentRecord = await prisma.paymentRecord.findUnique({
-         where: {
-            paymentNumber:parseInt(paymentNumber, 10),
-         }
-      })
-      if(!paymentRecord){
-         return fail(404, {message:'Payment record not found'});
-      }
-      const invoice = await prisma.invoice.findUnique({
-         where: {
-            invoiceNum: paymentRecord.paymentNumber
-         },
-      });
-      if(!invoice){
-         return fail(404, {message: 'invoice not found'})
-      }
+   const leaseId = event.url.searchParams.get('leaseId');
+   if(leaseId){
       const lease = await prisma.lease.findUnique({
          where: {
-            leaseId: invoice.leaseId!
+            leaseId: leaseId
          }
       })
+      if(!lease){
+         return fail(404)
+      }
       const unit = await prisma.unit.findFirst({
          where: {
-            num: lease?.unitNum
+            num: lease.unitNum
          }
       })
       const customer = await prisma.user.findUnique({
          where: {
-            id: paymentRecord.customerId
+            id: lease.customerId
          }
       });
       const address = await prisma.address.findUnique({
          where: {
-            addressId: lease?.addressId
+            addressId: lease.addressId
          }
       })
-      if(lease?.anvilEID){
-         return { customer, paymentRecord, address }
-      }
       const employee = await prisma.user.findUnique({
          where: {
             id: event.locals.user.id
@@ -78,10 +62,23 @@ export const load = (async (event) => {
                anvilEID 
             }
          })
-         await qStash.notify({eventId:lease!.leaseId})
+         const notification = await qStash.notify({eventId:lease.leaseId, eventData:lease.leaseId});
+         console.log(notification);
+         const invoice = await prisma.invoice.findFirst({
+            where: {
+               leaseId: lease.leaseId
+            }
+         });
+         if(!invoice){
+            return fail(400)
+         }
+         const paymentRecord = await prisma.paymentRecord.findFirst({
+            where: {
+               invoiceNum: invoice.paymentRecordNum 
+            }
+         })
          return { packetDetails, customer, paymentRecord, address };
       }
-      return { paymentRecord, customer, address }
    }
    return { };
 }) satisfies PageServerLoad;

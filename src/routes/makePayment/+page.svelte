@@ -1,17 +1,16 @@
 <script lang="ts">
     import { PUBLIC_STRIPE_TEST, PUBLIC_URL } from '$env/static/public';
-    import { Elements, PaymentElement, } from 'svelte-stripe';
     import { onMount } from 'svelte';
     import { loadStripe } from '@stripe/stripe-js'
-    import type { StripeElements, Stripe, StripeEmbeddedCheckout } from '@stripe/stripe-js'
-
-    import type { PageData } from './$types';
 	import Header from '$lib/Header.svelte';
 	import { fade } from 'svelte/transition';
-	import InvoiceCustomer from '$lib/displayComponents/customerViews/InvoiceCustomer.svelte';
+	import dayjs from 'dayjs';
+	import { goto } from '$app/navigation';
+	import { browser } from '$app/environment';
+    import type { Stripe, StripeEmbeddedCheckout } from '@stripe/stripe-js'
+    import type { PageData } from './$types';
 
     let { data }: { data: PageData } = $props();
-
     let stripe:Stripe | null = $state(null);
     let clientSecret: string = $state('');
     let wrapper:string | HTMLElement = $state('');
@@ -57,13 +56,37 @@
         const {clientSecret} = await response.json();
         return clientSecret;
     }
+    let now = $state(dayjs());
+    let end = dayjs().add(15, 'minute');
+    let count = $state(end.diff(dayjs(), 'seconds'));
+    if(browser){
+        setInterval(async ()=>{
+            now = dayjs();
+            count = end.diff(now, 'second');
+            if(count <= 0){
+                goto('/')
+            }
+        }, 1000)
+    }
 </script>
 <Header title='Make a Payment'/>
-
-{#if !mounted}
-    <div transition:fade={{duration:600}} class="mt-10 m-2">
-        ...loading
+{#if data.newLease}
+    <div class="mt-10">
+        {count} seconds left
     </div>
-    {:else}
-    <div bind:this={wrapper} class="mt-10 m-2"></div>
+    {#if !mounted}
+        <div transition:fade={{duration:600}} class=" m-2">
+            ...loading
+        </div>
+        {:else}
+        <div bind:this={wrapper} class="mt-10 m-2"></div>
+    {/if}
+{:else}
+    {#if !mounted}
+        <div transition:fade={{duration:600}} class=" m-2">
+            ...loading
+        </div>
+        {:else}
+        <div bind:this={wrapper} class="mt-10 m-2"></div>
+    {/if}
 {/if}
