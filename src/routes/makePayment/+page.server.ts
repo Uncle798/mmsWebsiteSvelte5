@@ -8,7 +8,8 @@ export const load:PageServerLoad = (async (event) => {
    }
    const invoiceNum = event.url.searchParams.get('invoiceNum');
    const newLease = event.url.searchParams.get('newLease');
-   const subscription = event.url.searchParams.get('subscription')
+   const subscription = event.url.searchParams.get('subscription');
+   const leaseId = event.url.searchParams.get('leaseId')
    if(!invoiceNum){
       throw error(400, 'No invoice number provided')
    }
@@ -27,5 +28,5 @@ export const load:PageServerLoad = (async (event) => {
    })
    const stripeId = event.url.searchParams.get('stripeId');
 
-   return { invoice, stripeId, customer, newLease, subscription };
+   return { invoice, stripeId, customer, newLease, subscription, leaseId };
 })

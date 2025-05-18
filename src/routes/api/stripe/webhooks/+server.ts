@@ -21,6 +21,27 @@ export const POST: RequestHandler = async (event) => {
 
          }
          switch (stripeEvent?.type) {
+            case 'checkout.session.expired': {
+               const session = stripeEvent.data.object;
+               const handleSessionExpire = async (s: typeof session) => {
+                  if(s.metadata?.newLease){
+                     const lease = await prisma.lease.findUnique({
+                        where: {
+                           leaseId: s.metadata.leaseId,
+                        }
+                     })
+                     if(lease){
+                        await prisma.lease.delete({
+                           where: {
+                              leaseId: lease.leaseId
+                           }
+                        })
+                     }
+                  }
+               }
+               handleSessionExpire(session);
+               return new Response(JSON.stringify('ok'), {status: 200});
+            }
             case 'payment_intent.created': {
                const paymentIntent = stripeEvent.data.object;
                const handlePaymentIntent = async (intent:typeof paymentIntent)=> {
@@ -107,6 +128,10 @@ export const POST: RequestHandler = async (event) => {
                }
                handlePaymentIntent(paymentIntent);
                return new Response(JSON.stringify('ok'), {status: 200});
+            }
+            case 'payment_intent.canceled': {
+               
+               return new Response(JSON.stringify('ok'), {status:200});
             }
             case 'customer.subscription.created': {
                const subscription = stripeEvent.data.object;

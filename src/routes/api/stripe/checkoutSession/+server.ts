@@ -1,11 +1,12 @@
 import { PUBLIC_URL } from '$env/static/public';
 import { prisma } from '$lib/server/prisma';
 import { stripe } from '$lib/server/stripe';
+import dayjs from 'dayjs';
 import type { RequestHandler } from './$types';
 
 export const POST: RequestHandler = async (event) => {
    const body = await event.request.json();
-   const {  subscription, invoiceNum } = body;
+   const {  subscription, invoiceNum, newLease, leaseId } = body;
    if(!invoiceNum){
       return new Response(JSON.stringify('invoiceNum not provided'), { status: 400});
    }
@@ -25,7 +26,6 @@ export const POST: RequestHandler = async (event) => {
    if(!customer){
       return new Response(JSON.stringify('Customer not found'), { status:404 });
    }
-   console.log(customer)
    const previousSessions = await stripe.checkout.sessions.list({
       customer: customer.stripeId ? customer.stripeId : undefined
    })
@@ -66,6 +66,7 @@ export const POST: RequestHandler = async (event) => {
                      metadata: {
                         leaseId: lease.leaseId,
                         customerId: customer.id,
+                        newLease,
                      }
                   }
                },
@@ -84,6 +85,7 @@ export const POST: RequestHandler = async (event) => {
          customer: customer.stripeId ? customer.stripeId : undefined,
          mode: 'payment',
          ui_mode: 'embedded',
+         expires_at: newLease ? dayjs().add(30, 'minute').unix() : undefined, 
          return_url: `${PUBLIC_URL}/thanks?customerId=${customer.id}`,
          line_items: [
             {
@@ -100,7 +102,12 @@ export const POST: RequestHandler = async (event) => {
                },
                quantity: 1,
             }
-         ]
+         ],
+         metadata: {
+            leaseId,
+            newLease,
+            invoiceNum
+         },
       })
       return new Response(JSON.stringify(session.client_secret),  { status: 200 });
    }

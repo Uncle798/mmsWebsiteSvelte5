@@ -37,7 +37,9 @@
             },
             body: JSON.stringify({ 
                 invoiceNum: data.invoice.invoiceNum, 
-                subscription: data.subscription
+                subscription: data.subscription,
+                newLease: data.newLease,
+                leaseId: data.leaseId,
             })
         })
         const body = await response.json();

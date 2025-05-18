@@ -225,6 +225,6 @@ export const actions:Actions = {
          body:  { leaseId:lease.leaseId },
          workflowRunId: lease.leaseId
       })
-      redirect(303, `/makePayment?invoiceNum=${invoice.invoiceNum}&stripeId=${stripeId}&newLease=true`)
+      redirect(303, `/makePayment?invoiceNum=${invoice.invoiceNum}&stripeId=${stripeId}&newLease=true&leaseId=${lease.leaseId}`)
    }
 }
