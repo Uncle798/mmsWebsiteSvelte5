@@ -31,8 +31,9 @@ export const POST: RequestHandler = async (event) => {
    })
    if(previousSessions){
       previousSessions.data.forEach((session) => {
-         if(session.status === 'open')
-         stripe.checkout.sessions.expire(session.id)
+         if(session.status === 'open'){
+            stripe.checkout.sessions.expire(session.id)
+         }
       })
    }
    if(subscription){  
