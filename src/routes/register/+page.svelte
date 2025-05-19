@@ -31,7 +31,7 @@
    <RegisterForm data={data.registerForm} formType='customer'/>
 	<div class="flex flex-col">
 		Or, 
-		<a href="/login/google" class="anchor">Sign in with Google</a>
+		<a href="/login/google?redirectTo={data.redirectTo}&unitNum={data.unitNum}" class="anchor">Sign in with Google</a>
 		<a href="/login/yahoo" class="anchor">Sign in with Yahoo!</a>
 		<a href="/login?redirectTo={data.redirectTo}&unitNum={data.unitNum}" class="anchor">Already have an account? Login here.</a>
 	</div>

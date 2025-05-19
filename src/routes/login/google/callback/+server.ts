@@ -12,6 +12,23 @@ export const GET: RequestHandler = async (event) => {
    const codeVerifier = event.cookies.get('googleCodeVerifier') ?? null;
    const code = event.url.searchParams.get('code');
    const state = event.url.searchParams.get('state');
+   const redirectTo = event.url.searchParams.get('redirectTo');
+   console.log(event.url.searchParams)
+   let response = new Response(null, {status:302, headers:{Location:'/'}})
+   if(redirectTo){
+      switch (redirectTo) {
+         case 'newLease':
+            const unitNum = event.url.searchParams.get('unitNum');
+            if(unitNum){
+               response = new Response(null, {status:302, headers:{Location: `/newLease?unitNum=${unitNum}`}});
+               console.log(response);
+            }
+            break;
+      
+         default:
+            break;
+      }
+   }
    if(storedState === null || codeVerifier === null || code === null || state === null) {
       return new Response('Please restart the process something is null', { status: 400});
    }
@@ -50,7 +67,7 @@ export const GET: RequestHandler = async (event) => {
       const sessionToken = generateSessionToken();
       const session = await createSession(sessionToken, existingUser.id);
       setSessionTokenCookie(event, sessionToken,  session.expiresAt);
-      return new Response(null, {status:302, headers: { Location: '/'}})
+      return response;
    }
    const user = await prisma.user.create({
       data: {
@@ -64,5 +81,5 @@ export const GET: RequestHandler = async (event) => {
    const sessionToken = generateSessionToken();
    const session = await createSession(sessionToken, user.id);
    setSessionTokenCookie(event, sessionToken, session.expiresAt);
-   return new Response(null, {status:302, headers:{Location:'/'}});
+   return response;
 };
