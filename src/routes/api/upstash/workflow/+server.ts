@@ -28,7 +28,7 @@ export const { POST } = serve<InitialPayload>(
             })
             console.log('upstash 1st step')
          })
-         await context.waitForEvent('wait for lease sent or 15 min', leaseId, 1*60);
+         await context.waitForEvent('wait for lease sent or 15 min', leaseId, 15*60);
          await context.run("second-step", async () => {
             const lease = await prisma.lease.findUnique({
                where: {

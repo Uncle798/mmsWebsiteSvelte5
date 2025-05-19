@@ -57,7 +57,7 @@
         return clientSecret;
     }
     let now = $state(dayjs());
-    let end = dayjs().add(1, 'minute');
+    let end = dayjs().add(15, 'minute');
     let remainder = $state(end.diff(dayjs(), 'seconds'));
     let formattedRange = $state('')
     if(browser){
