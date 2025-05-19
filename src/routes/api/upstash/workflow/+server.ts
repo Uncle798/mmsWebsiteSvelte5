@@ -28,7 +28,7 @@ export const { POST } = serve<InitialPayload>(
             })
             console.log('upstash 1st step')
          })
-         await context.waitForEvent('wait for lease sent or 15 min', leaseId, 2*60);
+         await context.waitForEvent('wait for lease sent or 15 min', leaseId, 1*60);
          await context.run("second-step", async () => {
             const lease = await prisma.lease.findUnique({
                where: {
@@ -54,19 +54,11 @@ export const { POST } = serve<InitialPayload>(
                console.log('upstash found a payment record and stopped');
                return;
             } else {
-               // await prisma.lease.delete({
-               //    where: {
-               //       leaseId: lease?.leaseId
-               //    }
-               // })
-               // const sessionsList = await stripe.checkout.sessions.list();
-               // if(sessionsList){
-               //    sessionsList.data.forEach(async (session)=>{
-               //       if(session.customer?.toString() === lease?.customerId && session.status === 'open'){
-               //          await stripe.checkout.sessions.expire(session.id)
-               //       }
-               //    })
-               // }
+               await prisma.lease.delete({
+                  where: {
+                     leaseId: lease?.leaseId
+                  }
+               })
                console.log('upstash 2nd step')
             }
          });

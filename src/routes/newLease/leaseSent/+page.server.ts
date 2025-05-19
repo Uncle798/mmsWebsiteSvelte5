@@ -74,13 +74,18 @@ export const load:PageServerLoad = (async (event) => {
             }
          })
          await qStash.notify({eventId:lease.leaseId});
-         const paymentRecord = await prisma.paymentRecord.findFirst({
+         const invoice = await prisma.invoice.findFirst({
             where: {
-               invoice: {
-                  leaseId: lease.leaseId
-               }
+               leaseId: lease.leaseId
             }
          })
+         console.log(invoice);
+         const paymentRecord = await prisma.paymentRecord.findFirst({
+            where: {
+               invoiceNum: invoice?.invoiceNum
+            }
+         })
+         console.log(paymentRecord);
          return { packetDetails, customer, paymentRecord };
       }
       return {};

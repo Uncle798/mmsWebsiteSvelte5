@@ -57,29 +57,41 @@
         return clientSecret;
     }
     let now = $state(dayjs());
-    let end = dayjs().add(15, 'minute');
-    let count = $state(end.diff(dayjs(), 'seconds'));
+    let end = dayjs().add(1, 'minute');
+    let remainder = $state(end.diff(dayjs(), 'seconds'));
+    let formattedRange = $state('')
     if(browser){
-        setInterval(async ()=>{
+        const interval = setInterval(async ()=>{
             now = dayjs();
-            count = end.diff(now, 'second');
-            if(count <= 0){
+            remainder = end.diff(now, 'second');
+            if(remainder <= 0){
+                clearInterval(interval)
                 goto('/')
+            }
+            if(remainder < 60){
+                formattedRange = `${remainder} seconds`
+            }
+            const mins = Math.floor(remainder / 60);
+            const seconds = remainder % 60;
+            if(seconds < 10 ){
+                formattedRange = `${mins}:0${seconds}`
+            } else {
+                formattedRange = `${mins}:${seconds}`
             }
         }, 1000)
     }
 </script>
 <Header title='Make a Payment'/>
 {#if data.newLease}
-    <div class="mt-10">
-        {count} seconds left
+{#if !mounted}
+    <div in:fade={{duration:600}} class="mt-10 m-2">
+        ...loading
     </div>
-    {#if !mounted}
-        <div transition:fade={{duration:600}} class=" m-2">
-            ...loading
-        </div>
-        {:else}
-        <div bind:this={wrapper} class="mt-10 m-2"></div>
+{:else}
+    <div class="mt-10 mx-1 sm:mx-2" in:fade={{duration:600}}>
+        Please pay your deposit in the next {formattedRange} to hold your unit or your transaction will be canceled and you'll need to start again.
+    </div>
+    <div bind:this={wrapper} class="m-2"></div>
     {/if}
 {:else}
     {#if !mounted}
