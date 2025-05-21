@@ -35,31 +35,33 @@ export const { POST } = serve<InitialPayload>(
                   leaseId
                }
             });
-            await prisma.unit.update({
-               where:{
-                  num: lease?.unitNum,
-               },
-               data: {
-                  unavailable: false
-               }
-            });
-            const paymentRecords = await prisma.paymentRecord.findFirst({
-               where: {
-                  invoice: {
-                     leaseId: lease?.leaseId
+            if(lease){
+               await prisma.unit.update({
+                  where:{
+                     num: lease.unitNum,
+                  },
+                  data: {
+                     unavailable: false
                   }
-               }
-            })
-            if(paymentRecords){
-               console.log('upstash found a payment record and stopped');
-               return;
-            } else {
-               await prisma.lease.delete({
+               });
+               const paymentRecords = await prisma.paymentRecord.findFirst({
                   where: {
-                     leaseId: lease?.leaseId
+                     invoice: {
+                        leaseId: lease?.leaseId
+                     }
                   }
                })
-               console.log('upstash 2nd step')
+               if(paymentRecords){
+                  console.log('upstash found a payment record and stopped');
+                  return;
+               } else {
+                  await prisma.lease.delete({
+                     where: {
+                        leaseId: lease?.leaseId
+                     }
+                  })
+                  console.log('upstash 2nd step')
+               }
             }
          });
       }

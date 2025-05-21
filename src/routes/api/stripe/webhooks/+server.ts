@@ -21,27 +21,39 @@ export const POST: RequestHandler = async (event) => {
 
          }
          switch (stripeEvent?.type) {
-            // case 'checkout.session.expired': {
-            //    const session = stripeEvent.data.object;
-            //    const handleSessionExpire = async (s: typeof session) => {
-            //       if(s.metadata?.newLease){
-            //          const lease = await prisma.lease.findUnique({
-            //             where: {
-            //                leaseId: s.metadata.leaseId,
-            //             }
-            //          })
-            //          if(lease){
-            //             await prisma.lease.delete({
-            //                where: {
-            //                   leaseId: lease.leaseId
-            //                }
-            //             })
-            //          }
-            //       }
-            //    }
-            //    handleSessionExpire(session);
-            //    return new Response(JSON.stringify('ok'), {status: 200});
-            // }
+            case 'checkout.session.expired': {
+               const session = stripeEvent.data.object;
+               const handleSessionExpire = async (s: typeof session) => {
+                  if(s.metadata?.newLease){
+                     const lease = await prisma.lease.findUnique({
+                        where: {
+                           leaseId: s.metadata.leaseId,
+                        }
+                     })
+                     if(lease){
+                        const invoices = await prisma.invoice.findMany({
+                           where: {
+                              leaseId: lease?.leaseId
+                           }
+                        })
+                        if(invoices){
+                           await prisma.invoice.deleteMany({
+                              where: {
+                                 leaseId: lease.leaseId
+                              }
+                           })
+                        }
+                        await prisma.lease.delete({
+                           where: {
+                              leaseId: lease.leaseId
+                           }
+                        })
+                     }
+                  }
+               }
+               handleSessionExpire(session);
+               return new Response(JSON.stringify('ok'), {status: 200});
+            }
             case 'checkout.session.completed': {
                const checkoutSession = stripeEvent.data.object;
                const handleSession = async (session: typeof checkoutSession) => {
@@ -54,7 +66,7 @@ export const POST: RequestHandler = async (event) => {
                      if(invoice){
                         const paymentRecord = await prisma.paymentRecord.create({
                            data: {
-                              paymentAmount: session.amount_total ? session.amount_total : 0,
+                              paymentAmount: session.amount_total ? session.amount_total / 100 : 0,
                               customerId: invoice.customerId,
                               invoiceNum: invoice.invoiceNum,
                               paymentType: 'STRIPE',
@@ -243,7 +255,20 @@ export const POST: RequestHandler = async (event) => {
                   }
                }
                handleSubscription(subscription);
-               return new Response(JSON.stringify('ok'), {status:200})
+               return new Response(JSON.stringify('ok'), {status:200});
+            }
+            case 'customer.subscription.deleted': {
+               const subscription = stripeEvent.data.object;
+               console.log(subscription);
+               const handleSubscription = async (s: typeof subscription) => {
+                  const lease = await prisma.lease.findUnique({
+                     where: {
+                        leaseId: s.metadata.leaseId
+                     }
+                  })
+               }
+               handleSubscription(subscription);
+               return new Response(null, { status: 200 });
             }
             // case 'payment_intent.succeeded':{
             //    const paymentIntent = stripeEvent.data.object;
