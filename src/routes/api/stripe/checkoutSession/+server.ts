@@ -30,12 +30,11 @@ export const POST: RequestHandler = async (event) => {
       customer: customer.stripeId ? customer.stripeId : undefined,
       status: 'open'
    })
+   console.log(previousSessions);
    if(previousSessions){
-      previousSessions.data.forEach((session) => {
-         if(session.status === 'open'){
-            stripe.checkout.sessions.expire(session.id)
-         }
-      })
+      for(const session of previousSessions.data){
+         await stripe.checkout.sessions.expire(session.id)
+      }
    }
    if(subscription){  
       if(!invoice.leaseId){
@@ -83,7 +82,7 @@ export const POST: RequestHandler = async (event) => {
    } else {
       let returnUrl = `${PUBLIC_URL}/thanks?customerId=${customer.id}`;
       if(newLease){
-         returnUrl = `${PUBLIC_URL}/newLease/leaseSent?leaseId=${leaseId}`
+         returnUrl = `${PUBLIC_URL}/newLease/leaseSent?leaseId=${leaseId}`;
       }
       const session = await stripe.checkout.sessions.create({
          currency: 'usd',
@@ -114,6 +113,6 @@ export const POST: RequestHandler = async (event) => {
             invoiceNum
          },
       })
-      return new Response(JSON.stringify(session.client_secret),  { status: 200 });
+      return new Response(JSON.stringify(session.client_secret), { status: 200 });
    }
 };
