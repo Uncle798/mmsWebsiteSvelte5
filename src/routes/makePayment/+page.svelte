@@ -68,9 +68,6 @@
                 clearInterval(interval)
                 goto('/')
             }
-            if(remainder < 60){
-                formattedRange = `${remainder} seconds`
-            }
             const mins = Math.floor(remainder / 60);
             const seconds = remainder % 60;
             if(seconds < 10 ){
@@ -95,10 +92,10 @@
     {/if}
 {:else}
     {#if !mounted}
-        <div transition:fade={{duration:600}} class=" m-2">
+        <div in:fade={{duration:600}} class=" m-2">
             ...loading
         </div>
         {:else}
-        <div bind:this={wrapper} class="mt-10 m-2"></div>
+        <div bind:this={wrapper} class="mt-10 m-2" in:fade={{duration:600}}></div>
     {/if}
 {/if}

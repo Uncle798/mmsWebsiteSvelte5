@@ -33,7 +33,7 @@
     const currencyFormatter = new Intl.NumberFormat('en-US', {style: 'currency', currency: 'USD'})
 </script>
 <Header title='New lease'/>
-<div transition:fade={{duration:600}} class="mx-2 mt-10">
+<div in:fade={{duration:600}} class="mx-2 mt-10">
     {#if data.user}
         <UserCustomer user={data.user} />
     {/if}
