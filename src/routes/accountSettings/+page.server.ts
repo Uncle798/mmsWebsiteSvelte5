@@ -28,6 +28,9 @@ export const load:PageServerLoad = (async (event) => {
    const leasesPromise = prisma.lease.findMany({
       where: {
          customerId: event.locals.user.id
+      },
+      orderBy: {
+         unitNum: 'asc'
       }
    });
    const invoicesPromise = prisma.invoice.findMany({
