@@ -15,7 +15,18 @@ export const GET: RequestHandler = async (event) => {
    const redirectTo = event.cookies.get('redirectTo') ?? null;
    const unitNum = event.cookies.get('unitNum') ?? null;
    let response = new Response(null, {status:302, headers:{Location:'/'}});
-
+   if(redirectTo){
+      switch (redirectTo) {
+         case 'newLease':
+            if(unitNum){
+               response = new Response(null, {status:302, headers:{Location: `/newLease?unitNum=${unitNum}`}});
+            }
+            break;
+      
+         default:
+            break;
+      }
+   }
    if(storedState === null || codeVerifier === null || code === null || state === null) {
       return new Response('Please restart the process something is null', { status: 400});
    }
@@ -68,17 +79,5 @@ export const GET: RequestHandler = async (event) => {
    const sessionToken = generateSessionToken();
    const session = await createSession(sessionToken, user.id);
    setSessionTokenCookie(event, sessionToken, session.expiresAt);
-   if(redirectTo){
-      switch (redirectTo) {
-         case 'newLease':
-            if(unitNum){
-               response = new Response(null, {status:302, headers:{Location: `/newLease?unitNum=${unitNum}`}});
-            }
-            break;
-      
-         default:
-            break;
-      }
-   }
    return response;
 };
