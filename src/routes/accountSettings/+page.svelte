@@ -26,19 +26,21 @@
     let emailVerificationModalOpen = $state(false);
     let leaseEndModalOpen = $state(false);
     let currentLeaseId = $state('');
+    let autoPaySpinner = $state(false);
     function setCurrentLeaseId(leaseId:string){
         currentLeaseId = leaseId;
         leaseEndModalOpen = true;
     }
     function autoPaySignUp(leaseId:string){
         currentLeaseId = leaseId;
+        autoPaySpinner = true;
         submit()
     } 
     let { form, enhance, submit } = superForm(data.autoPayForm)
 </script>
 <Header title='Settings for {data.user?.givenName}' />
 
-<div transition:fade={{duration:600}} class="mx-2 mt-9 mb-24 sm:mb-14 lg:mb-9">
+<div in:fade={{duration:600}} class="mx-2 mt-9 mb-24 sm:mb-14 lg:mb-9">
     <div class="flex flex-col sm:flex-row gap-3">
         <div>
             {#if data.user}
@@ -148,7 +150,7 @@
                                 <input type="hidden" name="cuid2Id" id="cuid2Id" value={lease.leaseId}>
                                 <div class="flex">
                                     <button type="button" class='btn preset-filled-primary-50-950 rounded-lg m-1 sm:m-2' onclick={()=>autoPaySignUp(lease.leaseId)}>Sign up for auto pay</button>
-                                    {#if currentLeaseId === lease.leaseId}                                
+                                    {#if currentLeaseId === lease.leaseId && autoPaySpinner === true}                                
                                         <ProgressRing value={null} size="size-8" strokeWidth="6px" meterStroke="stroke-secondary-600-400" trackStroke="stroke-secondary-50-950" classes='ml-2' />
                                     {/if}
                                 </div>
