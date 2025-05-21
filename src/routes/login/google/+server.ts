@@ -9,9 +9,21 @@ export const GET: RequestHandler = async (event) => {
    const codeVerifier = generateCodeVerifier();
    const url = googleOAuth.createAuthorizationURL(state, codeVerifier, ['email', 'openid', 'profile']);
    if(redirectTo){
-      url.searchParams.append('redirectTo', redirectTo);
+      event.cookies.set('redirectTo', redirectTo, {
+         httpOnly: true,
+         maxAge: 60 *10,
+         secure: import.meta.env.PROD,
+         path: '/',
+         sameSite: 'lax'
+      })
       if(unitNum){
-         url.searchParams.append('unitNum', unitNum);
+            event.cookies.set('unitNum', unitNum, {
+            httpOnly: true,
+            maxAge: 60 *10,
+            secure: import.meta.env.PROD,
+            path: '/',
+            sameSite: 'lax'
+         })
       }
    }
    event.cookies.set('googleOauthState', state, {

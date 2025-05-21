@@ -11,6 +11,9 @@ export const GET: RequestHandler = async (event) => {
    const storedState = event.cookies.get('yahooOauthState') ?? null
    const code = event.url.searchParams.get('code');
    const state = event.url.searchParams.get('state');
+   const redirectTo = event.cookies.get('redirectTo') ?? null;
+   const unitNum = event.cookies.get('unitNum') ?? null;
+   let response = new Response(null, {status:302, headers:{Location:'/'}});
    if(code === null || storedState === null || state === null){
       new Response(JSON.stringify('Please restart the process something is null'), {status: 400})
    }
@@ -62,7 +65,17 @@ export const GET: RequestHandler = async (event) => {
    const sessionToken = generateSessionToken();
    const session = await createSession(sessionToken, user.id);
    setSessionTokenCookie(event, sessionToken, session.expiresAt);
-   return new Response(null, {status: 302, headers: {
-      Location: '/'
-   }});
+      if(redirectTo){
+      switch (redirectTo) {
+         case 'newLease':
+            if(unitNum){
+               response = new Response(null, {status:302, headers:{Location: `/newLease?unitNum=${unitNum}`}});
+            }
+            break;
+      
+         default:
+            break;
+      }
+   }
+   return response
 };
