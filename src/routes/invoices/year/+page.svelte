@@ -3,7 +3,10 @@
 
     let { data }: { data: PageData } = $props();
 </script>
-Select year: 
-{#each data.years as year}
-    <a href="/invoices/year/{year}" class="btn">{year},</a>
-{/each}
+<div class="mt-10 m-2">
+
+    Select year: 
+    {#each data.years as year}
+        <a href="/invoices/year/{year}" class="btn">{year},</a>
+    {/each}
+</div>

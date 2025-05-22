@@ -51,28 +51,36 @@
 </script>
 {#await wrapper}
     <Header title='Loading invoices' />
-    Loading {numberFormatter.format(data.invoiceCount)} invoices, 
-    {#if data.months}
-    or select year: 
-    {#each data.months as month}
-    <a href="/invoices/year/{month.getFullYear()}/month/{month.getMonth()}" class="btn">{dayjs(month).format('MMMM')},</a>
-    {/each}
-    {/if}
-    or:
-    <a href="/invoices/unpaid" class="btn">Unpaid invoices</a>
-    
-    <Placeholder numCols={2} numRows={3} heightClass='h-32'/>
+    <div class="mt-10 m-2">
+
+        Loading {numberFormatter.format(data.invoiceCount)} invoices, 
+        {#if data.months}
+        or select month: 
+        {#each data.months as month}
+        <a href="/invoices/year/{month.getFullYear()}/month/{month.getMonth()}" class="btn">{dayjs(month).format('MMMM')},</a>
+        {/each}
+        {/if}
+        or:
+        <a href="/invoices/unpaid" class="btn">Unpaid invoices</a>
+        
+        <Placeholder numCols={2} numRows={3} heightClass='h-32'/>
+    </div>
 {:then invoices}
     {#await data.customers}
         <Header title='Loading customers' />
-        Loading customers...
+        <div class="mt-10 m-2" >
+            Loading customers...
+        </div>
     {:then customers}
         {#await data.addresses}
-            Loading addresses...
+            <div class="mt-10 m-2">
+
+                Loading addresses...
+            </div>
         {:then addresses}
             {#if invoices.length >0}
                 <Header title='All invoices' />
-                <div class="flex m-2 border-b-2 dark:border-primary-950 border-primary-50 shadow-xl" transition:fade={{duration:600}}>
+                <div class="flex mt-10 mx-2 border-b-2 dark:border-primary-950 border-primary-50 shadow-xl" in:fade={{duration:600}}>
                     <Search data={data.searchForm} bind:search={search} searchType='invoice number' classes='w-1/2 p-2'/>
                     <DateSearch data={data.dateSearchForm} bind:startDate={startDate} bind:endDate={endDate} {minDate} {maxDate} classes='w-1/2 p-2'/>
                 </div>

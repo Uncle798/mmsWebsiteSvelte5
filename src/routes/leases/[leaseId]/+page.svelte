@@ -13,10 +13,10 @@
 {#if data.user?.employee}   
    <div class="flex mt-10 mx-1 sm:mx-2">
       {#if data.lease}
-         <LeaseEmployee lease={data.lease} />
+         <LeaseEmployee lease={data.lease} classes='mx-2 border rounded-lg p-2'/>
       {/if}
       {#if data.customer}
-         <UserEmployee user={data.customer} />
+         <UserEmployee user={data.customer} classes='mx-2 border rounded-lg p-2'/>
       {/if}
    </div>
 {:else}
