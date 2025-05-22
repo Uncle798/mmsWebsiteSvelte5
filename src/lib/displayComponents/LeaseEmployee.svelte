@@ -10,7 +10,7 @@
    const currencyFormatter = new Intl.NumberFormat('en-US', {style:'currency', currency:'USD'});
 </script>
 
-<div class="p-4 {classes} grid grid-cols-2 gap-x-2">
+<div class=" {classes} grid grid-cols-2 gap-x-2">
    <div class="col-span-2 text-center text-sm font-semibold">Lease</div>
    <div class="text-right">Unit number</div>
    <div class="font-medium"><a href="/units/{lease.unitNum}" class="anchor">{lease.unitNum.replace(/^0+/gm,'')}</a></div>
