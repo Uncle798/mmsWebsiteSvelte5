@@ -26,5 +26,5 @@ export const load = (async (event) => {
          id: invoice.customerId!, 
       }
    })
-   return {invoice, newLease, subscription, leaseId};
+   return {invoice, newLease, subscription, leaseId, customer};
 }) satisfies PageServerLoad;
