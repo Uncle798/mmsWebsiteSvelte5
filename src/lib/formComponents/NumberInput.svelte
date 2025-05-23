@@ -1,4 +1,5 @@
 <script lang="ts">
+	import type { FullAutoFill } from 'svelte/elements';
    import type { InputConstraint} from 'sveltekit-superforms';
 
    interface Props {
@@ -9,8 +10,9 @@
       placeholder?: string | undefined;
       name: string | null | undefined;
       classes?: string;
+      autocomplete?: FullAutoFill
    }
-   let { value = $bindable(), label, errors, constraints, placeholder, name, classes,  ...others }:Props = $props()
+   let { value = $bindable(), label, errors, constraints, placeholder, name, classes,  autocomplete, ...others }:Props = $props()
 </script>
 <div class="{classes}">
    <label class="label">
@@ -22,6 +24,7 @@
          bind:value={value}
          aria-invalid={errors ? 'true' : undefined}
          placeholder={placeholder}
+         autocomplete={autocomplete}
          {...constraints}
          {...others}
       />
