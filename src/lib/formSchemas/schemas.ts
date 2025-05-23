@@ -194,3 +194,12 @@ export type DateSearchFormSchema = typeof dateSearchFormSchema;
 
 export const blankFormSchema = z.object({});
 export type BlankFormSchema = typeof blankFormSchema
+
+export const creditCardFormSchema = z.object({
+   ccNum: z.string(),
+   cvv: z.number().positive().min(100).max(9999),
+   expMonth: z.string(),
+   expYear: z.string(),
+   postalCode: z.string(),
+})
+export type CreditCardFormSchema = typeof creditCardFormSchema;

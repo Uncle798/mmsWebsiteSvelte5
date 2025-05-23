@@ -1,6 +1,9 @@
 import { prisma } from '$lib/server/prisma';
 import { redirect, error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
+import { superValidate } from 'sveltekit-superforms';
+import { zod } from 'sveltekit-superforms/adapters';
+import { addressFormSchema, creditCardFormSchema } from '$lib/formSchemas/schemas';
 
 export const load = (async (event) => {
    if(!event.locals.user){
@@ -26,5 +29,7 @@ export const load = (async (event) => {
          id: invoice.customerId!, 
       }
    })
-   return {invoice, newLease, subscription, leaseId, customer};
+   const ccForm = await superValidate(zod(creditCardFormSchema));
+   const addressForm = await superValidate(zod(addressFormSchema));
+   return {invoice, newLease, subscription, leaseId, customer, ccForm, addressForm};
 }) satisfies PageServerLoad;
