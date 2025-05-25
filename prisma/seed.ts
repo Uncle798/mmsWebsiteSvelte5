@@ -334,7 +334,7 @@ async function  main (){
       }
    })
    for await (const unit of units) {
-      let leaseStart = dayjs(earliestStarting);
+      let leaseStart = dayjs(earliestStarting).add(Math.floor(Math.random()*30), 'days');
       const today = dayjs();
       let numMonthsLeft = today.diff(leaseStart, 'months');
       let lengthOfLease = Math.floor(Math.random()*numMonthsLeft);
