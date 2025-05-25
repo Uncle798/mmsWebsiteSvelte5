@@ -17,11 +17,11 @@ export const GET: RequestHandler = async ({request}) => {
          }
       });
       const todaysLeases:Lease[] =[];
-      leases.forEach((lease) => {
+      for(const lease of leases){
          if(lease.leaseEffectiveDate.getDate() === new Date().getDate()){
-            todaysLeases.push(lease)
+            todaysLeases.push(lease);
          }
-      })
+      }
       // for testing
       const customer = await prisma.user.findUnique({
          where: {
