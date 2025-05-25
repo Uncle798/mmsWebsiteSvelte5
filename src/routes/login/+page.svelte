@@ -71,8 +71,8 @@
         <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} buttonText='Email me a link to login'/>
     </form>
     <div class="flex flex-col">
-		<a href="/login/google?redirectTo={data.redirectTo}&unitNum={data.unitNum}" class="anchor">Sign in with Google</a>
-		<a href="/login/yahoo?redirectTo={data.redirectTo}&unitNum={data.unitNum}" class="anchor">Sign in with Yahoo!</a>
-        <a href="/register?redirectTo={data.redirectTo}&unitNum={data.unitNum}" class="anchor">Register new account</a>
+		<a href="/login/google?redirectTo={data.redirectTo}&unitNum={data.unitNum}&invoiceNum={data.invoiceNum}" class="anchor">Sign in with Google</a>
+		<a href="/login/yahoo?redirectTo={data.redirectTo}&unitNum={data.unitNum}&invoiceNum={data.invoiceNum}" class="anchor">Sign in with Yahoo!</a>
+        <a href="/register?redirectTo={data.redirectTo}&unitNum={data.unitNum}&invoiceNum={data.invoiceNum}" class="anchor">Register new account</a>
     </div>
 </div>

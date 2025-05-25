@@ -28,21 +28,23 @@ export const load = (async (event) => {
    setSessionTokenCookie(event, token, session.expiresAt);
    const redirectTo = event.url.searchParams.get('redirectTo');
    const unitNum = event.url.searchParams.get('unitNum');
+   const invoiceNum = event.url.searchParams.get('invoiceNum');
    switch (redirectTo) {
       case 'home':
          redirect(303, '/');
-         break;
       case 'newLease':
          redirect(302, `/newLease?unitNum=${unitNum}`)
-         break;
       case 'units':
          if(unitNum){
             redirect(302, `/units/${unitNum}`)
          }
          redirect(302, '/units')
-         break;
+      case 'invoice':
+         if(invoiceNum){
+            redirect(302, `/invoices/${invoiceNum}`)
+         }
+         redirect(302, `/invoices`)
       default:
-         redirect(302, '/units/available');
-         break;
+         redirect(302, '/');
    }
 }) satisfies PageServerLoad;

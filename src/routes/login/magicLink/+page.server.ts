@@ -12,6 +12,7 @@ export const load = (async (event) => {
    const toastReason = event.url.searchParams.get('toast');
    const redirectTo = event.url.searchParams.get('redirectTo');
    const unitNum = event.url.searchParams.get('unitNum');
+   const invoiceNum = event.url.searchParams.get('invoiceNum');
    return {magicLinkForm, toastReason, redirectTo, unitNum};
 }) satisfies PageServerLoad;
 

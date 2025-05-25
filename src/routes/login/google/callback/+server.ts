@@ -14,6 +14,7 @@ export const GET: RequestHandler = async (event) => {
    const state = event.url.searchParams.get('state');
    const redirectTo = event.cookies.get('redirectTo') ?? null;
    const unitNum = event.cookies.get('unitNum') ?? null;
+   const invoiceNum = event.cookies.get('invoiceNum') ?? null;
    let response = new Response(null, {status:302, headers:{Location:'/'}});
    if(redirectTo){
       switch (redirectTo) {
@@ -22,7 +23,10 @@ export const GET: RequestHandler = async (event) => {
                response = new Response(null, {status:302, headers:{Location: `/newLease?unitNum=${unitNum}`}});
             }
             break;
-      
+         case 'invoice':
+            if(invoiceNum){
+               response = new Response(null, {status:302, headers:{Location: `/invoices/${invoiceNum}`}})
+            }
          default:
             break;
       }

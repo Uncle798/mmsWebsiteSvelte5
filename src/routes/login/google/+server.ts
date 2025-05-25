@@ -5,6 +5,7 @@ import { googleOAuth } from '$lib/server/oauth';
 export const GET: RequestHandler = async (event) => {
    const redirectTo = event.url.searchParams.get('redirectTo');
    const unitNum = event.url.searchParams.get('unitNum');
+   const invoiceNum = event.url.searchParams.get('invoiceNum')
    const state = generateState();
    const codeVerifier = generateCodeVerifier();
    const url = googleOAuth.createAuthorizationURL(state, codeVerifier, ['email', 'openid', 'profile']);
@@ -24,6 +25,16 @@ export const GET: RequestHandler = async (event) => {
             path: '/',
             sameSite: 'lax'
          })
+      }
+      if(invoiceNum){
+         event.cookies.set('invoiceNum', invoiceNum, {
+         httpOnly: true,
+         maxAge: 60 *10,
+         secure: import.meta.env.PROD,
+         path: '/',
+         sameSite: 'lax'
+      })
+
       }
    }
    event.cookies.set('googleOauthState', state, {

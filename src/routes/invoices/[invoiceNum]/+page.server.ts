@@ -3,12 +3,12 @@ import type { PageServerLoad } from './$types';
 import { fail, redirect } from '@sveltejs/kit';
 
 export const load = (async (event) => {
-   if(!event.locals.user){
-      redirect(302, '/login?toast=unauthorized')
-   }
    const invoiceNum = event.params.invoiceNum;
    if(!invoiceNum){
       fail(404);
+   }
+   if(!event.locals.user){
+      redirect(302, `/login?toast=unauthorized&redirectTo=invoice&invoiceNum=${invoiceNum}`)
    }
    if(invoiceNum){
       if(event.locals.user.employee){
