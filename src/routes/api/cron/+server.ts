@@ -5,10 +5,10 @@ import type { RequestHandler } from './$types';
 import { sendInvoice, sendStatusEmail } from '$lib/server/mailtrap';
 
 export const GET: RequestHandler = async ({request}) => {
-   const authHeader = request.headers.get('authorization')
-   if(authHeader !== `Bearer ${CRON_SECRET}`) {
-      return new Response(JSON.stringify({success:false}), {status: 401})
-   }
+   // const authHeader = request.headers.get('authorization')
+   // if(authHeader !== `Bearer ${CRON_SECRET}`) {
+   //    return new Response(JSON.stringify({success:false}), {status: 401})
+   // }
    const handleRequest = async (r:Request) => {
       console.log(r)
       const leases = await prisma.lease.findMany({
