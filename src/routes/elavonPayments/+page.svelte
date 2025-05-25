@@ -1,8 +1,4 @@
-<svelte:head>
-   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-   <script src="https://demo.convergepay.com/hosted-payments/PayWithConverge.js" ></script>
-   <script src="https://api.demo.convergepay.com/hosted-payments/Checkout.js"></script>
-</svelte:head>
+
 <script lang="ts">
 	import { onMount } from 'svelte';
    import type { PageData } from './$types';
@@ -11,6 +7,7 @@
 	import { redirect } from '@sveltejs/kit';
 	import { browser } from '$app/environment';
 	import { goto } from '$app/navigation';
+	import { Combobox } from '@skeletonlabs/skeleton-svelte';
 
    let { data }: { data: PageData } = $props();
    let sessionToken = $state('');
@@ -152,55 +149,9 @@
 </script>
 
 <div class="mt-10 flex flex-col">
-   
-   <button onclick={openLightbox} class="btn">Proceed to Payment</button>
-   Transaction Status:<div id="txn_status"></div>
-   Transaction Response:<div id="txn_response"></div>
-</div>
-
-<div class="m-2">
-   <label for="ccNum">Credit Card number
-      <input type="text" name="ccNum" id="ccNum" class="input" placeholder="0000 0000 0000 0000" autocomplete="cc-number">
-   </label>
-   <div class="input-group flex gap-4 ">
-      <label for="expMonth">Expiration month
-         <select name="expMonth" id="expMonth" class="select m-2">
-            {#each monthComboBoxData as month}
-               {#if month.label === thisMonthLabel}
-                  <option value={month.value} selected>{month.label}</option>
-               {:else}
-                  <option value={month.value}>{month.label}</option>
-               {/if}
-            {/each}
-         </select>
-      </label>
-      <div class="px-2">
-         <label for="expYear">Expiration year
-            <select name="expYear" id="expYear" class="select m-2">
-               {#each yearComboBoxData as year}
-               {#if year.label === new Date().getFullYear().toString()}
-               <option value={year.value} selected>{year.label}</option>
-               {:else}
-               <option value={year.value}>{year.label}</option>
-               {/if}
-               {/each}
-            </select>
-         </label>
-      </div>
-      <div class="px-2">
-         <label for="cvv">CVV
-            <input type="text" name="cvv" id="cvv" class="input my-2" placeholder="000" autocomplete="cc-csc" />
-         </label>
-      </div>
-      <div class="px-2">
-         <label for="postalCode">Billing zip code
-            <input type="text" name="postalCode" id="postalCode" class="input my-2" placeholder="83843" autocomplete="billing postal-code">
-         </label>
-      </div>
-   </div>
-   {#if !processing}
-      <button onclick={pay} class="btn">Pay bill</button>
-   {:else}
-      Processing
-   {/if}
+   <CreditCardForm
+      data={data.ccForm}
+      invoice={data.invoice}
+      sessionToken={sessionToken}
+   />
 </div>

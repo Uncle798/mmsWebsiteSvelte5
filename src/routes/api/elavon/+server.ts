@@ -4,7 +4,7 @@ import type { RequestHandler } from './$types';
 
 export const POST: RequestHandler = async (event) => {
    const body = await event.request.json();
-   const { invoiceNum } = body;
+   const { invoiceNum, subscription } = body;
    if(!invoiceNum){
       return new Response(JSON.stringify('invoice number not provided'), {status: 400});
    }
@@ -24,7 +24,23 @@ export const POST: RequestHandler = async (event) => {
    if(!customer){
       return new Response(JSON.stringify('Customer not found'), {status:404});
    }
-   const details = {
+   let details = {};
+   if(subscription){
+      details = {
+         ssl_transaction_type: 'ccaddrecurring',
+         
+         ssl_account_id: CONVERGE_ACCOUNT_ID,
+         ssl_user_id: CONVERGE_USER_ID,
+         ssl_pin: CONVERGE_SSL_PIN,
+         ssl_amount: invoice.invoiceAmount,
+         ssl_invoice_number: invoice.invoiceNum,
+         ssl_first_name: customer.givenName ? customer.givenName : '',
+         ssl_last_name: customer.familyName ? customer.familyName : '',
+         ssl_company: customer.organizationName ? customer.organizationName : '',
+         
+      }
+   }
+    details = {
       ssl_transaction_type: 'ccsale',
       ssl_account_id: CONVERGE_ACCOUNT_ID,
       ssl_user_id: CONVERGE_USER_ID,
@@ -48,6 +64,5 @@ export const POST: RequestHandler = async (event) => {
       body: formBody.toString()
    })
    const responseBody = await response.text();
-   console.log(responseBody)
    return new Response(JSON.stringify(responseBody), {status:200});
 };

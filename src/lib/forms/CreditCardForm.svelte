@@ -1,19 +1,85 @@
+<svelte:head>
+   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+   <script src="https://api.demo.convergepay.com/hosted-payments/Checkout.js"></script>
+</svelte:head>
 <script lang="ts">
 	import { superForm, type Infer, type SuperValidated } from "sveltekit-superforms";
-   import type { CreditCardFormSchema } from "$lib/formSchemas/schemas";
+   import { creditCardFormSchema, type CreditCardFormSchema } from "$lib/formSchemas/schemas";
 	import FormMessage from "$lib/formComponents/FormMessage.svelte";
 	import TextInput from "$lib/formComponents/TextInput.svelte";
-	import NumberInput from "$lib/formComponents/NumberInput.svelte";
-	import { onMount } from "svelte";
+	import { browser } from '$app/environment';;
+	import { goto } from '$app/navigation';
 	import { Combobox } from "@skeletonlabs/skeleton-svelte";
-	import { IndentDecrease } from "lucide-svelte";
+	import { valibot, } from "sveltekit-superforms/adapters";
+	import type { Invoice } from "@prisma/client";
 
    interface Props {
       data: SuperValidated<Infer<CreditCardFormSchema>>,
+      sessionToken: string,
+      invoice: Invoice,
       classes?: string
    }
-   let { data, classes, }:Props = $props();
-   let { form, message, errors, constraints, enhance, delayed, timeout} = superForm(data, {});
+   let { data, sessionToken, invoice, classes, }:Props = $props();
+   let processing = $state(false)
+   let { form, message, errors, constraints, enhance, delayed, timeout} = superForm(data, {
+      SPA: true,
+      validators: valibot(creditCardFormSchema),
+      onUpdate({form}){
+         processing = true
+         console.log({form})
+         if(form.valid){
+            const {data} = form;
+            let date:string;
+            if(data.expMonth < 10){
+               date = '0' + data.expMonth.toString() + data.expYear.toString().substring(2);
+            } else {
+               date = data.expMonth.toString() + data.expYear.toString().substring(2);
+            }
+            console.log(date)
+            const paymentData = {
+               ssl_txn_auth_token: sessionToken, 
+               ssl_card_number: data.ccNum,
+               ssl_exp_date: date,
+               ssl_cvv2cvc2: data.cvv,
+               ssl_cvv2cvc2_indicator: 1,
+               ssl_amount: invoice.invoiceAmount,
+               ssl_avs_zip: data.postalCode,
+               ssl_partial_auth_indicator: 0,
+            }
+            const callback = {
+               //@ts-ignore
+               onError: function (error) { 
+                  console.log(error)
+               }, 
+               //@ts-ignore
+               onCancelled: function (response) { 
+                  console.log(response)
+               
+               },
+               //@ts-ignore
+               onDeclined: function (response) { 
+                  console.log(response)
+               }, 
+               //@ts-ignore
+               onApproval: async function (response) { 
+               
+                  const res = await fetch('/api/elavon/paymentSuccess', {
+                     method: 'POST',
+                     body: JSON.stringify(response, null, '\t')
+                  }).then(async (r) => await r.json())
+                  console.log(res)
+                  if(res){
+                     if(browser){
+                        goto(`/thanks?invoiceNum=${res}`)
+                     }
+                  }
+               }
+            }
+         //@ts-ignore
+         ConvergeEmbeddedPayment.pay(paymentData, callback)
+         }
+      }
+   });
 
    interface ComboboxData {
       label: string;
@@ -30,23 +96,20 @@
    }
    const yearComboBoxData: ComboboxData[] = [];
    for(let index = new Date().getFullYear(); index < (new Date().getFullYear() +20); index++){
-      const string = index.toString().substring(2);
+      
       yearComboBoxData.push({
          label: index.toString(),
-         value: string
+         value: index.toString()
       })
    }
-   const thisMonth = (new Date().getMonth()+1)
-   let thisMonthLabel = $state('')
-   if(thisMonth < 10){
-      thisMonthLabel = '0' + thisMonth.toString()
-   } else {
-      thisMonthLabel = thisMonth.toString();
-   }
-</script>
+   let selectedMonth = $state(['']);
+   let selectedYear = $state(['']);
 
-<div class={classes}>
-   <TextInput 
+</script>
+<FormMessage message={$message} />
+<form method="POST" use:enhance>
+   <div class={classes}> 
+      <TextInput 
       errors={$errors.ccNum}
       constraints={$constraints.ccNum}
       bind:value={$form.ccNum}
@@ -54,48 +117,56 @@
       name='ccNum'
       placeholder='0000 0000 0000 0000'
       autocomplete='cc-number'
-   />
-   <div class="input-group flex gap-4 ">
-      <label for="expMonth">Expiration month
-         <select name="expMonth" id="expMonth" class="select m-2" value={$form.expMonth}>
-            {#each monthComboBoxData as month}
-               {#if month.label === thisMonthLabel}
-                  <option value={month.value} selected>{month.label}</option>
-               {:else}
-                  <option value={month.value}>{month.label}</option>
-               {/if}
-            {/each}
-         </select>
-      </label>
-      <label for="expYear">Expiration year
-         <select name="expYear" id="expYear" class="select m-2" value={$form.expYear}>
-            {#each yearComboBoxData as year}
-               {#if year.label === new Date().getFullYear().toString()}
-                  <option value={year.value} selected>{year.label}</option>
-               {:else}
-                  <option value={year.value}>{year.label}</option>
-               {/if}
-            {/each}
-         </select>
-      </label>
-      <NumberInput
-         bind:value={$form.cvv}
-         errors={$errors.cvv}
-         constraints={$constraints.cvv}
-         label='CVV'
-         name='cvv'
-         placeholder='123'
-         autocomplete='cc-csc'
-         classes='p-1'
+      classes='m-2'
       />
-      <TextInput
-         bind:value={$form.postalCode}
-         errors={$errors.postalCode}
-         constraints={$constraints.postalCode}
-         label='Billing zip code'
-         name='postalCode'
-         placeholder='83843'
-         autocomplete='billing postal-code'
-      />
-   </div>
-</div>
+      <div class="flex m-2 gap-2 ">
+         <Combobox
+            bind:value={selectedMonth}
+            data={monthComboBoxData}
+            label='Expiration month'
+            name='expMonth'
+            required={true}
+            openOnClick={true}
+            onValueChange={(event)=>{
+               console.log(event.value[0])
+               $form.expMonth = parseInt(event.value[0], 10)
+            }}
+         />
+         <Combobox
+            bind:value={selectedYear}
+            data={yearComboBoxData}
+            name='expYear'
+            label='Expiration year'
+            required={true}
+            openOnClick={true}
+            onValueChange={(event) => {
+               console.log(event.value[0])
+               $form.expYear = parseInt(event.value[0], 10)
+            }}
+         />
+         <TextInput
+            bind:value={$form.cvv}
+            errors={$errors.cvv}
+            constraints={$constraints.cvv}
+            label='CVV'
+            name='cvv'
+            placeholder='123'
+            autocomplete='cc-csc'
+         />
+         <TextInput
+            bind:value={$form.postalCode}
+            errors={$errors.postalCode}
+            constraints={$constraints.postalCode}
+            label='Billing zip code'
+            name='postalCode'
+            placeholder='83843'
+            autocomplete='billing postal-code'
+         />
+      </div>
+   </div>  
+    {#if !processing}
+      <button class="btn">Pay bill</button>
+   {:else}
+      Processing
+   {/if}
+</form>
