@@ -189,7 +189,8 @@ export const actions: Actions = {
             customerId: lease.customerId,
             leaseId: lease.leaseId,
             invoiceNotes:'Deposit for unit ' + lease.unitNum.replace(/^0+/gm,''), 
-            deposit: true
+            deposit: true,
+            invoiceDue: new Date(),
          }
       })
       if(leaseForm.data.paymentType === 'CASH' || leaseForm.data.paymentType === 'CHECK') {

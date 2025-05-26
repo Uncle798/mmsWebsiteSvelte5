@@ -53,7 +53,8 @@ export const POST: RequestHandler = async (event) => {
                   data: {
                      customerId: lease?.customerId,
                      invoiceAmount: lease!.price,
-                     invoiceNotes: `Rent for unit ${lease?.unitNum.replace(/^0+/gm, '')} for ${date}`
+                     invoiceNotes: `Rent for unit ${lease?.unitNum.replace(/^0+/gm, '')} for ${date}`,
+                     invoiceDue: dayjs(lease?.leaseEffectiveDate).add(1, 'month').toDate(),
                   }
                })
                const stripeInvoice = await stripe.invoices.create({

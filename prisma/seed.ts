@@ -258,7 +258,7 @@ function makeInvoice(lease:Lease, month:Date, deposit:boolean){
       invoiceCreated: month,
       invoiceNotes,
       deposit,
-      invoiceDue: dayjs(month).add(30, 'days').toDate()
+      invoiceDue: dayjs(month).add(1, 'month').toDate()
    };
    return invoice;
 }

@@ -98,7 +98,7 @@ export const actions: Actions = {
                customerId: lease.customerId,
                leaseId: lease.leaseId,
                invoiceAmount: lease.price,
-               invoiceCreated: autoPayFirstDue,
+               invoiceDue: autoPayFirstDue,
                invoiceNotes: `Auto-payment for unit ${lease.unitNum}`
             }
          })
