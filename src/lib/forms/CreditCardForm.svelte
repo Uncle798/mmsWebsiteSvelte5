@@ -12,6 +12,8 @@
 	import { Combobox } from "@skeletonlabs/skeleton-svelte";
 	import { valibot, } from "sveltekit-superforms/adapters";
 	import type { Invoice } from "@prisma/client";
+   import RestrictedInput from 'restricted-input'
+	import { onMount } from "svelte";
 
    interface Props {
       data: SuperValidated<Infer<CreditCardFormSchema>>,
@@ -104,7 +106,18 @@
    }
    let selectedMonth = $state(['']);
    let selectedYear = $state(['']);
-
+   // onMount(()=> {
+   //    const ccInput = document.querySelector('input[name="ccNum"]') as HTMLInputElement;
+   //    if(ccInput){
+   //       const formattedCreditCardInput = new RestrictedInput({
+   //          element: ccInput,
+   //          pattern: "{{9999}} {{9999}} {{9999}} {{9999}}",
+   //       })
+   //       if(ccInput.value.startsWith('3')){
+   //          formattedCreditCardInput.setPattern('{{999}} {{99999}} {{99999}}')
+   //       }
+   //    }
+   // })
 </script>
 <FormMessage message={$message} />
 <form method="POST" use:enhance>
