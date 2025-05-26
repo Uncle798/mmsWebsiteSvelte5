@@ -75,6 +75,7 @@
 		"lucide-svelte": "^0.454.0",
 		"mailtrap": "^3.4.0",
 		"payment": "^2.4.7",
+		"restricted-input": "^4.1.4",
 		"svelte-credit-cards": "^2.0.6",
 		"svelte-stripe": "^1.3.0",
 		"valibot": "^1.1.0",
