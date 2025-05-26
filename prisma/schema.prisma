@@ -147,6 +147,7 @@ model Invoice {
   leaseId          String?
   invoiceAmount    Float
   invoiceCreated   DateTime       @default(now())
+  invoiceDue DateTime
   paymentRecordNum Int?           @unique
   invoiceNotes     String?
   stripeId         String?        @unique
