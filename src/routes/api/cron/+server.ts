@@ -81,6 +81,6 @@ export const GET: RequestHandler = async ({request}) => {
          await sendStatusEmail(admin, invoices.length, totalInvoiced, availableUnits)
       }
    }
-   handleRequest(request)
+   await handleRequest(request)
    return new Response(JSON.stringify({success:true}), {status: 200});
 };
