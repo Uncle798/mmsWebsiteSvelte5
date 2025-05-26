@@ -145,15 +145,26 @@ export const cuidIdFormSchema = z.object({
 });
 export type CuidIdFormSchema = typeof cuidIdFormSchema;
 
-export const newInvoiceFormSchema = z.object({
-   customerId: z.string().cuid2(),
-   invoiceNotes: z.string().nullable(),
-   employeeId: z.string().min(23).max(30),
-   invoiceAmount: z.number().positive(),
-   leaseId: z.string().min(23).max(30).nullable(),
-   deposit: z.boolean()
+// export const newInvoiceFormSchema = z.object({
+//    customerId: z.string().cuid2(),
+//    invoiceNotes: z.string().nullable(),
+//    employeeId: z.string().min(23).max(30),
+//    invoiceAmount: z.number().positive(),
+//    leaseId: z.string().min(23).max(30).nullable(),
+//    deposit: z.boolean()
+// })
+// export type NewInvoiceFormSchema = typeof newInvoiceFormSchema;
+
+export const newInvoiceFormSchema = v.object({
+   customerId: v.pipe(v.string(), v.cuid2()),
+   employeeId: v.pipe(v.string(), v.cuid2()),
+   invoiceNotes: v.string(),
+   invoiceAmount: v.pipe(v.number(), v.gtValue(1)),
+   leaseId: v.pipe(v.string(), v.cuid2()),
+   deposit: v.boolean(),
+   invoiceDue: v.date(),
 })
-export type NewInvoiceFormSchema = typeof newInvoiceFormSchema;
+export type NewInvoiceFormSchema = typeof newInvoiceFormSchema
 
 export const magicLinkFormSchema = z.object({
    email: z.string().min(5)
