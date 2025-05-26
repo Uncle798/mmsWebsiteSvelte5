@@ -3,6 +3,7 @@ import { prisma } from '$lib/server/prisma';
 import type { Invoice, Lease } from '@prisma/client';
 import type { RequestHandler } from './$types';
 import { sendInvoice, sendStatusEmail } from '$lib/server/mailtrap';
+import dayjs from 'dayjs';
 
 export const GET: RequestHandler = async ({request}) => {
    const authHeader = request.headers.get('authorization')
@@ -45,7 +46,8 @@ export const GET: RequestHandler = async ({request}) => {
                leaseId:lease.leaseId,
                invoiceAmount: lease.price,
                customerId: lease.customerId,
-               invoiceNotes: `Monthly rent for unit ${lease.unitNum.replace(/^0+/gm, '')}`
+               invoiceNotes: `Monthly rent for unit ${lease.unitNum.replace(/^0+/gm, '')}`,
+               invoiceDue: dayjs().add(30, 'days').toDate()
             }
          });
          invoices.push(invoice);

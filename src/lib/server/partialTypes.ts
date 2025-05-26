@@ -50,7 +50,8 @@ export const partialInvoice = Prisma.validator<Prisma.InvoiceDefaultArgs>()({
       invoiceAmount: true,
       invoiceCreated: true,
       invoiceNotes: true,
-      deposit: true
+      deposit: true,
+      invoiceDue: true
    }
 })
 export type PartialInvoice = Prisma.InvoiceGetPayload<typeof partialInvoice>
@@ -66,6 +67,7 @@ export const partialPaymentRecord = Prisma.validator<Prisma.PaymentRecordDefault
       paymentNotes: true,
       invoiceNum: true,
       deposit: true,
+   
    }
 })
 export type PartialPaymentRecord = Prisma.PaymentRecordGetPayload<typeof partialPaymentRecord>
