@@ -28,7 +28,10 @@ export const GET: RequestHandler = async (event) => {
    } else {
       const previousInvoice = await prisma.invoice.findFirst({
          orderBy:{
-            
+            invoiceDue:'desc'
+         },
+         where:{
+            leaseId: lease.leaseId
          }
       })
 

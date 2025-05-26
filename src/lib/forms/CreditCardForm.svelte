@@ -106,8 +106,10 @@
    }
    let selectedMonth = $state(['']);
    let selectedYear = $state(['']);
+
+   // let ccInput = $state<HTMLInputElement>()
    // onMount(()=> {
-   //    const ccInput = document.querySelector('input[name="ccNum"]') as HTMLInputElement;
+   //    ccInput = document.querySelector('input[name="ccNum"]') as HTMLInputElement;
    //    if(ccInput){
    //       const formattedCreditCardInput = new RestrictedInput({
    //          element: ccInput,
