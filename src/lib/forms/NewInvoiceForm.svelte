@@ -2,21 +2,21 @@
    import FormMessage from "$lib/formComponents/FormMessage.svelte";
 	import FormSubmitWithProgress from "$lib/formComponents/FormSubmitWithProgress.svelte";
 	import NumberInput from "$lib/formComponents/NumberInput.svelte";
-	import TextInput from "$lib/formComponents/TextInput.svelte";
-   import type { NewInvoiceFormSchema, RegisterFormSchema } from "$lib/formSchemas/schemas";
-	import type { PartialUser } from "$lib/server/partialTypes";
-	import type { Lease } from "@prisma/client";
+   import type { NewInvoiceFormSchema, } from "$lib/formSchemas/schemas";
+	import type { Lease, User } from "@prisma/client";
 	import type { SuperValidated, Infer } from "sveltekit-superforms";
    import { superForm } from "sveltekit-superforms";
 
-   import { Combobox, Modal, Switch } from "@skeletonlabs/skeleton-svelte";
+   import { Combobox, Switch } from "@skeletonlabs/skeleton-svelte";
 	import dayjs from "dayjs";
 	import TextArea from "$lib/formComponents/TextArea.svelte";
+	import DateInput from "$lib/formComponents/DateInput.svelte";
+	import { onMount } from "svelte";
 
    interface Props {
       data: SuperValidated<Infer<NewInvoiceFormSchema>>;
       employeeId: string | undefined;
-      customers: PartialUser[];
+      customers: User[];
       leases: Lease[];
       defaultCustomer?: string;
       classes?: string;
@@ -28,6 +28,9 @@
          formData.set('leaseId', selectedLease[0])
       },
    });
+   onMount(()=> {
+      $form.invoiceDue = new Date()
+   })
    let selectedCustomer = $state([defaultCustomer]);
    let selectedLease = $state(['']);
    interface ComboBoxData {
@@ -104,11 +107,23 @@
             label='Invoice amount: $'
             name='invoiceAmount'
          />
+         <DateInput
+            bind:value={$form.invoiceDue}
+            errors={$errors.invoiceDue}
+            constraints={$constraints.invoiceDue}
+            label='Invoice Due Date'
+            name='invoiceDue'
+            min={dayjs().subtract(1, 'year').toDate()}
+            max={dayjs().add(1, 'year').toDate()}
+         />
+         <Switch name='deposit' bind:checked={$form.deposit} label='Deposit' classes='mt-2'>
+            Deposit
+         </Switch>
          <input type="hidden" name='employeeId' value={employeeId}/>
          <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} buttonText='Create Invoice'/>
       {/if}
       {#if leaseSelected}
-         <TextInput
+         <TextArea
             bind:value={$form.invoiceNotes}
             errors={$errors.invoiceNotes}
             constraints={$constraints.invoiceNotes}
@@ -126,6 +141,16 @@
          <Switch name='deposit' bind:checked={$form.deposit} label='Deposit' classes='mt-2'>
             Deposit
          </Switch>
+         <DateInput
+            bind:value={$form.invoiceDue}
+            errors={$errors.invoiceDue}
+            constraints={$constraints.invoiceDue}
+            label='Invoice Due Date'
+            name='invoiceDue'
+            min={dayjs().subtract(1, 'year').toDate()}
+            max={dayjs().add(1, 'year').toDate()}
+            placeholder={dayjs().format('MM/DD/YYYY')}
+         />
          <input type="hidden" name='employeeId' value={employeeId}/>
          <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} buttonText='Create Invoice'/>
       {/if}
