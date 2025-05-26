@@ -100,7 +100,7 @@ async function deleteAll() {
          userData[i].email = emailFront.toLowerCase() + '@sweetsweetemail.com';
       }
    }
-   userData.forEach((user) =>{
+   for(const user of userData){
       const sameEmail = userData.filter((u) => u.email === user.email);
       if(sameEmail.length > 1){
          const randString:string=String(Math.floor(Math.random()*101));
@@ -108,7 +108,7 @@ async function deleteAll() {
          user.email = emailFront.toLowerCase() + 'yetanotherfakeemail.com';
          //cSpell:enable
       }
-   })
+   }
 }
 
 async function createEmployees() {
@@ -201,7 +201,7 @@ async function createLease(unit: Unit, leaseStart:Date, leaseEnd: Date | null, r
 
  function makeAddresses(users:User[]){
    const addresses:PartialAddress[]=[]
-   users.forEach((user) =>{
+   for(const user of users){
       const address:PartialAddress = {
          userId: user.id,
          address1: faker.location.streetAddress(), 
@@ -213,7 +213,7 @@ async function createLease(unit: Unit, leaseStart:Date, leaseEnd: Date | null, r
          phoneNum1Country: '1'
       }
       addresses.push(address);
-   });
+   }
    return addresses;
  }
 
@@ -319,10 +319,10 @@ async function  main (){
    const userEndTime = dayjs();
    console.log(`👥 ${totalUsers} users created in ${userEndTime.diff(deleteEndTime, 's')} sec`);
    const uD:Unit[]=[];
-   unitData.forEach((unit)=>{
+   for(const unit of unitData){
       const dbUnit = makeUnit(unit);
       uD.push(dbUnit);
-   })
+   }
    const units = await prisma.unit.createManyAndReturn({
       data: uD
    })
@@ -378,7 +378,7 @@ async function  main (){
          leaseEnded: null
       }
    })
-   currentLeases.forEach(async(lease)=>{
+   for await(const lease of currentLeases){
       await prisma.unit.update({
          where: {
             num: lease.unitNum
@@ -387,7 +387,7 @@ async function  main (){
             leasedPrice: lease.price
          }
       })
-   });
+   }
    const discount = makeDiscount(employees[0])
    await prisma.discountCode.create({
       data: discount
@@ -439,7 +439,7 @@ async function  main (){
    const dbPayments = await prisma.paymentRecord.createManyAndReturn({
       data: paymentRecords
    });
-   dbPayments.forEach(async (record) =>{
+   for await(const record of dbPayments){
       await prisma.invoice.update({
          where: {
             invoiceNum: record.invoiceNum!,
@@ -455,7 +455,7 @@ async function  main (){
              await makeRefund(record)
          }
       }
-   })                     
+   }                 
    const paymentEndTime = dayjs();
    const totalRecords = await countAll();
    console.log(`🧾 ${paymentRecords.length} payment records created in ${paymentEndTime.diff(invoiceEndTime, 'second')} sec`);
