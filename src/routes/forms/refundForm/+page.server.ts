@@ -1,7 +1,7 @@
 import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
 import { message, superValidate } from 'sveltekit-superforms';
-import { zod } from 'sveltekit-superforms/adapters';
+import { valibot, zod } from 'sveltekit-superforms/adapters';
 import { refundFormSchema } from '$lib/formSchemas/schemas';
 import { ratelimit } from '$lib/server/rateLimit';
 import { prisma } from '$lib/server/prisma';
@@ -11,7 +11,7 @@ export const load = (async (event) => {
     if(!event.locals.user?.employee){
         redirect(302, '/login?toast=employee')
     }
-    const refundForm = superValidate(zod(refundFormSchema));
+    const refundForm = superValidate(valibot(refundFormSchema));
     return { refundForm };  
 }) satisfies PageServerLoad;
 
@@ -21,7 +21,7 @@ export const actions: Actions = {
             redirect(302, '/login?toast=employee');
         }
         const formData = await event.request.formData();
-        const refundForm = await superValidate(formData, zod(refundFormSchema));
+        const refundForm = await superValidate(formData, valibot(refundFormSchema));
         const { success, reset } = await ratelimit.employeeForm.limit(event.locals.user.id)
         if(!success){
             const timeRemaining = Math.floor((reset - Date.now()) / 1000);
@@ -38,9 +38,9 @@ export const actions: Actions = {
         if(!paymentRecord){
             return message(refundForm, 'Payment record not found')
         }
-        if(paymentRecord.paymentType === 'STRIPE'){
+        if(paymentRecord.paymentType === 'CREDIT'){
             const refund = await stripe.refunds.create({
-                payment_intent: paymentRecord.stripeId!,
+                payment_intent: paymentRecord.transactionId!,
                 amount: refundForm.data.amount,
             })
             const refundRecord = await prisma.refundRecord.create({
@@ -49,7 +49,7 @@ export const actions: Actions = {
                     refundAmount: refund.amount,
                     employeeId: event.locals.user.id!,
                     customerId: paymentRecord.customerId,
-                    refundType: 'STRIPE',
+                    refundType: 'CREDIT',
                     refundNotes: `Refund of payment record number ${paymentRecord.paymentNumber}`,
                     paymentRecordNum: paymentRecord.paymentNumber
                 }

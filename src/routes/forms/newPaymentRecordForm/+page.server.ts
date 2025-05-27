@@ -3,7 +3,7 @@ import { redirect } from '@sveltejs/kit';
 import { superValidate, message,} from 'sveltekit-superforms';
 import { prisma } from '$lib/server/prisma';
 import { ratelimit } from '$lib/server/rateLimit';
-import { zod } from 'sveltekit-superforms/adapters';
+import { valibot } from 'sveltekit-superforms/adapters';
 import { newPaymentRecordFormSchema } from '$lib/formSchemas/schemas';
 
 
@@ -13,7 +13,7 @@ export const actions:Actions = {
          redirect(302, '/login?toast=employee');
       }
       const formData = await event.request.formData();
-      const newPaymentRecordForm = await superValidate(formData, zod(newPaymentRecordFormSchema));
+      const newPaymentRecordForm = await superValidate(formData, valibot(newPaymentRecordFormSchema));
       const {success, reset} = await ratelimit.employeeForm.limit(event.locals.user.id);
       if(!success){
             const timeRemaining = Math.floor((reset - Date.now()) / 1000);
@@ -48,7 +48,7 @@ export const actions:Actions = {
          redirect(302, '/paymentRecords/' + paymentRecord.paymentNumber)
       }
       
-      if(data.paymentType === 'STRIPE'){
+      if(data.paymentType === 'CREDIT'){
          redirect(302, '/makePayment?invoiceNum='+data.invoiceNum)
       }
       return { newPaymentRecordForm }

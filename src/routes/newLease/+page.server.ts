@@ -2,7 +2,7 @@ import  {prisma} from "$lib/server/prisma";
 import type { Actions, PageServerLoad } from './$types';
 import {superValidate, message } from 'sveltekit-superforms';
 import { addressFormSchema, leaseDiscountFormSchema, nameFormSchema, newLeaseSchema } from "$lib/formSchemas/schemas";
-import { zod } from 'sveltekit-superforms/adapters';
+import { valibot, zod } from 'sveltekit-superforms/adapters';
 import { redirect } from "@sveltejs/kit";
 import { ratelimit } from "$lib/server/rateLimit";
 import { fail } from "@sveltejs/kit";
@@ -23,7 +23,7 @@ export const load:PageServerLoad = (async (event) =>{
    if(!event.locals.user.emailVerified){
       redirect(302, `/register/emailVerification??redirectTo=newLease&unitNum=${unitNum}`)
    }
-   const leaseForm = await superValidate(zod(newLeaseSchema));
+   const leaseForm = await superValidate(valibot(newLeaseSchema));
    const nameForm = await superValidate(zod(nameFormSchema));
    const addressForm = await superValidate(zod(addressFormSchema));
    const leaseDiscountForm = await superValidate(zod(leaseDiscountFormSchema));
@@ -62,7 +62,7 @@ export const actions:Actions = {
       if(!event.locals.user){
          redirect(302, '/login?toast=unauthorized');
       }
-      const leaseForm = await superValidate(event.request, zod(newLeaseSchema));
+      const leaseForm = await superValidate(event.request, valibot(newLeaseSchema));
       if(!leaseForm.valid){
          message(leaseForm, 'no good')
       }

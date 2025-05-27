@@ -1,5 +1,6 @@
 import { z } from "zod"
 import * as v from 'valibot'
+import { PaymentType } from "@prisma/client";
 
 export const employmentFormSchema = z.object({
    employee: z.boolean().nullable(),
@@ -29,24 +30,24 @@ export const leaseEndFormSchema = z.object({
 })
 export type LeaseEndFormSchema = typeof leaseEndFormSchema;
 
-export const newLeaseSchema = z.object({
-   unitNum: z.string().min(3).max(9),
-   organization: z.boolean(),
-   discountId: z.string().cuid2().optional(),
-   customerId: z.string().cuid2(),
-   paymentType: z.enum(['CASH', 'CHECK', 'STRIPE']).optional()
+export const newLeaseSchema = v.object({
+   unitNum: v.pipe(v.string(), v.minLength(3), v.maxLength(9)),
+   organization: v.boolean(),
+   discountId: v.optional(v.pipe(v.string(), v.cuid2())),
+   customerId: v.pipe(v.string(), v.cuid2()),
+   paymentType: v.optional(v.enum(PaymentType)),
 })
 export type NewLeaseSchema = typeof newLeaseSchema;
 
-export const paymentRecordSchema = z.object({
-   customerId: z.string().cuid2(),
-   invoiceId: z.string().nullable(),
-   paymentAmount: z.number(),
-   payee: z.string().optional(),
-   unitNum: z.string().min(3).max(8).nullable(),
-   paymentType: z.enum(['STRIPE', 'CASH', 'CHECK']),
-   paymentNotes: z.string().optional(),
-});
+export const paymentRecordSchema = v.object({
+   customerId: v.pipe(v.string(), v.cuid2()),
+   invoiceId: v.optional(v.pipe(v.string(), v.cuid2())),
+   paymentAmount: v.pipe(v.number(), v.integer(), v.minValue(1)),
+   payee: v.optional(v.string()),
+   unitNum: v.pipe(v.string(), v.minLength(3), v.maxLength(9)),
+   paymentType: v.enum(PaymentType),
+   paymentNote: v.optional(v.string())
+})
 export type PaymentRecordSchema = typeof paymentRecordSchema
 
 export const loginSchema = z.object({
@@ -145,16 +146,6 @@ export const cuidIdFormSchema = z.object({
 });
 export type CuidIdFormSchema = typeof cuidIdFormSchema;
 
-// export const newInvoiceFormSchema = z.object({
-//    customerId: z.string().cuid2(),
-//    invoiceNotes: z.string().nullable(),
-//    employeeId: z.string().min(23).max(30),
-//    invoiceAmount: z.number().positive(),
-//    leaseId: z.string().min(23).max(30).nullable(),
-//    deposit: z.boolean()
-// })
-// export type NewInvoiceFormSchema = typeof newInvoiceFormSchema;
-
 export const newInvoiceFormSchema = v.object({
    customerId: v.pipe(v.string(), v.cuid2()),
    employeeId: v.pipe(v.string(), v.cuid2()),
@@ -171,17 +162,17 @@ export const magicLinkFormSchema = z.object({
 });
 export type MagicLinkFormSchema  = typeof magicLinkFormSchema;
 
-export const newPaymentRecordFormSchema = z.object({
-   customerId: z.string().cuid2(),
-   employeeId: z.string().cuid2(),
-   invoiceNum: z.number().nullable(),
-   paymentAmount: z.number().positive(),
-   payee: z.string().nullable().optional(),
-   paymentCompleted: z.boolean(),
-   paymentNotes: z.string().nullable(),
-   paymentType: z.enum(['CASH', 'CHECK', 'STRIPE']),
-   cashOrCheck: z.boolean(),
-   deposit: z.boolean() 
+export const newPaymentRecordFormSchema = v.object({
+   customerId: v.pipe(v.string(), v.cuid2()),
+   employeeId: v.pipe(v.string(), v.cuid2()),
+   invoiceNum: v.nullable(v.pipe(v.number(), v.minValue(1))),
+   paymentAmount: v.pipe(v.number(), v.minValue(1)),
+   payee: v.optional(v.string()),
+   paymentCompleted: v.boolean(),
+   paymentNotes: v.optional(v.string()),
+   paymentType: v.enum(PaymentType),
+   cashOrCheck: v.boolean(),
+   deposit: v.boolean(),
 })
 export type NewPaymentRecordFormSchema = typeof newPaymentRecordFormSchema;
 
@@ -190,11 +181,11 @@ export const paymentRecordDeleteSchema = z.object({
 });
 export type PaymentRecordDeleteSchema = typeof paymentRecordDeleteSchema;
 
-export const refundFormSchema = z.object({
-   paymentRecordNumber: z.number().positive(),
-   amount: z.number().positive(),
-   notes: z.string().nullable(),
-   refundType: z.enum(['CASH', 'CHECK', 'STRIPE']), 
+export const refundFormSchema = v.object({
+   paymentRecordNumber: v.pipe(v.number(), v.minValue(1)),
+   amount: v.pipe(v.number(), v.minValue(1)),
+   notes: v.optional(v.string()),
+   refundType: v.enum(PaymentType)
 })
 export type RefundFormSchema = typeof refundFormSchema;
 

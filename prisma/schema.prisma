@@ -202,7 +202,7 @@ model MagicLink {
 }
 
 enum PaymentType {
-  STRIPE
+  CREDIT
   CASH
   CHECK
 }
