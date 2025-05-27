@@ -213,13 +213,7 @@ export const creditCardFormSchema = v.object({
    expMonth: v.pipe(v.number(), v.integer(), v.maxValue(12), v.minValue(1)),
    expYear: v.pipe(v.number(), v.integer(), v.minValue(2025), v.maxValue(3045)),
    postalCode: v.pipe(v.string(), v.digits(), v.minLength(5), v.maxLength(5)),
+   billingGivenName: v.string(),
+   billingFamilyName: v.string(),
 })
 export type CreditCardFormSchema = typeof creditCardFormSchema
-// export const creditCardFormSchema = z.object({
-//    ccNum: z.number().positive().int(),
-//    cvv: z.number().positive().min(100).max(9999),
-//    expMonth: z.string(),
-//    expYear: z.string(),
-//    postalCode: z.string(),
-// })
-// export type CreditCardFormSchema = typeof creditCardFormSchema;
