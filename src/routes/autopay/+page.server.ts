@@ -2,6 +2,9 @@ import { fail, redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { prisma } from '$lib/server/prisma';
 import dayjs from 'dayjs';
+import { superValidate } from 'sveltekit-superforms';
+import { valibot } from 'sveltekit-superforms/adapters';
+import { creditCardFormSchema } from '$lib/formSchemas/schemas';
 
 export const load = (async (event) => {
    const redirectTo = event.url.searchParams.get('redirectTo');
@@ -28,34 +31,23 @@ export const load = (async (event) => {
    if(!customer){
       fail(404)
    }
-   let invoice = await prisma.invoice.findFirst({
+   const invoiceNum = await event.fetch('/api/newAutoPay', {
+      method: 'POST',
+      body: JSON.stringify({
+         leaseId: lease?.leaseId
+      })
+   }).then(async (response) =>{
+      return await response.json()
+   })
+   console.log(typeof invoiceNum)
+   const invoice = await prisma.invoice.findUnique({
       where: {
-         AND:[
-            {leaseId: lease!.leaseId},
-            {paymentRecordNum: null}
-         ]
+         invoiceNum
       }
    })
-   if(invoice){
-      return { customer, lease, redirectTo, invoice}
-   } else {
-      const previousInvoice = await prisma.invoice.findFirst({
-         where: {
-            leaseId
-         },
-         orderBy: {
-            invoiceDue: 'desc'
-         }
-      })
-      invoice = await prisma.invoice.create({
-         data: {
-            leaseId: lease!.leaseId,
-            invoiceAmount: lease!.price,
-            invoiceDue: dayjs(previousInvoice?.invoiceDue).add(1, "month").toDate(),
-            customerId: customer!.id
-
-         }
-      })
+   if(!invoice){
+      fail(404)
    }
-   return { customer, lease, redirectTo, invoice };
+   const creditCardForm = await superValidate(valibot(creditCardFormSchema))
+   return { customer, lease, redirectTo, invoice, creditCardForm };
 }) satisfies PageServerLoad;

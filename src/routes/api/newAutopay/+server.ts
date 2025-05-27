@@ -1,7 +1,8 @@
 import { prisma } from '$lib/server/prisma';
+import dayjs from 'dayjs';
 import type { RequestHandler } from './$types';
 
-export const GET: RequestHandler = async (event) => {
+export const POST: RequestHandler = async (event) => {
    const body = await event.request.json();
    const {leaseId} = body;
    if(!leaseId){
@@ -26,16 +27,17 @@ export const GET: RequestHandler = async (event) => {
    if(invoice){
       return new Response(JSON.stringify(invoice.invoiceNum), {status: 200})
    } else {
-      const previousInvoice = await prisma.invoice.findFirst({
-         orderBy:{
-            invoiceDue:'desc'
-         },
-         where:{
-            leaseId: lease.leaseId
+      const diff = dayjs().diff(lease.leaseEffectiveDate, 'months')
+      const dueDate = dayjs(lease.leaseEffectiveDate).add(diff + 1, 'months').toDate()
+      const newInvoice = await prisma.invoice.create({
+         data: {
+            invoiceAmount: lease.price,
+            leaseId: lease.leaseId,
+            invoiceNotes: `Auto-payment for unit ${lease.unitNum} for ${dayjs(dueDate).format('MMMM YYYY')}`,
+            invoiceDue: dueDate,
+            customerId: lease.customerId,
          }
       })
-
+      return new Response(JSON.stringify(newInvoice.invoiceNum), {status:200});
    }
-
-   return new Response();
 };

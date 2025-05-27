@@ -1,10 +1,12 @@
 import { CONVERGE_ACCOUNT_ID, CONVERGE_SSL_PIN, CONVERGE_USER_ID } from '$env/static/private';
 import { prisma } from '$lib/server/prisma';
+import dayjs from 'dayjs';
 import type { RequestHandler } from './$types';
 
 export const POST: RequestHandler = async (event) => {
    const body = await event.request.json();
    const { invoiceNum, subscription } = body;
+   console.log(subscription)
    if(!invoiceNum){
       return new Response(JSON.stringify('invoice number not provided'), {status: 400});
    }
@@ -28,34 +30,30 @@ export const POST: RequestHandler = async (event) => {
    if(subscription){
       details = {
          ssl_transaction_type: 'ccaddrecurring',
-         
          ssl_account_id: CONVERGE_ACCOUNT_ID,
          ssl_user_id: CONVERGE_USER_ID,
          ssl_pin: CONVERGE_SSL_PIN,
          ssl_amount: invoice.invoiceAmount,
          ssl_invoice_number: invoice.invoiceNum,
-         ssl_first_name: customer.givenName ? customer.givenName : '',
-         ssl_last_name: customer.familyName ? customer.familyName : '',
-         ssl_company: customer.organizationName ? customer.organizationName : '',
-         
+         ssl_next_payment_date: dayjs(invoice.invoiceDue).format('MM/DD/YYYY'),
+         ssl_billing_cycle: 'MONTHLY',
       }
-   }
-    details = {
-      ssl_transaction_type: 'ccsale',
-      ssl_account_id: CONVERGE_ACCOUNT_ID,
-      ssl_user_id: CONVERGE_USER_ID,
-      ssl_pin: CONVERGE_SSL_PIN,
-      ssl_amount: invoice.invoiceAmount,
-      ssl_invoice_number: invoice.invoiceNum,
-      ssl_first_name: customer.givenName ? customer.givenName : '',
-      ssl_last_name: customer.familyName ? customer.familyName : '',
-      ssl_company: customer.organizationName ? customer.organizationName : '',
+   } else {
+      details = {
+        ssl_transaction_type: 'ccsale',
+        ssl_account_id: CONVERGE_ACCOUNT_ID,
+        ssl_user_id: CONVERGE_USER_ID,
+        ssl_pin: CONVERGE_SSL_PIN,
+        ssl_amount: invoice.invoiceAmount,
+        ssl_invoice_number: invoice.invoiceNum,
+     }
    }
    const formBody = Object.keys(details).map(key => {
       const string = encodeURIComponent(key) + '=' + 
          encodeURIComponent(details[key as keyof typeof details])
       return string
    }).join('&')
+   console.log(formBody)
    const response = await fetch('https://api.demo.convergepay.com/hosted-payments/transaction_token', {
       method: 'POST', 
       headers: {
