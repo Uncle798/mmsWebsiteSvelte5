@@ -107,20 +107,6 @@
    }
    let selectedMonth = $state(['']);
    let selectedYear = $state(['']);
-
-   // let ccInput = $state<HTMLInputElement>()
-   // onMount(()=> {
-   //    ccInput = document.querySelector('input[name="ccNum"]') as HTMLInputElement;
-   //    if(ccInput){
-   //       const formattedCreditCardInput = new RestrictedInput({
-   //          element: ccInput,
-   //          pattern: "{{9999}} {{9999}} {{9999}} {{9999}}",
-   //       })
-   //       if(ccInput.value.startsWith('3')){
-   //          formattedCreditCardInput.setPattern('{{999}} {{99999}} {{99999}}')
-   //       }
-   //    }
-   // })
 </script>
 <FormMessage message={$message} />
 <form method="POST" use:enhance>
