@@ -76,27 +76,27 @@ model Unit {
 }
 
 model Lease {
-  leaseId              String        @id @unique @default(cuid(2))
-  customerId           String
-  employeeId           String
-  addressId            String
-  unitNum              String
-  price                Float
-  discount             Float?
-  discountId           String?
-  leaseCreatedAt       DateTime      @default(now())
-  leaseReturnedAt      DateTime?
-  leaseEffectiveDate   DateTime
-  leaseEnded           DateTime?
-  dropboxURL           String?
-  anvilEID             String?       @unique
-  stripeSubscriptionId String?
-  invoices             Invoice[]
-  Address              Address       @relation(fields: [addressId], references: [addressId], onDelete: NoAction, onUpdate: NoAction)
-  customer             User          @relation("customer", fields: [customerId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  employee             User          @relation("employee", fields: [employeeId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  unit                 Unit          @relation(fields: [unitNum], references: [num])
-  discountCode         DiscountCode? @relation(fields: [discount, discountId], references: [amountOff, discountId])
+  leaseId            String        @id @unique @default(cuid(2))
+  customerId         String
+  employeeId         String
+  addressId          String
+  unitNum            String
+  price              Float
+  discount           Float?
+  discountId         String?
+  leaseCreatedAt     DateTime      @default(now())
+  leaseReturnedAt    DateTime?
+  leaseEffectiveDate DateTime
+  leaseEnded         DateTime?
+  dropboxURL         String?
+  anvilEID           String?       @unique
+  subscriptionId     String?
+  invoices           Invoice[]
+  Address            Address       @relation(fields: [addressId], references: [addressId], onDelete: NoAction, onUpdate: NoAction)
+  customer           User          @relation("customer", fields: [customerId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  employee           User          @relation("employee", fields: [employeeId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  unit               Unit          @relation(fields: [unitNum], references: [num])
+  discountCode       DiscountCode? @relation(fields: [discount, discountId], references: [amountOff, discountId])
 
   @@unique([leaseId, unitNum, price])
   @@index([leaseId, leaseCreatedAt(sort: Desc)])
@@ -120,7 +120,7 @@ model DiscountCode {
 
 model PaymentRecord {
   paymentNumber    Int           @id @unique @default(autoincrement())
-  stripeId         String?       @unique
+  transactionId    String?       @unique
   invoiceNum       Int?
   customerId       String
   unitNum          String?
@@ -147,7 +147,7 @@ model Invoice {
   leaseId          String?
   invoiceAmount    Float
   invoiceCreated   DateTime       @default(now())
-  invoiceDue DateTime
+  invoiceDue       DateTime
   paymentRecordNum Int?           @unique
   invoiceNotes     String?
   stripeId         String?        @unique
