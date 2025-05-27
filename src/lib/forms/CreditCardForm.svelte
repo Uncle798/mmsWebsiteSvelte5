@@ -12,16 +12,15 @@
 	import { Combobox } from "@skeletonlabs/skeleton-svelte";
 	import { valibot, } from "sveltekit-superforms/adapters";
 	import type { Invoice } from "@prisma/client";
-   import RestrictedInput from 'restricted-input'
-	import { onMount } from "svelte";
 
    interface Props {
       data: SuperValidated<Infer<CreditCardFormSchema>>,
       sessionToken: string,
       invoice: Invoice,
+      subscription: boolean
       classes?: string
    }
-   let { data, sessionToken, invoice, classes, }:Props = $props();
+   let { data, sessionToken, invoice, subscription, classes, }:Props = $props();
    let processing = $state(false)
    let { form, message, errors, constraints, enhance, delayed, timeout} = superForm(data, {
       SPA: true,
@@ -47,6 +46,8 @@
                ssl_amount: invoice.invoiceAmount,
                ssl_avs_zip: data.postalCode,
                ssl_partial_auth_indicator: 0,
+               ssl_first_name: data.billingGivenName,
+               ssl_last_name: data.billingFamilyName
             }
             const callback = {
                //@ts-ignore
@@ -65,7 +66,7 @@
                //@ts-ignore
                onApproval: async function (response) { 
                
-                  const res = await fetch('/api/elavon/paymentSuccess', {
+                  const res = await fetch(`/api/elavon/paymentSuccess?subscription${subscription}`, {
                      method: 'POST',
                      body: JSON.stringify(response, null, '\t')
                   }).then(async (r) => await r.json())
@@ -123,7 +124,25 @@
 </script>
 <FormMessage message={$message} />
 <form method="POST" use:enhance>
-   <div class={classes}> 
+   <div class='{classes} m-2'> 
+      <TextInput
+         bind:value={$form.billingGivenName}
+         errors={$errors.billingGivenName}
+         constraints={$constraints.billingGivenName}
+         label='Given name on credit card'
+         name='billingGivenName'
+         placeholder='Smokey'
+         autocomplete='cc-given-name'
+      />
+      <TextInput
+         bind:value={$form.billingFamilyName}
+         errors={$errors.billingFamilyName}
+         constraints={$constraints.billingFamilyName}
+         label='Family name on credit card'
+         name='billingFamilyName'
+         placeholder='Bear'
+         autocomplete='cc-family-name'
+      />
       <TextInput 
       errors={$errors.ccNum}
       constraints={$constraints.ccNum}
@@ -132,9 +151,8 @@
       name='ccNum'
       placeholder='0000 0000 0000 0000'
       autocomplete='cc-number'
-      classes='m-2'
       />
-      <div class="flex m-2 gap-2 ">
+      <div class="flex gap-2 ">
          <Combobox
             bind:value={selectedMonth}
             data={monthComboBoxData}
