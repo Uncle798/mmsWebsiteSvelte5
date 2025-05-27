@@ -18,7 +18,7 @@ export const POST: RequestHandler = async (event) => {
          data: {
             invoiceNum: invoice.invoiceNum,
             paymentAmount: parseInt(ssl_amount, 10),
-            paymentType: 'STRIPE',
+            paymentType: 'CREDIT',
             customerId: invoice.customerId, 
             paymentNotes: `Payment for invoice number ${invoice.invoiceNum}, ${invoice.invoiceNotes}`,
             transactionId: ssl_txn_id
