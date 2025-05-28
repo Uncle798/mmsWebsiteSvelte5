@@ -183,8 +183,8 @@
          />
       </div>
    </div>  
-    {#if !processing}
-      <button class="btn">Pay bill</button>
+   {#if !processing}
+      <button class="btn rounded-lg preset-filled-primary-50-950 m-1 sm:m-2">Pay bill</button>
    {:else}
       Processing
    {/if}

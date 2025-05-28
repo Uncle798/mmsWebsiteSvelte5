@@ -24,14 +24,14 @@
 
 <div class="flex flex-col sm:flex-row m-2 gap-1 {classes}">
    {#if array.length > size}  
-      <select name="size" id="size" class="select rounded-lg truncate sm:w-1/2" bind:value={size}>
+      <select name="size" id="size" class="select rounded-lg truncate sm:w-1/3" value={size} onchange={(event) => size = Number(event.currentTarget.value)}>
          {#each [5,10,25,50] as v}
          <option value={v}>Show {v} {label} per page</option>
          {/each}
          <option value={array.length}>Show all {array.length} {label}</option>
       </select>
    {/if}
-   <Pagination data={array} bind:page={pageNum} bind:pageSize={size} classes='rounded-lg' showFirstLastButtons={true} siblingCount={3}>
+   <Pagination data={array} bind:page={pageNum} bind:pageSize={size} showFirstLastButtons={true} siblingCount={3} >
       {#snippet labelEllipsis()}<IconEllipsis class="size-4" />{/snippet}
       {#snippet labelNext()}<IconArrowRight class="size-4" />{/snippet}
       {#snippet labelPrevious()}<IconArrowLeft class="size-4" />{/snippet}
