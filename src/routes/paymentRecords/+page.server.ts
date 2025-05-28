@@ -1,7 +1,7 @@
 import { prisma } from '$lib/server/prisma';
 import { superValidate } from 'sveltekit-superforms';
 import type { PageServerLoad } from './$types';
-import { zod } from 'sveltekit-superforms/adapters';
+import { valibot, zod } from 'sveltekit-superforms/adapters';
 import { dateSearchFormSchema, refundFormSchema, searchFormSchema } from '$lib/formSchemas/schemas';
 import { redirect } from '@sveltejs/kit';
 import { arrayOfYears } from '$lib/server/utils';
@@ -12,7 +12,7 @@ export const load = (async (event) => {
    }
    const searchForm = await superValidate(zod(searchFormSchema));
    const dateSearchForm = await superValidate(zod(dateSearchFormSchema));
-   const refundForm = await superValidate(zod(refundFormSchema));
+   const refundForm = await superValidate(valibot(refundFormSchema));
    const paymentRecordCount = await prisma.paymentRecord.count();
    const firstPayment = await prisma.paymentRecord.findFirst({
       orderBy: {
