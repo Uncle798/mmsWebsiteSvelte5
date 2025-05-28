@@ -305,7 +305,7 @@ async function  main (){
    const deleteStartTime = dayjs();
    await deleteAll();
    const deleteEndTime = dayjs();
-   console.log(`📋 Previous records deleted in ${deleteEndTime.diff(deleteStartTime, 's')} sec`);
+   console.log(`📋 Previous records deleted in ${deleteEndTime.diff(deleteStartTime, 's')} seconds`);
    userMakeEmail();
    const users:User[] = await prisma.user.createManyAndReturn({
       data: userData
@@ -317,7 +317,7 @@ async function  main (){
       await createEmployees();
    const totalUsers = await prisma.user.count();
    const userEndTime = dayjs();
-   console.log(`👥 ${totalUsers} users created in ${userEndTime.diff(deleteEndTime, 's')} sec`);
+   console.log(`👥 ${totalUsers} users created in ${userEndTime.diff(deleteEndTime, 's')} seconds`);
    const uD:Unit[]=[];
    for(const unit of unitData){
       const dbUnit = makeUnit(unit);
@@ -327,7 +327,7 @@ async function  main (){
       data: uD
    })
    const unitEndTime = dayjs();
-   console.log(`🚪 ${units.length} units created in ${unitEndTime.diff(userEndTime, 'ms')} ms`);
+   console.log(`🚪 ${units.length} units created in ${unitEndTime.diff(userEndTime, 's')} seconds`);
    const leases:PartialLease[]=[];
    const employees = await prisma.user.findMany({
       where:{
@@ -393,13 +393,13 @@ async function  main (){
       data: discount
    })
    const leaseEndTime = dayjs();
-   console.log(`🎫 ${leases.length} leases created in ${leaseEndTime.diff(unitEndTime, 'ms')} ms`);
+   console.log(`🎫 ${leases.length} leases created in ${leaseEndTime.diff(unitEndTime, 'second')} seconds`);
    const invoices: PartialInvoice[] = [];
    for await (const lease of dbLeases){
       const leaseEndDate:Date | null = lease.leaseEnded ?? new Date();
       const months:Date[] = arrayOfMonths(lease.leaseEffectiveDate, leaseEndDate);
       let i = 0;
-      for await (const month of months) {
+      for(const month of months) {
          let deposit = false;
          if(i === 0){
             deposit = true;
@@ -413,7 +413,7 @@ async function  main (){
       data: invoices,
    })
    const invoiceEndTime = dayjs();
-   console.log(`💰 ${invoices.length} invoices created in ${invoiceEndTime.diff(leaseEndTime, 's')} sec`);
+   console.log(`💰 ${invoices.length} invoices created in ${invoiceEndTime.diff(leaseEndTime, 's')} seconds`);
    const paymentRecords:PartialPaymentRecord[]=[];
    for await (const invoice of dbInvoices){
       const paymentDate = dayjs(invoice.invoiceCreated).add(1, 'months');
@@ -458,8 +458,9 @@ async function  main (){
    }                 
    const paymentEndTime = dayjs();
    const totalRecords = await countAll();
-   console.log(`🧾 ${paymentRecords.length} payment records created in ${paymentEndTime.diff(invoiceEndTime, 'second')} sec`);
-   console.log(`🖥️  ${totalRecords} database entries created in ${paymentEndTime.diff(deleteStartTime, 'second')} sec`);
+   console.log(`🧾 ${paymentRecords.length} payment records created in ${paymentEndTime.diff(invoiceEndTime, 'second')} seconds`);
+   console.log(`🖥️  ${totalRecords} database entries created in ${paymentEndTime.diff(deleteStartTime, 'second')} seconds`);
+   process.exit(0);
 }
 
 
