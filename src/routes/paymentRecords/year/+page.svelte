@@ -10,7 +10,7 @@
         goto(`/paymentRecords/year/${year}`);
     }
 </script>
-<div class="mt-10">
+<div class="mt-10 m-1 sm:m-2 sm:mt-10">
     <label for="selectYear" class="label-text"> 
         Select year:
         <select name="selectYear" id="selectYear" class="select" bind:value={currentYear} onchange={onSelect}>

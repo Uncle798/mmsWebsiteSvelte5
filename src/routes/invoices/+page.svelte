@@ -87,8 +87,8 @@
 </script>
 {#await wrapper}
     <Header title='Loading invoices' />
-    <div class="bg-tertiary-50 dark:bg-tertiary-950 w-full rounded-b-lg fixed top-8 p-2">Total invoiced (not including deposits):</div>
-    <div class="mt-20 mx-1 sm:mx-2" transition:fade={{duration:600}}>
+    <div class="bg-tertiary-50 dark:bg-tertiary-950 w-full rounded-b-lg fixed top-8 p-2 z-50">Total invoiced (not including deposits):</div>
+    <div class="mt-20 mx-1 sm:mx-2 " in:fade={{duration:600}}>
         Loading {numberFormatter.format(data.invoiceCount)} invoices, 
         <Combobox
             data={yearComboboxData}
@@ -99,10 +99,10 @@
             onValueChange={(details) => {
                 goto(`/invoices/year/${details.value[0]}`)
             }}
-            classes='mx-1 sm:mx-2'
+            classes='mx-1 sm:mx-2 z-40'
         />
-        <Placeholder numCols={4} numRows={1} heightClass='h-10'/>
-        <Placeholder numCols={2} numRows={size} heightClass='h-40'/>
+        <Placeholder numCols={4} numRows={1} heightClass='h-10' classes='z-0'/>
+        <Placeholder numCols={2} numRows={size} heightClass='h-40' classes='z-0'/>
     </div>
     
     {:then invoices}
@@ -120,16 +120,16 @@
                 <Revenue 
                     label="Total invoiced (not including deposits)" 
                     amount={totalRevenue(searchedInvoices(dateSearchedInvoices(invoices)))} 
-                    classes='bg-tertiary-50 dark:bg-tertiary-950 w-full rounded-b-lg fixed top-8 p-2'
+                    classes='bg-tertiary-50 dark:bg-tertiary-950 w-full rounded-b-lg sticky top-8 p-2 z-50'
                 />
 
-                <div class="flex mx-1 sm:mx-2 border-b-2 dark:border-primary-950 border-primary-50 mt-16" transition:fade={{duration:600}}>
+                <div class="flex mx-1 sm:mx-2 border-b-2 dark:border-primary-950 border-primary-50 sticky top-16 bg-surface-50-950 z-40" transition:fade={{duration:600}}>
                     <Search data={data.searchForm} bind:search={search} searchType='invoice number' classes='w-1/2 p-2'/>
                     <Search data={data.searchForm} bind:search={nameSearch} searchType='Customer' classes='w-1/2 p-2'/>
                     <DateSearch data={data.dateSearchForm} bind:startDate={startDate} bind:endDate={endDate} {minDate} {maxDate} classes='w-1/2 p-2'/>
                 </div>
 
-                <div class="grid grid-cols-1 sm:mx-2 mx-1 gap-3" transition:fade={{duration:600}}>
+                <div class="grid grid-cols-1 sm:mx-2 mx-1 mt-8 gap-3" transition:fade={{duration:600}}>
                     {#each  slicedInvoices(searchedInvoices(searchByUser(invoices))) as invoice}  
                     {@const customer = customers.find((customer) => customer.id === invoice.customerId)}
                         <div class="sm:grid sm:grid-cols-2 border-2 border-primary-50 dark:border-primary-950 rounded-lg">

@@ -57,7 +57,7 @@
 
 <Header title='Payment Records' />
 {#await wrapper}
-    <div class="mt-10">
+    <div class="mt-10 m-1 sm:m-2 sm:mt-10" in:fade={{duration:600}}>
         loading {numberFormatter.format(data.paymentRecordCount)} payment records
         {#if data.months}
             <label for="selectMonth">
@@ -72,7 +72,7 @@
                 <a href='/paymentRecords/year/{month.getFullYear()}/month/{month.getMonth()}' class="btn">{dayjs(month).format('MMMM')}</a>
             {/each}
         {/if}
-        <Placeholder numCols={2} numRows={3} heightClass='h-32'/>
+        <Placeholder numCols={1} numRows={25} heightClass='h-48'/>
     </div>
 {:then paymentRecords} 
     {#await data.customers}
@@ -82,18 +82,18 @@
             loading contacts
         {:then addresses}         
             {#if paymentRecords.length >0}
-                <div transition:fade={{duration:600}}>
+                <div in:fade={{duration:600}}>
                         <Revenue 
                             label="Total revenue" 
                             amount={totalRevenue(searchedPayments(dateSearchPayments(paymentRecords)))} 
                             classes=' 
-                            absolute top-8 left-0 p-2
+                            sticky top-8 left-0 p-2
                             bg-tertiary-50 dark:bg-tertiary-950
-                            w-full
+                            w-full z-40
                             rounded-b-lg
                             '    
                         />
-                        <div class="flex border-b-2 border-primary-50 dark:border-primary-950 m-2 mt-16">
+                        <div class="sticky flex border-b-2 border-primary-50 dark:border-primary-950 m-2 top-18 left-0 bg-primary-50 dark:bg-surface-950 z-30">
                             <Search 
                                 bind:search={search} 
                                 searchType='payment record number' 
@@ -109,7 +109,7 @@
                                 classes='p-2 flex flex-col md:grid md:grid-cols-2'    
                             />
                         </div>
-                        <div class="grid grid-cols-1 gap-y-3 gap-x-1 m-2">
+                        <div class="grid grid-cols-1 gap-y-3 gap-x-1 m-2 mt-8 z-0">
                             {#each slicedSource(dateSearchPayments(searchedPayments(paymentRecords))) as paymentRecord}
                             {@const customer = customers.find((customer) => customer.id === paymentRecord.customerId) }
                                 <div class=" rounded-lg border border-primary-50 dark:border-primary-950  md:flex md:w-full">

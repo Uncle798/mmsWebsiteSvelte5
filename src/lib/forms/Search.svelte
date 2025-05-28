@@ -25,7 +25,7 @@
 				name="search"
 				id="search"
 				class="input mb-2 mt-1"
-				placeholder="Search by {searchType} ..."
+				placeholder="Search by {searchType}..."
 				bind:value={search}
 			/>
 			<button
