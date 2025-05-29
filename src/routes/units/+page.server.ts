@@ -8,6 +8,7 @@ import { unitNotesFormSchema, unitPricingFormSchema, leaseEndFormSchema, searchF
 import type { PageServerLoad, Actions } from "./$types";
 import type { Address, Lease, Unit } from "@prisma/client";
 import type { PartialUser } from "$lib/server/partialTypes";
+import pricingData from "$lib/server/pricingData";
 
 export type UnitCustomer = Unit & PartialUser & Lease & Address;
 
@@ -34,6 +35,12 @@ export const load:PageServerLoad = async (event) =>{
          num: 'asc'
       }
    });
+   const sizes:string[] = []
+   for(const datum of pricingData){
+      if(datum.size !== 'ours'){
+         sizes.push(datum.size)
+      }
+   }
    return {
       units,
       leases, 
@@ -42,7 +49,8 @@ export const load:PageServerLoad = async (event) =>{
       unitPricingForm,
       leaseEndForm,
       searchForm,
-      addresses
+      addresses,
+      sizes
    }
 }
 

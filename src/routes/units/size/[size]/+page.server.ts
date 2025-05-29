@@ -14,6 +14,7 @@ export const load = (async (event) => {
    const size = event.params.size;
    const sizes:string[] = [];
    pricingData.forEach((datum) =>{
+      if(datum.size !== 'ours')
       sizes.push(datum.size)
    })
    const units = prisma.unit.findMany({
