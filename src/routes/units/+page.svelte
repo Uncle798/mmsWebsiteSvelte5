@@ -1,6 +1,6 @@
 <script lang="ts">
 	import LeaseEmployee from '$lib/displayComponents/LeaseEmployee.svelte';
-	import { Modal } from '@skeletonlabs/skeleton-svelte';
+	import { Combobox, Modal } from '@skeletonlabs/skeleton-svelte';
 	import Pagination from '$lib/displayComponents/Pagination.svelte';
 	import Placeholder from '$lib/displayComponents/Placeholder.svelte';
 	import UnitEmployee from '$lib/displayComponents/UnitEmployee.svelte';
@@ -14,8 +14,7 @@
 	import type { Lease, Unit } from '@prisma/client';
 	import Search from '$lib/forms/Search.svelte';
 	import Address from '$lib/displayComponents/AddressEmployee.svelte';
-	import HorizontalDivider from '$lib/displayComponents/HorizontalDivider.svelte';
-	import Revenue from '$lib/displayComponents/Revenue.svelte';
+	import Revenue from '$lib/displayComponents/Revenue.svelte'
 	let { data }: { data: PageData } = $props();
 	let modalOpen = $state(false);
 	let currentLeaseId = $state('');
@@ -36,10 +35,19 @@
 	let search = $state('');
 	let pageNum = $state(1);
 	let size = $state(25);
+	let selectedSize = $state([''])
 	let slicedUnits = $derived((units: Unit[]) => units.slice((pageNum - 1) * size, pageNum * size));
-	let filteredUnits = $derived((units: Unit[]) =>
-		units.filter((unit) => unit.num.toString().includes(search))
-	);
+	let filteredUnits = $derived((units:Unit[]) => {
+		if(selectedSize[0] === 'All'){
+			return units
+		} else if(selectedSize[0] !== ''){
+			return units.filter((unit) => {
+				return unit.size === selectedSize[0]
+			})
+		} else {
+			return units
+		}
+	})
 	const totalRevenue = $derived((leases:Lease[]) => {
 		let totalRevenue = 0;
 		leases.forEach((lease) => {
@@ -47,6 +55,25 @@
 		})
 		return totalRevenue;
 	})
+	const searchedUnits = $derived((units:Unit[]) => 
+		units.filter((unit) => {
+			return unit.num.toString().toLowerCase().includes(search.toLowerCase())
+		})
+	)
+	   interface ComboboxData {
+      label: string;
+      value: string;
+   }
+   const comboboxData:ComboboxData[] = [{
+      label: 'All',
+      value: 'All'
+   }];
+   for(const size of data.sizes){
+      comboboxData.push({
+         label: size.replace(/^0+/gm, '').replace(/x0/gm, 'x'),
+         value: size
+      })
+   }
 </script>
 
 <Header title="All units" />
@@ -79,8 +106,10 @@
 </Modal>
 
 {#await data.units}
-   Loading units...
-   <Placeholder numCols={2} numRows={3} heightClass='h-32'/>
+	<div class="m-2">
+		Loading units...
+		<Placeholder numCols={2} numRows={3} heightClass='h-32'/>
+	</div>
 {:then units} 
 	{#await data.leases}
 		loading leases
@@ -94,14 +123,15 @@
 				loading addresses
 			{:then addresses} 
             {#if units}
-					<Search {search} searchType='Unit number' data={data.searchForm} classes='mx-1 sm:mx-2 mt-10' />
-					<HorizontalDivider />
-					<Revenue label='Current leased monthly revenue' amount={totalRevenue(leases)} classes='mx-2'/>
-					<HorizontalDivider />
-            	<div class="grid container grid-cols-1 sm:m-2 m-1 gap-y-3 gap-x-1" transition:fade={{duration:600}}>
-               	{#each slicedUnits(filteredUnits(units)) as unit (unit.num)}
+					<Revenue label='Current leased monthly revenue' amount={totalRevenue(leases)} classes='bg-tertiary-50-950 w-full rounded-b-lg fixed z-40'/>
+					<div class="fixed w-full top-14 z-30 bg-surface-50-950 border-b-2 border-primary-50-950 rounded-b-lg flex">
+						<Search searchType='Unit number' data={data.searchForm} classes='m-2' bind:search={search}/>
+						<Combobox data={comboboxData} label='Select Size' bind:value={selectedSize} classes='m-2'/>
+					</div>
+            	<div class=" sm:m-2 m-1 sm:mt-38" in:fade={{duration:600}}>
+               	{#each slicedUnits(filteredUnits(searchedUnits(units))) as unit (unit.num)}
                	{@const lease = leases?.find((lease) => lease.unitNum === unit.num)}
-							<div class="border-2 border-primary-50 dark:border-primary-950 rounded-lg grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+							<div class="border-2 border-primary-50 dark:border-primary-950 rounded-lg grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 my-2">
 								<div class="flex flex-col">
 									<UnitEmployee {unit} classes='p-4'/>
 									<button class="btn preset-filled-primary-50-950 rounded-lg mx-2 mb-2" onclick={()=> openModal('unitPricing', unit.advertisedPrice, '', unit.size)}>Change all {unit.size.replace(/^0+/gm,'').replace(/x0/gm,'x')} pricing</button>
