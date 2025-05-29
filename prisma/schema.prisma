@@ -102,22 +102,6 @@ model Lease {
   @@index([leaseId, leaseCreatedAt(sort: Desc)])
 }
 
-model DiscountCode {
-  discountId      String    @id @unique @default(cuid(2))
-  code            String    @unique
-  amountOff       Float
-  percentage      Boolean   @default(false)
-  notes           String?
-  discountCreated DateTime  @default(now())
-  discountEnded   DateTime?
-  employee        User      @relation(fields: [userId], references: [id])
-  leases          Lease[]
-  userId          String
-
-  @@unique([discountId, amountOff])
-  @@map("discountCode")
-}
-
 model PaymentRecord {
   paymentNumber    Int           @id @unique @default(autoincrement())
   transactionId    String?       @unique
@@ -173,6 +157,22 @@ model RefundRecord {
   paymentRecord    PaymentRecord[]
   customer         User            @relation("customer", fields: [customerId], references: [id])
   employee         User?           @relation("employee", fields: [employeeId], references: [id])
+}
+
+model DiscountCode {
+  discountId      String    @id @unique @default(cuid(2))
+  code            String    @unique
+  amountOff       Float
+  percentage      Boolean   @default(false)
+  notes           String?
+  discountCreated DateTime  @default(now())
+  discountEnded   DateTime?
+  employee        User      @relation(fields: [userId], references: [id])
+  leases          Lease[]
+  userId          String
+
+  @@unique([discountId, amountOff])
+  @@map("discountCode")
 }
 
 model Session {
