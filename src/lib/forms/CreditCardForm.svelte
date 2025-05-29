@@ -12,15 +12,18 @@
 	import { Combobox } from "@skeletonlabs/skeleton-svelte";
 	import { valibot, } from "sveltekit-superforms/adapters";
 	import type { Invoice } from "@prisma/client";
+   import Payment from "payment";
+	import { onMount } from "svelte";
 
    interface Props {
       data: SuperValidated<Infer<CreditCardFormSchema>>,
       sessionToken: string,
       invoice: Invoice,
-      subscription: boolean
-      classes?: string
+      subscription: boolean,
+      classes?: string,
+      buttonText?: string
    }
-   let { data, sessionToken, invoice, subscription, classes, }:Props = $props();
+   let { data, sessionToken, invoice, subscription, buttonText='Pay Bill',classes, }:Props = $props();
    let processing = $state(false)
    let { form, message, errors, constraints, enhance, delayed, timeout} = superForm(data, {
       SPA: true,
@@ -107,10 +110,16 @@
    }
    let selectedMonth = $state(['']);
    let selectedYear = $state(['']);
+   let ccNumElement = $state<HTMLInputElement>();
+   onMount(()=>{
+      if(ccNumElement){
+         Payment.formatCardNumber(ccNumElement)
+      }
+   })
 </script>
 <FormMessage message={$message} />
 <form method="POST" use:enhance>
-   <div class='{classes} m-2'> 
+   <div class='{classes}'> 
       <TextInput
          bind:value={$form.billingGivenName}
          errors={$errors.billingGivenName}
@@ -129,15 +138,21 @@
          placeholder='Bear'
          autocomplete='cc-family-name'
       />
-      <TextInput 
-      errors={$errors.ccNum}
-      constraints={$constraints.ccNum}
-      bind:value={$form.ccNum}
-      label='Credit Card Number'
-      name='ccNum'
-      placeholder='0000 0000 0000 0000'
-      autocomplete='cc-number'
-      />
+      <div>
+         <label for="ccNum" class="label-text">Credit card number
+            <input 
+               name="ccNum" 
+               id="ccNum" 
+               bind:this={ccNumElement} 
+               class="input" 
+               bind:value={$form.ccNum} 
+               autocomplete="cc-number"
+               {...$constraints.ccNum}>
+         </label>
+         {#if $errors.ccNum}
+            <span class="invalid">{errors}</span>
+         {/if}
+      </div>
       <div class="flex gap-2 ">
          <Combobox
             bind:value={selectedMonth}
@@ -184,7 +199,7 @@
       </div>
    </div>  
    {#if !processing}
-      <button class="btn rounded-lg preset-filled-primary-50-950 m-1 sm:m-2">Pay bill</button>
+      <button class="btn rounded-lg preset-filled-primary-50-950 m-1 sm:m-2">{buttonText}</button>
    {:else}
       Processing
    {/if}
