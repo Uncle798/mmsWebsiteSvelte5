@@ -38,7 +38,7 @@
 
 <Header title='Home' />
 {#await wrapper}
-   <article class="m-2 mt-10">
+   <article class="m-2">
       <div>
          <p>
             Thank you for visiting Moscow Mini Storage!
@@ -53,7 +53,7 @@
       <Placeholder numCols={4} numRows={4} heightClass='h-24' classes='z-0'/>
    </div>
 {:then units} 
-      <article class="m-2 mt-10">
+      <article class="m-2">
          <div>
             <p>
                Thank you for visiting Moscow Mini Storage!

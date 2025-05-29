@@ -17,7 +17,7 @@
 <div class="{classes}">
     <div class="grid gap-x-1 gap-y-3 p-3" style="grid-template-columns: repeat({numCols}, minmax(0, 1fr));">
         {#each {length:numRows*numCols} as row }
-            <div class="placeholder rounded-2xl animate-pulse {heightClass}"></div>
+            <div class="placeholder rounded-2xl animate-pulse {heightClass} z-0"></div>
         {/each}
     </div>
 </div>

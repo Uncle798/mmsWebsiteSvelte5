@@ -103,7 +103,7 @@
 			<Placeholder numCols={1} numRows={2} heightClass='h-10' />
 			<Placeholder numCols={2} numRows={size} heightClass='h-44'/>
 		{:then addresses}
-		<div class=" bg-tertiary-50 dark:bg-tertiary-950 w-full rounded-b-lg fixed top-9 p-2 flex flex-col sm:flex-row z-50">
+		<div class=" bg-tertiary-50 dark:bg-tertiary-950 w-full rounded-b-lg fixed top-9 left-0 p-2 flex flex-col sm:flex-row z-50">
 			<Revenue 
 				label="Total refunds" 
 				amount={totalRevenue(searchRefunds(dateSearchRefunds(refunds)))}
@@ -116,7 +116,7 @@
 			/>
 
 		</div>
-			<div class="flex mx-2 mt-18 border-b-2  border-primary-50 dark:border-primary-950 shadow-lg" transition:fade={{duration:600}}>
+			<div class="flex border-b-2 border-primary-50-950 shadow-lg sticky top-18 left-0 bg-surface-50-950 mx-2" in:fade={{duration:600}}>
 				<Search
 					bind:search={search}
 					searchType="refund records" 
@@ -139,7 +139,7 @@
 				/>
 			</div>
 
-			<div class="grid grid-cols-1 mx-2 gap-3 shadow-lg">
+			<div class="grid grid-cols-1 mx-2 mt-20 gap-3 shadow-lg" in:fade={{duration:600}}>
 				{#each slicedRefunds(searchRefunds(dateSearchRefunds(searchByUser(refunds)))) as refund (refund.refundNumber)}
 				{@const customer = customers.find((customer) => customer.id === refund.customerId)}
 					<div class="border rounded-lg border-primary-50 dark:border-primary-950 sm:grid sm:grid-cols-2">

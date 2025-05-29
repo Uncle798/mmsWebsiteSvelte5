@@ -21,7 +21,7 @@
    })
    const currencyFormatter = new Intl.NumberFormat('en-US', {style:'currency', currency:'USD'})
 </script>
-<div class="flex sticky top-8 dark:bg-tertiary-950 bg-tertiary-50 rounded-b-lg" transition:fade={{duration:600}}>
+<div class="flex fixed bg-tertiary-50-950 w-full rounded-b-lg" transition:fade={{duration:600}}>
    <span class="m-2">Unavailable: {data.units.length} of {data.unitCount}</span>
    <span class="m-2">Available percentage {Math.round((data.units.length*100)/data.unitCount)}%</span>
    <span class="m-2">Unavailable revenue per month: {currencyFormatter.format(lostRevenue)}</span>

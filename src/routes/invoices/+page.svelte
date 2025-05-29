@@ -87,8 +87,8 @@
 </script>
 {#await wrapper}
     <Header title='Loading invoices' />
-    <div class="bg-tertiary-50 dark:bg-tertiary-950 w-full rounded-b-lg fixed top-8 p-2 z-50">Total invoiced (not including deposits):</div>
-    <div class="mt-20 mx-1 sm:mx-2 " in:fade={{duration:600}}>
+    <div class="bg-tertiary-50 dark:bg-tertiary-950 w-full rounded-b-lg fixed top-8 p-2 z-40">Total invoiced (not including deposits):</div>
+    <div class="mx-1 sm:mx-2 mt-10 sm:mt-10" in:fade={{duration:600}}>
         Loading {numberFormatter.format(data.invoiceCount)} invoices, 
         <Combobox
             data={yearComboboxData}
@@ -129,7 +129,7 @@
                     <DateSearch data={data.dateSearchForm} bind:startDate={startDate} bind:endDate={endDate} {minDate} {maxDate} classes='w-1/2 p-2'/>
                 </div>
 
-                <div class="grid grid-cols-1 sm:mx-2 mx-1 mt-8 gap-3" transition:fade={{duration:600}}>
+                <div class="grid grid-cols-1 sm:m-2 m-1 gap-3" transition:fade={{duration:600}}>
                     {#each  slicedInvoices(searchedInvoices(searchByUser(invoices))) as invoice}  
                     {@const customer = customers.find((customer) => customer.id === invoice.customerId)}
                         <div class="sm:grid sm:grid-cols-2 border-2 border-primary-50 dark:border-primary-950 rounded-lg">

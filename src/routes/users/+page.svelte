@@ -27,7 +27,7 @@
 {#await data.users}
    ...loading {data.userCount} users
 {:then users }
-   <div transition:fade={{duration:600}} class="m-2 mt-10">
+   <div in:fade={{duration:600}} class="m-2">
       <Search data={data.searchForm} bind:search={search} searchType='user' />
       <div class="grid grid-cols-1 gap-y-3 gap-x-1">
          {#each slicedSource(searchedUsers(users)) as user (user.id)}

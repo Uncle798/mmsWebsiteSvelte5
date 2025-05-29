@@ -67,7 +67,7 @@
 	transitionsPositionerOut={{ x: -280, duration: 400 }}
 >
 {#snippet trigger()}
-		<Menu class='mx-2 border-2 ' />	
+		<Menu class='mx-2 border-2 z-50' />	
 {/snippet}
 {#snippet content()}
 	<article class="">
@@ -102,7 +102,7 @@
 	</article>
 {/snippet}
 </Modal>
-<div class=" bg-tertiary-50 dark:bg-tertiary-950 fixed top-0 right-0 left-0 h-9 text-center font-bold p-2">{PUBLIC_COMPANY_NAME}</div>
+<div class="bg-tertiary-50-950 sticky top-0 left-0 h-9 text-center font-bold z-40">{PUBLIC_COMPANY_NAME}</div>
 
 	<ToastProvider placement='top-start'>
 		{@render children()}

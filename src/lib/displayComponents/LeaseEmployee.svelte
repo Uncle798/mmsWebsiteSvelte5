@@ -38,6 +38,6 @@
    {#if lease.subscriptionId}
       On auto-pay
    {:else}
-      <a href="/autopay?leaseId={lease.leaseId}" class="anchor">Sign up for Auto-pay</a>
+      <a href="/autopay?leaseId={lease.leaseId}" class="anchor mx-2 col-span-2">Sign up for Auto-pay</a>
    {/if}
 </div>

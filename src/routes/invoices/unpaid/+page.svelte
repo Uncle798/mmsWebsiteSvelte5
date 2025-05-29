@@ -85,15 +85,15 @@
         {:then addresses}
             {#if invoices.length >0}       
                 <Header title='Unpaid invoices' />
-                <Revenue label="Current Unpaid Invoice total" amount={totalRevenue(searchedInvoices(dateSearchedInvoices(invoices)))} classes="bg-tertiary-50 dark:bg-tertiary-950 w-full rounded-b-lg fixed top-8 p-2"/>
-                <div class="flex gap-1 mt-20 mx-1 sm:mx-2">
+                <Revenue label="Current Unpaid Invoice total" amount={totalRevenue(searchedInvoices(dateSearchedInvoices(invoices)))} classes="bg-tertiary-50 dark:bg-tertiary-950 w-full rounded-b-lg sticky top-8 p-2 z-40"/>
+                <div class="flex gap-1 mx-1 sm:mx-2 sticky top-18 left-0 bg-surface-50-950 border-b-2 border-primary-50-950 z-30">
                     <div class="flex flex-col sm:flex-row">
                         <Search data={data.searchForm} bind:search={search} searchType='invoice number' classes='w-1/2'/>
                         <Search data={data.searchForm} bind:search={nameSearch} searchType='customer' classes='w-1/2'/>
                     </div>
                     <DateSearch data={data.dateSearchForm} bind:startDate={startDate} bind:endDate={endDate} {minDate} {maxDate} classes=""/>
                 </div>
-                <div class="grid grid-cols-1 gap-y-3 gap-x-1 mx-2 mt-2">
+                <div class="grid grid-cols-1 gap-y-3 gap-x-1 m-2 z-30">
                     {#each  slicedInvoices(searchedInvoices(searchByUser(invoices))) as invoice}  
                     {@const customer = customers.find((customer) => customer.id === invoice.customerId)}  
                         <div class="rounded-lg border dark:border-primary-950 border-primary-50 flex flex-col sm:flex-row">                            
