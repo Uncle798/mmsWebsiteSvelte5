@@ -21,6 +21,9 @@ export const load:PageServerLoad = (async (event) => {
                }
             }}
          ]
+      },
+      orderBy: {
+         num: 'asc'
       }
    })
    const unitCount = await prisma.unit.count();
