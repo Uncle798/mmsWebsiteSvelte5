@@ -15,7 +15,7 @@
    let { value = $bindable(), label, errors, constraints, placeholder, name, autocomplete, classes, ...others }:Props = $props()
 </script>
 <div class={classes}>
-<label class="label">
+<label class="label-text">
    {#if label}<span class="label-text">{label}</span>{/if}
    <input
       type="text"

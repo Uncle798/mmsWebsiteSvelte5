@@ -130,9 +130,9 @@
             <span class="invalid">{$errors.ccNum}</span>
          {/if}
       </div>
-      <div class="flex gap-2 flex-col med:flex-row">
+      <div class="flex gap-2 flex-row">
          <div>
-            <label for="ccExp" class="label-text">Credit Card expiration
+            <label for="ccExp" class="label-text">Expiration
                <input
                   name="ccExp"
                   id="ccExp"

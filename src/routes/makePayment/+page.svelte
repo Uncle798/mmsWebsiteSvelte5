@@ -43,7 +43,7 @@
    </div>
 
 {:else}
-<div class="flex flex-col m-2 mb-20 sm:mb-12 gap-2">
+<div class="flex flex-col m-2 gap-2">
    <InvoiceCustomer
       invoice={data.invoice}
       classes='border border-primary-50-950 rounded-lg'
