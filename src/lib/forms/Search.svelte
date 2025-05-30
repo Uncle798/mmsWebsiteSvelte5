@@ -24,12 +24,12 @@
 				type="search"
 				name="search"
 				id="search"
-				class="input mb-2 mt-1"
+				class="input"
 				placeholder="Search by {searchType}..."
 				bind:value={search}
 			/>
 			<button
-				class="btn rounded-lg preset-filled-primary-50-950 m-1"
+				class="btn rounded-lg preset-filled-primary-50-950 my-1"
 				type="button"
 				onclick={() => {
 					$form.search = '';

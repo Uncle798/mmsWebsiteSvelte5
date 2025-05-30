@@ -4,7 +4,7 @@
    import type { PageData } from './$types';
 	import CreditCardForm from '$lib/forms/CreditCardForm.svelte';
 	import { browser } from '$app/environment';
-	import { goto } from '$app/navigation';
+	import { goto, invalidate } from '$app/navigation';
 	import { Combobox } from '@skeletonlabs/skeleton-svelte';
 	import InvoiceCustomer from '$lib/displayComponents/customerViews/InvoiceCustomer.svelte';
 
@@ -15,7 +15,7 @@
    onMount(async () => {
       sessionToken = await getSessionToken();
       setTimeout(() => {
-         location.reload();
+         invalidate('/api/elavon');
       }, 15*60*1000)
       mounted = true
    })

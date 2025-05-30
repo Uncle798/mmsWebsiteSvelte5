@@ -36,7 +36,7 @@
 
 <div class="{classes}">
 	<form method="POST" use:enhance>
-		<div class="flex flex-col sm:flex-row items-center space-x-3">
+		<div class="flex gap-1">
 			<div>
 				<DateInput
 					bind:value={$form.startDate}

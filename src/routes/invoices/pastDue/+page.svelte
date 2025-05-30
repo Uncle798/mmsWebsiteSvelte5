@@ -13,6 +13,9 @@
     import utc from 'dayjs/plugin/utc'
 	import Revenue from '$lib/displayComponents/Revenue.svelte';
 	import Address from '$lib/displayComponents/AddressEmployee.svelte';
+    import { PanelTopClose, SearchIcon } from 'lucide-svelte';
+    import { onNavigate } from '$app/navigation';
+    import { Modal } from '@skeletonlabs/skeleton-svelte';
     dayjs.extend(utc)
     let { data }: { data: PageData } = $props();
     let pageNum = $state(1);
@@ -70,33 +73,60 @@
         })
         return totalRevenue
     })
+        let searchDrawerOpen = $state(false);
+    onNavigate(()=>{
+        searchDrawerOpen = false
+    })
 </script>
 {#await wrapper}
     <Header title='Loading invoices' />
     Loading {numberFormatter.format(data.invoiceCount)} invoices, 
-    <Placeholder numCols={2} numRows={3} heightClass='h-32'/>
-{:then invoices}
-    {#await data.customers}
-        <Header title='Loading customers' />
-        Loading customers...
-    {:then customers}
-        {#await data.addresses}
-            Loading addresses...
-        {:then addresses}
+    <Placeholder numCols={1} numRows={size} heightClass='h-40'/>
+    {:then invoices}
+        {#await data.customers}
+            <Header title='Loading customers' />
+            Loading customers...
+            <Placeholder numCols={1} numRows={size} heightClass='h-40'/>
+        {:then customers}
+            {#await data.addresses}
+                Loading addresses...
+                <Placeholder numCols={1} numRows={size} heightClass='h-40'/>
+            {:then addresses}
             {#if invoices.length >0}       
                 <Header title='Unpaid invoices' />
-                <Revenue label="Current Unpaid Invoice total" amount={totalRevenue(searchedInvoices(dateSearchedInvoices(invoices)))} classes="bg-tertiary-50 dark:bg-tertiary-950 w-full rounded-b-lg fixed top-8 p-2"/>
-                <div class="flex gap-1 mt-20 mx-1 sm:mx-2">
-                    <div class="flex flex-col sm:flex-row">
-                        <Search data={data.searchForm} bind:search={search} searchType='invoice number' classes='w-1/2'/>
-                        <Search data={data.searchForm} bind:search={nameSearch} searchType='customer' classes='w-1/2'/>
-                    </div>
-                    <DateSearch data={data.dateSearchForm} bind:startDate={startDate} bind:endDate={endDate} {minDate} {maxDate} classes=""/>
-                </div>
-                <div class="grid grid-cols-1 gap-y-3 gap-x-1 mx-2 mt-2">
+                <Revenue 
+                    label="Total invoiced (not including deposits)" 
+                    amount={totalRevenue(searchedInvoices(dateSearchedInvoices(invoices)))} 
+                    classes='bg-tertiary-50-950 w-full rounded-b-lg fixed top-8 p-2 z-40'
+                />
+                <Modal
+                    open={searchDrawerOpen}
+                    onOpenChange={(event)=>(searchDrawerOpen = event.open)}
+                    triggerBase='btn preset-filled-primary-50-950 rounded-lg fixed top-0 right-12 sm:right-0 z-50'
+                    contentBase='bg-surface-100-900 h-[360px] w-screen rounded-lg'
+                    positionerJustify=''
+                    positionerAlign=''
+                    positionerPadding=''
+                    transitionsPositionerIn={{y:-360, duration: 600}}
+                    transitionsPositionerOut={{y:-360, duration: 600}}
+                    modal={false}
+                >
+                    {#snippet trigger()}
+                        <SearchIcon />
+                    {/snippet}
+                    {#snippet content()}  
+                            <button onclick={()=>searchDrawerOpen=false} class='btn preset-filled-primary-50-950 rounded-lg m-1 absolute top-0 right-12 sm:right-0'><PanelTopClose/></button>
+                            <div class="mt-8">
+                                <Search data={data.searchForm} bind:search={search} searchType='invoice number' classes='m-1 sm:m-2 '/>
+                                <Search data={data.searchForm} bind:search={nameSearch} searchType='Customer' classes='m-1 sm:m-2 '/>
+                                <DateSearch data={data.dateSearchForm} bind:startDate={startDate} bind:endDate={endDate} {minDate} {maxDate} classes='w-1/2 mb-1 sm:mb-2 mx-1 sm:mx-2'/>
+                            </div>
+                    {/snippet}
+                </Modal>
+                <div class="grid grid-cols-1 gap-y-3 gap-x-1 mx-2 mt-18 sm:mt-12" in:fade={{duration:600}}>
                     {#each  slicedInvoices(searchedInvoices(searchByUser(invoices))) as invoice}  
                     {@const customer = customers.find((customer) => customer.id === invoice.customerId)}  
-                        <div class="rounded-lg border dark:border-primary-950 border-primary-50 flex flex-col sm:flex-row">                            
+                        <div class="rounded-lg border border-primary-50-950 grid sm:grid-cols-2">                            
                             <InvoiceEmployee {invoice} classes='px-2' />
                             {#if customer}
                             {@const address = addresses.find((address) => address.userId === customer.id)}
