@@ -142,31 +142,10 @@
                   bind:value={$form.exp}
                />
             </label>
+            {#if $errors.exp}
+               <span class="invalid">{$errors.exp}</span>
+            {/if}
          </div>
-         <!-- <Combobox
-            bind:value={selectedMonth}
-            data={monthComboBoxData}
-            label='Expiration month'
-            name='expMonth'
-            required={true}
-            openOnClick={true}
-            onValueChange={(event)=>{
-               console.log(event.value[0])
-               $form.expMonth = parseInt(event.value[0], 10)
-            }}
-         />
-         <Combobox
-            bind:value={selectedYear}
-            data={yearComboBoxData}
-            name='expYear'
-            label='Expiration year'
-            required={true}
-            openOnClick={true}
-            onValueChange={(event) => {
-               console.log(event.value[0])
-               $form.expYear = parseInt(event.value[0], 10)
-            }}
-         /> -->
          <TextInput
             bind:value={$form.cvv}
             errors={$errors.cvv}
