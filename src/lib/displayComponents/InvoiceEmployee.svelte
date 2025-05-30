@@ -21,6 +21,9 @@
    <div class='text-right'>Created</div> 
    <div class="font-medium">{dayjs(invoice.invoiceCreated).format('M/D/YYYY')}</div>
    <HorizontalDivider classes='col-span-2' />
+   <div class="text-right">Due</div>
+   <div class="font-medium">{dayjs(invoice.invoiceDue).format('M/D/YYYY')}</div>
+   <HorizontalDivider classes='col-span-2' />
    <div class='text-right'>Lease ID</div> 
    <div class="truncate font-medium"><a href="/leases/{invoice.leaseId}" class="anchor">{invoice.leaseId}</a></div>
    <HorizontalDivider classes='col-span-2' />
