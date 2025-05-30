@@ -6,7 +6,6 @@ import type { RequestHandler } from './$types';
 export const POST: RequestHandler = async (event) => {
    const body = await event.request.json();
    const { invoiceNum, subscription } = body;
-   console.log(subscription)
    if(!invoiceNum){
       return new Response(JSON.stringify('invoice number not provided'), {status: 400});
    }
@@ -27,7 +26,7 @@ export const POST: RequestHandler = async (event) => {
       return new Response(JSON.stringify('Customer not found'), {status:404});
    }
    let details = {};
-   if(subscription){
+   if(subscription === 'true'){
       details = {
          ssl_transaction_type: 'ccaddrecurring',
          ssl_account_id: CONVERGE_ACCOUNT_ID,
@@ -53,13 +52,12 @@ export const POST: RequestHandler = async (event) => {
          encodeURIComponent(details[key as keyof typeof details])
       return string
    }).join('&')
-   console.log(formBody)
    const response = await fetch('https://api.demo.convergepay.com/hosted-payments/transaction_token', {
       method: 'POST', 
       headers: {
          'Content-Type': 'application/x-www-form-urlencoded'
       }, 
-      body: formBody.toString()
+      body: formBody
    })
    const responseBody = await response.text();
    return new Response(JSON.stringify(responseBody), {status:200});

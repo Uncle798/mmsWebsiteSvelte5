@@ -1,9 +1,11 @@
-import { redirect,  error } from '@sveltejs/kit';
-import type { PageServerLoad } from './$types';
 import { prisma } from '$lib/server/prisma';
-import { stripe } from '$lib/server/stripe';
+import { redirect, error } from '@sveltejs/kit';
+import type { PageServerLoad } from './$types';
+import { superValidate } from 'sveltekit-superforms';
+import { valibot, zod } from 'sveltekit-superforms/adapters';
+import { addressFormSchema, creditCardFormSchema } from '$lib/formSchemas/schemas';
 
-export const load:PageServerLoad = (async (event) => {
+export const load = (async (event) => {
    if(!event.locals.user){
       redirect(302, '/login?toast=unauthorized')
    }
@@ -27,16 +29,7 @@ export const load:PageServerLoad = (async (event) => {
          id: invoice.customerId!, 
       }
    })
-   const stripeId = event.url.searchParams.get('stripeId');
-   const sessionsList = await stripe.checkout.sessions.list({status:'open'});
-   if(sessionsList){
-      for(const session of sessionsList.data){
-         console.log(session)
-         if(session.customer?.toString() === customer?.stripeId){
-            console.log(session)
-            await stripe.checkout.sessions.expire(session.id)
-         }
-      }
-   }
-   return { invoice, stripeId, customer, newLease, subscription, leaseId };
-})
+   const ccForm = await superValidate(valibot(creditCardFormSchema));
+   const addressForm = await superValidate(zod(addressFormSchema));
+   return {invoice, newLease, subscription, leaseId, customer, ccForm, addressForm};
+}) satisfies PageServerLoad;

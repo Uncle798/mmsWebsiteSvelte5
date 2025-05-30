@@ -14,6 +14,7 @@
 	import type { Invoice } from "@prisma/client";
    import Payment from "payment";
 	import { onMount } from "svelte";
+	import ArrowUp_0_1 from "lucide-svelte/icons/arrow-up-0-1";
 
    interface Props {
       data: SuperValidated<Infer<CreditCardFormSchema>>,
@@ -33,12 +34,7 @@
          console.log({form})
          if(form.valid){
             const {data} = form;
-            let date:string;
-            if(data.expMonth < 10){
-               date = '0' + data.expMonth.toString() + data.expYear.toString().substring(2);
-            } else {
-               date = data.expMonth.toString() + data.expYear.toString().substring(2);
-            }
+            let date:string = data.exp.substring(0, data.exp.indexOf(' ')) + data.exp.substring(data.exp.lastIndexOf(' ')+1);
             console.log(date)
             const paymentData = {
                ssl_txn_auth_token: sessionToken, 
@@ -86,34 +82,14 @@
          }
       }
    });
-
-   interface ComboboxData {
-      label: string;
-      value: string;
-   }
-   const monthComboBoxData:ComboboxData[] = []
-   for (let index = 1; index < 13; index++){
-      if(index < 10){
-         const string = '0'+ index.toString()
-         monthComboBoxData.push({ label: string, value:string})
-      } else {
-         monthComboBoxData.push({label: index.toString(), value: index.toString()})
-      }
-   }
-   const yearComboBoxData: ComboboxData[] = [];
-   for(let index = new Date().getFullYear(); index < (new Date().getFullYear() +20); index++){
-      
-      yearComboBoxData.push({
-         label: index.toString(),
-         value: index.toString()
-      })
-   }
-   let selectedMonth = $state(['']);
-   let selectedYear = $state(['']);
    let ccNumElement = $state<HTMLInputElement>();
+   let ccExpElement = $state<HTMLInputElement>();
    onMount(()=>{
       if(ccNumElement){
          Payment.formatCardNumber(ccNumElement)
+      }
+      if(ccExpElement){
+         Payment.formatCardExpiry(ccExpElement);
       }
    })
 </script>
@@ -147,14 +123,27 @@
                class="input" 
                bind:value={$form.ccNum} 
                autocomplete="cc-number"
-               {...$constraints.ccNum}>
+               {...$constraints.ccNum}
+               />
          </label>
          {#if $errors.ccNum}
-            <span class="invalid">{errors}</span>
+            <span class="invalid">{$errors.ccNum}</span>
          {/if}
       </div>
-      <div class="flex gap-2 ">
-         <Combobox
+      <div class="flex gap-2 flex-col med:flex-row">
+         <div>
+            <label for="ccExp" class="label-text">Credit Card expiration
+               <input
+                  name="ccExp"
+                  id="ccExp"
+                  class="input"
+                  bind:this={ccExpElement}
+                  autocomplete="cc-exp"
+                  bind:value={$form.exp}
+               />
+            </label>
+         </div>
+         <!-- <Combobox
             bind:value={selectedMonth}
             data={monthComboBoxData}
             label='Expiration month'
@@ -177,7 +166,7 @@
                console.log(event.value[0])
                $form.expYear = parseInt(event.value[0], 10)
             }}
-         />
+         /> -->
          <TextInput
             bind:value={$form.cvv}
             errors={$errors.cvv}
