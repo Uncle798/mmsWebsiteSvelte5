@@ -1,7 +1,7 @@
 import { prisma } from '$lib/server/prisma';
 import { superValidate } from 'sveltekit-superforms';
 import type { PageServerLoad } from './$types';
-import { redirect } from '@sveltejs/kit';
+import { fail, redirect } from '@sveltejs/kit';
 import { zod } from 'sveltekit-superforms/adapters';
 import { dateSearchFormSchema, searchFormSchema } from '$lib/formSchemas/schemas';
 import { arrayOfYears } from '$lib/server/utils';
@@ -18,6 +18,9 @@ export const load = (async (event) => {
             invoiceNum: 'asc'
         }
     })
+    if(!firstInvoice){
+        fail(400)
+    }
     const years = arrayOfYears(firstInvoice!.invoiceCreated.getFullYear());
 
     const invoices = prisma.invoice.findMany({
