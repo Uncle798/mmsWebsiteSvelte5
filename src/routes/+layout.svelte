@@ -60,7 +60,7 @@
 
 <Modal
 	bind:open={menuOpen}
-	triggerBase="btn bg-primary-50 dark:bg-primary-950 hover:shadow-xl hover:border-2 border-secondary-50 dark:border-secondary-950 fixed top-0 z-50"
+	triggerBase="btn bg-primary-50-950 hover:shadow-xl hover:border-2 border-secondary-50-950 fixed top-0 z-50"
 	contentBase="bg-surface-100-900 p-2 space-y-2 shadow-xl w-[240px] h-screen"
 	positionerJustify="justify-start"
 	positionerAlign=""
@@ -104,14 +104,14 @@
 	</article>
 {/snippet}
 </Modal>
-<div class="bg-tertiary-50-950 sticky top-0 left-0 h-9 text-center font-bold z-40">{PUBLIC_COMPANY_NAME}</div>
+<div class="bg-tertiary-50-950 fixed w-screen top-0 left-0 h-9 text-center font-bold z-40">{PUBLIC_COMPANY_NAME}</div>
 
 	<ToastProvider placement='top-start'>
 		{@render children()}
 	</ToastProvider>
 
 {#if !data.user?.employee}
-	<footer class="bg-tertiary-50 dark:bg-tertiary-950 fixed bottom-0 right-0 left-0 px-2 h-20 sm:h-12 lg:h-7">
+	<footer class="bg-tertiary-50-950 fixed bottom-0 right-0 w-screen px-2 h-20 sm:h-12 lg:h-7">
 		Open 7 days a week from 8:00 am to 8:00 pm we're located at {PUBLIC_ADDRESS1} Moscow ID 83843. Call us at <a href="tel:+{PUBLIC_PHONE}" class="anchor">{formattedPhone}</a>
 	</footer>
 {/if}
