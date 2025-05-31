@@ -14,8 +14,9 @@ export const load = (async (event) => {
          unitNum: 'asc'
       }
    });
+   const addresses = prisma.address.findMany();
    const searchForm = await superValidate(zod(searchFormSchema));
    const leaseCount = await prisma.lease.count();
    const customers = prisma.user.findMany();
-   return { leases, searchForm, leaseCount, customers, };
+   return { leases, searchForm, leaseCount, customers, addresses };
 }) satisfies PageServerLoad;
