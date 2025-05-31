@@ -22,6 +22,7 @@
 		{link: '/', label: 'Home'},
 	]
 	let employeeLinks:Link[] = [
+		{link: '/', label: 'Home'},
 		{link: '/units', label:'Units'},
 		{link: '/units/available', label:'Available Units'},
 		{link: '/units/unavailable', label: 'Unavailable units'},
@@ -29,6 +30,7 @@
 		{link: '/units/size', label: 'Units by size'},
 		{link: '/discounts', label: 'Discounts'},
 		{link: '/users/customers', label: 'Customers'},
+		{link: '/leases', label: 'All Leases'},
 		{link: '/invoices', label: 'Invoices'},
 		{link: '/invoices/unpaid', label: 'Unpaid invoices'},
 		{link: '/invoices/pastDue', label: 'Past due invoices'},
