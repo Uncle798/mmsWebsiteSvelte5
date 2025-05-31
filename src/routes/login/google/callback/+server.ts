@@ -15,6 +15,7 @@ export const GET: RequestHandler = async (event) => {
    const redirectTo = event.cookies.get('redirectTo') ?? null;
    const unitNum = event.cookies.get('unitNum') ?? null;
    const invoiceNum = event.cookies.get('invoiceNum') ?? null;
+   const paymentRecordNum = event.cookies.get('paymentRecordNum') ?? null;
    let response = new Response(null, {status:302, headers:{Location:'/'}});
    if(redirectTo){
       switch (redirectTo) {
@@ -26,7 +27,17 @@ export const GET: RequestHandler = async (event) => {
          case 'invoice':
             if(invoiceNum){
                response = new Response(null, {status:302, headers:{Location: `/invoices/${invoiceNum}`}})
+            } else {
+               response = new Response(null, {status:302, headers: {Location: '/invoices'}})
             }
+            break;
+         case 'paymentRecords':
+            if(paymentRecordNum){
+               response = new Response(null, {status:302, headers: {Location: `/paymentRecords/${paymentRecordNum}`}})
+            } else {
+               response = new Response(null, {status:302, headers: {Location: '/paymentRecords'}});
+            }
+            break;
          default:
             break;
       }

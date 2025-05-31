@@ -8,10 +8,10 @@ import { paymentRecordDeleteSchema } from '$lib/formSchemas/schemas';
 import { sendPaymentReceipt } from '$lib/server/mailtrap';
 
 export const load = (async (event) => {
-   if(!event.locals.user){
-      redirect(302, '/login?toast=unauthorized')
-   }
    const paymentRecordNum = event.params.paymentRecordNum;
+   if(!event.locals.user){
+      redirect(302, `/login?toast=unauthorized?redirectTo=paymentRecord&paymentRecordNum=${paymentRecordNum}`)
+   }
    if(!paymentRecordNum){
       return fail(404)
    }

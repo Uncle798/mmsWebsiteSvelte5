@@ -16,6 +16,7 @@
    import RefundForm from '$lib/forms/NewRefundForm.svelte'
    import { Combobox, Modal } from '@skeletonlabs/skeleton-svelte';
    import { goto } from '$app/navigation';
+	import { SearchIcon, PanelTopCloseIcon } from 'lucide-svelte';
    dayjs.extend(utc)
    let { data }: { data: PageData } = $props();
    let pageNum = $state(1);
@@ -28,6 +29,7 @@
    let modalOpen = $state(false);
    let sortBy = $state(false)
    let currentPaymentRecord = $state<PaymentRecord>({} as PaymentRecord)
+   let nonDeposits = $state<PaymentRecord[]>([]);
    let wrapper = new Promise<PaymentRecord[]>(async res => {
       const paymentRecords = await data.paymentRecords
       res(paymentRecords)
@@ -37,6 +39,11 @@
          endDate = dayjs.utc(paymentRecords[paymentRecords.length-1].paymentCreated).endOf('year').toDate();
          maxDate = endDate;
       }
+      for(const paymentRecord of paymentRecords){
+         if(!paymentRecord.deposit){
+            nonDeposits.push(paymentRecord)
+         }
+      }
    })
    const numberFormatter = new Intl.NumberFormat('en-US');
    let slicedSource = $derived((paymentRecords:PaymentRecord[]) => paymentRecords.slice((pageNum -1) * size, pageNum*size));
@@ -44,19 +51,19 @@
       return paymentRecords.filter((paymentRecord) => paymentRecord.paymentNumber.toString().includes(search)) || paymentRecords.filter((paymentRecord) => paymentRecord.paymentNotes!.includes(search));
    })
    let sortedByDate = $derived((paymentRecords:PaymentRecord[]) => paymentRecords.sort((a,b) => {
-   if(a.paymentCreated > b.paymentCreated){
-      if(sortBy){
-         return -1
-      }
-      return 1
-   }
-   if(a.paymentCreated < b.paymentCreated){
-      if(sortBy){
+      if(a.paymentCreated > b.paymentCreated){
+         if(sortBy){
+            return -1
+         }
          return 1
       }
-      return -1
-   }
-   return 0
+      if(a.paymentCreated < b.paymentCreated){
+         if(sortBy){
+            return 1
+         }
+         return -1
+      }
+      return 0
    }))
    let dateSearchPayments = $derived((paymentRecords:PaymentRecord[]) => paymentRecords.filter((paymentRecord) => {
       if(!startDate || !endDate){
@@ -66,12 +73,8 @@
    }))
    let totalRevenue = $derived((paymentRecords:PaymentRecord[]) => {
       let totalRevenue = 0;
-      if(paymentRecords[0]){
-         paymentRecords.forEach((paymentRecord) => {
-               if(paymentRecord.paymentCompleted && !paymentRecord.refunded){
-                  totalRevenue += paymentRecord.paymentAmount
-               }
-         })
+      for(const paymentRecord of paymentRecords){
+         totalRevenue += paymentRecord.paymentAmount
       }
       return totalRevenue;
    })
@@ -90,6 +93,7 @@
     data.years.forEach((year) => {
         yearComboboxData.push({label:year.toString(), value: year.toString()})
     })
+    let searchDrawerOpen = $state(false)
 </script>
 <Modal
    bind:open={modalOpen}
@@ -105,7 +109,7 @@
 </Modal>
 <Header title='Payment Records' />
 {#await wrapper}
-   <div class="mt-10 mx-1 sm:mx-2">
+   <div class="mx-1 sm:mx-2">
       loading {numberFormatter.format(data.paymentRecordCount)} payment records
       {#if data.years}
          <Combobox
@@ -120,47 +124,66 @@
             zIndex='50'
          />
       {/if}
-      <Placeholder numCols={3} numRows={1} heightClass='h-10' classes="z-0"/>
-      <Placeholder numCols={2} numRows={size} heightClass='h-32' classes='z-0'/>
+      <Placeholder numCols={1} numRows={size} heightClass='h-32' classes='z-0'/>
    </div>
 {:then paymentRecords} 
    {#await data.customers}
-      loading customers
+      Loading customers...
    {:then customers} 
       {#await data.addresses}
-         loading contacts
+         Loading contacts...
       {:then addresses}         
          {#if paymentRecords.length >0}
-         <div transition:fade={{duration:600}} class='mb-24 sm:mb-14 lg:mb-9'>
-               <div class=" bg-tertiary-50 dark:bg-tertiary-950 w-full rounded-b-lg fixed top-8">
+            <div class="bg-tertiary-50-950 w-screen rounded-b-lg fixed top-8 flex">
                <Revenue 
                   label="Total revenue" 
                   amount={totalRevenue(searchedPayments(dateSearchPayments(paymentRecords)))} 
                   classes='m-2'    
                />
-               </div>
-               <div class="flex border-b-2 border-primary-50 dark:border-primary-950  mx-1 sm:mx-2 mt-16">
-                  <Search 
-                     bind:search={search} 
-                     searchType='payment record number' 
-                     data={data.searchForm}
-                     classes='p-2 w-1/2'
-                  />      
-                  <DateSearch 
-                     bind:startDate={startDate} 
-                     bind:endDate={endDate} 
-                     {minDate} 
-                     {maxDate} 
-                     data={data.dateSearchForm}
-                     classes='p-2 flex flex-col md:grid md:grid-cols-2'    
-                  />
-               </div>
-
-               <div class="grid grid-cols-1 lg:grid-cols-2 gap-y-3 gap-x-1 m-2">
-                  <button onclick={()=>sortBy = !sortBy} class="anchor col-span-full">Sort by date {sortBy ? 'starting earliest' : 'starting latest'}</button>
+               <Revenue
+                  label='Non-deposit revenue'
+                  amount={totalRevenue(nonDeposits)}
+                  classes='m-2'
+               />
+            </div>
+            <Modal
+                  open={searchDrawerOpen}
+                  onOpenChange={(event)=>(searchDrawerOpen = event.open)}
+                  triggerBase='btn preset-filled-primary-50-950 rounded-lg fixed top-0 right-0 sm:right-0 z-50'
+                  contentBase='bg-surface-100-900 h-[280px] w-screen rounded-lg'
+                  positionerJustify=''
+                  positionerAlign=''
+                  positionerPadding=''
+                  transitionsPositionerIn={{y:-360, duration: 600}}
+                  transitionsPositionerOut={{y:-360, duration: 600}}
+                  modal={false}
+            >
+            {#snippet trigger()}
+               <SearchIcon />
+            {/snippet}
+            {#snippet content()}
+               <button onclick={()=>searchDrawerOpen=false} class='btn preset-filled-primary-50-950 rounded-lg m-1 absolute top-0 right-0'><PanelTopCloseIcon/></button>
+               <Search 
+                  bind:search={search} 
+                  searchType='payment record number' 
+                  data={data.searchForm}
+                  classes='m-1 sm:m-2 mt-9 sm:mt-9'
+               />      
+               <DateSearch 
+                  bind:startDate={startDate} 
+                  bind:endDate={endDate} 
+                  {minDate} 
+                  {maxDate} 
+                  data={data.dateSearchForm}
+                  classes='flex flex-col md:grid md:grid-cols-2 m-1 sm:m-2'    
+               />
+               <button onclick={()=>sortBy = !sortBy} class="anchor col-span-full">Sort by date {sortBy ? 'starting earliest' : 'starting latest'}</button>
+            {/snippet}
+            </Modal>
+               <div class="grid grid-cols-1 sm:grid-cols-2 gap-y-3 gap-x-1 m-2 mt-26 sm:mt-12" in:fade={{duration:600}}>
                   {#each slicedSource(dateSearchPayments(searchedPayments(sortedByDate(paymentRecords)))) as paymentRecord}
                   {@const customer = customers.find((customer) => customer.id === paymentRecord.customerId) }
-                     <div class=" rounded-lg border border-primary-50 dark:border-primary-950  md:flex md:w-full">
+                     <div class="rounded-lg border border-primary-50-950 grid sm:grid-cols-2">
                         <div>
                            <PaymentRecordEmployee paymentRecord={paymentRecord} classes="p-2" />
                            {#if !paymentRecord.refunded}
@@ -169,7 +192,7 @@
                         </div>
                         {#if customer}
                         {@const address = addresses.find((address)=> address.userId === customer.id)}
-                           <div class="flex flex-col md:w-1/2">
+                           <div class="flex flex-col">
                               <UserEmployee user={customer} classes='mx-2 mt-2'/>
                               {#if address}
                                  <Address {address} classes='mx-2'/>
@@ -180,7 +203,6 @@
                   {/each}
                </div>
                <Pagination bind:size={size} bind:pageNum={pageNum} array={searchedPayments(paymentRecords)} label='payment records'/>
-            </div>
          {:else}
             No payment records from that year
          {/if}

@@ -13,8 +13,9 @@ export const load = (async (event) => {
    const toastReason = event.url.searchParams.get('toast');
    const redirectTo = event.url.searchParams.get('redirectTo');
    const unitNum = event.url.searchParams.get('unitNum');
-   const invoiceNum = event.url.searchParams.get('invoiceNum')
-   return {magicLinkForm, toastReason, redirectTo, unitNum, invoiceNum};
+   const invoiceNum = event.url.searchParams.get('invoiceNum');
+   const paymentRecordNum = event.url.searchParams.get('paymentRecordNum');
+   return {magicLinkForm, toastReason, redirectTo, unitNum, invoiceNum, paymentRecordNum};
 }) satisfies PageServerLoad;
 
 export const actions:Actions ={
@@ -38,8 +39,9 @@ export const actions:Actions ={
       const redirectTo = event.url.searchParams.get('redirectTo');
       const unitNum = event.url.searchParams.get('unitNum');
       const invoiceNum = event.url.searchParams.get('invoiceNum');
-      if(redirectTo || unitNum || invoiceNum ){
-         const fullLink = `${magicLink}?redirectTo=${redirectTo}&unitNum=${unitNum}&invoiceNum=${invoiceNum}`
+      const paymentRecordNum = event.url.searchParams.get('paymentRecordNum')
+      if(redirectTo){
+         const fullLink = `${magicLink}?redirectTo=${redirectTo}&unitNum=${unitNum}&invoiceNum=${invoiceNum}&paymentRecordNum=${paymentRecordNum}`
          await sendMagicLinkEmail(fullLink, user.email!)
       } else {
          await sendMagicLinkEmail(magicLink, user.email!);
