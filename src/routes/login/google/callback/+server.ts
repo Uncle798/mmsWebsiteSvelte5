@@ -81,18 +81,19 @@ export const GET: RequestHandler = async (event) => {
       const session = await createSession(sessionToken, existingUser.id);
       setSessionTokenCookie(event, sessionToken,  session.expiresAt);
       return response;
+   } else {
+      const user = await prisma.user.create({
+         data: {
+            email,
+            googleId,
+            givenName,
+            familyName,
+            emailVerified: true
+         }
+      })
+      const sessionToken = generateSessionToken();
+      const session = await createSession(sessionToken, user.id);
+      setSessionTokenCookie(event, sessionToken, session.expiresAt);
+      return response;
    }
-   const user = await prisma.user.create({
-      data: {
-         email,
-         googleId,
-         givenName,
-         familyName,
-         emailVerified: true
-      }
-   })
-   const sessionToken = generateSessionToken();
-   const session = await createSession(sessionToken, user.id);
-   setSessionTokenCookie(event, sessionToken, session.expiresAt);
-   return response;
 };
