@@ -38,7 +38,7 @@
 
 <Header title='Home' />
 {#await wrapper}
-   <article class="m-2">
+   <article class="m-2 mt-10">
       <div>
          <p>
             Thank you for visiting Moscow Mini Storage!
@@ -50,10 +50,13 @@
       </div>
    </article>
    <div in:fade={{duration:600}}>
-      <Placeholder numCols={4} numRows={4} heightClass='h-24' classes='z-0'/>
+      <Placeholder numCols={1} numRows={4} heightClass='h-34' classes='z-0 sm:hidden'/>
+      <Placeholder numCols={2} numRows={4} heightClass='h-34' classes='z-0 hidden sm:block md:hidden' />
+      <Placeholder numCols={3} numRows={4} heightClass='h-34' classes='z-0 hidden md:block lg:hidden' />
+      <Placeholder numCols={4} numRows={4} heightClass='h-34' classes='z-0 hidden lg:block' />     
    </div>
 {:then units} 
-      <article class="m-2">
+      <article class="m-2 mt-10">
          <div>
             <p>
                Thank you for visiting Moscow Mini Storage!

@@ -9,8 +9,6 @@
 	import AddressEmployee from '$lib/displayComponents/AddressEmployee.svelte';
 	import { Modal } from '@skeletonlabs/skeleton-svelte';
 	import { SearchIcon, PanelTopClose } from 'lucide-svelte';
-	import { leaseEndFormSchema } from '$lib/formSchemas/schemas';
-	import { snapshot } from 'node:test';
    let { data }: { data: PageData } = $props();
    let search = $state('')
    let pageNum = $state(1);
@@ -41,13 +39,19 @@
 <Header title='All leases' />
 
 {#await data.leases}
-   Loading {data.leaseCount} leases...
+   <div class="mt-10">
+      Loading {data.leaseCount} leases...
+   </div>
 {:then leases}
    {#await wrapper}
-      Loading customers...
+      <div class="mt-10">
+         Loading customers...
+      </div>
    {:then customers} 
       {#await data.addresses}
-         Loading addresses...
+         <div class="mt-10">
+            Loading addresses...
+         </div>
       {:then addresses}
          <Modal
             open={searchDrawerOpen}
@@ -70,21 +74,23 @@
                <Search search={customerSearch} searchType='customer name' data={data.searchForm} classes='mx-1' />
             {/snippet}
          </Modal>
-         {#each slicedLeases(searchByCustomer(searchedLeases(leases))) as lease}
-         {@const customer = customers.find((customer) => customer.id === lease.customerId)}
-         {@const leaseAddress = addresses.find((address) => address.addressId === lease.addressId)}
-         <div class="grid sm:grid-cols-2 border border-primary-50-950 m-1 sm:m-2 rounded-lg">
-            <LeaseEmployee lease={lease} classes='mx-2'/>
-            {#if customer}
-               <div class='m-2'> 
-                  <UserEmployee user={customer} />
-                  {#if leaseAddress}
-                     <AddressEmployee address={leaseAddress} />
+         <div class="rounded-lg mt-10 sm:mt-10">
+            {#each slicedLeases(searchByCustomer(searchedLeases(leases))) as lease}
+            {@const customer = customers.find((customer) => customer.id === lease.customerId)}
+            {@const leaseAddress = addresses.find((address) => address.addressId === lease.addressId)}
+               <div class="grid sm:grid-cols-2 border border-primary-50-950 m-2 rounded-lg">
+                  <LeaseEmployee lease={lease} classes='mx-2'/>
+                  {#if customer}
+                     <div class='m-2'> 
+                        <UserEmployee user={customer} />
+                        {#if leaseAddress}
+                           <AddressEmployee address={leaseAddress} />
+                        {/if}
+                     </div>
                   {/if}
                </div>
-            {/if}
+            {/each}
          </div>
-         {/each}
          <Pagination bind:size={size} bind:pageNum={pageNum} array={searchedLeases(leases)} label='leases'/>
       {/await}
    {/await}

@@ -91,8 +91,7 @@
 </script>
 {#await wrapper}
     <Header title='Loading invoices' />
-    <div class="bg-tertiary-50 dark:bg-tertiary-950 w-full rounded-b-lg fixed top-8 p-2 z-40">Total invoiced (not including deposits):</div>
-    <div class="mx-1 sm:mx-2 mt-10 sm:mt-10" in:fade={{duration:600}}>
+    <div class="mx-1 sm:mx-2 mt-10" in:fade={{duration:600}}>
         Loading {numberFormatter.format(data.invoiceCount)} invoices, 
         <Combobox
             data={yearComboboxData}
@@ -106,7 +105,7 @@
             classes='mx-1 sm:mx-2'
             zIndex='40'
         />
-        <Placeholder numCols={1} numRows={size} heightClass='h-40' classes='z-0 sm:hidden'/>
+        <Placeholder numCols={1} numRows={size} heightClass='h-40' classes='z-0'/>
     </div>
     
     {:then invoices}
@@ -143,7 +142,7 @@
                     modal={false}
                 >
                     {#snippet trigger()}
-                        <SearchIcon />
+                        <SearchIcon aria-label='Search'/>
                     {/snippet}
                     {#snippet content()}  
                         <button onclick={()=>searchDrawerOpen=false} class='btn preset-filled-primary-50-950 rounded-lg m-1 absolute top-0 right-0'><PanelTopClose/></button>
@@ -154,7 +153,7 @@
                         </div>
                     {/snippet}
                 </Modal>
-                <div class="grid grid-cols-1 sm:m-2 m-1 gap-3 mt-18 sm:mt-12" in:fade={{duration:600}}>
+                <div class="grid grid-cols-1 sm:m-2 m-1 gap-2 mt-26 sm:mt-20" in:fade={{duration:600}}>
                     {#each  slicedInvoices(searchedInvoices(searchByUser(invoices))) as invoice}  
                     {@const customer = customers.find((customer) => customer.id === invoice.customerId)}
                         <div class="sm:grid sm:grid-cols-2 border-2 border-primary-50-950 rounded-lg">

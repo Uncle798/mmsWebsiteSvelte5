@@ -109,7 +109,7 @@
 </Modal>
 <Header title='Payment Records' />
 {#await wrapper}
-   <div class="mx-1 sm:mx-2">
+   <div class="mx-1 sm:mx-2 mt-10 sm:mt-10">
       loading {numberFormatter.format(data.paymentRecordCount)} payment records
       {#if data.years}
          <Combobox
@@ -128,10 +128,14 @@
    </div>
 {:then paymentRecords} 
    {#await data.customers}
-      Loading customers...
+      <div class="mt-10">
+         Loading customers...
+      </div>
    {:then customers} 
       {#await data.addresses}
-         Loading contacts...
+         <div class="mt-10">
+            Loading contacts...
+         </div>
       {:then addresses}         
          {#if paymentRecords.length >0}
             <div class="bg-tertiary-50-950 w-screen rounded-b-lg fixed top-8 flex">
@@ -149,7 +153,7 @@
             <Modal
                   open={searchDrawerOpen}
                   onOpenChange={(event)=>(searchDrawerOpen = event.open)}
-                  triggerBase='btn preset-filled-primary-50-950 rounded-lg fixed top-0 right-0 sm:right-0 z-50'
+                  triggerBase='btn preset-filled-primary-50-950 rounded-lg fixed top-0 right-3 z-50'
                   contentBase='bg-surface-100-900 h-[280px] w-screen rounded-lg'
                   positionerJustify=''
                   positionerAlign=''
@@ -180,10 +184,10 @@
                <button onclick={()=>sortBy = !sortBy} class="anchor col-span-full">Sort by date {sortBy ? 'starting earliest' : 'starting latest'}</button>
             {/snippet}
             </Modal>
-               <div class="grid grid-cols-1 sm:grid-cols-2 gap-y-3 gap-x-1 m-2 mt-26 sm:mt-12" in:fade={{duration:600}}>
+               <div class="mt-26 sm:mt-20" in:fade={{duration:600}}>
                   {#each slicedSource(dateSearchPayments(searchedPayments(sortedByDate(paymentRecords)))) as paymentRecord}
                   {@const customer = customers.find((customer) => customer.id === paymentRecord.customerId) }
-                     <div class="rounded-lg border border-primary-50-950 grid sm:grid-cols-2">
+                     <div class="rounded-lg border border-primary-50-950 grid sm:grid-cols-2 m-2">
                         <div>
                            <PaymentRecordEmployee paymentRecord={paymentRecord} classes="p-2" />
                            {#if !paymentRecord.refunded}
