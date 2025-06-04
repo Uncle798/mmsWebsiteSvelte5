@@ -7,7 +7,7 @@
     import EmailVerification from '$lib/forms/EmailVerificationForm.svelte'
 	import AddressCustomer from '$lib/displayComponents/customerViews/AddressCustomer.svelte';
 	import Header from '$lib/Header.svelte';
-	import { BadgeCheck, User, } from 'lucide-svelte';
+	import { BadgeCheck, } from 'lucide-svelte';
 	import LeaseCustomer from '$lib/displayComponents/customerViews/LeaseCustomer.svelte';
 	import LeaseEndForm from '$lib/forms/LeaseEndForm.svelte';
 	import { fade } from 'svelte/transition';
@@ -16,7 +16,6 @@
 	import ThemeSelector from '$lib/displayComponents/ThemeSelector.svelte';
 	import UserCustomer from '$lib/displayComponents/customerViews/UserCustomer.svelte';
 	import { superForm } from 'sveltekit-superforms';
-	import FormSubmitWithProgress from '$lib/formComponents/FormSubmitWithProgress.svelte';
     
     let {data}:{ data: PageData} = $props();
     let addressModalOpen = $state(false);
@@ -118,13 +117,6 @@
             </Modal>
         {/await}
     </div>
-    {#await data.stripeAccountSession}
-        ...loading Stripe Account Link
-    {:then stripeAccountSession} 
-        <div class="my-2">
-            <a href={stripeAccountSession?.url} class='anchor'>Manage your payments here.</a>
-        </div>
-    {/await}
     {#await data.leasesPromise}
         ...loading leases
     {:then leases}
@@ -145,7 +137,7 @@
                     <LeaseCustomer lease={lease} classes='w-64'/>
                     {#if !lease.leaseEnded}
                         <button class="btn preset-filled-primary-50-950 rounded-lg m-1 sm:m-2" onclick={()=> setCurrentLeaseId(lease.leaseId)}>End Lease</button>
-                        {#if !lease.stripeSubscriptionId}
+                        {#if !lease.subscriptionId}
                             <form method="POST" use:enhance>
                                 <input type="hidden" name="cuid2Id" id="cuid2Id" value={lease.leaseId}>
                                 <div class="flex">
