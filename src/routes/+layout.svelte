@@ -46,7 +46,6 @@
 		{link: '/employeeNewCustomer', label:'New customer'},
 	]
 	let adminLinks:Link[] = [
-		{link: '/', label: 'Home'},
 		{link: '/users', label:'All Users'},
 
 	]
@@ -56,11 +55,6 @@
 		menuOpen = false;
 	})
 	const formattedPhone = PUBLIC_PHONE.substring(0,1) +'-'+ PUBLIC_PHONE.substring(1,4)+'-'+PUBLIC_PHONE.substring(4,7)+'-'+PUBLIC_PHONE.substring(7)
-	let drawerWidth = $state(200);
-
-	if(data.user?.employee){
-		drawerWidth = 240
-	} 
 </script>
 
 {#if data.user?.employee}
@@ -68,7 +62,7 @@
 	<Modal
 		bind:open={menuOpen}
 		triggerBase="btn bg-primary-50-950 hover:shadow-xl hover:border-2 border-secondary-50-950 absolute top-0 left-0 z-50"
-		contentBase={`bg-surface-100-900 p-2 space-y-2 shadow-xl w-[240px] h-screen`}
+		contentBase={`bg-surface-100-900 space-y-2 shadow-xl w-[240px] h-screen`}
 		positionerJustify="justify-start"
 		positionerAlign=""
 		positionerPadding=""
@@ -79,8 +73,8 @@
 			<Menu class='mx-2 border-2 z-50' />	
 	{/snippet}
 	{#snippet content()}
-		<article class="">
-			<ul>
+		<article class="h-full">
+			<ul class="overflow-auto h-8/9 m-1">
 				{#if data.user?.employee}
 					{#each employeeLinks as employeeLink}
 						<li><a class="anchor" href={employeeLink.link}>{employeeLink.label}</a></li>
@@ -91,7 +85,9 @@
 						<li><a class="anchor" href={adminLink.link}>{adminLink.label}</a></li>
 					{/each}
 				{/if}
-				<div class="absolute bottom-0 m-1 sm:m-2 mb-2">
+			</ul>
+			<div class="static bottom-0 bg-surface-100-900 h-1/9 border-1 border-primary-50-950 rounded-lg">
+				<ul class="m-1">
 					{#if data.user}
 					<li><a href="/accountSettings" class="anchor">Settings</a></li>
 						<form action="/logout" method="post" use:enhance>
@@ -100,8 +96,8 @@
 					{:else}
 						<li><a class="anchor" href="/login">Login</a></li>
 					{/if}
-				</div>
-			</ul>
+				</ul>
+			</div>
 			<button class="absolute top-1 left-[205px] btn-icon" onclick={()=>{menuOpen=false}}><XCircleIcon aria-label='close' class=''/></button>
 		</article>
 	{/snippet}
@@ -129,7 +125,7 @@
 				{#each customerLinks as link}
 					<a href={link.link} class="anchor">{link.label}</a>
 				{/each}
-				<div class="absolute bottom-0 m-1 sm:m-2 mb-2">
+				<div class="absolute bottom-0 m-1 sm:m-2 mb-2  bg-surface-100-900">
 					{#if data.user}
 					<li><a href="/accountSettings" class="anchor">Settings</a></li>
 						<form action="/logout" method="post" use:enhance>
