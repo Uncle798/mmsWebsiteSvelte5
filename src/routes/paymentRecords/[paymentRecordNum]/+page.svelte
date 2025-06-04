@@ -16,7 +16,7 @@
 </script>
 {#if data.paymentRecord }
    <Header title='Payment Record Num: {data.paymentRecord}' />
-   <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-1 m-1 sm:m-2 mt-10 sm:mt-10 mb-22 sm:mb-12 lg:mb-7 border-2 dark:border-primary-950 border-primary-50 rounded-lg w-fit">
+   <div class="grid grid-cols-1 sm:grid-cols-2 gap-1 m-1 sm:m-2 mt-10 sm:mt-10 mb-22 sm:mb-12 lg:mb-7 border-2 border-primary-50-950 rounded-lg w-fit">
       <div class="flex flex-col p-2">
          {#if data.user?.employee}
             <PaymentRecordEmployee paymentRecord={data.paymentRecord} classes=''/>
@@ -47,19 +47,6 @@
             {/if}
          {/if}
       </div>
-      {#if data.invoice}
-         {#if data.user?.employee}
-            <InvoiceEmployee invoice={data.invoice} classes='p-2'/>
-         {:else}
-            <InvoiceCustomer invoice={data.invoice} />
-         {/if}
-      {/if}
-      {#if data.refundRecord}
-         {#if data.user?.employee}      
-            <RefundRecordEmployee refundRecord={data.refundRecord} classes='p-2 '/>
-         {:else}
-            <RefundRecordCustomer refundRecord={data.refundRecord} />
-         {/if}
-      {/if}
+
    </div>
 {/if}

@@ -8,7 +8,7 @@
 </script>
 
 <Header title="Thanks!" />
-<div class="flex flex-col sm:flex-row border-2 border-primary-50-950 m-1 sm:m-2 rounded-lg">
+<div class="flex flex-col sm:flex-row border-2 border-primary-50-950 m-1 sm:m-2 rounded-lg mt-10 sm:mt-10">
    <span class="m-2">Thanks for your business!</span>
    {#if data.paymentRecord}
       <PaymentRecordCustomer paymentRecord={data.paymentRecord} classes='px-2 sm:w-1/2'/>
