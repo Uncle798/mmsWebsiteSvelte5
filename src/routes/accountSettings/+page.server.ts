@@ -12,12 +12,6 @@ export const load:PageServerLoad = (async (event) => {
    if(!event.locals.user){
       redirect(302, '/login?toast=unauthorized')
    }
-   let stripeAccountSession: Promise<Stripe.BillingPortal.Session> | undefined = undefined;
-   if(event.locals.user.stripeId){
-      stripeAccountSession = stripe.billingPortal.sessions.create({
-         customer: event.locals.user.stripeId!
-      })
-   }
    const addressPromise = prisma.address.findFirst({
       where: {
          userId: event.locals.user.id,
@@ -60,7 +54,6 @@ export const load:PageServerLoad = (async (event) => {
       invoicesPromise, 
       paymentsPromise,
       autoPayForm, 
-      stripeAccountSession
    };
 })
 
