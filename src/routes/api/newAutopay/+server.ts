@@ -33,7 +33,7 @@ export const POST: RequestHandler = async (event) => {
          data: {
             invoiceAmount: lease.price,
             leaseId: lease.leaseId,
-            invoiceNotes: `Auto-payment for unit ${lease.unitNum} for ${dayjs(dueDate).format('MMMM YYYY')}`,
+            invoiceNotes: `Auto-payment for unit ${lease.unitNum.replace(/^0+/gm, '')} for ${dayjs(dueDate).format('MMMM YYYY')}`,
             invoiceDue: dueDate,
             customerId: lease.customerId,
          }
