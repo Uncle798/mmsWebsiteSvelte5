@@ -3,8 +3,8 @@ import type { RequestHandler } from './$types';
 
 export const POST: RequestHandler = async (event) => {
    const subscription = event.url.searchParams.get('subscription')
-   const body = await event.request.json()
-   const { ssl_invoice_number, ssl_txn_id, ssl_amount } = body;
+   const body = await event.request.json();
+   const { ssl_invoice_number, ssl_txn_id, ssl_amount, ssl_transaction_type } = body;
    if(ssl_invoice_number){
       const invoice = await prisma.invoice.findUnique({
          where: {
@@ -21,7 +21,8 @@ export const POST: RequestHandler = async (event) => {
             paymentType: 'CREDIT',
             customerId: invoice.customerId, 
             paymentNotes: `Payment for invoice number ${invoice.invoiceNum}, ${invoice.invoiceNotes}`,
-            transactionId: ssl_txn_id
+            transactionId: ssl_txn_id,
+            paymentCompleted: new Date(), 
          }
       })
       await prisma.invoice.update({
@@ -32,7 +33,7 @@ export const POST: RequestHandler = async (event) => {
             paymentRecordNum: paymentRecord.paymentNumber
          }
       })
-      if(subscription){
+      if(ssl_transaction_type === 'CCADDRECURRING'){
          await prisma.lease.update({
             where: {
                leaseId: invoice.leaseId!,
@@ -41,6 +42,7 @@ export const POST: RequestHandler = async (event) => {
                subscriptionId: ssl_txn_id
             }
          })
+         console.log(ssl_transaction_type)
       }
       return new Response(JSON.stringify(invoice.invoiceNum), {status: 200})
    }
