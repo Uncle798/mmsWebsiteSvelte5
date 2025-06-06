@@ -9,12 +9,12 @@
 	import TextInput from "$lib/formComponents/TextInput.svelte";
 	import { browser } from '$app/environment';;
 	import { goto } from '$app/navigation';
-	import { Combobox } from "@skeletonlabs/skeleton-svelte";
+   import { fade } from "svelte/transition";
+	import { ProgressRing, Progress } from "@skeletonlabs/skeleton-svelte";
 	import { valibot, } from "sveltekit-superforms/adapters";
 	import type { Invoice } from "@prisma/client";
    import Payment from "payment";
 	import { onMount } from "svelte";
-	import ArrowUp_0_1 from "lucide-svelte/icons/arrow-up-0-1";
 
    interface Props {
       data: SuperValidated<Infer<CreditCardFormSchema>>,
@@ -25,7 +25,8 @@
       buttonText?: string
    }
    let { data, sessionToken, invoice, subscription, buttonText='Pay Bill',classes, }:Props = $props();
-   let processing = $state(false)
+   let processing = $state(false);
+
    let { form, message, errors, constraints, enhance, delayed, timeout} = superForm(data, {
       SPA: true,
       validators: valibot(creditCardFormSchema),
@@ -65,9 +66,9 @@
                //@ts-ignore
                onApproval: async function (response) { 
                
-                  const res = await fetch(`/api/elavon/paymentSuccess?subscription${subscription}`, {
+                  const res = await fetch(`/api/elavon/paymentSuccess`, {
                      method: 'POST',
-                     body: JSON.stringify(response, null, '\t')
+                     body: JSON.stringify({response, subscription}, null, '\t')
                   }).then(async (r) => await r.json())
                   console.log(res)
                   if(res){
@@ -167,8 +168,18 @@
       </div>
    </div>  
    {#if !processing}
-      <button class="btn rounded-lg preset-filled-primary-50-950 m-1 sm:m-2">{buttonText}</button>
+      <button class="btn rounded-lg preset-filled-primary-50-950 my-1 sm:my-2">{buttonText}</button>
    {:else}
-      Processing
+      Processing...
+   {#if $delayed && !$timeout}
+   <div in:fade={{duration:600}}>
+      <ProgressRing value={null} size="size-8" strokeWidth="6px" meterStroke="stroke-secondary-600-400" trackStroke="stroke-secondary-50-950" classes='ml-2' />
+   </div>
+   {/if}
+   {#if $timeout}
+   <div in:fade={{duration:600}}>
+      <Progress value={null} width="size-8" classes='mt-2 ml-2' />
+   </div>
+   {/if}
    {/if}
 </form>
