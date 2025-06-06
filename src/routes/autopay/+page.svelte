@@ -4,6 +4,7 @@
 
 	import Header from '$lib/Header.svelte';
 	import CreditCardForm from '$lib/forms/CreditCardForm.svelte';
+	import InvoiceCustomer from '$lib/displayComponents/customerViews/InvoiceCustomer.svelte';
 
     let { data }: { data: PageData } = $props();
     let mounted = $state(false);
@@ -22,7 +23,12 @@
 </script>
 <Header title="Sign up for auto pay" />
 {#if !mounted}
-    <div class="mt-10">Loading ...</div>
+    <div class="mt-10 m-1">Loading...</div>
 {:else}
-    <CreditCardForm data={data.creditCardForm} invoice={data.invoice!} sessionToken={sessionToken} subscription={true} classes='mt-10'/>
+    <div class="mt-10 sm:mt-10 m-1 sm:m-2">
+        {#if data.invoice}
+            <InvoiceCustomer invoice={data.invoice} />
+            <CreditCardForm data={data.creditCardForm} invoice={data.invoice} sessionToken={sessionToken} subscription={true} buttonText={`Start Auto pay of $${data.invoice.invoiceAmount}`}/>
+        {/if}
+    </div>
 {/if}

@@ -26,7 +26,7 @@ export const POST: RequestHandler = async (event) => {
       return new Response(JSON.stringify('Customer not found'), {status:404});
    }
    let details = {};
-   if(subscription === 'true'){
+   if(subscription){
       details = {
          ssl_transaction_type: 'ccaddrecurring',
          ssl_account_id: CONVERGE_ACCOUNT_ID,
