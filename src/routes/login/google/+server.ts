@@ -10,7 +10,6 @@ export const GET: RequestHandler = async (event) => {
    const state = generateState();
    const codeVerifier = generateCodeVerifier();
    const url = googleOAuth.createAuthorizationURL(state, codeVerifier, ['email', 'openid', 'profile']);
-   console.log(url)
    if(redirectTo){
       event.cookies.set('redirectTo', redirectTo, {
          httpOnly: true,
@@ -61,7 +60,6 @@ export const GET: RequestHandler = async (event) => {
       path: '/',
       sameSite: 'lax'
    })
-   console.log(url)
    return new Response(null, {
       status: 302,
       headers: {

@@ -79,13 +79,11 @@ export const load:PageServerLoad = (async (event) => {
                leaseId: lease.leaseId
             }
          })
-         console.log(invoice);
          const paymentRecord = await prisma.paymentRecord.findFirst({
             where: {
                invoiceNum: invoice?.invoiceNum
             }
          })
-         console.log(paymentRecord);
          return { packetDetails, customer, paymentRecord };
       }
       return {};

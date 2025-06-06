@@ -7,7 +7,6 @@ import dayjs from 'dayjs';
 export const POST:RequestHandler = async (event) => {
    const body = await event.request.json();
    const { customerId, invoiceNum, subscription, } = body;
-   console.log(body)
    if(!invoiceNum){
       return new Response(JSON.stringify('Invoice not provided'), { status:400 });
    }

@@ -75,7 +75,7 @@ export async function invalidateSession(sessionId:string):Promise<void> {
          }
       })
    } catch (error) {
-      console.log(error)
+      console.error(error)
    }
 }
 
