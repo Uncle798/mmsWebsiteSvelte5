@@ -15,6 +15,7 @@
 	import Search from '$lib/forms/Search.svelte';
 	import Address from '$lib/displayComponents/AddressEmployee.svelte';
 	import Revenue from '$lib/displayComponents/Revenue.svelte'
+	import { SearchIcon, PanelTopClose } from 'lucide-svelte';
 	let { data }: { data: PageData } = $props();
 	let modalOpen = $state(false);
 	let currentLeaseId = $state('');
@@ -74,64 +75,63 @@
          value: size
       })
    }
+	let searchDrawerOpen = $state(false)
 </script>
 
 <Header title="All units" />
 
-<Modal
-	bind:open={modalOpen}
-	contentBase="card bg-surface-400-600 p-4 space-y-4 shadow-xl max-w-(--breakpoint-sm)"
-	backdropClasses="backdrop-blur-xs"
->
-	{#snippet content()}
-		{#if globalModalType === 'lease'}
-			{#if data.leaseEndForm}
-				<LeaseEndForm
-					data={data.leaseEndForm}
-					leaseId={currentLeaseId}
-					customer={false}
-					bind:leaseEndModalOpen={modalOpen}
-				/>
-			{/if}
-		{:else if globalModalType === 'unitPricing'}
-			<UnitPricingForm
-				data={data.unitPricingForm!}
-				bind:unitPricingFormModalOpen={modalOpen}
-				size={currentSize}
-				oldPrice={currentOldPrice}
-			/>
-		{/if}
-		<button class="btn" onclick={() => (modalOpen = false)}>Cancel</button>
-	{/snippet}
-</Modal>
+
 
 {#await data.units}
-	<div class="m-2">
+	<div class="mt-10 m-1 sm:m-2">
 		Loading units...
 		<Placeholder numCols={2} numRows={3} heightClass='h-32'/>
 	</div>
 {:then units} 
 	{#await data.leases}
-		loading leases
+		<div class="mt-10 m-1 sm:m-2">
+			Loading leases...
+		</div>
 		<Placeholder numCols={2} numRows={3} heightClass='h-32'/>
 	{:then leases} 
 		{#await data.customers}
-			loading customers 
+			<div class="mt-10 m-1 sm:m-2">
+				Loading customers...
+			</div>
 			<Placeholder numCols={2} numRows={3} heightClass='h-32'/>
 		{:then customers}
 			{#await data.addresses}
-				loading addresses
+				<div class="mt-10 m-1 sm:m-2">
+					Loading addresses...
+				</div>
 			{:then addresses} 
             {#if units}
-					<Revenue label='Current leased monthly revenue' amount={totalRevenue(leases)} classes='bg-tertiary-50-950 w-full rounded-b-lg fixed z-40'/>
-					<div class="fixed w-full top-14 z-30 bg-surface-50-950 border-b-2 border-primary-50-950 rounded-b-lg flex">
-						<Search searchType='Unit number' data={data.searchForm} classes='m-2' bind:search={search}/>
-						<Combobox data={comboboxData} label='Select Size' bind:value={selectedSize} classes='m-2'/>
-					</div>
-            	<div class=" sm:m-2 m-1 sm:mt-38" in:fade={{duration:600}}>
+					<Revenue label='Current leased monthly revenue' amount={totalRevenue(leases)} classes='bg-tertiary-50-950 w-full rounded-b-lg fixed top-9 z-40'/>
+					<Modal
+						open={searchDrawerOpen}
+						onOpenChange={(event)=>(searchDrawerOpen = event.open)}
+						triggerBase='btn preset-filled-primary-50-950 rounded-lg fixed top-0 right-0 z-50'
+						contentBase='bg-surface-100-900 h-[230px] w-screen rounded-lg'
+						positionerJustify=''
+						positionerAlign=''
+						positionerPadding=''
+						transitionsPositionerIn={{y:-360, duration: 600}}
+						transitionsPositionerOut={{y:-360, duration: 600}}
+						modal={false}
+					>
+						{#snippet trigger()}
+							<SearchIcon aria-label='Search' />
+						{/snippet}
+						{#snippet content()}
+							<button onclick={()=>searchDrawerOpen=false} class='btn preset-filled-primary-50-950 rounded-lg m-1 absolute top-0 right-0'><PanelTopClose/></button>
+							<Search searchType='Unit number' data={data.searchForm} classes='m-2 mt-10' bind:search={search}/>
+							<Combobox data={comboboxData} label='Select Size' bind:value={selectedSize} classes=''/>
+						{/snippet}
+					</Modal>
+            	<div class=" sm:m-2 m-1 sm:mt-18 mt-24" in:fade={{duration:600}}>
                	{#each slicedUnits(filteredUnits(searchedUnits(units))) as unit (unit.num)}
                	{@const lease = leases?.find((lease) => lease.unitNum === unit.num)}
-							<div class="border-2 border-primary-50 dark:border-primary-950 rounded-lg grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 my-2">
+							<div class="border-2 border-primary-50-950 rounded-lg grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 my-2">
 								<div class="flex flex-col">
 									<UnitEmployee {unit} classes='p-4'/>
 									<button class="btn preset-filled-primary-50-950 rounded-lg mx-2 mb-2" onclick={()=> openModal('unitPricing', unit.advertisedPrice, '', unit.size)}>Change all {unit.size.replace(/^0+/gm,'').replace(/x0/gm,'x')} pricing</button>
@@ -142,15 +142,15 @@
 								{#if lease}
 								{@const customer = customers?.find((customer) => customer.id === lease.customerId)}
 									<div class="flex flex-col">
-										<LeaseEmployee {lease} classes=''/>
-										<button class="btn preset-filled-primary-50-950 rounded-lg m-4" onclick={()=>openModal('lease', 0, lease.leaseId)}>End Lease</button>
+										<LeaseEmployee {lease} classes='mx-1 sm:mx-2'/>
+										<button class="btn preset-filled-primary-50-950 rounded-lg m-1 sm:m-2" onclick={()=>openModal('lease', 0, lease.leaseId)}>End Lease</button>
 									</div>
 									<div class="flex flex-col">
 										{#if customer}
 										{@const address = addresses.find((address) => address.userId === customer.id)}
-										<UserEmployee user={customer} classes='px-4 pt-4'/>
+										<UserEmployee user={customer} classes='mx-1 sm:mx-2'/>
 										{#if address}
-										<Address {address} classes='px-4' />
+										<Address {address} classes='mx-1 sm:mx-2' />
 										{/if}
 										{/if}
 									</div>
@@ -162,6 +162,32 @@
 						{/each}
 					</div>
             	<Pagination pageNum={pageNum} size={size} array={filteredUnits(units)} label='units'/>
+					<Modal
+						bind:open={modalOpen}
+						contentBase="card bg-surface-400-600 p-4 space-y-4 shadow-xl max-w-(--breakpoint-sm)"
+						backdropClasses="backdrop-blur-xs"
+					>
+						{#snippet content()}
+							{#if globalModalType === 'lease'}
+								{#if data.leaseEndForm}
+									<LeaseEndForm
+										data={data.leaseEndForm}
+										leaseId={currentLeaseId}
+										customer={false}
+										bind:leaseEndModalOpen={modalOpen}
+									/>
+								{/if}
+							{:else if globalModalType === 'unitPricing'}
+								<UnitPricingForm
+									data={data.unitPricingForm!}
+									bind:unitPricingFormModalOpen={modalOpen}
+									size={currentSize}
+									oldPrice={currentOldPrice}
+								/>
+							{/if}
+							<button class="btn" onclick={() => (modalOpen = false)}>Cancel</button>
+						{/snippet}
+					</Modal>
             {/if}
 			{/await}
 		{/await}    
