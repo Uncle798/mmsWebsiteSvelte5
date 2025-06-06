@@ -61,7 +61,7 @@
 	<header> 
 	<Modal
 		bind:open={menuOpen}
-		triggerBase="btn bg-primary-50-950 hover:shadow-xl hover:border-2 border-secondary-50-950 absolute top-0 left-0 z-50"
+		triggerBase="btn bg-primary-50-950 hover:shadow-xl hover:border-2 border-secondary-50-950 fixed top-0 left-0 z-50"
 		contentBase={`bg-surface-100-900 space-y-2 shadow-xl w-[240px] h-screen`}
 		positionerJustify="justify-start"
 		positionerAlign=""
@@ -102,7 +102,7 @@
 		</article>
 	{/snippet}
 	</Modal>
-		<div class="bg-tertiary-50-950 absolute w-screen top-0 left-0 h-9 text-center font-bold z-40 ">{PUBLIC_COMPANY_NAME}</div>
+		<div class="bg-tertiary-50-950 fixed w-screen top-0 left-0 h-9 text-center font-bold z-40 ">{PUBLIC_COMPANY_NAME}</div>
 	</header>
 {:else}
 	<header> 
@@ -140,7 +140,7 @@
 		</article>
 	{/snippet}
 	</Modal>
-		<div class="bg-tertiary-50-950 absolute w-screen top-0 left-0 h-9 text-center font-bold z-40 ">{PUBLIC_COMPANY_NAME}</div>
+		<div class="bg-tertiary-50-950 fixed w-screen top-0 left-0 h-9 text-center font-bold z-40 ">{PUBLIC_COMPANY_NAME}</div>
 	</header>
 {/if}
 	<ToastProvider placement='top-start'>
