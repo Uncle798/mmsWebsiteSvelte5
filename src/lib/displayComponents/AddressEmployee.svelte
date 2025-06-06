@@ -9,10 +9,10 @@
 </script>
 
 <div class="{classes}">
+   <div><a href="tel:{address.phoneNum1}" class="anchor">{formattedPhone}</a></div>
    <p>{address.address1}</p>
    {#if address.address2}
       <p>{address.address2}</p>
    {/if}
    <p>{address.city}, {address.state}, {address.postalCode}</p>
-   <div><a href="tel:{address.phoneNum1}" class="anchor">{formattedPhone}</a></div>
 </div>
