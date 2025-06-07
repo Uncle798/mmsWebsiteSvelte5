@@ -11,7 +11,6 @@ export const GET: RequestHandler = async ({request}) => {
       return new Response(JSON.stringify({success:false}), {status: 401})
    }
    const handleRequest = async (r:Request) => {
-      console.log(r)
       const leases = await prisma.lease.findMany({
          where: {
             leaseEnded: null

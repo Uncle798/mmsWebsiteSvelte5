@@ -39,7 +39,6 @@ export const load = (async (event) => {
    }).then(async (response) =>{
       return await response.json()
    })
-   console.log(typeof invoiceNum)
    const invoice = await prisma.invoice.findUnique({
       where: {
          invoiceNum

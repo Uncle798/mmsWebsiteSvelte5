@@ -32,11 +32,9 @@
       validators: valibot(creditCardFormSchema),
       onUpdate({form}){
          processing = true
-         console.log({form})
          if(form.valid){
             const {data} = form;
             let date:string = data.exp.substring(0, data.exp.indexOf(' ')) + data.exp.substring(data.exp.lastIndexOf(' ')+1,);
-            console.log(date)
             const paymentData = {
                ssl_txn_auth_token: sessionToken, 
                ssl_card_number: data.ccNum,
@@ -52,7 +50,7 @@
             const callback = {
                //@ts-ignore
                onError: function (error) { 
-                  console.log(error)
+                  console.error(error)
                }, 
                //@ts-ignore
                onCancelled: function (response) { 
@@ -70,7 +68,6 @@
                      method: 'POST',
                      body: JSON.stringify({response, subscription}, null, '\t')
                   }).then(async (r) => await r.json())
-                  console.log(res)
                   if(res){
                      if(browser){
                         goto(`/thanks?invoiceNum=${res}`)

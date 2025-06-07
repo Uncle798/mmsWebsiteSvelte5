@@ -63,7 +63,6 @@ export const load = (async (event) => {
             }
          })
          const notification = await qStash.notify({eventId:lease.leaseId, eventData:lease.leaseId});
-         console.log(notification);
          const invoice = await prisma.invoice.findFirst({
             where: {
                leaseId: lease.leaseId
