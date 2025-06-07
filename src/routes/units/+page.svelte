@@ -85,7 +85,8 @@
 {#await data.units}
 	<div class="mt-10 m-1 sm:m-2">
 		Loading units...
-		<Placeholder numCols={2} numRows={3} heightClass='h-32'/>
+		<Placeholder numCols={1} numRows={6} heightClass='h-96' classes='sm:hidden'/>
+		<Placeholder numCols={1} numRows={6} heightClass='h-76' classes='hidden sm:block'/>
 	</div>
 {:then units} 
 	{#await data.leases}
@@ -111,7 +112,7 @@
 						open={searchDrawerOpen}
 						onOpenChange={(event)=>(searchDrawerOpen = event.open)}
 						triggerBase='btn preset-filled-primary-50-950 rounded-lg fixed top-0 right-0 z-50'
-						contentBase='bg-surface-100-900 h-[230px] w-screen rounded-lg'
+						contentBase='bg-surface-100-900 h-[230px] w-screen rounded-b-lg'
 						positionerJustify=''
 						positionerAlign=''
 						positionerPadding=''
@@ -124,11 +125,24 @@
 						{/snippet}
 						{#snippet content()}
 							<button onclick={()=>searchDrawerOpen=false} class='btn preset-filled-primary-50-950 rounded-lg m-1 absolute top-0 right-0'><PanelTopClose/></button>
-							<Search searchType='Unit number' data={data.searchForm} classes='m-2 mt-10' bind:search={search}/>
-							<Combobox data={comboboxData} label='Select Size' bind:value={selectedSize} classes=''/>
+							<div class="mx-2 mt-9">
+
+								<Search searchType='Unit number' data={data.searchForm} classes='' bind:search={search}/>
+								<Combobox data={comboboxData} 
+									label='Select Size' 
+									bind:value={selectedSize} 
+									positionerBase='overflow-auto h-44 '
+									labelBase=''
+									placeholder='Select size...'
+									onValueChange={(details) => {
+										searchDrawerOpen=false;
+										selectedSize=details.value
+									}}
+								/>
+						</div>
 						{/snippet}
 					</Modal>
-            	<div class=" sm:m-2 m-1 sm:mt-18 mt-24" in:fade={{duration:600}}>
+            	<div class=" sm:m-2 m-1 sm:mt-18 mt-24" in:fade={{duration:1600}}>
                	{#each slicedUnits(filteredUnits(searchedUnits(units))) as unit (unit.num)}
                	{@const lease = leases?.find((lease) => lease.unitNum === unit.num)}
 							<div class="border-2 border-primary-50-950 rounded-lg grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 my-2">

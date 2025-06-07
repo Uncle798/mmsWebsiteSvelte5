@@ -17,9 +17,9 @@
 </script>
 <div class="">
    
-   <label class="label label-text">
+   <label class="label ">
       {#if label}
-         <span class="">{label}</span>
+         <span class="label-text">{label}</span>
       {/if}
       <textarea
          class="input rounded-none h-auto"
