@@ -47,3 +47,8 @@
     border-color: var(--color-gray-200, currentColor);
   }
 }
+
+@theme {
+  --breakpoint-short: @media(max-height: 200px)
+}
+@custom-variant limitedHeight (@media(max-height: 200px));
