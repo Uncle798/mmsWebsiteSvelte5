@@ -10,6 +10,8 @@
    import Revenue from '$lib/displayComponents/Revenue.svelte';
    import type { Lease } from '@prisma/client';
    import Address from '$lib/displayComponents/AddressEmployee.svelte';
+	import { Modal } from '@skeletonlabs/skeleton-svelte';
+	import { PanelTopClose, SearchIcon } from 'lucide-svelte';
 
    let { data }: { data: PageData } = $props();
    let pageNum = $state(1);
@@ -26,23 +28,47 @@
       });
       return totalLeased
    })
+   let searchDrawerOpen = $state(false);
 </script>
 <Header title='Current Customers'/>
 {#await data.customers}
-   <div class="m-2">
-      ...loading {data.customerCount} customers
+   <div class="mt-10 m-1">
+      Loading {data.customerCount} customers...
    </div>
 {:then customers}
    {#await data.leases}
-      loading leases...
+      <div class="mt-10">
+         Loading leases...
+      </div>   
    {:then leases} 
       {#await data.addresses}
-         loading addresses
+         <div class="mt-10">
+            Loading addresses...
+         </div>
       {:then addresses}    
          <div in:fade={{duration:600}}>
-            <Revenue label='Current monthly invoiced' amount={totalLeased(leases)} classes='sticky top-0 left-0 bg-tertiary-50-950 rounded-b-lg'/>
-            <Search bind:search={search} searchType='customer name' data={data.userSearchForm} classes='m-2 border-b-2 border-primary-50-950'/>
-            <div class="grid grid-cols-1 mx-2 gap-y-3 gap-x-1">
+            <Revenue label='Current monthly invoiced' amount={totalLeased(leases)} classes='fixed top-9 w-screen left-0 bg-tertiary-50-950 rounded-b-lg'/>
+            <Modal
+               open={searchDrawerOpen}
+               onOpenChange={(event)=>(searchDrawerOpen = event.open)}
+               triggerBase='btn preset-filled-primary-50-950 rounded-lg fixed top-0 right-0 z-50'
+               contentBase='bg-surface-100-900 h-[230px] w-screen rounded-b-lg'
+               positionerJustify=''
+               positionerAlign=''
+               positionerPadding=''
+               transitionsPositionerIn={{y:-360, duration: 600}}
+               transitionsPositionerOut={{y:-360, duration: 600}}
+               modal={false}
+            >
+               {#snippet trigger()}
+                  <SearchIcon aria-label='search' />
+               {/snippet}
+               {#snippet content()}
+                  <button onclick={()=>searchDrawerOpen=false} class='btn preset-filled-primary-50-950 rounded-lg m-1 absolute top-0 right-0'><PanelTopClose/></button>
+                  <Search bind:search={search} searchType='customer name' data={data.userSearchForm} classes='m-2 border-b-2 border-primary-50-950'/>
+               {/snippet}
+            </Modal>
+            <div class="grid grid-cols-1 mx-1 sm:mx-2 gap-y-3 gap-x-1 mt-22 sm:mt-18">
                {#each slicedSource(searchedSource(customers)) as customer}
                {@const address = addresses.find((address) => address.userId === customer.id)}
                {@const lease = leases.find((lease) => lease.customerId === customer.id)}
