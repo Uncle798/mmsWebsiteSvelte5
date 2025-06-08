@@ -6,41 +6,114 @@
 	import UnitEmployee from '$lib/displayComponents/UnitEmployee.svelte';
 	import UnitNotesForm from '$lib/forms/UnitNotesForm.svelte';
 	import UnitCustomer from '$lib/displayComponents/customerViews/UnitCustomer.svelte';
+	import { Combobox, Modal } from '@skeletonlabs/skeleton-svelte';
+	import { SearchIcon, PanelTopClose } from 'lucide-svelte';
+	import { onMount } from 'svelte';
    let { data }:{data:PageData} = $props();
    const currencyFormatter = new Intl.NumberFormat('en-US', {style: 'currency', currency:'USD'});
-   let lostRevenue = $state(0);
    let sizeFilter = $state('');
    const filterSize = $derived((units:Unit[]) => units.filter((unit) => unit.size.includes(sizeFilter)))
-   function setSizeFilter(event:Event){
-      const select = event.target as HTMLSelectElement;
-      const size = select.value
-      sizeFilter = size;
+   interface ComboboxData {
+      label: string,
+      value: string,
    }
+   const comboboxData:ComboboxData[] = [{
+      label: 'All',
+      value: 'All'
+   }];
+   onMount(async () => {
+      let units = await data.availableUnits;
+      const sizes:string[] = [];
+      for(const unit of units){
+         if(sizes.find((size) => size === unit.size)){
+            continue;
+         } else {
+            sizes.push(unit.size)
+         }
+      }
+      for(const size of sizes.sort((a, b) => {
+         if(a > b){
+            return 1;
+         } else if (a === b ){
+            return 0;
+         } else {
+            return -1;
+         }
+      })){
+         comboboxData.push({
+            value: size,
+            label: size.replace(/^0+/gm,'').replace(/x0/gm,'x')
+         })
+      }
+   })
+   let selectedSize = $state([''])
+   const lostRevenue = $derived((units:Unit[]) => {
+      let revenue = 0;
+      for(const unit of units){
+         revenue += unit.advertisedPrice
+      }
+      return revenue;
+   })
+   let searchDrawerOpen = $state(false);
+   let filteredUnits = $derived((units:Unit[]) => {
+      if(selectedSize[0] === 'All'){
+         return units;
+      } else if(selectedSize[0] !== ''){
+         return units.filter((unit) => {
+            unit.size === selectedSize[0]
+         });
+      } else {
+         return units;
+      }
+   })
 </script>
 <Header title='Available Units' />
 {#await data.availableUnits}
-   <div class="m-2">
+   <div class="m-2 mt-10">
       ...loading available units
    </div>
 {:then availableUnits}   
    {#if data.user?.employee}
-      <div class="flex fixed bg-tertiary-50-950 rounded-b-lg z-40 w-full" in:fade={{duration:600}}>
-         <span class="m-2">Available: {availableUnits.length} of {data.unitCount}</span>
-         <span class="m-2">Available percentage {Math.round((availableUnits.length*100)/data.unitCount)}%</span>
-         <span class="m-2">Open revenue per month: {currencyFormatter.format(lostRevenue)}</span>
+      <div class="flex fixed bg-tertiary-50-950 rounded-b-lg z-40 w-full top-9">
+         <span class="m-1">Available: {availableUnits.length} of {data.unitCount}</span>
+         <span class="m-1">Percentage: {Math.round((availableUnits.length*100)/data.unitCount)}%</span>
+         <span class="m-1">Open revenue per month: {currencyFormatter.format(lostRevenue(availableUnits))}</span>
       </div>
-      <div class="fixed top-18 w-full z-30 bg-surface-50-950 p-2" in:fade={{duration:600}}>
-         <label for="sizeFilter" class="label-text">Filter by size
-            <select name="sizeFilter" id="sizeFilter" class="select" bind:value={sizeFilter} onchange={setSizeFilter}>
-               <option value="">All</option>
-               {#each data.sizes as size}
-                  <option value={size}>{size.replace(/^0/gm, '').replace(/x0/gm, 'x')}</option>
-               {/each}
-            </select>
-         </label>
-      </div>
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 m-1 sm:m-2 bg-surface-50-950 sm:mt-28">
-         {#each filterSize(availableUnits) as unit}
+      <Modal
+         open={searchDrawerOpen}
+         onOpenChange={(event)=>(searchDrawerOpen = event.open)}
+         triggerBase='btn preset-filled-primary-50-950 rounded-lg fixed top-0 right-0 z-50'
+         contentBase='bg-surface-100-900 h-[140px] w-screen rounded-b-lg'
+         positionerJustify=''
+         positionerAlign=''
+         positionerPadding=''
+         transitionsPositionerIn={{y:-360, duration: 600}}
+         transitionsPositionerOut={{y:-360, duration: 600}}
+         modal={false}
+      >
+      {#snippet trigger()}
+         <SearchIcon aria-label='Search' />
+      {/snippet}
+      
+      {#snippet content()}         
+         <button onclick={()=>searchDrawerOpen=false} class='btn preset-filled-primary-50-950 rounded-lg m-1 absolute top-0 right-0'><PanelTopClose/></button>
+         <div class="w-full m-1 sm:m-2 mt-9 sm:mt-9">
+            <Combobox
+               data={comboboxData}
+               label='Filter by Size' 
+               bind:value={selectedSize} 
+               positionerBase='overflow-auto h-44 limitedHeight:h-auto'
+               placeholder='Select size...'
+               onValueChange={(details) => {
+                  searchDrawerOpen = false
+                  selectedSize=details.value
+               }}
+            />
+         </div>
+      {/snippet}
+      </Modal>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 m-1 sm:m-2 bg-surface-50-950 mt-24 sm:mt-18">
+         {#each filteredUnits(availableUnits) as unit}
             <div class="border-2 border-primary-50 dark:border-primary-950 rounded-lg">
                <UnitEmployee {unit}/>
                <div class="text-center sm:col-span-2">
