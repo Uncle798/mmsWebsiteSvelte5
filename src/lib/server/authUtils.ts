@@ -3,7 +3,7 @@ import { generateRandomString } from '@oslojs/crypto/random';
 import type { RandomReader } from '@oslojs/crypto/random';
 import { sha256 } from '@oslojs/crypto/sha2';
 import { prisma } from './prisma';
-import type { PartialUser } from "./partialTypes";
+import type { User } from '@prisma/client';
 import type { Session, } from "@prisma/client";
 import dayjs from 'dayjs';
 import type { RequestEvent } from '@sveltejs/kit';
@@ -171,5 +171,5 @@ export async function verifyMagicLink(code:string):Promise<string> {
 }
 
 export type SessionValidationResult =
-   | {session:Session; user:PartialUser | null}
+   | {session:Session; user:User | null}
    | {session:null; user:null};
