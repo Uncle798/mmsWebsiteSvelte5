@@ -132,7 +132,7 @@
 									label='Select Size' 
 									bind:value={selectedSize} 
 									positionerBase=''
-									positionerClasses='overflow-auto h-24 limited-height:h-96'
+									positionerClasses='overflow-auto short:h-24 tall:h-48 grande:h-96 venti:h-auto'
 									labelBase=''
 									placeholder='Select size...'
 									onValueChange={(details) => {
