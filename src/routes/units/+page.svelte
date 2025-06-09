@@ -131,7 +131,8 @@
 								<Combobox data={comboboxData} 
 									label='Select Size' 
 									bind:value={selectedSize} 
-									positionerBase='overflow-auto h-44 '
+									positionerBase=''
+									positionerClasses='overflow-auto h-24 limited-height:h-96'
 									labelBase=''
 									placeholder='Select size...'
 									onValueChange={(details) => {

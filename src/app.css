@@ -51,4 +51,4 @@
 @theme {
   --breakpoint-short: @media(max-height: 200px)
 }
-@custom-variant limitedHeight (@media(max-height: 200px));
+@custom-variant limited-height (@media screen and (max-height: 200px));
