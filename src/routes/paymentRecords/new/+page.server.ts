@@ -2,7 +2,7 @@ import { prisma } from '$lib/server/prisma';
 import {redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { superValidate } from 'sveltekit-superforms';
-import { zod } from 'sveltekit-superforms/adapters';
+import { valibot, zod } from 'sveltekit-superforms/adapters';
 import { newInvoiceFormSchema, newPaymentRecordFormSchema, registerFormSchema } from '$lib/formSchemas/schemas';
 
 export const load = (async (event) => {
@@ -39,9 +39,9 @@ export const load = (async (event) => {
       }
    });
    const leases = await prisma.lease.findMany({})
-   const newPaymentRecordForm = await superValidate(zod(newPaymentRecordFormSchema));
+   const newPaymentRecordForm = await superValidate(valibot(newPaymentRecordFormSchema));
    const registerForm = await superValidate(zod(registerFormSchema));
-   const invoiceForm = await superValidate(zod(newInvoiceFormSchema));
+   const invoiceForm = await superValidate(valibot(newInvoiceFormSchema));
    let defaultCustomer = event.url.searchParams.get('defaultCustomer');
    let defaultInvoice = event.url.searchParams.get('defaultInvoice');
    if(!defaultCustomer){
