@@ -2,7 +2,7 @@ import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { prisma } from '$lib/server/prisma';
 import { superValidate } from 'sveltekit-superforms';
-import { zod } from 'sveltekit-superforms/adapters';
+import { valibot } from 'sveltekit-superforms/adapters';
 import { unitNotesFormSchema } from '$lib/formSchemas/schemas';
 import pricingData from '$lib/server/pricingData';
 
@@ -19,7 +19,7 @@ export const load = (async (event) => {
       },
    });
    const unitCount = await prisma.unit.count();
-   const unitNotesForm = await superValidate(zod(unitNotesFormSchema));
+   const unitNotesForm = await superValidate(valibot(unitNotesFormSchema));
    const sizes:string[] = [];
    pricingData.forEach((datum) => {
       if(datum.size !== 'ours'){

@@ -2,7 +2,7 @@ import { prisma } from "$lib/server/prisma";
 import { redirect, fail } from "@sveltejs/kit";
 import { superValidate, message } from 'sveltekit-superforms'
 import { ratelimit } from "$lib/server/rateLimit";
-import { zod } from 'sveltekit-superforms/adapters'
+import { valibot, zod } from 'sveltekit-superforms/adapters'
 import { unitNotesFormSchema, unitPricingFormSchema, leaseEndFormSchema, searchFormSchema } from "$lib/formSchemas/schemas";
 
 import type { PageServerLoad, Actions } from "./$types";
@@ -20,7 +20,7 @@ export const load:PageServerLoad = async (event) =>{
       throw redirect(302, '/units/available')
    }
    const unitPricingForm = await superValidate(zod(unitPricingFormSchema), {id: 'pricingFrom'});
-   const unitNotesForm = await superValidate(zod(unitNotesFormSchema), {id: 'unitNotesForm'});
+   const unitNotesForm = await superValidate(valibot(unitNotesFormSchema), {id: 'unitNotesForm'});
    const leaseEndForm = await superValidate(zod(leaseEndFormSchema));
    const searchForm = await superValidate(zod(searchFormSchema));
    const leases =  prisma.lease.findMany({
@@ -57,7 +57,7 @@ export const load:PageServerLoad = async (event) =>{
 export const actions:Actions = {
    unitNotesForm: async (event) => {
       const formData = await event.request.formData();
-      const unitNotesForm = await superValidate(formData, zod(unitNotesFormSchema));
+      const unitNotesForm = await superValidate(formData, valibot(unitNotesFormSchema));
       if(!unitNotesForm.valid){
          return fail(400, {unitNotesForm});
       }
