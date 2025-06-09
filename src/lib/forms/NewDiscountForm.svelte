@@ -49,6 +49,6 @@
          name='notes'
          placeholder='For any non-profits'
       />
-      <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} />
+      <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} buttonText='Make discount'/>
    </form>
 </div>
