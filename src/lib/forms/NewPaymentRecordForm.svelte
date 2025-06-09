@@ -1,7 +1,6 @@
 <script lang="ts">
    import type { SuperValidated, Infer } from "sveltekit-superforms";
-   import type { PartialUser } from "$lib/server/partialTypes";
-   import type { Lease } from "@prisma/client";
+   import type { Lease, User } from "@prisma/client";
    import type { NewInvoiceFormSchema, NewPaymentRecordFormSchema} from "$lib/formSchemas/schemas";
    import { superForm } from "sveltekit-superforms";
    import { Combobox, Modal, Switch } from "@skeletonlabs/skeleton-svelte";
@@ -18,7 +17,7 @@
       data: SuperValidated<Infer<NewPaymentRecordFormSchema>>;
       invoiceForm: SuperValidated<Infer<NewInvoiceFormSchema>>;
       employeeId: string | undefined;
-      customers: PartialUser[];
+      customers: User[];
       invoices: Invoice[];
       leases: Lease[];
       defaultCustomer?: string;
@@ -149,7 +148,7 @@
                <select name="paymentType" id="paymentType" class="select">
                   <option value='CASH'>Cash</option>
                   <option value="CHECK">Check</option>
-                  <option value="STRIPE">Credit Card</option>
+                  <option value="CREDIT">Credit Card</option>
                </select>
             </label>
          </div>
