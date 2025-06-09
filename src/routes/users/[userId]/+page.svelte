@@ -23,24 +23,28 @@
    let slicedPayments = $derived((paymentRecords:PaymentRecord[]) => paymentRecords.slice((pageNum -1) * size, pageNum*size));
    const slicedInvoices = $derived((invoices:Invoice[]) => invoices.slice((pageNum - 1) * size, pageNum * size));
    let searchedPayments = $derived((paymentRecords:PaymentRecord[]) => paymentRecords.filter((paymentRecord) => paymentRecord.paymentNumber.toString().includes(search) ))
-   let totalInvoiced = $state(0);
-   let totalPaid = $state(0)
-   let difference =$state(0)
-   const wrapper = new Promise<Invoice[]>(async res => {
-      const invoices = await data.invoices;
-      const payments = await data.paymentRecords;
-      invoices.forEach((invoice) => {
-         if(!invoice.deposit){
-            totalInvoiced += invoice.invoiceAmount
+   const derivedTotalInvoiced = $derived((invoices:Invoice[]) => {
+      let total = 0;
+      for(const invoice of invoices){
+         total += invoice.invoiceAmount
+      }
+      return total;
+   })
+   const derivedTotalPaid = $derived((payments:PaymentRecord[]) => {
+      let total = 0;
+      for(const payment of payments){
+         total += payment.paymentAmount
+      }
+      return total
+   })
+   const overDueInvoices = $derived((invoices:Invoice[]) => {
+      const returnedInvoices:Invoice[] = [];
+      for(const invoice of invoices){
+         if(invoice.invoiceDue > new Date()){
+            returnedInvoices.push(invoice)
          }
-      })
-      payments.forEach((payment) => {
-         if(!payment.deposit){
-            totalPaid += payment.paymentAmount
-         }
-      })
-      difference = totalInvoiced - totalPaid
-      res(invoices)   
+      }
+      return returnedInvoices;
    })
 </script>
 
@@ -96,7 +100,7 @@
    {/each}
 {/await}
 <div>
-{#await wrapper}
+{#await data.invoices}
     <div class='col-span-1'>
         ...loading invoices
     </div>
@@ -108,17 +112,13 @@
          ...loading refunds
       {:then refunds}
          <div class="flex ">
-            <span class="m-2 mt-0">Total invoiced (not including deposits): {currencyFormatter.format(totalInvoiced)}</span>
-            <span class="m-2 mt-0">Total paid (not including deposits): {currencyFormatter.format(totalPaid)}</span>
-            {#if difference < 0}
-               <span class="text-red-700 dark:text-red-500 m-2 mt-0">Outstanding balance: {currencyFormatter.format(difference)}</span>
-               {#if dayjs(invoices[0].invoiceCreated).add(1,'month') < dayjs()}
-                  <span class="text-red-700 dark:text-red-500 m-2 mt-0">Due: {dayjs(invoices[0].invoiceCreated).add(1, 'month').format('MMMM D YYYY')}</span>
-               {:else}
-                  <span class="text-green-700 dark:text-green-500 m-2 mt-0">Due: {dayjs(invoices[0].invoiceCreated).add(1, 'month').format('MMMM D YYYY')}</span>
+            <span class="mx-1">Total invoiced (not including deposits): {currencyFormatter.format(derivedTotalInvoiced(invoices))}</span>
+            <span class="mx-1">Total paid (not including deposits): {currencyFormatter.format(derivedTotalPaid(paymentRecords))}</span>
+            {#if derivedTotalInvoiced(invoices) - derivedTotalPaid(paymentRecords) > 0}
+               <span class="mx-1 dark:text-red-500 text-red-700">Outstanding Balance: {currencyFormatter.format(derivedTotalInvoiced(invoices) - derivedTotalPaid(paymentRecords))}</span>
+               {#if overDueInvoices(invoices).length > 0}
+                  <span class="mx-1 dark:text-red-500 text-red-700">Overdue Balance: {currencyFormatter.format(derivedTotalInvoiced(overDueInvoices(invoices)))}</span>
                {/if}
-            {:else if difference < 0 }   
-               <span class="text-green-700 dark:text-green-500 m-2 mt-0">Outstanding balance: {currencyFormatter.format(difference)}</span>
             {/if}
          </div>
          {#if refunds.length > 0}
@@ -126,14 +126,14 @@
             {#each slicedInvoices(invoices) as invoice}
             {@const paymentRecord = paymentRecords.find((payment) => payment.invoiceNum === invoice.invoiceNum)}
             {@const refund = refunds.find((refund) => refund.paymentRecordNum === paymentRecord?.paymentNumber)}
-                  <InvoiceEmployee invoice={invoice} classes='rounded-lg border-2 border-primary-50 dark:border-primary-950'/>
+                  <InvoiceEmployee invoice={invoice} classes='rounded-lg border-2 border-primary-50-950'/>
                   {#if paymentRecord}
-                     <PaymentRecordEmployee paymentRecord={paymentRecord} classes='rounded-lg border-2 border-primary-50 dark:border-primary-950'/>
+                     <PaymentRecordEmployee paymentRecord={paymentRecord} classes='rounded-lg border-2 border-primary-50-950'/>
                   {:else}
                      <div class="min-w-1/3"></div>
                   {/if}
                   {#if refund}
-                     <RefundRecordDisplay refundRecord={refund} classes='rounded-lg border-2 border-primary-50 dark:border-primary-950 min-h-72'/>
+                     <RefundRecordDisplay refundRecord={refund} classes='rounded-lg border-2 border-primary-50-950 min-h-72'/>
                   {:else}
                      <div class="min-w-1/3"></div>
                   {/if}
@@ -144,9 +144,9 @@
             {#each slicedInvoices(invoices) as invoice}
             {@const paymentRecord = paymentRecords.find((payment) => payment.invoiceNum === invoice.invoiceNum)}
 
-               <InvoiceEmployee invoice={invoice} classes='rounded-lg border-2 border-primary-50 dark:border-primary-950'/>
+               <InvoiceEmployee invoice={invoice} classes='rounded-lg border-2 border-primary-50-950'/>
                {#if paymentRecord}
-                  <PaymentRecordEmployee paymentRecord={paymentRecord} classes='rounded-lg border-2 border-primary-50 dark:border-primary-950'/>               
+                  <PaymentRecordEmployee paymentRecord={paymentRecord} classes='rounded-lg border-2 border-primary-50-950'/>               
                {/if}
             {/each}
             </div>
