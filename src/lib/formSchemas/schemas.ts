@@ -17,10 +17,10 @@ export const unitPricingFormSchema = z.object({
 });
 export type UnitPricingFormSchema = typeof unitPricingFormSchema;
 
-export const unitNotesFormSchema =  z.object({
-   notes: z.string().nullable(),
-   unavailable: z.boolean(),
-   unitNum: z.string().min(3).max(6),
+export const unitNotesFormSchema =  v.object({
+   notes: v.nullable(v.string()),
+   unavailable: v.boolean(),
+   unitNum: v.pipe(v.string(), v.maxLength(7), v.minLength(3)),
 });
 export type  UnitNotesFormSchema = typeof unitNotesFormSchema;
 
@@ -85,7 +85,6 @@ export const addressFormSchema = z.object({
    phoneNum1: z.string().min(10).max(12).trim(),
    phoneNum1Country: z.string().min(2).max(2).trim(),
 });
-
 export type AddressFormSchema = typeof addressFormSchema;
 
 export const nameFormSchema = z.object({
