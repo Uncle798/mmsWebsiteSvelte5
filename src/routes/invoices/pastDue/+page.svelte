@@ -80,22 +80,29 @@
 </script>
 {#await wrapper}
     <Header title='Loading invoices' />
-    Loading {numberFormatter.format(data.invoiceCount)} invoices, 
-    <Placeholder numCols={1} numRows={size} heightClass='h-40'/>
+    <div class="mt-10 mx-1">
+        Loading {numberFormatter.format(data.invoiceCount)} invoices, 
+        <Placeholder numCols={1} numRows={size} heightClass='h-40'/>
+    </div>
     {:then invoices}
         {#await data.customers}
             <Header title='Loading customers' />
-            Loading customers...
-            <Placeholder numCols={1} numRows={size} heightClass='h-40'/>
+            <div class="mt-10 mx-1">
+                Loading customers...
+                <Placeholder numCols={1} numRows={size} heightClass='h-40'/>
+            </div>
         {:then customers}
             {#await data.addresses}
-                Loading addresses...
-                <Placeholder numCols={1} numRows={size} heightClass='h-40'/>
+                <Header title='Loading addresses' />
+                <div class="mt-10 mx-1">
+                    Loading addresses...
+                    <Placeholder numCols={1} numRows={size} heightClass='h-40'/>
+                </div>
             {:then addresses}
             {#if invoices.length >0}       
                 <Header title='Unpaid invoices' />
                 <Revenue 
-                    label="Total invoiced (not including deposits)" 
+                    label="Total over due (not including deposits)" 
                     amount={totalRevenue(searchedInvoices(dateSearchedInvoices(invoices)))} 
                     classes='bg-tertiary-50-950 w-full rounded-b-lg fixed top-8 p-2 z-40'
                 />
@@ -123,7 +130,7 @@
                             </div>
                     {/snippet}
                 </Modal>
-                <div class="grid grid-cols-1 gap-y-3 gap-x-1 mx-2 mt-18 sm:mt-12" in:fade={{duration:600}}>
+                <div class="grid grid-cols-1 gap-y-3 gap-x-1 mx-1 sm:mx-2 mt-26 sm:mt-20" in:fade={{duration:600}}>
                     {#each  slicedInvoices(searchedInvoices(searchByUser(invoices))) as invoice}  
                     {@const customer = customers.find((customer) => customer.id === invoice.customerId)}  
                         <div class="rounded-lg border border-primary-50-950 grid sm:grid-cols-2">                            
