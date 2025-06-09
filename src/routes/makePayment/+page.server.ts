@@ -2,8 +2,8 @@ import { prisma } from '$lib/server/prisma';
 import { redirect, error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { superValidate } from 'sveltekit-superforms';
-import { valibot, zod } from 'sveltekit-superforms/adapters';
-import { addressFormSchema, creditCardFormSchema } from '$lib/formSchemas/schemas';
+import { valibot, } from 'sveltekit-superforms/adapters';
+import { creditCardFormSchema } from '$lib/formSchemas/schemas';
 
 export const load = (async (event) => {
    if(!event.locals.user){
