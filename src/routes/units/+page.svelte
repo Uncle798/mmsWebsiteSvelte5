@@ -36,7 +36,7 @@
 	let search = $state('');
 	let pageNum = $state(1);
 	let size = $state(25);
-	let selectedSize = $state([''])
+	let selectedSize = $state(['']);
 	let slicedUnits = $derived((units: Unit[]) => units.slice((pageNum - 1) * size, pageNum * size));
 	let filteredUnits = $derived((units:Unit[]) => {
 		if(selectedSize[0] === 'All'){
@@ -93,13 +93,13 @@
 		<div class="mt-10 m-1 sm:m-2">
 			Loading leases...
 		</div>
-		<Placeholder numCols={2} numRows={3} heightClass='h-32'/>
+		<Placeholder numCols={1} numRows={3} heightClass='h-32'/>
 	{:then leases} 
 		{#await data.customers}
 			<div class="mt-10 m-1 sm:m-2">
 				Loading customers...
 			</div>
-			<Placeholder numCols={2} numRows={3} heightClass='h-32'/>
+			<Placeholder numCols={1} numRows={3} heightClass='h-32'/>
 		{:then customers}
 			{#await data.addresses}
 				<div class="mt-10 m-1 sm:m-2">
@@ -145,27 +145,27 @@
             	<div class=" sm:m-2 m-1 sm:mt-18 mt-24" in:fade={{duration:1600}}>
                	{#each slicedUnits(filteredUnits(searchedUnits(units))) as unit (unit.num)}
                	{@const lease = leases?.find((lease) => lease.unitNum === unit.num)}
-							<div class="border-2 border-primary-50-950 rounded-lg grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 my-2">
+							<div class="border-2 border-primary-50-950 rounded-lg grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 my-2 gap-2">
 								<div class="flex flex-col">
-									<UnitEmployee {unit} classes='p-4'/>
+									<UnitEmployee {unit} classes=''/>
 									<button class="btn preset-filled-primary-50-950 rounded-lg mx-2 mb-2" onclick={()=> openModal('unitPricing', unit.advertisedPrice, '', unit.size)}>Change all {unit.size.replace(/^0+/gm,'').replace(/x0/gm,'x')} pricing</button>
 								</div>
 								{#if data.unitNotesForm}
-									<UnitNotesForm data={data.unitNotesForm} {unit} classes=' p-4 '/>
+									<UnitNotesForm data={data.unitNotesForm} {unit} classes=''/>
 								{/if}
 								{#if lease}
 								{@const customer = customers?.find((customer) => customer.id === lease.customerId)}
 									<div class="flex flex-col">
-										<LeaseEmployee {lease} classes='mx-1 sm:mx-2'/>
+										<LeaseEmployee {lease} classes=''/>
 										<button class="btn preset-filled-primary-50-950 rounded-lg m-1 sm:m-2" onclick={()=>openModal('lease', 0, lease.leaseId)}>End Lease</button>
 									</div>
 									<div class="flex flex-col">
 										{#if customer}
 										{@const address = addresses.find((address) => address.userId === customer.id)}
-										<UserEmployee user={customer} classes='mx-1 sm:mx-2'/>
-										{#if address}
-										<Address {address} classes='mx-1 sm:mx-2' />
-										{/if}
+											<UserEmployee user={customer} classes=''/>
+											{#if address}
+												<Address {address} classes='' />
+											{/if}
 										{/if}
 									</div>
 									{:else}
