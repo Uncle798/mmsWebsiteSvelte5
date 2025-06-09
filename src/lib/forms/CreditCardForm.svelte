@@ -26,7 +26,7 @@
    }
    let { data, sessionToken, invoice, subscription, buttonText='Pay Bill',classes, }:Props = $props();
    let processing = $state(false);
-
+   let errorDisplay = $state<HTMLElement>();
    let { form, message, errors, constraints, enhance, delayed, timeout} = superForm(data, {
       SPA: true,
       validators: valibot(creditCardFormSchema),
@@ -34,7 +34,8 @@
          processing = true
          if(form.valid){
             const {data} = form;
-            let date:string = data.exp.substring(0, data.exp.indexOf(' ')) + data.exp.substring(data.exp.lastIndexOf(' ')+1,);
+            let date:string = data.exp.substring(0, data.exp.indexOf(' ')) + data.exp.substring(data.exp.lastIndexOf(' ')+1);
+            console.log(date);
             const paymentData = {
                ssl_txn_auth_token: sessionToken, 
                ssl_card_number: data.ccNum,
@@ -51,6 +52,9 @@
                //@ts-ignore
                onError: function (error) { 
                   console.error(error)
+                  if(errorDisplay){
+                     errorDisplay.innerHTML = error
+                  }
                }, 
                //@ts-ignore
                onCancelled: function (response) { 
@@ -59,7 +63,12 @@
                },
                //@ts-ignore
                onDeclined: function (response) { 
-                  console.log(response)
+                  console.log(response);
+                  if(errorDisplay){
+                     errorDisplay.innerHTML = response.errorMessage
+                  }
+                  processing = false
+                  $timeout = false
                }, 
                //@ts-ignore
                onApproval: async function (response) { 
@@ -168,15 +177,16 @@
       <button class="btn rounded-lg preset-filled-primary-50-950 my-1 sm:my-2">{buttonText}</button>
    {:else}
       Processing...
-   {#if $delayed && !$timeout}
-   <div in:fade={{duration:600}}>
-      <ProgressRing value={null} size="size-8" strokeWidth="6px" meterStroke="stroke-secondary-600-400" trackStroke="stroke-secondary-50-950" classes='ml-2' />
-   </div>
-   {/if}
-   {#if $timeout}
-   <div in:fade={{duration:600}}>
-      <Progress value={null} width="size-8" classes='mt-2 ml-2' />
-   </div>
-   {/if}
+      {#if $delayed && !$timeout}
+         <div in:fade={{duration:600}}>
+            <ProgressRing value={null} size="size-8" strokeWidth="6px" meterStroke="stroke-secondary-600-400" trackStroke="stroke-secondary-50-950" classes='ml-2' />
+         </div>
+      {/if}
+      {#if $timeout}
+         <div in:fade={{duration:600}}>
+            <Progress value={null} width="size-8" classes='mt-2 ml-2' />
+         </div>
+      {/if}
+      <div bind:this={errorDisplay}></div>
    {/if}
 </form>
