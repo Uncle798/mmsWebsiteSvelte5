@@ -27,6 +27,28 @@ export const load = (async () => {
          leaseEnded: 'desc'
       }
    })
+   const customers = prisma.user.findMany({
+      where: {
+         customerLeases: {
+            some: {
+               leaseEnded: {
+                  gt: dayjs(new Date()).subtract(1, 'year').toDate()
+               }
+            }
+         }
+      }
+   })
+   const addresses = prisma.address.findMany({
+      where: {
+         leases: {
+            some: {
+               leaseEnded: {
+                  gt: dayjs().subtract(1, 'year').toDate()
+               }
+            }
+         }
+      }
+   })
    const unitNotesForm = await superValidate(valibot(unitNotesFormSchema))
-   return { units, leases, unitNotesForm, };
+   return { units, leases, unitNotesForm, customers, addresses };
 }) satisfies PageServerLoad;
