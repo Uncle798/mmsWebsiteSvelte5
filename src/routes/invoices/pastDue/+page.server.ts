@@ -16,9 +16,10 @@ export const load = (async (event) => {
       where: {
          AND: [
             {paymentRecordNum: null},
-            {invoiceCreated: {
-               lte: dayjs().subtract(1, 'month').toDate()
-            }}
+            {invoiceDue: {
+               lte: new Date()
+            }},
+            {deposit: false}
          ]
       }
    })
@@ -26,9 +27,10 @@ export const load = (async (event) => {
       where: {
          AND: [
             {paymentRecordNum: null},
-            {invoiceCreated: {
-               lte: dayjs().subtract(1, 'month').toDate()
-            }}
+            {invoiceDue: {
+               lte: new Date()
+            }},
+            {deposit: false}
          ]
       },
       orderBy: {
