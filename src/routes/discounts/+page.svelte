@@ -18,5 +18,6 @@
     <DiscountEndForm data={data.discountEndForm} discountId={discount.discountId}/>
 {/each}
     <HorizontalDivider />
+    <span>New discount</span>
     <NewDiscountForm data={data.newDiscountForm} />
 </div>
