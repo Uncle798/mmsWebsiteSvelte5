@@ -86,7 +86,7 @@
 					{/each}
 				{/if}
 			</ul>
-			<div class="static bottom-0 bg-surface-100-900 h-1/9 border-1 border-primary-50-950 rounded-lg">
+			<div class="fixed w-[240px] bottom-0 bg-surface-100-900 border-1 border-primary-50-950 rounded-lg">
 				<ul class="m-1">
 					{#if data.user}
 					<li><a href="/accountSettings" class="anchor">Settings</a></li>
@@ -121,6 +121,7 @@
 	{/snippet}
 	{#snippet content()}
 		<article class="">
+			<button class="absolute top-1 left-[90px] btn-icon" onclick={()=>{menuOpen=false}}><XCircleIcon aria-label='close' class=''/></button>
 			<ul>
 				{#each customerLinks as link}
 					<a href={link.link} class="anchor">{link.label}</a>
@@ -136,7 +137,7 @@
 					{/if}
 				</div>
 			</ul>
-			<button class="absolute top-1 left-[90px] btn-icon" onclick={()=>{menuOpen=false}}><XCircleIcon aria-label='close' class=''/></button>
+			
 		</article>
 	{/snippet}
 	</Modal>
