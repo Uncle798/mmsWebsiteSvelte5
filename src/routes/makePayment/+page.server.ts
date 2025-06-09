@@ -30,6 +30,5 @@ export const load = (async (event) => {
       }
    })
    const ccForm = await superValidate(valibot(creditCardFormSchema));
-   const addressForm = await superValidate(zod(addressFormSchema));
-   return {invoice, newLease, subscription, leaseId, customer, ccForm, addressForm};
+   return {invoice, newLease, subscription, leaseId, customer, ccForm, };
 }) satisfies PageServerLoad;
