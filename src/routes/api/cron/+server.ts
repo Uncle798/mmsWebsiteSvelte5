@@ -45,7 +45,7 @@ export const GET: RequestHandler = async ({request}) => {
                leaseId:lease.leaseId,
                invoiceAmount: lease.price,
                customerId: lease.customerId,
-               invoiceNotes: `Monthly rent for unit ${lease.unitNum.replace(/^0+/gm, '')}`,
+               invoiceNotes: `Monthly rent for unit ${lease.unitNum.replace(/^0+/gm, '')} ${dayjs().format('MMM YYYY')}`,
                invoiceDue: dayjs().add(1, 'month').toDate()
             }
          });
