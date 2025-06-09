@@ -1,6 +1,6 @@
 <script lang="ts">
    import type { SuperValidated, Infer } from "sveltekit-superforms";
-   import type { Lease, User } from "@prisma/client";
+   import { type Lease, type User, PaymentType } from "@prisma/client";
    import type { NewInvoiceFormSchema, NewPaymentRecordFormSchema} from "$lib/formSchemas/schemas";
    import { superForm } from "sveltekit-superforms";
    import { Combobox, Modal, Switch } from "@skeletonlabs/skeleton-svelte";
@@ -49,8 +49,15 @@
       })
       return data
    })
-
-   customers.forEach((customer)=>{
+   const paymentTypeComboBoxData:ComboBoxData[] = [];
+   for(const paymentType of Object.values(PaymentType)){
+      paymentTypeComboBoxData.push({
+         label: paymentType.substring(0,1)+paymentType.substring(1).toLowerCase(),
+         value: paymentType
+      })
+   }
+   let selectedPaymentType = $state([''])
+   for(const customer of customers){
       const label = `${customer.givenName} ${customer.familyName}`;
       const value = customer.id;
       const datum = {
@@ -58,7 +65,7 @@
          value
       }
       customerComboBoxData.push(datum);
-   });
+   };
    let invoiceFormOpen=$state(false);
    let invoiceSelected=$state(false);
    onMount(()=>{
@@ -67,7 +74,7 @@
          if(invoice){
             invoiceSelected = true
             $form.paymentAmount=invoice.invoiceAmount;
-            $form.paymentNotes=`Payment for invoice number: ${invoice.invoiceNum} ${invoice.invoiceNotes}`
+            $form.paymentNotes=`Payment for invoice number: ${invoice.invoiceNum}, ${invoice.invoiceNotes}`
             $form.deposit=invoice.deposit;
          }
       }
@@ -143,15 +150,17 @@
             label='Payment amount: $'
             name='paymentAmount'
          />
-         <div class="">
-            <label for="paymentType" class="label-text">Payment type
-               <select name="paymentType" id="paymentType" class="select">
-                  <option value='CASH'>Cash</option>
-                  <option value="CHECK">Check</option>
-                  <option value="CREDIT">Credit Card</option>
-               </select>
-            </label>
-         </div>
+         <Combobox
+            data={paymentTypeComboBoxData}
+            bind:value={selectedPaymentType}
+            onValueChange={(details) =>{
+               $form.paymentType = details.value[0] as PaymentType
+            }}
+            label='Payment Type'
+            placeholder='Select Payment type'
+            openOnClick={true}
+            
+         />
          <input type="hidden" name='employeeId' value={employeeId} />
          <TextArea
             bind:value={$form.paymentNotes}
