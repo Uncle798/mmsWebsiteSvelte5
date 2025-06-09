@@ -30,25 +30,8 @@
 @import '@skeletonlabs/skeleton/themes/vintage';
 @import '@skeletonlabs/skeleton/themes/vox';
 @import '@skeletonlabs/skeleton/themes/wintry';
-/*
-  The default border color has changed to `currentColor` in Tailwind CSS v4,
-  so we've added these compatibility styles to make sure everything still
-  looks the same as it did with Tailwind CSS v3.
 
-  If we ever want to remove these styles, we need to add an explicit border
-  color utility to any element that depends on these defaults.
-*/
-@layer base {
-  *,
-  ::after,
-  ::before,
-  ::backdrop,
-  ::file-selector-button {
-    border-color: var(--color-gray-200, currentColor);
-  }
-}
-
-@theme {
-  --breakpoint-short: @media(max-height: 200px)
-}
-@custom-variant limited-height (@media screen and (max-height: 200px));
+@custom-variant short (@media screen and (max-height: 400px));
+@custom-variant tall (@media screen and (min-height: 401px) and (max-height: 600px));
+@custom-variant grande (@media screen and (min-height: 601px) and (max-height: 800px));
+@custom-variant venti (@media screen and (min-height: 801px))
