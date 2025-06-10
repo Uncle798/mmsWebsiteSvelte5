@@ -213,7 +213,7 @@ export const actions: Actions = {
                paymentRecordNum: paymentRecord.paymentNumber
             }
          })
-         redirect(302, `/employeeNewLease/leaseSent?paymentNumber=${paymentRecord.paymentNumber}`);
+         redirect(302, `/employeeNewLease/leaseSent?leaseId=${lease.leaseId}`);
       }
       let name:string = `${customer!.givenName} ${customer!.familyName}`
       if(customer!.organizationName){
