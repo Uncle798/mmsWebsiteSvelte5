@@ -133,8 +133,8 @@
         </Modal>
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
             {#each leases as lease}
-                <div class="border-2 rounded-lg border-primary-50 dark:border-primary-950">
-                    <LeaseCustomer lease={lease} classes='w-64'/>
+                <div class="border-2 rounded-lg border-primary-50-950 flex flex-col">
+                    <LeaseCustomer lease={lease} classes=''/>
                     {#if !lease.leaseEnded}
                         <button class="btn preset-filled-primary-50-950 rounded-lg m-1 sm:m-2" onclick={()=> setCurrentLeaseId(lease.leaseId)}>End Lease</button>
                         {#if !lease.subscriptionId}
@@ -148,7 +148,7 @@
                                 </div>
                             </form>
                         {:else}
-                            Thanks for auto-paying!
+                            <span class="m-2">Thanks for auto-paying!</span>
                         {/if}
                     {/if}
                 </div>
