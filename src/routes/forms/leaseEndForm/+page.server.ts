@@ -32,17 +32,34 @@ export const actions: Actions = {
          }
       })
       if(!lease){
-         fail(404)
+         return fail(404)
       }
-      if(lease?.customerId !== event.locals.user.id && !event.locals.user.employee){
+      if(lease.customerId !== event.locals.user.id && !event.locals.user.employee){
          return message(leaseEndForm, 'Not your lease')
+      }
+      if(lease.subscriptionId){
+         const response = await event.fetch('/api/elavon/cancelRecurring', {
+            method: "POST",
+            body: JSON.stringify({leaseId: lease.leaseId})
+         })
+         if(response){
+            console.log(await response.json())
+            await prisma.lease.update({
+               where: {
+                  leaseId: lease.leaseId
+               },
+               data: {
+                  subscriptionId: null
+               }
+            })
+         }
       }
       await prisma.lease.update({
          where: {
             leaseId:leaseEndForm.data.leaseId
          },
          data:{
-            leaseEnded: new Date,
+            leaseEnded: new Date(),
          }
       });
       let notes = ''
