@@ -55,6 +55,8 @@
                   if(errorDisplay){
                      errorDisplay.innerHTML = error
                   }
+                  processing = false
+                  $timeout = false
                }, 
                //@ts-ignore
                onCancelled: function (response) { 
