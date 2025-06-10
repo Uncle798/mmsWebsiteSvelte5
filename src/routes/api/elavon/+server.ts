@@ -27,6 +27,12 @@ export const POST: RequestHandler = async (event) => {
    }
    let details = {};
    if(subscription){
+      let ssl_next_payment_date:string ='';
+      if(invoice.invoiceDue < new Date()){
+         ssl_next_payment_date = dayjs().format('MM/DD/YYYY')
+      } else {
+         ssl_next_payment_date = dayjs(invoice.invoiceDue).format('MM/DD/YYYY')
+      }
       details = {
          ssl_transaction_type: 'ccaddrecurring',
          ssl_account_id: CONVERGE_ACCOUNT_ID,
@@ -34,7 +40,7 @@ export const POST: RequestHandler = async (event) => {
          ssl_pin: CONVERGE_SSL_PIN,
          ssl_amount: invoice.invoiceAmount,
          ssl_invoice_number: invoice.invoiceNum,
-         ssl_next_payment_date: dayjs(invoice.invoiceDue).format('MM/DD/YYYY'),
+         ssl_next_payment_date,
          ssl_billing_cycle: 'MONTHLY',
       }
    } else {
