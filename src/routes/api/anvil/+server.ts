@@ -1,4 +1,5 @@
 import { prisma } from '$lib/server/prisma';
+//@ts-ignore
 import { decryptRSA } from '@anvilco/encryption';
 import { ANVIL_RSA_PRIVATE_KEY_BASE64 } from '$env/static/private';
 import type { RequestHandler } from './$types';
@@ -51,10 +52,11 @@ export const POST: RequestHandler = async (event) => {
                const date = dayjs(lease?.leaseEffectiveDate).format('M/D/YYYY')
                const invoice = await prisma.invoice.create({
                   data: {
-                     customerId: lease?.customerId,
+                     customerId: lease!.customerId,
                      invoiceAmount: lease!.price,
                      invoiceNotes: `Rent for unit ${lease?.unitNum.replace(/^0+/gm, '')} for ${date}`,
                      invoiceDue: dayjs(lease?.leaseEffectiveDate).add(1, 'month').toDate(),
+                     leaseId: lease!.leaseId
                   }
                })
                const stripeInvoice = await stripe.invoices.create({
