@@ -1,7 +1,6 @@
 <script lang="ts">
-    import Header from '$lib/Header.svelte';
-    import { PUBLIC_ANVIL_EMAIL, PUBLIC_COMPANY_NAME } from '$env/static/public';
-    import type { PageData } from './$types';
+   import Header from '$lib/Header.svelte';
+   import type { PageData } from './$types';
 	import PaymentRecordEmployee from '$lib/displayComponents/PaymentRecordEmployee.svelte';
 	import UserEmployee from '$lib/displayComponents/UserEmployee.svelte';
 	import AddressEmployee from '$lib/displayComponents/AddressEmployee.svelte';
@@ -13,12 +12,12 @@
    The lease has been sent to {data.customer?.email}. Please check {data.user?.email} and sign the lease.
 </div>
 {#if data.paymentRecord}
-   <div class="flex flex-col sm:flex-row rounded-lg border-2 border-primary-50 dark:border-primary-950 m-1 sm:m-2">
-      <PaymentRecordEmployee paymentRecord={data.paymentRecord} classes='w-72 m-2'/>
-      {#if data.customer}
+<div class="flex flex-col sm:flex-row rounded-lg border-2 border-primary-50-950 m-1 sm:m-2">
+   <PaymentRecordEmployee paymentRecord={data.paymentRecord} classes='w-96 m-2'/>
+   {#if data.customer}
          <div class="">
-               <UserEmployee user={data.customer} />
-               {#if data.address}
+            <UserEmployee user={data.customer} />
+            {#if data.address}
                <AddressEmployee address={data.address} />
             {/if}
          </div> 
