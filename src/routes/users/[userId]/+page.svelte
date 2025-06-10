@@ -26,21 +26,25 @@
    const derivedTotalInvoiced = $derived((invoices:Invoice[]) => {
       let total = 0;
       for(const invoice of invoices){
-         total += invoice.invoiceAmount
+         if(!invoice.deposit){
+            total += invoice.invoiceAmount
+         }
       }
       return total;
    })
    const derivedTotalPaid = $derived((payments:PaymentRecord[]) => {
       let total = 0;
       for(const payment of payments){
-         total += payment.paymentAmount
+         if(!payment.deposit){
+            total += payment.paymentAmount
+         }
       }
       return total
    })
    const overDueInvoices = $derived((invoices:Invoice[]) => {
       const returnedInvoices:Invoice[] = [];
       for(const invoice of invoices){
-         if(invoice.invoiceDue > new Date()){
+         if(invoice.invoiceDue < new Date() && !invoice.paymentRecordNum && !invoice.deposit){
             returnedInvoices.push(invoice)
          }
       }
