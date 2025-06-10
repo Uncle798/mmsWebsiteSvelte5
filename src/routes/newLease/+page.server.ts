@@ -24,9 +24,9 @@ export const load:PageServerLoad = (async (event) =>{
       redirect(302, `/register/emailVerification??redirectTo=newLease&unitNum=${unitNum}`)
    }
    const leaseForm = await superValidate(valibot(newLeaseSchema));
-   const nameForm = await superValidate(zod(nameFormSchema));
-   const addressForm = await superValidate(zod(addressFormSchema));
-   const leaseDiscountForm = await superValidate(zod(leaseDiscountFormSchema));
+   const nameForm = await superValidate(valibot(nameFormSchema));
+   const addressForm = await superValidate(valibot(addressFormSchema));
+   const leaseDiscountForm = await superValidate(valibot(leaseDiscountFormSchema));
    const discountId = event.url.searchParams.get('discountId');
    const redirectTo = event.url.searchParams.get('redirectTo');
    

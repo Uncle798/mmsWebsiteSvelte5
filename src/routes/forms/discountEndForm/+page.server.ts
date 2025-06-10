@@ -3,7 +3,7 @@ import { prisma } from "$lib/server/prisma";
 import { ratelimit } from "$lib/server/rateLimit";
 import { redirect, type Actions } from "@sveltejs/kit";
 import { superValidate, message, fail } from "sveltekit-superforms";
-import { zod } from "sveltekit-superforms/adapters";
+import { valibot } from "sveltekit-superforms/adapters";
 
 export const actions: Actions = {
    default: async (event) => {
@@ -11,7 +11,7 @@ export const actions: Actions = {
          redirect(302, '/login?toast=employee');
       }
       const formData = await event.request.formData();
-      const discountEndForm = await superValidate(formData, zod(cuidIdFormSchema));
+      const discountEndForm = await superValidate(formData, valibot(cuidIdFormSchema));
       const { success, reset } = await ratelimit.employeeForm.limit(event.locals.user?.id)
 		if(!success) {
 			const timeRemaining = Math.floor((reset - Date.now()) /1000);

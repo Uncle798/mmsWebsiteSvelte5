@@ -1,5 +1,5 @@
 import { message, superValidate } from 'sveltekit-superforms';
-import { zod } from 'sveltekit-superforms/adapters';
+import { valibot, } from 'sveltekit-superforms/adapters';
 import type { PageServerLoad, Actions } from './$types';
 import { magicLinkFormSchema } from '$lib/formSchemas/schemas';
 import { ratelimit } from '$lib/server/rateLimit';
@@ -9,7 +9,7 @@ import { sendMagicLinkEmail } from '$lib/server/mailtrap';
 import { PUBLIC_COMPANY_EMAIL } from '$env/static/public';
 
 export const load = (async (event) => {
-   const magicLinkForm = await superValidate(zod(magicLinkFormSchema))
+   const magicLinkForm = await superValidate(valibot(magicLinkFormSchema))
    const toastReason = event.url.searchParams.get('toast');
    const redirectTo = event.url.searchParams.get('redirectTo');
    const unitNum = event.url.searchParams.get('unitNum');
@@ -21,7 +21,7 @@ export const load = (async (event) => {
 export const actions:Actions ={
    default: async (event) =>{
       const formData = await event.request.formData();
-      const magicLinkForm = await superValidate(formData, zod(magicLinkFormSchema));
+      const magicLinkForm = await superValidate(formData, valibot(magicLinkFormSchema));
       const { success, reset } = await ratelimit.login.limit(event.getClientAddress());
       if(!success){
          const timeRemaining = Math.floor((reset - Date.now()) / 1000);

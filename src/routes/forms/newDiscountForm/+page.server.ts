@@ -1,6 +1,6 @@
 import { superValidate, message, fail } from 'sveltekit-superforms';
 import type { Actions } from './$types';
-import { zod } from 'sveltekit-superforms/adapters';
+import { valibot, zod } from 'sveltekit-superforms/adapters';
 import { newDiscountFormSchema } from '$lib/formSchemas/schemas';
 import { redirect } from '@sveltejs/kit';
 import { ratelimit } from '$lib/server/rateLimit';
@@ -13,7 +13,7 @@ export const actions: Actions = {
          redirect(302, '/login?toast=employee')
       }
       const formData = await event.request.formData();
-      const newDiscountForm = await superValidate(formData, zod(newDiscountFormSchema));
+      const newDiscountForm = await superValidate(formData, valibot(newDiscountFormSchema));
       const { success, reset } = await ratelimit.employeeForm.limit( event.locals.user.id);
       if(!success){
          const timeRemaining = Math.floor((reset-Date.now()) / 1000);

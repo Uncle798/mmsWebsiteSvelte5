@@ -24,9 +24,9 @@ export const unitNotesFormSchema =  v.object({
 });
 export type  UnitNotesFormSchema = typeof unitNotesFormSchema;
 
-export const leaseEndFormSchema = z.object({
-   leaseId: z.string().cuid2(),
-   customer: z.boolean().nullable(),
+export const leaseEndFormSchema = v.object({
+   leaseId: v.pipe(v.string(), v.cuid2()),
+   customer: v.nullable(v.boolean()),
 })
 export type LeaseEndFormSchema = typeof leaseEndFormSchema;
 
@@ -74,23 +74,23 @@ export const emailFormSchema = z.object({
 });
 export type EmailFormSchema = typeof emailFormSchema;
 
-export const addressFormSchema = z.object({
-   organizationName: z.string().min(1).max(255).trim().optional(),
-   address1: z.string().min(2).max(255).trim(),
-   address2: z.string().min(2).max(255).trim().optional(),
-   city: z.string(),
-   state: z.string().min(2).max(255),
-   postalCode: z.string().min(5).max(9),
-   country: z.string().min(2).max(2),
-   phoneNum1: z.string().min(10).max(12).trim(),
-   phoneNum1Country: z.string().min(2).max(2).trim(),
+export const addressFormSchema = v.object({
+   organizationName: v.optional(v.pipe(v.string(), v.minLength(1), v.maxLength(255))),
+   address1: v.pipe(v.string(), v.minLength(2), v.maxLength(255)),
+   address2: v.optional(v.pipe(v.string(), v.minLength(2), v.maxLength(255))),
+   city: v.string(),
+   state: v.pipe(v.string(), v.minLength(2), v.maxLength(255)),
+   postalCode: v.pipe(v.string(), v.minLength(5), v.maxLength(9)),
+   country: v.pipe(v.string(), v.minLength(2), v.maxLength(2)),
+   phoneNum1: v.pipe(v.string(), v.minLength(10), v.maxLength(12), v.digits()),
+   phoneNum1Country: v.pipe(v.string(), v.minLength(2), v.maxLength(2)),
 });
 export type AddressFormSchema = typeof addressFormSchema;
 
-export const nameFormSchema = z.object({
-   familyName: z.string().min(1).max(255).trim(),
-   givenName: z.string().min(1).max(255).trim(),
-   organizationName: z.string().min(1).max(255).nullable(),
+export const nameFormSchema = v.object({
+   familyName: v.pipe(v.string(), v.minLength(1), v.maxLength(255)),
+   givenName: v.pipe(v.string(), v.minLength(1), v.maxLength(255)),
+   organizationName: v.nullable(v.pipe(v.string(), v.minLength(1), v.maxLength(255))),
 });
 export type NameFormSchema = typeof nameFormSchema;
 
@@ -126,22 +126,22 @@ export const searchFormSchema = z.object({
 });
 export type SearchFormSchema = typeof searchFormSchema;
 
-export const leaseDiscountFormSchema = z.object({
-   code: z.string().min(8).max(255).nullable(),
-   unitNum: z.string().min(3).max(8),
+export const leaseDiscountFormSchema = v.object({
+   code: v.nullable(v.pipe(v.string(), v.minLength(8), v.maxLength(255))),
+   unitNum: v.pipe(v.string(), v.minLength(3), v.maxLength(8)),
 });
 export type LeaseDiscountFormSchema = typeof leaseDiscountFormSchema;
 
-export const newDiscountFormSchema = z.object({
-   code: z.string().min(8).max(255),
-   amountOff: z.number().min(0),
-   percentage: z.boolean(),
-   notes: z.string().nullable()
+export const newDiscountFormSchema = v.object({
+   code: v.pipe(v.string(), v.minLength(8), v.maxLength(255)),
+   amountOff: v.pipe(v.number(), v.minValue(1)),
+   percentage: v.boolean(),
+   notes: v.nullable(v.string())
 });
 export type NewDiscountFormSchema = typeof newDiscountFormSchema;
 
-export const cuidIdFormSchema = z.object({
-   cuid2Id: z.string().cuid2()
+export const cuidIdFormSchema = v.object({
+   cuid2Id: v.pipe(v.string(), v.cuid2())
 });
 export type CuidIdFormSchema = typeof cuidIdFormSchema;
 
@@ -156,8 +156,8 @@ export const newInvoiceFormSchema = v.object({
 })
 export type NewInvoiceFormSchema = typeof newInvoiceFormSchema
 
-export const magicLinkFormSchema = z.object({
-   email: z.string().min(5)
+export const magicLinkFormSchema = v.object({
+   email: v.pipe(v.string(), v.minLength(5))
 });
 export type MagicLinkFormSchema  = typeof magicLinkFormSchema;
 
@@ -175,8 +175,8 @@ export const newPaymentRecordFormSchema = v.object({
 })
 export type NewPaymentRecordFormSchema = typeof newPaymentRecordFormSchema;
 
-export const paymentRecordDeleteSchema = z.object({
-   paymentRecordNumber: z.number().positive()
+export const paymentRecordDeleteSchema = v.object({
+   paymentRecordNumber: v.pipe(v.number(), v.minValue(1))
 });
 export type PaymentRecordDeleteSchema = typeof paymentRecordDeleteSchema;
 
@@ -188,13 +188,13 @@ export const refundFormSchema = v.object({
 })
 export type RefundFormSchema = typeof refundFormSchema;
 
-export const dateSearchFormSchema = z.object({
-   startDate: z.date().optional(),
-   endDate: z.date().optional()
+export const dateSearchFormSchema = v.object({
+   startDate: v.optional(v.date()),
+   endDate: v.optional(v.date())
 });
 export type DateSearchFormSchema = typeof dateSearchFormSchema;
 
-export const blankFormSchema = z.object({});
+export const blankFormSchema = v.object({});
 export type BlankFormSchema = typeof blankFormSchema
 
 export const creditCardFormSchema = v.object({
