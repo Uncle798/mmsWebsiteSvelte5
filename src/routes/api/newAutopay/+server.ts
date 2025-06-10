@@ -1,5 +1,6 @@
 import { prisma } from '$lib/server/prisma';
 import dayjs from 'dayjs';
+//@ts-ignore
 import type { RequestHandler } from './$types';
 
 export const POST: RequestHandler = async (event) => {
@@ -33,7 +34,7 @@ export const POST: RequestHandler = async (event) => {
          data: {
             invoiceAmount: lease.price,
             leaseId: lease.leaseId,
-            invoiceNotes: `Auto-payment for unit ${lease.unitNum.replace(/^0+/gm, '')} for ${dayjs(dueDate).format('MMMM YYYY')}`,
+            invoiceNotes: `Auto-payment for unit ${lease.unitNum.replace(/^0+/gm, '')}, ${dayjs(dueDate).format('MMMM YYYY')}`,
             invoiceDue: dueDate,
             customerId: lease.customerId,
          }

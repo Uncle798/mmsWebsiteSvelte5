@@ -69,10 +69,10 @@ export const POST: RequestHandler = async (event) => {
                               paymentAmount: session.amount_total ? session.amount_total / 100 : 0,
                               customerId: invoice.customerId,
                               invoiceNum: invoice.invoiceNum,
-                              paymentType: 'STRIPE',
+                              paymentType: 'CREDIT',
                               paymentNotes: `Payment for invoice number ${invoice.invoiceNum}, ${invoice.invoiceNotes}`,
                               deposit: invoice.deposit,
-                              stripeId: session.id,
+                              transactionId: session.id,
                            }
                         })
                         console.log(paymentRecord)
@@ -249,7 +249,7 @@ export const POST: RequestHandler = async (event) => {
                            leaseId: lease.leaseId
                         },
                         data: {
-                           stripeSubscriptionId: s.id
+                           subscriptionId: s.id
                         }
                      })
                   }

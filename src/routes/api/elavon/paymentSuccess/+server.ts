@@ -4,6 +4,7 @@ import type { RequestHandler } from './$types';
 export const POST: RequestHandler = async (event) => {
    const body = await event.request.json();
    const { response, subscription } = body;
+   console.log(subscription);
    const { ssl_invoice_number, ssl_txn_id, ssl_amount, ssl_transaction_type } = response;
    console.log(ssl_transaction_type)
    if(ssl_invoice_number){
@@ -34,7 +35,8 @@ export const POST: RequestHandler = async (event) => {
             paymentRecordNum: paymentRecord.paymentNumber
          }
       })
-      if(subscription){
+      if(ssl_transaction_type === 'CCADDRECURRING'){
+         console.log('subscription')
          await prisma.lease.update({
             where: {
                leaseId: invoice.leaseId!,
