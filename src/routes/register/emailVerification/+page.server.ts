@@ -1,6 +1,6 @@
 import { fail as superFormFail, superValidate, message } from 'sveltekit-superforms';
 import type { PageServerLoad, Actions } from './$types';
-import { zod } from 'sveltekit-superforms/adapters';
+import { valibot } from 'sveltekit-superforms/adapters';
 import { emailVerificationFormSchema } from '$lib/formSchemas/schemas';
 import { fail, redirect, } from '@sveltejs/kit';
 import { ratelimit } from '$lib/server/rateLimit';
@@ -16,7 +16,7 @@ export const load:PageServerLoad = (async (event) => {
     if(event.locals.user.emailVerified){
         redirect(302, '/accountSettings')
     }
-    const emailVerificationForm = await superValidate(zod(emailVerificationFormSchema));
+    const emailVerificationForm = await superValidate(valibot(emailVerificationFormSchema));
     const verification = await prisma.verification.findFirst({
         where: {
             userId: event.locals.user?.id
@@ -40,7 +40,7 @@ export const actions: Actions ={
             redirect(302, '/');
         }
         const formData = await event.request.formData();
-        const emailVerificationForm = await superValidate(formData, zod(emailVerificationFormSchema));
+        const emailVerificationForm = await superValidate(formData, valibot(emailVerificationFormSchema));
         if(!emailVerificationForm.valid){
             return superFormFail(400, emailVerificationForm);
         }

@@ -2,7 +2,7 @@ import { prisma } from "$lib/server/prisma";
 import { redirect, fail } from "@sveltejs/kit";
 import { superValidate, message } from 'sveltekit-superforms'
 import { ratelimit } from "$lib/server/rateLimit";
-import { valibot, zod } from 'sveltekit-superforms/adapters'
+import { valibot } from 'sveltekit-superforms/adapters'
 import { unitNotesFormSchema, unitPricingFormSchema, leaseEndFormSchema, searchFormSchema } from "$lib/formSchemas/schemas";
 
 import type { PageServerLoad, Actions } from "./$types";
@@ -19,10 +19,10 @@ export const load:PageServerLoad = async (event) =>{
    if(!event.locals.user.employee){
       throw redirect(302, '/units/available')
    }
-   const unitPricingForm = await superValidate(zod(unitPricingFormSchema), {id: 'pricingFrom'});
+   const unitPricingForm = await superValidate(valibot(unitPricingFormSchema), {id: 'pricingFrom'});
    const unitNotesForm = await superValidate(valibot(unitNotesFormSchema), {id: 'unitNotesForm'});
-   const leaseEndForm = await superValidate(zod(leaseEndFormSchema));
-   const searchForm = await superValidate(zod(searchFormSchema));
+   const leaseEndForm = await superValidate(valibot(leaseEndFormSchema));
+   const searchForm = await superValidate(valibot(searchFormSchema));
    const leases =  prisma.lease.findMany({
       where: {
          leaseEnded: null

@@ -1,7 +1,7 @@
 import { prisma } from '$lib/server/prisma';
 import {  message, superValidate } from 'sveltekit-superforms';
 import type { PageServerLoad, Actions } from './$types';
-import { zod } from 'sveltekit-superforms/adapters';
+import { valibot } from 'sveltekit-superforms/adapters';
 import { cuidIdFormSchema, employmentFormSchema } from '$lib/formSchemas/schemas';
 import { searchFormSchema } from '$lib/formSchemas/schemas';
 import { redirect } from '@sveltejs/kit';
@@ -13,8 +13,8 @@ export const load = (async (event) => {
    if(!event.locals.user?.admin){
       redirect(302, '/login?toast=admin')
    }
-   const employmentChangeForm = await superValidate(zod(employmentFormSchema));
-   const searchForm = await superValidate(zod(searchFormSchema));
+   const employmentChangeForm = await superValidate(valibot(employmentFormSchema));
+   const searchForm = await superValidate(valibot(searchFormSchema));
    const userCount = await prisma.user.count();
    const users = prisma.user.findMany({
       orderBy: [
@@ -30,14 +30,14 @@ export const load = (async (event) => {
 export const actions: Actions = {
    search: async (event) => {
       const formData = await event.request.formData();
-      const searchForm = await superValidate(formData, zod(searchFormSchema));
+      const searchForm = await superValidate(formData, valibot(searchFormSchema));
       return {searchForm}
    },
    archive: async (event) => {
       if(!event.locals.user?.admin){
          redirect(302, '/login?toast=admin')
       }
-      const userDeleteForm = await superValidate(event.request, zod(cuidIdFormSchema));
+      const userDeleteForm = await superValidate(event.request, valibot(cuidIdFormSchema));
       if(!userDeleteForm.valid){
          message(userDeleteForm, 'userDeleteForm not valid');
       }
@@ -48,7 +48,7 @@ export const actions: Actions = {
       }
       await prisma.user.update({
          where:{
-            id: userDeleteForm.data.discountId,
+            id: userDeleteForm.data.cuid2Id,
          },
          data:{
             archive: true,

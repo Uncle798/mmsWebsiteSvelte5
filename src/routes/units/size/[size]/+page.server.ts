@@ -1,7 +1,7 @@
 import { prisma } from '$lib/server/prisma';
 import { superValidate } from 'sveltekit-superforms';
 import type { PageServerLoad } from './$types';
-import { zod } from 'sveltekit-superforms/adapters';
+import { valibot } from 'sveltekit-superforms/adapters';
 import { unitPricingFormSchema } from '$lib/formSchemas/schemas';
 import { redirect } from '@sveltejs/kit';
 import pricingData from '$lib/server/pricingData';
@@ -10,7 +10,7 @@ export const load = (async (event) => {
    if(!event.locals.user?.employee){
       redirect(302, '/login?toast=employee')
    }
-   const unitPricingForm = await superValidate(zod(unitPricingFormSchema));
+   const unitPricingForm = await superValidate(valibot(unitPricingFormSchema));
    const size = event.params.size;
    const sizes:string[] = [];
    pricingData.forEach((datum) =>{

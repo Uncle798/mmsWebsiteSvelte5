@@ -1,7 +1,7 @@
 import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
 import { message, superValidate } from 'sveltekit-superforms';
-import { zod } from 'sveltekit-superforms/adapters';
+import { valibot } from 'sveltekit-superforms/adapters';
 import { createSession, generateEmailVerificationRequest, generateSessionToken, setSessionTokenCookie } from "$lib/server/authUtils";
 import { registerFormSchema } from '$lib/formSchemas/schemas';
 import { ratelimit } from '$lib/server/rateLimit';
@@ -15,7 +15,7 @@ export const load = (async () => {
 export const actions: Actions = {
    customer: async (event) => {
       const formData = await event.request.formData();
-      const registerForm = await superValidate(formData, zod(registerFormSchema));
+      const registerForm = await superValidate(formData, valibot(registerFormSchema));
       if(!registerForm.valid){
          message(registerForm, 'Unable to process');
       }
@@ -60,7 +60,7 @@ export const actions: Actions = {
          redirect(302, '/login?toast=employee')
       }
       const formData = await event.request.formData();
-      const registerForm = await superValidate(formData, zod(registerFormSchema));
+      const registerForm = await superValidate(formData, valibot(registerFormSchema));
 		const redirectTo = event.url.searchParams.get('redirectTo');
       if(!registerForm.valid){
          message(registerForm, 'Unable to process');

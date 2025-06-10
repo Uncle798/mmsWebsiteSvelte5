@@ -3,7 +3,7 @@ import { fail, redirect } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
 import type { RefundRecord } from '@prisma/client';
 import { message, superValidate } from 'sveltekit-superforms';
-import { zod } from 'sveltekit-superforms/adapters';
+import { valibot } from 'sveltekit-superforms/adapters';
 import { paymentRecordDeleteSchema } from '$lib/formSchemas/schemas';
 import { sendPaymentReceipt } from '$lib/server/mailtrap';
 
@@ -96,7 +96,7 @@ export const actions: Actions = {
          redirect(302, '/login?toast=unauthorized')
       }
       const formData = await event.request.formData()
-      const form = await superValidate(formData, zod(paymentRecordDeleteSchema));
+      const form = await superValidate(formData, valibot(paymentRecordDeleteSchema));
       if(!form.valid){
          message(form, 'Not a valid form')
       }

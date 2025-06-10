@@ -1,6 +1,6 @@
 import type { Actions } from './$types';
 import { superValidate, message } from 'sveltekit-superforms';
-import { zod } from 'sveltekit-superforms/adapters';
+import { valibot } from 'sveltekit-superforms/adapters';
 import { ratelimit } from '$lib/server/rateLimit';
 import { prisma } from '$lib/server/prisma';
 import { fail, redirect } from '@sveltejs/kit';
@@ -12,7 +12,7 @@ export const actions: Actions = {
          redirect(302, '/login?toast=employee')
       }
       const formData = await event.request.formData();
-      const unitPricingForm = await superValidate(formData, zod(unitPricingFormSchema));
+      const unitPricingForm = await superValidate(formData, valibot(unitPricingFormSchema));
       
       if(!unitPricingForm.valid){
          return fail(400, {unitPricingForm});

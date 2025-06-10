@@ -1,7 +1,7 @@
 import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { superValidate } from 'sveltekit-superforms';
-import { zod } from 'sveltekit-superforms/adapters';
+import { valibot } from 'sveltekit-superforms/adapters';
 import { dateSearchFormSchema, searchFormSchema } from '$lib/formSchemas/schemas';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc'
@@ -14,8 +14,8 @@ export const load = (async (event) => {
       redirect(302, '/login?toast=employee')
    }
    const year = event.params.year
-   const searchForm = await superValidate(zod(searchFormSchema));
-   const dateSearchForm = await superValidate(zod(dateSearchFormSchema));
+   const searchForm = await superValidate(valibot(searchFormSchema));
+   const dateSearchForm = await superValidate(valibot(dateSearchFormSchema));
    const startDate = dayjs.utc(year).startOf('year').toDate();
    const endDate = dayjs.utc(year).endOf('year').toDate();
    const refunds = prisma.refundRecord.findMany({

@@ -2,7 +2,7 @@ import  {prisma} from "$lib/server/prisma";
 import type { Actions, PageServerLoad } from './$types';
 import {superValidate, message } from 'sveltekit-superforms';
 import { addressFormSchema, leaseDiscountFormSchema, nameFormSchema, newLeaseSchema } from "$lib/formSchemas/schemas";
-import { valibot, zod } from 'sveltekit-superforms/adapters';
+import { valibot } from 'sveltekit-superforms/adapters';
 import { redirect } from "@sveltejs/kit";
 import { ratelimit } from "$lib/server/rateLimit";
 import { fail } from "@sveltejs/kit";

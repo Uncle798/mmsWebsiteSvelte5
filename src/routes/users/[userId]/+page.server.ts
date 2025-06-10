@@ -2,14 +2,14 @@ import { error, redirect } from "@sveltejs/kit";
 import type { PageServerLoad, } from "./$types";
 import { prisma } from "$lib/server/prisma";;
 import { superValidate } from "sveltekit-superforms";
-import { zod } from "sveltekit-superforms/adapters";
+import { valibot } from "sveltekit-superforms/adapters";
 import { addressFormSchema, leaseEndFormSchema } from "$lib/formSchemas/schemas";
 export const load: PageServerLoad = async (event) => {
    if(!event.locals.user?.employee){
       redirect(302, '/login?toast=employee')
    }
-   const addressForm = await superValidate(zod(addressFormSchema));
-   const leaseEndForm = await superValidate(zod(leaseEndFormSchema))
+   const addressForm = await superValidate(valibot(addressFormSchema));
+   const leaseEndForm = await superValidate(valibot(leaseEndFormSchema))
    const userId = event.params.userId;
 
    const dbUser = await prisma.user.findUnique({

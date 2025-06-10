@@ -1,19 +1,19 @@
-import { z } from "zod"
+
 import * as v from 'valibot'
 import { PaymentType } from "@prisma/client";
 
-export const employmentFormSchema = z.object({
-   employee: z.boolean().nullable(),
-   admin: z.boolean().nullable(),
-   userId: z.string().cuid2(),
+export const employmentFormSchema = v.object({
+   employee: v.nullable(v.boolean()),
+   admin: v.nullable(v.boolean()),
+   userId: v.pipe(v.string(), v.cuid2()),
 });
 export type EmploymentFormSchema = typeof employmentFormSchema;
 
-export const unitPricingFormSchema = z.object({
-   size: z.string().min(5).max(7).trim(),
-   price: z.number().int().positive(),
-   changeDeposit: z.boolean(),
-   lowerPrice: z.boolean(),
+export const unitPricingFormSchema = v.object({
+   size: v.pipe(v.string(), v.minLength(5), v.maxLength(8)),
+   price: v.pipe(v.number(), v.integer(), v.minValue(1)),
+   changeDeposit: v.boolean(),
+   lowerPrice: v.boolean(),
 });
 export type UnitPricingFormSchema = typeof unitPricingFormSchema;
 
@@ -50,28 +50,33 @@ export const paymentRecordSchema = v.object({
 })
 export type PaymentRecordSchema = typeof paymentRecordSchema
 
-export const loginSchema = z.object({
-   email: z.string().email().min(3).max(255).trim(),
+export const loginSchema = v.object({
+   email: v.pipe(v.string(), v.email()),
 });
 export type LoginSchema = typeof loginSchema;
 
-export const emailFormSchema = z.object({
-   email: z.string().min(3).max(255).email().trim().toLowerCase(),
-   emailConfirm: z.string().min(3).max(255).email().trim().toLowerCase(),
-}).superRefine(({ email, emailConfirm}, context) =>{
-   if(email !== emailConfirm) {
-      context.addIssue({
-         code: 'custom',
-         message: 'Emails must match', 
-         path: ['email']
-      })
-      context.addIssue({
-         code: 'custom',
-         message: 'Emails must match', 
-         path: ['emailConfirm']
-      })
-   }
-});
+export const emailFormSchema = v.pipe(
+   v.object({
+      email: v.pipe(v.string(), v.email()),
+      confirmEmail: v.pipe(v.string(), v.email()),
+   }),
+   v.rawCheck(({dataset, addIssue}) =>{
+      if(dataset.typed){
+         if(dataset.value.email !== dataset.value.confirmEmail){
+            addIssue({
+               message: 'Emails must match',
+               path: [{
+                  type: 'object',
+                  origin: 'value',
+                  input: dataset.value,
+                  key: 'email',
+                  value: dataset.value.email
+               }]
+            })
+         }
+      }
+   })
+)
 export type EmailFormSchema = typeof emailFormSchema;
 
 export const addressFormSchema = v.object({
@@ -94,35 +99,40 @@ export const nameFormSchema = v.object({
 });
 export type NameFormSchema = typeof nameFormSchema;
 
-export const registerFormSchema = z.object({
-   familyName: z.string().min(1).max(255).trim(),
-   givenName: z.string().min(1).max(255).trim(),
-   organizationName: z.string().min(1).max(255).trim().optional(),
-   email: z.string().min(5).max(255),
-   emailConfirm: z.string().min(5).max(255),
-}).superRefine(({email, emailConfirm}, context)=>{
-   if(emailConfirm !== email){
-      context.addIssue({
-         code: 'custom',
-         message: 'Email must match email confirm', 
-         path: ['email']
-      })
-      context.addIssue({
-         code: 'custom',
-         message: 'Email must match email confirm', 
-         path: ['emailConfirm']
-      })
-   }
-});
+export const registerFormSchema = v.pipe(
+   v.object({
+      familyName: v.pipe(v.string(), v.minLength(1), v.maxLength(255)),
+      givenName: v.pipe(v.string(), v.minLength(1), v.maxLength(255)),
+      organizationName: v.optional(v.pipe(v.string(), v.minLength(1), v.maxLength(255))),
+      email: v.pipe(v.string(), v.email()),
+      emailConfirm: v.pipe(v.string(), v.email())
+   }),
+   v.rawCheck(({dataset, addIssue}) => {
+      if(dataset.typed){
+         if(dataset.value.email !== dataset.value.emailConfirm){
+            addIssue({
+               message: 'Emails must match',
+               path: [{
+                  type: 'object',
+                  origin: 'value',
+                  input: dataset.value,
+                  key: 'email', 
+                  value: dataset.value.email
+               }]
+            })
+         }
+      }
+   })
+)
 export type RegisterFormSchema = typeof registerFormSchema;
 
-export const emailVerificationFormSchema = z.object({
-   code: z.string().min(8).max(8)
+export const emailVerificationFormSchema = v.object({
+   code: v.pipe(v.string(), v.minLength(8), v.maxLength(8))
 });
 export type EmailVerificationFormSchema = typeof emailVerificationFormSchema;
 
-export const searchFormSchema = z.object({
-   search: z.string().min(1).max(255),
+export const searchFormSchema = v.object({
+   search: v.pipe(v.string(), v.minLength(1), v.maxLength(255)),
 });
 export type SearchFormSchema = typeof searchFormSchema;
 

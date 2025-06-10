@@ -2,7 +2,7 @@ import { prisma } from '$lib/server/prisma';
 import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
 import { superValidate,  } from 'sveltekit-superforms';
-import { zod } from 'sveltekit-superforms/adapters';
+import { valibot } from 'sveltekit-superforms/adapters';
 import { addressFormSchema, cuidIdFormSchema, emailFormSchema, emailVerificationFormSchema, leaseEndFormSchema, nameFormSchema, } from '$lib/formSchemas/schemas';
 import dayjs from 'dayjs';
 import { stripe } from '$lib/server/stripe';
@@ -37,12 +37,12 @@ export const load:PageServerLoad = (async (event) => {
          customerId: event.locals.user.id
       }
    })
-   const addressForm = await superValidate(zod(addressFormSchema));
-   const nameForm = await superValidate(zod(nameFormSchema));
-   const emailForm = await superValidate(zod(emailFormSchema));
-   const emailVerificationForm = await superValidate(zod(emailVerificationFormSchema));
-   const leaseEndForm = await superValidate(zod(leaseEndFormSchema));
-   const autoPayForm = await superValidate(zod(cuidIdFormSchema));
+   const addressForm = await superValidate(valibot(addressFormSchema));
+   const nameForm = await superValidate(valibot(nameFormSchema));
+   const emailForm = await superValidate(valibot(emailFormSchema));
+   const emailVerificationForm = await superValidate(valibot(emailVerificationFormSchema));
+   const leaseEndForm = await superValidate(valibot(leaseEndFormSchema));
+   const autoPayForm = await superValidate(valibot(cuidIdFormSchema));
    return { 
       addressForm, 
       nameForm, 
@@ -60,7 +60,7 @@ export const load:PageServerLoad = (async (event) => {
 export const actions: Actions = {
    default: async (event) => {
       const formData = await event.request.formData();
-      const form = await superValidate(formData, zod(cuidIdFormSchema));
+      const form = await superValidate(formData, valibot(cuidIdFormSchema));
       if(!form.valid){
          return {form}
       }

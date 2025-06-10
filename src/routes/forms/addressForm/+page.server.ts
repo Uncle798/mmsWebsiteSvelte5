@@ -1,7 +1,7 @@
 import { superValidate, message } from 'sveltekit-superforms';
 import { ratelimit } from "$lib/server/rateLimit";
 import type { PageServerLoad, Actions } from './$types';
-import { valibot, zod } from 'sveltekit-superforms/adapters';
+import { valibot } from 'sveltekit-superforms/adapters';
 import { addressFormSchema } from '$lib/formSchemas/schemas';
 import { prisma } from '$lib/server/prisma';
 import { fail, redirect } from '@sveltejs/kit';

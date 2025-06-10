@@ -1,7 +1,7 @@
 
 import { redirect } from '@sveltejs/kit';
 import { fail, message, superValidate} from 'sveltekit-superforms';
-import { zod } from 'sveltekit-superforms/adapters';
+import { valibot } from 'sveltekit-superforms/adapters';
 import { newLeaseSchema, registerFormSchema, addressFormSchema, leaseDiscountFormSchema  } from '$lib/formSchemas/schemas'
 import type { PageServerLoad, Actions } from './$types';
 import { prisma } from '$lib/server/prisma';
@@ -22,10 +22,10 @@ export const load = (async (event) => {
    if(!event.locals.user?.employee){
       redirect(302, '/login?toast=employee')
    } 
-   const leaseForm = await superValidate(zod(newLeaseSchema));
-   const registerForm = await superValidate(zod(registerFormSchema));
-   const addressForm = await superValidate(zod(addressFormSchema));
-   const leaseDiscountForm = await superValidate(zod(leaseDiscountFormSchema));
+   const leaseForm = await superValidate(valibot(newLeaseSchema));
+   const registerForm = await superValidate(valibot(registerFormSchema));
+   const addressForm = await superValidate(valibot(addressFormSchema));
+   const leaseDiscountForm = await superValidate(valibot(leaseDiscountFormSchema));
    const discountId = event.url.searchParams.get('discountId');
    const redirectTo = event.url.searchParams.get('redirectTo');
    const userId = event.url.searchParams.get('userId');
@@ -91,7 +91,7 @@ export const actions: Actions = {
       if(!event.locals.user?.employee){
          redirect(302, '/login?toast=employee')
       }
-      const leaseForm = await superValidate(event.request, zod(newLeaseSchema));
+      const leaseForm = await superValidate(event.request, valibot(newLeaseSchema));
       if(!leaseForm.valid){
          message(leaseForm, 'Not valid');
       }

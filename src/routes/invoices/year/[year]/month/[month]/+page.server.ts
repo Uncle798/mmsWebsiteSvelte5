@@ -4,7 +4,7 @@ import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc'
 import { prisma } from '$lib/server/prisma';
 import { superValidate } from 'sveltekit-superforms';
-import { zod } from 'sveltekit-superforms/adapters';
+import { valibot } from 'sveltekit-superforms/adapters';
 import { dateSearchFormSchema, searchFormSchema } from '$lib/formSchemas/schemas';
 
 dayjs.extend(utc)
@@ -85,7 +85,7 @@ export const load = (async (event) => {
          ]
       }
    })
-   const searchForm = await superValidate(zod(searchFormSchema));
-   const dateSearchForm = await superValidate(zod(dateSearchFormSchema));
+   const searchForm = await superValidate(valibot(searchFormSchema));
+   const dateSearchForm = await superValidate(valibot(dateSearchFormSchema));
    return { invoices, customers, addresses, invoiceCount, searchForm, dateSearchForm };
 }) satisfies PageServerLoad;

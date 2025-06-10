@@ -1,6 +1,6 @@
 import { superValidate, message, fail } from 'sveltekit-superforms';
 import type { Actions } from './$types';
-import { valibot, zod } from 'sveltekit-superforms/adapters';
+import { valibot } from 'sveltekit-superforms/adapters';
 import { newDiscountFormSchema } from '$lib/formSchemas/schemas';
 import { redirect } from '@sveltejs/kit';
 import { ratelimit } from '$lib/server/rateLimit';

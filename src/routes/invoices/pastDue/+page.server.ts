@@ -2,7 +2,7 @@ import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { prisma } from '$lib/server/prisma';
 import { superValidate } from 'sveltekit-superforms';
-import { zod } from 'sveltekit-superforms/adapters';
+import { valibot } from 'sveltekit-superforms/adapters';
 import { dateSearchFormSchema, searchFormSchema } from '$lib/formSchemas/schemas';
 import dayjs from 'dayjs';
 
@@ -10,8 +10,8 @@ export const load = (async (event) => {
    if(!event.locals.user?.employee){
       redirect(302, '/login?toast=employee')
    }
-   const searchForm = await superValidate(zod(searchFormSchema));
-   const dateSearchForm = await superValidate(zod(dateSearchFormSchema));
+   const searchForm = await superValidate(valibot(searchFormSchema));
+   const dateSearchForm = await superValidate(valibot(dateSearchFormSchema));
    const invoiceCount = await prisma.invoice.count({
       where: {
          AND: [

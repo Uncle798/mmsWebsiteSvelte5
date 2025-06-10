@@ -5,7 +5,7 @@ import utc from 'dayjs/plugin/utc'
 import { prisma } from '$lib/server/prisma';
 import { arrayOfMonths } from '$lib/server/utils';
 import { superValidate } from 'sveltekit-superforms';
-import { zod } from 'sveltekit-superforms/adapters';
+import { valibot } from 'sveltekit-superforms/adapters';
 import { dateSearchFormSchema, searchFormSchema } from '$lib/formSchemas/schemas';
 
 dayjs.extend(utc)
@@ -14,8 +14,8 @@ export const load = (async (event) => {
         redirect(302, '/login?toast=employee')
     }
     const year = event.params.year;
-    const searchForm = await superValidate(zod(searchFormSchema));
-    const dateSearchForm = await superValidate(zod(dateSearchFormSchema));
+    const searchForm = await superValidate(valibot(searchFormSchema));
+    const dateSearchForm = await superValidate(valibot(dateSearchFormSchema));
     const startDate = dayjs.utc(year).startOf('year').toDate();
     const endDate = dayjs.utc(year).endOf('year').toDate();
     const invoices = prisma.invoice.findMany({

@@ -2,7 +2,7 @@ import { prisma } from '$lib/server/prisma';
 import { superValidate } from 'sveltekit-superforms';
 import type { PageServerLoad } from './$types';
 import { fail, redirect } from '@sveltejs/kit';
-import { zod } from 'sveltekit-superforms/adapters';
+import { valibot } from 'sveltekit-superforms/adapters';
 import { dateSearchFormSchema, searchFormSchema } from '$lib/formSchemas/schemas';
 import { arrayOfYears } from '$lib/server/utils';
 
@@ -10,8 +10,8 @@ export const load = (async (event) => {
     // if(!event.locals.user?.employee){
     //     redirect(302, '/login?toast=employee&redirectTo=invoices')
     //  }
-    const searchForm = await superValidate(zod(searchFormSchema));
-    const dateSearchForm = await superValidate(zod(dateSearchFormSchema));
+    const searchForm = await superValidate(valibot(searchFormSchema));
+    const dateSearchForm = await superValidate(valibot(dateSearchFormSchema));
     const invoiceCount = await prisma.invoice.count();
     const firstInvoice = await prisma.invoice.findFirst({
         orderBy: {

@@ -3,7 +3,7 @@ import { fail, redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { prisma } from '$lib/server/prisma';
 import { superValidate } from 'sveltekit-superforms';
-import { zod } from 'sveltekit-superforms/adapters';
+import { valibot } from 'sveltekit-superforms/adapters';
 import type { Address, User } from '@prisma/client';
 import { leaseEndFormSchema, unitNotesFormSchema, unitPricingFormSchema } from '$lib/formSchemas/schemas';
 import dayjs from 'dayjs';
@@ -65,8 +65,8 @@ export const load = (async (event) => {
          addresses.push(address)
       }
    }
-   const unitNotesForm = await superValidate(zod(unitNotesFormSchema));
-   const unitPricingForm = await superValidate(zod(unitPricingFormSchema));
-   const leaseEndForm = await superValidate(zod(leaseEndFormSchema));
+   const unitNotesForm = await superValidate(valibot(unitNotesFormSchema));
+   const unitPricingForm = await superValidate(valibot(unitPricingFormSchema));
+   const leaseEndForm = await superValidate(valibot(leaseEndFormSchema));
    return { unit, leases, customers, addresses, unitNotesForm, unitPricingForm, leaseEndForm, totalRevenue };
 }) satisfies PageServerLoad;

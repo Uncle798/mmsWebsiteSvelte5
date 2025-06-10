@@ -1,6 +1,6 @@
 import { superValidate } from 'sveltekit-superforms';
 import type { PageServerLoad } from './$types';
-import { valibot, zod } from 'sveltekit-superforms/adapters';
+import { valibot } from 'sveltekit-superforms/adapters';
 import { newInvoiceFormSchema, registerFormSchema } from '$lib/formSchemas/schemas';
 import { redirect } from '@sveltejs/kit';
 import { prisma } from '$lib/server/prisma';
@@ -10,7 +10,7 @@ export const load = (async (event) => {
         redirect(302, '/login?toast=employee')
      }
     const newInvoiceForm = await superValidate(valibot(newInvoiceFormSchema));
-    const registerForm = await superValidate(zod(registerFormSchema));
+    const registerForm = await superValidate(valibot(registerFormSchema));
     const customers = await prisma.user.findMany({
         orderBy: {
             familyName: 'asc'
