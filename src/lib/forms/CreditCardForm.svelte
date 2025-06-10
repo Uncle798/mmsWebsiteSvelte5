@@ -50,8 +50,7 @@
             }
             const callback = {
                //@ts-ignore
-               onError: function (error) { 
-                  console.error(error)
+               onError: function (error) {
                   if(errorDisplay){
                      errorDisplay.innerHTML = error
                   }
@@ -60,12 +59,12 @@
                }, 
                //@ts-ignore
                onCancelled: function (response) { 
-                  console.log(response)
+                  processing = false
+                  $timeout = false
                
                },
                //@ts-ignore
-               onDeclined: function (response) { 
-                  console.log(response);
+               onDeclined: function (response) {
                   if(errorDisplay){
                      errorDisplay.innerHTML = response.errorMessage
                   }
@@ -177,7 +176,7 @@
    </div>  
    {#if !processing}
       <button class="btn rounded-lg preset-filled-primary-50-950 my-1 sm:my-2">{buttonText}</button>
-   {:else}
+   {:else if processing}
       Processing...
       {#if $delayed && !$timeout}
          <div in:fade={{duration:600}}>
@@ -189,6 +188,6 @@
             <Progress value={null} width="size-8" classes='mt-2 ml-2' />
          </div>
       {/if}
-      <div bind:this={errorDisplay}></div>
    {/if}
+   <div bind:this={errorDisplay}></div>
 </form>
