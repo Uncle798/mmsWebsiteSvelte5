@@ -10,22 +10,22 @@ export const load = (async (event) => {
             invoiceNum: parseInt(invoiceNum, 10),
          }
       });
-      const paymentRecord = await prisma.paymentRecord.findFirst({
+      const paymentRecordPromise = prisma.paymentRecord.findFirst({
          where: {
             invoiceNum: invoice?.invoiceNum
          }
       });
-      const customer = await prisma.user.findFirst({
+      const customerPromise = prisma.user.findFirst({
          where: {
             id: invoice!.customerId!
          }
       })
-      const address = await prisma.address.findFirst({
+      const addressPromise = prisma.address.findFirst({
          where: {
             userId: invoice!.customerId!
          }
       });
-      return { paymentRecord, invoice, customer, address }
+      return { paymentRecordPromise, invoice, customerPromise, addressPromise }
    }
    if(customerId){
       const customer = await prisma.user.findUnique({

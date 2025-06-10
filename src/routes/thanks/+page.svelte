@@ -9,16 +9,28 @@
 
 <Header title="Thanks!" />
 <div class="flex flex-col sm:flex-row border-2 border-primary-50-950 m-1 sm:m-2 rounded-lg mt-10 sm:mt-10">
-   <span class="m-2">Thanks for your business!</span>
-   {#if data.paymentRecord}
-      <PaymentRecordCustomer paymentRecord={data.paymentRecord} classes='px-2 sm:w-1/2'/>
-      {#if data.customer}
-         <div class="flex flex-col px-2 pt-2 sm:w-1/2">
-            <UserCustomer user={data.customer} />
-            {#if data.address}
-               <AddressCustomer address={data.address} />
-            {/if}
-      </div>
-      {/if}
-   {/if}
+   {#await data.customerPromise}
+      <span class="m-2">Thanks for your business!</span>
+   {:then customer} 
+      {#await data.paymentRecordPromise}
+         <span class="m-2">Thanks for your business!</span>
+         {:then paymentRecord}
+         {#await data.addressPromise}
+            <span class="m-2">Thanks for your business!</span>
+            {:then address} 
+               <span class="m-2 w-1/3">Thanks for your business!</span> 
+               {#if paymentRecord}
+                  <PaymentRecordCustomer {paymentRecord} />
+               {/if}
+               <div class="m-2 w-1/3">
+                  {#if customer}
+                     <UserCustomer user={customer} />
+                  {/if}
+                  {#if address}
+                     <AddressCustomer {address} />
+                  {/if}
+               </div>
+         {/await}
+      {/await}
+   {/await}
 </div>
