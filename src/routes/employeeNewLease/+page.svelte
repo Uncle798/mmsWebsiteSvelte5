@@ -13,6 +13,7 @@
    import Checkbox from '$lib/formComponents/Checkbox.svelte';
    import LeaseDiscountForm from '$lib/forms/LeaseDiscountForm.svelte';
    import RadioButton from '$lib/formComponents/RadioButton.svelte';
+	import { PaymentType } from '@prisma/client';
 
    let { data }: { data: PageData } = $props();
    let addressModalOpen = $state(false)
@@ -43,7 +44,9 @@
    {#if !data.customer}
       <div class="m-2">
          <a href="/employeeNewCustomer" class="btn rounded-lg preset-filled-primary-50-950">Create new customer</a>
-         Renting unit {data.unitNum.replace(/^0+/gm,'').replace(/x0/gm, 'x')}
+         <h1 class="m-1 h4">
+            Renting unit {data.unitNum.replace(/^0+/gm,'').replace(/x0/gm, 'x')}
+         </h1>
          <form action="/employeeNewLease?/selectCustomer&unitNum={data.unitNum}" method="POST" >
             <Combobox
             data={customerComboBoxData}
@@ -114,30 +117,16 @@
          <div class="flex flex-col w-80">
             {#if data.unit && data.address}
             <div class="flex bg-primary-50 dark:bg-primary-950 mt-2 rounded-lg">
-               <RadioButton
-                  value='STRIPE'
-                  errors={$errors.paymentType}
-                  constraints={$constraints.paymentType}
-                  groupName='paymentType'
-                  id='STRIPE'
-                  label="Stripe"
-               />
-               <RadioButton
-                  value='CASH'
-                  errors={$errors.paymentType}
-                  constraints={$constraints.paymentType}
-                  groupName='paymentType'
-                  id='CASH'
-                  label='Cash'
-               />
-               <RadioButton
-                  value='CHECK'
-                  errors={$errors.paymentType}
-                  constraints={$constraints.paymentType}
-                  groupName="paymentType"
-                  id='CHECK'
-                  label='Check'
-               />
+               {#each Object.values(PaymentType) as paymentType}
+                  <RadioButton
+                     value={paymentType}
+                     errors={$errors.paymentType}
+                     constraints={$constraints.paymentType}
+                     groupName='paymentType'
+                     id={paymentType}
+                     label={paymentType.substring(0,1) + paymentType.substring(1).toLowerCase()}
+                  />
+               {/each}
             </div>
             <FormSubmitWithProgress 
                delayed={$delayed} 
