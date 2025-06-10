@@ -2,7 +2,7 @@ import { prisma } from '$lib/server/prisma';
 import { CONVERGE_ACCOUNT_ID, CONVERGE_SSL_PIN, CONVERGE_USER_ID } from '$env/static/private';
 import type { RequestHandler } from './$types';
 
-export const GET: RequestHandler = async (event) => {
+export const POST: RequestHandler = async (event) => {
    const body = await event.request.json();
    const { leaseId } = body;
    if(leaseId){
@@ -28,6 +28,7 @@ export const GET: RequestHandler = async (event) => {
          const string = encodeURIComponent(key) + '=' + encodeURIComponent(details[key as keyof typeof details])
          return string;
       }).join('&')
+      console.log(formBody)
       const response = await fetch('https://api.demo.convergepay.com/VirtualMerchantDemo/processxml.do', {
          method: 'POST',
          headers: {
@@ -35,7 +36,7 @@ export const GET: RequestHandler = async (event) => {
          }, 
          body: formBody
       })
-      const responseBody = response.text();
+      const responseBody = await response.text();
       console.log(responseBody);
       return new Response(JSON.stringify(responseBody), {status: 200})
    }
