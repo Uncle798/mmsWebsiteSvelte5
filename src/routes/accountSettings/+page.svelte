@@ -26,6 +26,7 @@
     let leaseEndModalOpen = $state(false);
     let currentLeaseId = $state('');
     let autoPaySpinner = $state(false);
+    let autoPayCancelSpinner = $state(false);
     function setCurrentLeaseId(leaseId:string){
         currentLeaseId = leaseId;
         leaseEndModalOpen = true;
@@ -35,6 +36,11 @@
         autoPaySpinner = true;
         submit()
     } 
+    function autoPayCancel(leaseId:string){
+        currentLeaseId = leaseId;
+        autoPayCancelSpinner = true;
+        submit()
+    }
     let { form, enhance, submit } = superForm(data.autoPayForm)
 </script>
 <Header title='Settings for {data.user?.givenName}' />
@@ -138,7 +144,7 @@
                     {#if !lease.leaseEnded}
                         <button class="btn preset-filled-primary-50-950 rounded-lg m-1 sm:m-2" onclick={()=> setCurrentLeaseId(lease.leaseId)}>End Lease</button>
                         {#if !lease.subscriptionId}
-                            <form method="POST" use:enhance>
+                            <form method="POST" action="?/autoPaySignUp" use:enhance>
                                 <input type="hidden" name="cuid2Id" id="cuid2Id" value={lease.leaseId}>
                                 <div class="flex">
                                     <button type="button" class='btn preset-filled-primary-50-950 rounded-lg m-1 sm:m-2' onclick={()=>autoPaySignUp(lease.leaseId)}>Sign up for auto pay</button>
@@ -149,6 +155,10 @@
                             </form>
                         {:else}
                             <span class="m-2">Thanks for auto-paying!</span>
+                            <form action="?/autoPayCancel" use:enhance method="POST">
+                                <input type="hidden" name="cuid2Id" id="cuid2Id" value={lease.leaseId} />
+                                <button class="btn preset-filled-primary-50-950 rounded-lg m-1 sm:m-2" onclick={()=>autoPayCancel(lease.leaseId)}>Cancel Auto-pay</button>
+                            </form>
                         {/if}
                     {/if}
                 </div>

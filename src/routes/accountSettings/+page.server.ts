@@ -58,7 +58,7 @@ export const load:PageServerLoad = (async (event) => {
 })
 
 export const actions: Actions = {
-   default: async (event) => {
+   autoPaySignUp: async (event) => {
       const formData = await event.request.formData();
       const form = await superValidate(formData, valibot(cuidIdFormSchema));
       if(!form.valid){
@@ -96,6 +96,25 @@ export const actions: Actions = {
             }
          })
          redirect(302, `/makePayment?invoiceNum=${autoPayInvoice.invoiceNum}&subscription=true`)
+      }
+      return { form }
+   },
+   autoPayCancel: async (event) =>{
+      const formData = await event.request.formData();
+      const form = await superValidate(formData, valibot(cuidIdFormSchema));
+      if(!form.valid){
+         return { form };
+      }
+      const lease = await prisma.lease.findUnique({
+         where: {
+            leaseId: form.data.cuid2Id
+         }
+      });
+      if(lease){
+         const response = event.fetch('/api/elavon/cancelRecurring', {
+            method: 'POST', 
+            body: JSON.stringify({leaseId:form.data.cuid2Id})
+         })
       }
    }
 };
