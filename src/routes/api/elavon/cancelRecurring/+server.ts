@@ -1,5 +1,6 @@
 import { prisma } from '$lib/server/prisma';
 import { CONVERGE_ACCOUNT_ID, CONVERGE_SSL_PIN, CONVERGE_USER_ID } from '$env/static/private';
+import * as xmlJs from 'xml-js'
 import type { RequestHandler } from './$types';
 
 export const POST: RequestHandler = async (event) => {
@@ -24,17 +25,17 @@ export const POST: RequestHandler = async (event) => {
          ssl_pin: CONVERGE_SSL_PIN,
          ssl_recurring_id: lease.subscriptionId
       }
-      const formBody = Object.keys(details).map(key => {
-         const string = encodeURIComponent(key) + '=' + encodeURIComponent(details[key as keyof typeof details])
-         return string;
-      }).join('&')
-      console.log(formBody)
+      const xml = '<?xml version="1.0" encoding="UTF-8"?>\n' +'<txn>\n'+ xmlJs.js2xml(details, {compact: true, ignoreComment: true, spaces: 4, ignoreDoctype: false}) + '\n</txn>';
+      
+      console.log(xml);
+      const uri = encodeURIComponent(xml);
+      console.log(uri)
       const response = await fetch('https://api.demo.convergepay.com/VirtualMerchantDemo/processxml.do', {
          method: 'POST',
          headers: {
             'Content-Type': 'application/x-www-form-urlencoded'
          }, 
-         body: formBody
+         body:uri
       })
       const responseBody = await response.text();
       console.log(responseBody);
