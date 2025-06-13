@@ -20,34 +20,37 @@
       currentOldPrice = oldPrice;
       unitPricingModalOpen = true
    }
-   let leasedAmount = $state(0);
-   const availableUnits:Unit[]=$state([]);
-   let lostRevenue = $state(0);
-   let numUnits = $state(0)
-   const unitsWrapper = new Promise<Unit[]>(async res => {
-      const units = await data.units;
-      const leases = await data.leases;
-      units.forEach((unit) => {
+   const availableUnits = $derived((units:Unit[], leases:Lease[]) =>{
+      const availableUnits:Unit[] =[];
+      for(const unit of units){
          const lease = leases.find((lease) => lease.unitNum === unit.num)
          if(!lease){
             availableUnits.push(unit)
          }
-      });
-      leases.forEach((lease) =>{
-         leasedAmount += lease.price
-      })
-      numUnits = units.length
-      availableUnits.forEach((unit) => {
-         lostRevenue += unit.advertisedPrice
-      })
-      currentOldPrice = units[0].advertisedPrice
-      res(units)
+      }
+      return availableUnits;
+   });
+   const currentRevenue = $derived((units:Unit[]) =>{
+      let revenue = 0;
+      for(const unit of units){
+         if(unit.leasedPrice){
+            revenue += unit.leasedPrice
+         }
+      }
+      return revenue;
+   });
+   const lostRevenue = $derived((units:Unit[]) => {
+      let revenue = 0;
+      for(const unit of units){
+         revenue += unit.advertisedPrice
+      }
+      return revenue;
    })
    interface ComboboxData {
       label: string;
       value: string;
    }
-   const comboboxData:ComboboxData[] = [];
+   const comboboxData:ComboboxData[] = [{label:'All', value:'all'}];
    for(const size of data.sizes){
       comboboxData.push({
          label: size.replace(/^0+/gm, '').replace(/x0/gm, 'x'),
@@ -74,6 +77,11 @@
       label='Select Size'
       value={selectedSize}
       onValueChange={(event) =>{
+         if(event.value[0] === 'all'){
+            if(browser){
+               goto('/units')
+            }
+         }
          if(browser){
             goto(`/units/size/${event.value[0]}`)
          }
@@ -83,40 +91,38 @@
    <button class="btn preset-filled-primary-50-950 rounded-lg mt-5" onclick={()=>openModal(currentOldPrice)}>Change All {data.size.replace(/^0+/gm, '').replace(/x0/gm,'x')} prices</button>
 </div>
 
-{#await unitsWrapper}
-<div class="relative m-1 sm:m-2 mt-4">
+{#await data.units}
+<div class="relative m-1 sm:m-2 mt-10">
    Loading units
 </div>
 {:then units}
-   {#if units.length > 0 }
-      <div class="flex fixed top-8 bg-tertiary-50-950 rounded-b-lg w-full">
-         <Revenue amount={leasedAmount} label='Current revenue from {data.size.replace(/^0+/gm, '').replace(/x0/gm,'x')} units' classes='ml-16 sm:ml-32 sm:w-auto flex flex-col md:flex-row w-1/3'/>
-         <div class="flex flex-col sm:flex-row">
-            <span class="mx-1 sm:mx-2 ">Available: {availableUnits.length} of {numUnits} ({Math.round((availableUnits.length*100)/numUnits)}%)</span>
-            <span class="mx-1 sm:mx-2 ">Open revenue: {currencyFormatter.format(lostRevenue)}</span>
-         </div>
-      </div>
-   {:else}
-      <div class="relative top-16 mx-2">
-         Unit size not found
-      </div>
-   {/if}
-   {#await data.leases}
-      <div class="relative m-1 sm:m-2 mt-4">
-         Loading leases
-      </div>
-   {:then leases} 
+{#await data.leases}
+<div class="relative m-1 sm:m-2 mt-4">
+   Loading leases
+</div>
+{:then leases} 
+{#if units.length > 0 }
+   <div class="flex fixed top-9 bg-tertiary-50-950 rounded-b-lg w-screen justify-between">
+      <Revenue amount={currentRevenue(units)} label='Current revenue from {data.size.replace(/^0+/gm, '').replace(/x0/gm,'x')} units' classes='w-1/3'/>
+         <span class="mx-1 sm:mx-2 w-1/3">Available: {availableUnits(units, leases).length} of {units.length} ({Math.round((availableUnits(units, leases).length*100)/units.length)}%)</span>
+         <span class="mx-1 sm:mx-2 w-1/3">Open revenue: {currencyFormatter.format(lostRevenue(availableUnits(units, leases)))}</span>
+   </div>
+{:else}
+   <div class="top-16 mx-2">
+      Unit size not found
+   </div>
+{/if}
    {#await data.customers}
-      <div class="relative m-1 sm:m-2 mt-4">
+      <div class="m-1 sm:m-2 mt-4">
          Loading customers
       </div>
    {:then customers} 
       {#await data.addresses}
-         <div class="relative m-1 sm:m-2 mt-4">
+         <div class="m-1 sm:m-2 mt-4">
             Loading addresses
          </div>
          {:then addresses}
-            <div class="grid grid-cols-1 gap-3 m-1 sm:m-2 sm:mt-30">
+            <div class="grid grid-cols-1 gap-3 m-1 sm:m-2 sm:mt-36">
                {#each units as unit}
                {@const lease = leases.find((lease) => lease.unitNum === unit.num)}
                {@const customer = customers.find((customer)=> customer.id === lease?.customerId)}

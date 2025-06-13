@@ -21,14 +21,16 @@
    }
    let selectedSize = $state(['']);
 </script>
-<Combobox
-   data={comboboxData}
-   label='Select Size'
-   value={selectedSize}
-   classes='mx-2'
-   onValueChange={(event) =>{
-      if(browser){
-         goto(`/units/size/${event.value[0]}`)
-      }
-   }}
-/>
+<div class="mt-10 mx-2">
+   <Combobox
+      data={comboboxData}
+      label='Select Size'
+      value={selectedSize}
+      onValueChange={(event) =>{
+         if(browser){
+            goto(`/units/size/${event.value[0]}`)
+         }
+      }}
+      openOnClick={true}
+   />
+</div>

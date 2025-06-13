@@ -10,6 +10,7 @@
 	import Revenue from '$lib/displayComponents/Revenue.svelte';
 	import UserEmployee from '$lib/displayComponents/UserEmployee.svelte';
 	import AddressEmployee from '$lib/displayComponents/AddressEmployee.svelte';
+   import { PanelTopClose, SearchIcon } from 'lucide-svelte';
     interface Props {
         data: PageData;
     }
@@ -48,7 +49,6 @@
     let currentUsers = $derived((users:User[]) => users.filter((user) => {
         return user.givenName?.toLowerCase().includes(nameSearch.toLowerCase()) || user.familyName?.toLowerCase().includes(nameSearch.toLowerCase());
     }))
-
     const searchByUser = $derived((paymentRecords:PaymentRecord[]) => {
         const users = currentUsers(customers);
         const records:PaymentRecord[] = []
@@ -61,7 +61,8 @@
             })
         })
         return records
-    }) 
+    })
+   let searchDrawerOpen = $state(false);
 </script>
 <Header title='Deposits' />
 <Modal
@@ -82,41 +83,60 @@
         loading {numberFormatter.format(data.depositCount)} deposits
     </div>
 {:then deposits} 
-    {#await userWrapper}
-        <div class="mt-12">
-            loading customers
-        </div>
-    {:then customers} 
-        {#await data.addresses}
-            <div class="mt-12">
-                loading addresses
-            </div>
-        {:then addresses} 
-            <Revenue amount={totalRevenue(searchedPaymentRecords(deposits))} label='Amount of deposits:' classes='bg-tertiary-50 dark:bg-tertiary-950 w-full rounded-b-lg fixed top-8 p-2' />
-            <div class="flex flex-col sm:flex-row m-2 mt-19 gap-1">
-                <Search bind:search={search} searchType='payment record number' data={data.searchForm} classes='sm:w-1/3'/>
-                <Search bind:search={noteSearch} searchType='Payment notes' data={data.searchForm} classes='sm:w-1/3'/>
-                <Search bind:search={nameSearch} searchType='By user' data={data.searchForm} classes='sm:w-1/3'/>
-            </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 md: gap-3 mb-24 sm:mb-14 lg:mb-9">
-                {#each slicedSource(searchedPaymentRecords(searchByNotes(searchByUser(deposits)))) as deposit}
-                {@const user = customers.find((customer) => customer.id === deposit.customerId)}
-                    <div class="flex flex-col border-2 dark:border-primary-950 border-primary-50 rounded-lg mx-1 sm:mx-2">
-                        <PaymentRecordEmployee paymentRecord={deposit} classes='px-2'/>
-                        <button type="button" class="btn rounded-lg preset-filled-primary-50-950 m-2" onclick={() => refundModal(deposit)}>Refund this deposit</button>
-                        <div class="m-2">
-                            {#if user}
-                            {@const address = addresses.find((address) => address.userId === user.id)}
-                                <UserEmployee {user} />
-                                {#if address}
-                                    <AddressEmployee {address} />
-                                {/if}
-                            {/if}
-                        </div>
-                    </div>
-                {/each}
-                <Pagination pageNum={pageNum} size={size} array={searchedPaymentRecords(searchByNotes(searchByUser(deposits)))} label='invoices' classes='col-span-full' />
-            </div>
-        {/await}
-    {/await}
+   {#await userWrapper}
+      <div class="mt-12">
+         loading customers
+      </div>
+   {:then customers} 
+      {#await data.addresses}
+         <div class="mt-12">
+               loading addresses
+         </div>
+      {:then addresses} 
+         <Revenue amount={totalRevenue(searchedPaymentRecords(deposits))} label='Amount of deposits' classes='bg-tertiary-50-950 w-screen rounded-b-lg fixed top-8 p-2' />
+         <Modal
+            open={searchDrawerOpen}
+            onOpenChange={(event)=>(searchDrawerOpen = event.open)}
+            triggerBase='btn preset-filled-primary-50-950 rounded-lg fixed top-0 right-0 z-50'
+            contentBase='bg-surface-100-900 h-[340px] w-screen rounded-lg'
+            positionerJustify=''
+            positionerAlign=''
+            positionerPadding=''
+            transitionsPositionerIn={{y:-360, duration: 600}}
+            transitionsPositionerOut={{y:-360, duration: 600}}
+            modal={false}
+         >
+            {#snippet trigger()}
+               <SearchIcon aria-label='Search'/>
+            {/snippet}
+            {#snippet content()}
+               <button onclick={()=>searchDrawerOpen=false} class='btn preset-filled-primary-50-950 rounded-lg m-1 absolute top-0 right-0'><PanelTopClose/></button>
+               <div class="mt-9 mx-1 sm:mx-2">
+                  <Search bind:search={search} searchType='payment record number' data={data.searchForm} classes=''/>
+                  <Search bind:search={noteSearch} searchType='Payment notes' data={data.searchForm} classes=''/>
+                  <Search bind:search={nameSearch} searchType='By user' data={data.searchForm} classes=''/>
+               </div>
+            {/snippet}
+         </Modal>
+         <div class="grid grid-cols-1 sm:grid-cols-2 gap-1 mb-24 sm:mb-14 lg:mb-9 mt-20">
+               {#each slicedSource(searchedPaymentRecords(searchByNotes(searchByUser(deposits)))) as deposit}
+               {@const user = customers.find((customer) => customer.id === deposit.customerId)}
+                  <div class="flex flex-col border-2 border-primary-50-950 rounded-lg mx-1 sm:mx-2">
+                     <PaymentRecordEmployee paymentRecord={deposit} classes='px-2'/>
+                     <button type="button" class="btn rounded-lg preset-filled-primary-50-950 m-2" onclick={() => refundModal(deposit)}>Refund this deposit</button>
+                     <div class="m-2">
+                           {#if user}
+                           {@const address = addresses.find((address) => address.userId === user.id)}
+                              <UserEmployee {user} />
+                              {#if address}
+                                 <AddressEmployee {address} />
+                              {/if}
+                           {/if}
+                     </div>
+                  </div>
+               {/each}
+               <Pagination pageNum={pageNum} size={size} array={searchedPaymentRecords(searchByNotes(searchByUser(deposits)))} label='invoices' classes='col-span-full' />
+         </div>
+      {/await}
+   {/await}
 {/await}
