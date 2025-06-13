@@ -12,6 +12,7 @@
 	import Placeholder from '$lib/displayComponents/Placeholder.svelte';
 	import Address from '$lib/displayComponents/AddressEmployee.svelte';
 	import { fade } from 'svelte/transition';
+	import { Modal } from '@skeletonlabs/skeleton-svelte';
 	let { data }: { data: PageData } = $props();
 	let size = $state(25);
 	let pageNum = $state(1);
@@ -66,48 +67,55 @@
 	});
 	let nameSearch = $state('')
 	const currentUsers = $derived((users:User[]) => users.filter((user) => {
-		return user.givenName?.toLowerCase().includes(nameSearch.toLowerCase()) || user.familyName?.toLowerCase().includes(nameSearch.toLowerCase())
+		return user.givenName?.toLowerCase().includes(nameSearch.toLowerCase()) 
+		|| user.familyName?.toLowerCase().includes(nameSearch.toLowerCase()) 
+		|| user.organizationName?.toLowerCase().includes(nameSearch.toLowerCase())
 	}))
-	const searchByUser = $derived((refunds:RefundRecord[]) => {
-		const users = currentUsers(customers);
+	const searchByUser = $derived((refunds:RefundRecord[], customers:User[]) => {
 		const returnedRefunds:RefundRecord[] =[]
-		users.forEach((user) => {
+		for(const user of customers){
 			const userRefunds = refunds.filter((record) => {
 				return record.customerId === user.id
 			});
 			userRefunds.forEach((record) => {
 				returnedRefunds.push(record);
 			})
-		});
+		};
 		return returnedRefunds;
 	})
+	let searchDrawerOpen = $state(false);
 </script>
 
 <Header title="All Refunds" />
 {#await wrapper}
-	loading {numberFormatter.format(data.refundCount)} refunds
-	{#if data.years}
-		or select year:
-		{#each data.years as year}
-			<a href="/refundRecords/year/{year}" class="btn">{year.toString()},</a>
-		{/each}
-	{/if}
-		<Placeholder numCols={1} numRows={2} heightClass='h-10' />
+	<div class="mt-10">
+		Loading {numberFormatter.format(data.refundCount)} refunds...
+		{#if data.years}
+			or select year:
+			{#each data.years as year}
+				<a href="/refundRecords/year/{year}" class="btn">{year.toString()},</a>
+			{/each}
+		{/if}
+	</div>
 		<Placeholder numCols={2} numRows={size} heightClass='h-44'/>
 	{:then refunds}
-	{#await customerWrapper}
-		<Placeholder numCols={1} numRows={2} heightClass='h-10' />
+	{#await data.customers}
+		<div class="mt-10">
+			Loading customers...
+		</div>
 		<Placeholder numCols={2} numRows={size} heightClass='h-44'/>
 	{:then customers}
 		{#await data.addresses}
-			<Placeholder numCols={1} numRows={2} heightClass='h-10' />
+			<div class="mt-10">
+				Loading addresses...
+			</div>
 			<Placeholder numCols={2} numRows={size} heightClass='h-44'/>
 		{:then addresses}
-		<div class=" bg-tertiary-50 dark:bg-tertiary-950 w-full rounded-b-lg fixed top-9 left-0 p-2 flex flex-col sm:flex-row z-50">
+		<div class=" bg-tertiary-50-950 w-full rounded-b-lg fixed top-9 left-0 flex flex-col sm:flex-row z-50">
 			<Revenue 
 				label="Total refunds" 
 				amount={totalRevenue(searchRefunds(dateSearchRefunds(refunds)))}
-				classes='mr-2'	
+				classes=''	
 			/>
 			<Revenue 
 				label="Refunds not deposits" 
@@ -116,47 +124,62 @@
 			/>
 
 		</div>
-			<div class="flex border-b-2 border-primary-50-950 shadow-lg sticky top-18 left-0 bg-surface-50-950 mx-2" in:fade={{duration:600}}>
-				<Search
+		<Modal
+			open={searchDrawerOpen}
+			onOpenChange={(event)=>(searchDrawerOpen = event.open)}
+			triggerBase='btn preset-filled-primary-50-950 rounded-lg fixed top-0 right-3 z-50'
+			contentBase='bg-surface-100-900 h-[400px] w-screen rounded-lg'
+			positionerJustify=''
+			positionerAlign=''
+			positionerPadding=''
+			transitionsPositionerIn={{y:-400, duration: 600}}
+			transitionsPositionerOut={{y:-400, duration: 600}}
+			modal={false}
+		>
+			{#snippet content()}
+				<div class="flex" >
+					<Search
 					bind:search={search}
 					searchType="refund records" 
 					data={data.searchForm} 
 					classes='p-2 '	
-				/>
-				<Search
+					/>
+					<Search
 					bind:search={nameSearch} 
 					searchType="user name" 
 					data={data.searchForm} 
 					classes='p-2 '	
-				/>
-				<DateSearch 
+					/>
+					<DateSearch 
 					bind:endDate 
 					bind:startDate 
 					data={data.dateSearchForm} 
 					{minDate} 
 					{maxDate} 
 					classes='p-2'	
-				/>
-			</div>
-
-			<div class="grid grid-cols-1 mx-2 mt-20 gap-3 shadow-lg" in:fade={{duration:600}}>
-				{#each slicedRefunds(searchRefunds(dateSearchRefunds(searchByUser(refunds)))) as refund (refund.refundNumber)}
+					/>
+				</div>
+				
+			{/snippet}
+		</Modal>
+			<div class="grid grid-cols-1 mx-2 mt-24 sm:mt-18 gap-3 shadow-lg" in:fade={{duration:600}}>
+				{#each slicedRefunds(searchRefunds(dateSearchRefunds(searchByUser(refunds, customers)))) as refund (refund.refundNumber)}
 				{@const customer = customers.find((customer) => customer.id === refund.customerId)}
-					<div class="border rounded-lg border-primary-50 dark:border-primary-950 sm:grid sm:grid-cols-2">
-						<RefundRecordEmployee refundRecord={refund} classes='px-2 pt-2 '/>
+					<div class="border rounded-lg border-primary-50-950 sm:grid sm:grid-cols-2">
+						<RefundRecordEmployee refundRecord={refund} classes='mx-2 mt-2 '/>
 						{#if customer}
 						{@const address = addresses.find((address) => address.userId === customer.id)}
 							<div class="flex flex-col">
-								<UserEmployee user={customer} classes='pt-2 pl-2 ' />
+								<UserEmployee user={customer} classes='mx-2 ' />
 								{#if address}
-									<Address {address} classes='pl-2'/>
+									<Address {address} classes='mx-2'/>
 								{/if}
 							</div>
 						{/if}
 					</div>
 				{/each}
 			</div>
-			<Pagination bind:size bind:pageNum label="refund records" array={searchRefunds(dateSearchRefunds(searchByUser(refunds)))} />
+			<Pagination bind:size bind:pageNum label="refund records" array={searchRefunds(dateSearchRefunds(searchByUser(refunds, customers)))} />
 		{/await}
 	{/await}
 {/await}
