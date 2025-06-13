@@ -37,6 +37,7 @@
 		{link: '/invoices/year', label: 'Invoices by year'},
 		{link: '/invoices/new', label: 'New Invoice'},
 		{link: '/paymentRecords', label: 'Payment Records'},
+		{link: '/paymentRecords/new', label: 'New Payment Record'},
 		{link: '/paymentRecords/deposits', label: 'Deposits'},
 		{link: '/paymentRecords/incomplete', label:'Incomplete Payment Records'},
 		{link: '/paymentRecords/year', label: 'Payment Records by year'},
