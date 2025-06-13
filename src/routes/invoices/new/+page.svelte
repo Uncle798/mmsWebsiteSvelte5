@@ -18,11 +18,12 @@
 >
     {#snippet content()}
         <RegisterForm data={data.registerForm} registerFormModalOpen={registerFormModalOpen} formType='employee'/>
-        <button class="btn" onclick={()=>registerFormModalOpen=false}>Cancel</button>
+        <button class="btn preset-filled-primary-50-950 rounded-lg h-fit" onclick={()=>registerFormModalOpen=false}>Cancel</button>
     {/snippet}
 </Modal>
 <Header title="New Invoice" />
 <div in:fade={{duration:600}} class="mt-10">
     <button class="btn preset-filled-primary-50-950 rounded-lg m-2" type="button" onclick={()=>registerFormModalOpen = true}>Create New Customer</button>
+    <div class="mx-2">Or,</div>
     <NewInvoiceForm data={data.newInvoiceForm} employeeId={data.user?.id} customers={data.customers} leases={data.leases} classes='px-2'/>
 </div>
