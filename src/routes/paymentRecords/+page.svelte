@@ -1,6 +1,6 @@
 <script lang="ts">
    import type { PageData } from './$types';
-   import type { PaymentRecord } from '@prisma/client';
+   import type { PaymentRecord, User } from '@prisma/client';
    import Header from '$lib/Header.svelte';
    import PaymentRecordEmployee from '$lib/displayComponents/PaymentRecordEmployee.svelte';
    import Pagination from '$lib/displayComponents/Pagination.svelte';
@@ -29,7 +29,15 @@
    let modalOpen = $state(false);
    let sortBy = $state(false)
    let currentPaymentRecord = $state<PaymentRecord>({} as PaymentRecord)
-   let nonDeposits = $state<PaymentRecord[]>([]);
+   let nonDeposits = $derived((payments:PaymentRecord[]) =>{
+      const returnedPayments:PaymentRecord[] = [];
+      for(const payment of payments){
+         if(!payment.deposit){
+            returnedPayments.push(payment)
+         }
+      }
+      return returnedPayments;
+   });
    let wrapper = new Promise<PaymentRecord[]>(async res => {
       const paymentRecords = await data.paymentRecords
       res(paymentRecords)
@@ -38,11 +46,6 @@
          minDate = startDate;
          endDate = dayjs.utc(paymentRecords[paymentRecords.length-1].paymentCreated).endOf('year').toDate();
          maxDate = endDate;
-      }
-      for(const paymentRecord of paymentRecords){
-         if(!paymentRecord.deposit){
-            nonDeposits.push(paymentRecord)
-         }
       }
    })
    const numberFormatter = new Intl.NumberFormat('en-US');
@@ -71,6 +74,22 @@
       }
       return paymentRecord.paymentCreated >= startDate && paymentRecord.paymentCreated <= endDate;
    }))
+   let nameSearch = $state('');
+   let currentUsers = $derived((users:User[]) => users.filter((user) => {
+      return user.givenName?.toLowerCase().includes(nameSearch.toLowerCase()) || user.familyName?.toLowerCase().includes(nameSearch.toLowerCase()) || user.organizationName?.toLowerCase().includes(nameSearch.toLowerCase())
+   }));
+   const searchByUser = $derived((paymentRecords:PaymentRecord[], customers:User[]) => {
+      const customerPayments:PaymentRecord[] = [];
+      for(const customer of customers){
+         const payments = paymentRecords.filter((paymentRecord) =>{
+            return paymentRecord.customerId === customer.id;
+         })
+         for(const payment of payments){
+            customerPayments.push(payment)
+         }
+      }
+      return customerPayments;
+   })
    let totalRevenue = $derived((paymentRecords:PaymentRecord[]) => {
       let totalRevenue = 0;
       for(const paymentRecord of paymentRecords){
@@ -146,7 +165,7 @@
                />
                <Revenue
                   label='Non-deposit revenue'
-                  amount={totalRevenue(nonDeposits)}
+                  amount={totalRevenue(nonDeposits(paymentRecords))}
                   classes='m-2'
                />
             </div>
@@ -154,7 +173,7 @@
                   open={searchDrawerOpen}
                   onOpenChange={(event)=>(searchDrawerOpen = event.open)}
                   triggerBase='btn preset-filled-primary-50-950 rounded-lg fixed top-0 right-3 z-50'
-                  contentBase='bg-surface-100-900 h-[280px] w-screen rounded-lg'
+                  contentBase='bg-surface-100-900 h-[400px] w-screen rounded-lg'
                   positionerJustify=''
                   positionerAlign=''
                   positionerPadding=''
@@ -172,7 +191,13 @@
                   searchType='payment record number' 
                   data={data.searchForm}
                   classes='m-1 sm:m-2 mt-9 sm:mt-9'
-               />      
+               />
+               <Search
+                  bind:search={nameSearch}
+                  searchType='customer name'
+                  data={data.searchForm}
+                  classes='m-1 sm:m-2'
+               />
                <DateSearch 
                   bind:startDate={startDate} 
                   bind:endDate={endDate} 
@@ -181,11 +206,11 @@
                   data={data.dateSearchForm}
                   classes='flex flex-col md:grid md:grid-cols-2 m-1 sm:m-2'    
                />
-               <button onclick={()=>sortBy = !sortBy} class="anchor col-span-full">Sort by date {sortBy ? 'starting earliest' : 'starting latest'}</button>
+               <button onclick={()=>sortBy = !sortBy} class="anchor col-span-full mx-2">Sort by date {sortBy ? 'starting earliest' : 'starting latest'}</button>
             {/snippet}
             </Modal>
                <div class="mt-26 sm:mt-20" in:fade={{duration:600}}>
-                  {#each slicedSource(dateSearchPayments(searchedPayments(sortedByDate(paymentRecords)))) as paymentRecord}
+                  {#each slicedSource(dateSearchPayments(searchedPayments(sortedByDate(searchByUser(paymentRecords, currentUsers(customers)))))) as paymentRecord}
                   {@const customer = customers.find((customer) => customer.id === paymentRecord.customerId) }
                      <div class="rounded-lg border border-primary-50-950 grid sm:grid-cols-2 m-2">
                         <div>
@@ -206,7 +231,7 @@
                      </div>
                   {/each}
                </div>
-               <Pagination bind:size={size} bind:pageNum={pageNum} array={searchedPayments(paymentRecords)} label='payment records'/>
+               <Pagination bind:size={size} bind:pageNum={pageNum} array={dateSearchPayments(searchedPayments(searchByUser(paymentRecords, currentUsers(customers))))} label='payment records'/>
          {:else}
             No payment records from that year
          {/if}
