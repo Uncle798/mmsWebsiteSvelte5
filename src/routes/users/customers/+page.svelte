@@ -19,7 +19,9 @@
    let search = $state('');
    let slicedSource = $derived((customers:PartialUser[]) => customers.slice((pageNum-1)*size, pageNum*size));
    let searchedSource = $derived((customers:PartialUser[]) => customers.filter((customer) => {
-      return customer.familyName?.toLowerCase().includes(search.toLowerCase()) || customer.givenName?.toLowerCase().includes(search.toLowerCase())
+      return customer.familyName?.toLowerCase().includes(search.toLowerCase()) 
+      || customer.givenName?.toLowerCase().includes(search.toLowerCase())
+      || customer.organizationName?.toLowerCase().includes(search.toLowerCase())
    }))
    const totalLeased = $derived((leases:Lease[]) => {
       let totalLeased = 0;
@@ -52,7 +54,7 @@
                open={searchDrawerOpen}
                onOpenChange={(event)=>(searchDrawerOpen = event.open)}
                triggerBase='btn preset-filled-primary-50-950 rounded-lg fixed top-0 right-0 z-50'
-               contentBase='bg-surface-100-900 h-[230px] w-screen rounded-b-lg'
+               contentBase='bg-surface-100-900 h-[140px] w-screen rounded-b-lg'
                positionerJustify=''
                positionerAlign=''
                positionerPadding=''
@@ -65,10 +67,10 @@
                {/snippet}
                {#snippet content()}
                   <button onclick={()=>searchDrawerOpen=false} class='btn preset-filled-primary-50-950 rounded-lg m-1 absolute top-0 right-0'><PanelTopClose/></button>
-                  <Search bind:search={search} searchType='customer name' data={data.userSearchForm} classes='m-2 border-b-2 border-primary-50-950'/>
+                  <Search bind:search={search} searchType='customer name' data={data.userSearchForm} classes='mx-2 mt-9'/>
                {/snippet}
             </Modal>
-            <div class="grid grid-cols-1 mx-1 sm:mx-2 gap-y-3 gap-x-1 mt-22 sm:mt-18">
+            <div class="grid grid-cols-1 mx-1 sm:mx-2 gap-y-2 gap-x-1 mt-18 sm:mt-18">
                {#each slicedSource(searchedSource(customers)) as customer}
                {@const address = addresses.find((address) => address.userId === customer.id)}
                {@const lease = leases.find((lease) => lease.customerId === customer.id)}
