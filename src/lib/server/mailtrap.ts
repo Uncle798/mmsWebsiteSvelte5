@@ -24,6 +24,7 @@ export async function sendVerificationEmail(verificationCode:string, email:strin
       return response;
    } catch (error) {
       console.error(error)
+      return error
    }
 }
 
@@ -42,6 +43,7 @@ export async function sendMagicLinkEmail(magicLink:string, email:string) {
       return response;
    } catch (error) {
       console.error(error)
+      return error
    }
 }
 
@@ -56,6 +58,7 @@ export async function sendPaymentReceipt(customer:User, paymentRecord:PaymentRec
       return response
    } catch (error) {
       console.error(error)
+      return error
    }
 }
 
@@ -72,6 +75,7 @@ export async function sendInvoice(invoice:Invoice, customer:User) {
       return response
    } catch (error) {
       console.error(error)
+      return error
    }
 }
 
@@ -88,5 +92,6 @@ export async function sendStatusEmail(admin:User, invoiceCount:number, totalInvo
       
    } catch (error) {
       console.error(error)
+      return error
    }
 }
