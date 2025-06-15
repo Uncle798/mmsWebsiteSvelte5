@@ -25,20 +25,27 @@ export const POST: RequestHandler = async (event) => {
          ssl_pin: CONVERGE_SSL_PIN,
          ssl_recurring_id: lease.subscriptionId
       }
-      const xml = '<?xml version="1.0" encoding="UTF-8"?>\n' +'<txn>\n'+ xmlJs.js2xml(details, {compact: true, ignoreComment: true, spaces: 4, ignoreDoctype: false}) + '\n</txn>';
-      
-      console.log(xml);
-      const uri = encodeURIComponent(xml);
-      console.log(uri)
+      const xml = 'xmldata=\n' +'<txn>\n'+ xmlJs.js2xml(details, {compact: true, ignoreComment: true, spaces: 4, ignoreDoctype: false}) + '\n</txn>';
       const response = await fetch('https://api.demo.convergepay.com/VirtualMerchantDemo/processxml.do', {
          method: 'POST',
          headers: {
             'Content-Type': 'application/x-www-form-urlencoded'
          }, 
-         body:uri
+         body:xml
       })
       const responseBody = await response.text();
-      console.log(responseBody);
+      const responseJson = xmlJs.xml2js(responseBody,{compact: true, ignoreDeclaration: true});
+      //@ts-ignore
+      if(responseJson.txn.ssl_result_message === 'SUCCESS'){
+         await prisma.lease.update({
+            where: {
+               leaseId: lease.leaseId
+            },
+            data: {
+               subscriptionId: null
+            }
+         })
+      }
       return new Response(JSON.stringify(responseBody), {status: 200})
    }
    return new Response(JSON.stringify('leaseId not provided'), {status: 400});
