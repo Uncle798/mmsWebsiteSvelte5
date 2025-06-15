@@ -5,8 +5,6 @@ import { superValidate,  } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import { addressFormSchema, cuidIdFormSchema, emailFormSchema, emailVerificationFormSchema, leaseEndFormSchema, nameFormSchema, } from '$lib/formSchemas/schemas';
 import dayjs from 'dayjs';
-import { stripe } from '$lib/server/stripe';
-import type Stripe from 'stripe';
 
 export const load:PageServerLoad = (async (event) => {
    if(!event.locals.user){
@@ -61,6 +59,7 @@ export const actions: Actions = {
    autoPaySignUp: async (event) => {
       const formData = await event.request.formData();
       const form = await superValidate(formData, valibot(cuidIdFormSchema));
+      console.log(formData)
       if(!form.valid){
          return {form}
       }
