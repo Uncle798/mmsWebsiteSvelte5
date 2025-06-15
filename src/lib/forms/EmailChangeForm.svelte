@@ -8,15 +8,13 @@
    interface Props {
       data: SuperValidated<Infer<EmailFormSchema>>;
       emailModalOpen: boolean;
-      emailVerification: boolean;
       classes?: string;
    }
 
-    let { data, emailModalOpen=$bindable(false), emailVerification=$bindable(false), classes }:Props = $props();
+    let { data, emailModalOpen=$bindable(false), classes }:Props = $props();
 
    let { form, message, errors, constraints, enhance, delayed, timeout} = superForm(data, {
       onUpdated(){
-         emailVerification=true;
          emailModalOpen=false;
       },   
    })
@@ -33,11 +31,11 @@
 
       />
       <EmailInput
-         bind:value={$form.emailConfirm}
-         errors={$errors.emailConfirm}
-         constraints={$constraints.emailConfirm}
+         bind:value={$form.confirmEmail}
+         errors={$errors.confirmEmail}
+         constraints={$constraints.confirmEmail}
          label='Confirm your email'
-         name='emailConfirm'
+         name='confirmEmail'
       />
       <FormProgress delayed={$delayed} timeout={$timeout}/>
    </form>
