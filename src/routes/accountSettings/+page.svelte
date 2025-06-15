@@ -16,174 +16,177 @@
 	import ThemeSelector from '$lib/displayComponents/ThemeSelector.svelte';
 	import UserCustomer from '$lib/displayComponents/customerViews/UserCustomer.svelte';
 	import { superForm } from 'sveltekit-superforms';
+	import NameChangeForm from '$lib/forms/NameChangeForm.svelte';
+	import EmailChangeForm from '$lib/forms/EmailChangeForm.svelte';
     
     let {data}:{ data: PageData} = $props();
-    let addressModalOpen = $state(false);
-    let nameModalOpen = $state(false);
-    let emailModalOpen = $state(false);
-    let emailVerification = $state(false);
-    let emailVerificationModalOpen = $state(false);
-    let leaseEndModalOpen = $state(false);
+    let globalModalOpen = $state(false);
+    let modalSelector = $state('')
     let currentLeaseId = $state('');
     let autoPaySpinner = $state(false);
     let autoPayCancelSpinner = $state(false);
+
     function setCurrentLeaseId(leaseId:string){
-        currentLeaseId = leaseId;
-        leaseEndModalOpen = true;
+      currentLeaseId = leaseId;
+      modalSelector = 'leaseEnd';
+      globalModalOpen = true;
     }
     function autoPaySignUp(leaseId:string){
-        currentLeaseId = leaseId;
-        autoPaySpinner = true;
-        submit()
+      currentLeaseId = leaseId;
+      autoPaySpinner = true;
+      console.log(leaseId)
+      submit()
     } 
     function autoPayCancel(leaseId:string){
-        currentLeaseId = leaseId;
-        autoPayCancelSpinner = true;
-        submit()
+      currentLeaseId = leaseId;
+      autoPayCancelSpinner = true;
+      submit()
     }
     let { form, enhance, submit } = superForm(data.autoPayForm)
 </script>
 <Header title='Settings for {data.user?.givenName}' />
+<Modal
+   open={globalModalOpen}
+   contentBase="card bg-surface-400-600 p-4 space-y-4 shadow-xl max-w-(--breakpoint-sm)"
+   backdropClasses="backdrop-blur-xs"
+>
+   {#snippet content()}
+      {#if modalSelector === 'emailVerification'}
+         {#if data.user}
+         <EmailVerification 
+            data={data.emailVerificationForm} 
+            bind:emailVerificationModalOpen={globalModalOpen} 
+            redirect='false' 
+            userId={data.user.id}
+         />
+         {/if}
+      {/if}
+      {#if modalSelector === 'name'}
+         <NameChangeForm data={data.nameForm} bind:nameModalOpen={globalModalOpen} />
+      {/if}
+      {#if modalSelector === 'email'}
+         <EmailChangeForm data={data.emailForm} bind:emailModalOpen={globalModalOpen} />
+      {/if}
+      {#if modalSelector === 'address'}
+         <AddressForm data={data.addressForm} bind:addressModalOpen={globalModalOpen} userId={data.user?.id}/>
+      {/if}
+      {#if modalSelector === 'leaseEnd'}
+         <LeaseEndForm data={data.leaseEndForm} leaseId={currentLeaseId} customer={true} bind:leaseEndModalOpen={globalModalOpen}/>
+      {/if}
+         <button class="btn preset-filled-primary-50-950 rounded-lg" onclick={()=>globalModalOpen = false}>Cancel</button>
+   {/snippet}
+</Modal>
 
-<div in:fade={{duration:600}} class="mx-2 mt-9 mb-24 sm:mb-14 lg:mb-9">
-    <div class="flex flex-col sm:flex-row gap-3">
-        <div>
-            {#if data.user}
-                <UserCustomer user={data.user}/>
-            {/if}
-            {#if data.user?.emailVerified}
-            <div class="flex ">
-                Email Verified
-                <BadgeCheck size='20' color='green' class='mx-1'/>
+<div in:fade={{duration:600}} class="mx-2 mt-10 mb-24 sm:mb-14 lg:mb-9">
+   <div class="flex flex-col sm:flex-row gap-2">
+      <div>
+         {#if data.user}
+               <UserCustomer user={data.user}/>
+         {/if}
+         {#if data.user?.emailVerified}
+         <div class="flex ">
+               Email Verified
+               <BadgeCheck size='20' class='mx-1 text-success-50-950'/>
+         </div>
+         {:else}
+            <div class="flex flex-col">
+               <button class="btn preset-filled-primary-50-950 mx-2 rounded-lg" onclick={()=>{
+                  modalSelector='emailVerification'
+                  globalModalOpen=true
+               }}>
+                  Please confirm your email address
+               </button>
             </div>
+         {/if}
+      </div>
+      <div class="flex flex-col sm:flex-row gap-2 mx-2">
+         <button class="btn preset-filled-primary-50-950 rounded-lg" onclick={()=>{
+            modalSelector='name';
+            globalModalOpen=true;
+         }}>
+            Change Name
+         </button>
+         <button class="btn preset-filled-primary-50-950 rounded-lg " onclick={()=>{
+            modalSelector='email';
+            globalModalOpen=true;
+         }}>
+            Change Email
+         </button>
+      </div>
+   </div>
+   <div class="flex flex-col sm:flex-row gap-3">
+      {#await data.addressPromise}
+         ...loading address
+      {:then address} 
+      {#if address}
+         <AddressCustomer {address} classes=''/>
+      {/if}
+         <button class="btn preset-filled-primary-50-950 m-1 sm:m-2" onclick={()=> {
+            modalSelector = 'address'
+            globalModalOpen = true;
+         }}>
+            {#if address}
+               Change address
             {:else}
-                <button class="btn preset-filled-primary-50-950 text-wrap h-fit" onclick={()=>emailVerificationModalOpen=true}>Please confirm your email address</button>
-                <Modal
-                    bind:open={emailVerificationModalOpen}
-                    contentBase="card bg-surface-400-600 p-4 space-y-4 shadow-xl max-w-(--breakpoint-sm)"
-                    backdropClasses="backdrop-blur-xs"
-                >
-                    {#snippet content()}
-                        <EmailVerification data={data.emailVerificationForm} bind:emailVerificationModalOpen={emailVerificationModalOpen} redirect='false' bind:emailVerification={emailVerification}/>
-                        <button class="btn preset-filled-primary-50-950 rounded-lg" onclick={()=>emailVerificationModalOpen = false}>Cancel</button>
-                    {/snippet}
-                </Modal>
+               Add address
             {/if}
-        </div>
-        <div class="flex flex-col sm:flex-row gap-2 m-2">
-            <button class="btn preset-filled-primary-50-950 rounded-lg" onclick={()=>nameModalOpen=true}>Change Name</button>
-            <button class="btn preset-filled-primary-50-950 rounded-lg " onclick={()=>emailModalOpen=true}>Change Email</button>
-        </div>
-    </div>
-    <Modal
-        bind:open={nameModalOpen}
-        contentBase="card bg-surface-400-600 p-4 space-y-4 shadow-xl max-w-(--breakpoint-sm)"
-        backdropClasses="backdrop-blur-xs"
-    >
-        {#snippet content()}
-            <NameForm data={data.nameForm} bind:nameModalOpen={nameModalOpen} />
-            <button class="btn" onclick={()=>nameModalOpen=false}>Cancel</button>
-        {/snippet}
-    </Modal>
-
-    <Modal
-        bind:open={emailModalOpen}
-        contentBase="card bg-surface-400-600 p-4 space-y-4 shadow-xl max-w-(--breakpoint-sm)"
-        backdropClasses="backdrop-blur-xs"
-    >
-        {#snippet content()}
-            <EmailForm data={data.emailForm} bind:emailModalOpen={emailModalOpen} bind:emailVerification={emailVerification} />
-            <button class="btn preset-filled-primary-50-950 rounded-lg" onclick={()=>emailModalOpen = false}>Cancel</button>
-        {/snippet}
-    </Modal>
-    <div class="flex flex-col sm:flex-row gap-3">
-        {#await data.addressPromise}
-            ...loading address
-        {:then address} 
-        {#if address}
-            <AddressCustomer {address} classes='pt-2'/>
-        {/if}
-            <Modal
-                bind:open={addressModalOpen}
-                triggerBase="btn preset-filled-primary-50-950 rounded-lg mb-2"
-                contentBase="card bg-surface-400-600 p-4 space-y-4 shadow-xl max-w-(--breakpoint-sm)"
-                backdropClasses="backdrop-blur-xs"
-            >
-                {#snippet trigger()}
-                    {#if address}
-                        Change Address
-                    {:else}
-                        Add address
-                    {/if}
-                {/snippet}
-                {#snippet content()}
-                    <AddressForm data={data.addressForm} bind:addressModalOpen={addressModalOpen} userId={data.user?.id!} classes=''/>
-                    <button class="btn" onclick={()=>addressModalOpen=false}>Close</button>
-                {/snippet}
-            </Modal>
-        {/await}
-    </div>
-    {#await data.leasesPromise}
-        ...loading leases
-    {:then leases}
-        {#if leases}
-        <Modal 
-            bind:open={leaseEndModalOpen}
-            contentBase="card bg-surface-400-600 p-4 space-y-4 shadow-xl max-w-(--breakpoint-sm)"
-            backdropClasses="backdrop-blur-xs"
-        >
-            {#snippet content()}
-                <LeaseEndForm data={data.leaseEndForm} bind:leaseEndModalOpen={leaseEndModalOpen} leaseId={currentLeaseId} customer={true}/>
-                <button class="btn preset-filled-primary-50-950 rounded-lg" onclick={()=>leaseEndModalOpen=false}>Cancel</button>
-            {/snippet}
-        </Modal>
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-            {#each leases as lease}
-                <div class="border-2 rounded-lg border-primary-50-950 flex flex-col">
-                    <LeaseCustomer lease={lease} classes=''/>
-                    {#if !lease.leaseEnded}
-                        <button class="btn preset-filled-primary-50-950 rounded-lg m-1 sm:m-2" onclick={()=> setCurrentLeaseId(lease.leaseId)}>End Lease</button>
-                        {#if !lease.subscriptionId}
-                            <form method="POST" action="?/autoPaySignUp" use:enhance>
-                                <input type="hidden" name="cuid2Id" id="cuid2Id" value={lease.leaseId}>
-                                <div class="flex">
-                                    <button type="button" class='btn preset-filled-primary-50-950 rounded-lg m-1 sm:m-2' onclick={()=>autoPaySignUp(lease.leaseId)}>Sign up for auto pay</button>
-                                    {#if currentLeaseId === lease.leaseId && autoPaySpinner === true}                                
-                                        <ProgressRing value={null} size="size-8" strokeWidth="6px" meterStroke="stroke-secondary-600-400" trackStroke="stroke-secondary-50-950" classes='ml-2' />
-                                    {/if}
-                                </div>
-                            </form>
-                        {:else}
-                            <span class="m-2">Thanks for auto-paying!</span>
-                            <form action="?/autoPayCancel" use:enhance method="POST">
-                                <input type="hidden" name="cuid2Id" id="cuid2Id" value={lease.leaseId} />
-                                <button class="btn preset-filled-primary-50-950 rounded-lg m-1 sm:m-2" onclick={()=>autoPayCancel(lease.leaseId)}>Cancel Auto-pay</button>
-                            </form>
-                        {/if}
-                    {/if}
-                </div>
-            {/each}
-        </div>
-        {/if}
-    {/await}
-    <div class="grid grid-cols-1 gap-x-1 gap-y-3 py-2">
-        {#await data.invoicesPromise}
-            loading invoices
-        {:then invoices} 
-            {#await data.paymentsPromise}
-                loading payments
-            {:then payments} 
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-1 gap-y-3">
-                    {#each invoices as invoice}
-                    {@const paymentRecord = payments.find((payment) => payment.invoiceNum === invoice.invoiceNum)}
-                        <InvoiceCustomer {invoice} classes="border-2 border-primary-50 dark:border-primary-950 rounded-lg"/>
-                        {#if paymentRecord}
-                            <PaymentRecordCustomer {paymentRecord} classes="border-2 border-primary-50 dark:border-primary-950 rounded-lg"/>
-                        {/if}
-                    {/each}
-                </div>
-            {/await}
-        {/await}
-    </div>
-    <ThemeSelector />
+         </button>
+      {/await}
+   </div>
+   {#await data.leasesPromise}
+      ...loading leases
+   {:then leases}
+      {#if leases}
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 my-2">
+         {#each leases as lease}
+               <div class="border-2 rounded-lg border-primary-50-950 flex flex-col">
+                  <LeaseCustomer lease={lease} classes=''/>
+                  {#if !lease.leaseEnded}
+                     <button class="btn preset-filled-primary-50-950 rounded-lg m-1 sm:m-2" onclick={()=> setCurrentLeaseId(lease.leaseId)}>End Lease</button>
+                     {#if !lease.subscriptionId}
+                        <form method="POST" action="?/autoPaySignUp" use:enhance>
+                           <input type="hidden" name="cuid2Id" id="cuid2Id" value={lease.leaseId}>
+                           <div class="flex">
+                              <button type="button" class='btn preset-filled-primary-50-950 rounded-lg m-1 sm:m-2' onclick={()=>autoPaySignUp(lease.leaseId)}>Sign up for auto pay</button>
+                              {#if currentLeaseId === lease.leaseId && autoPaySpinner === true}                                
+                                    <ProgressRing value={null} size="size-8" strokeWidth="6px" meterStroke="stroke-secondary-600-400" trackStroke="stroke-secondary-50-950" classes='ml-2' />
+                              {/if}
+                           </div>
+                        </form>
+                     {:else}
+                        <span class="m-2">Thanks for auto-paying!</span>
+                        <form action="?/autoPayCancel" use:enhance method="POST">
+                           <input type="hidden" name="cuid2Id" id="cuid2Id" value={lease.leaseId} />
+                           <button class="btn preset-filled-primary-50-950 rounded-lg m-1 sm:m-2" onclick={()=>autoPayCancel(lease.leaseId)}>Cancel Auto-pay</button>
+                           {#if currentLeaseId === lease.leaseId && autoPayCancelSpinner === true}
+                              <ProgressRing value={null} size='size-8' strokeWidth='6px' meterStroke="stroke-secondary-600-400" trackStroke="stroke-secondary-50-950" classes='ml-2' />
+                           {/if}
+                        </form>
+                     {/if}
+                  {/if}
+               </div>
+         {/each}
+      </div>
+      {/if}
+   {/await}
+   <div class="grid grid-cols-1 gap-x-1 gap-y-2 ">
+      {#await data.invoicesPromise}
+         Loading invoices...
+      {:then invoices} 
+         {#await data.paymentsPromise}
+               Loading payments...
+         {:then payments} 
+               <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-1 gap-y-3">
+                  {#each invoices as invoice}
+                  {@const paymentRecord = payments.find((payment) => payment.invoiceNum === invoice.invoiceNum)}
+                     <InvoiceCustomer {invoice} classes="border-2 border-primary-50-950 rounded-lg"/>
+                     {#if paymentRecord}
+                           <PaymentRecordCustomer {paymentRecord} classes="border-2 border-primary-50-950 rounded-lg"/>
+                     {/if}
+                  {/each}
+               </div>
+         {/await}
+      {/await}
+   </div>
+   <ThemeSelector />
 </div>
