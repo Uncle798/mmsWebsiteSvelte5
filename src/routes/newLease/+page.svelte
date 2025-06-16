@@ -71,13 +71,13 @@
             <UnitCustomer unit={data.unit} classes='py-2 w-64'/>
             <input type="hidden" name="unitNum" value={data.unit.num}>
             {#if data.discount}
-                <div class="py-2" transition:fade={{duration:300}}>
+                <div class="py-2" in:fade={{duration:300}}>
                     {#if data.discount.percentage}
-                        Discount {data.discount.amountOff}%
-                        Monthly Rent {currencyFormatter.format(data.unit.advertisedPrice - (data.unit.advertisedPrice * (data.discount.amountOff / 100)))}
+                        Discount: <span class="text-green-700 dark:text-green-500">{data.discount.amountOff}%</span>
+                        Monthly Rent: <span class="text-green-700 dark:text-green-500">{currencyFormatter.format(data.unit.advertisedPrice - (data.unit.advertisedPrice * (data.discount.amountOff / 100)))}</span>
                     {:else}
-                        Discount {currencyFormatter.format(data.discount.amountOff)}
-                        Monthly Rent {currencyFormatter.format(data.unit.advertisedPrice - data.discount.amountOff)}
+                        Discount: <span class="text-green-700 dark:text-green-500">{currencyFormatter.format(data.discount.amountOff)}</span>
+                        Monthly Rent: <span class="text-green-700 dark:text-green-500">{currencyFormatter.format(data.unit.advertisedPrice - data.discount.amountOff)}</span>
                     {/if}
                 </div>
             {/if}

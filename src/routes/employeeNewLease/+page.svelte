@@ -40,7 +40,7 @@
 
 
 <Header title="Employee New Lease" />
-<div transition:fade={{duration:600}} class="mx-2 mt-10">
+<div in:fade={{duration:600}} out:fade={{duration:0}} class="mx-2 mt-10">
    {#if !data.customer}
       <div class="m-2">
          <a href="/employeeNewCustomer" class="btn rounded-lg preset-filled-primary-50-950">Create new customer</a>
@@ -49,14 +49,14 @@
          </h1>
          <form action="/employeeNewLease?/selectCustomer&unitNum={data.unitNum}" method="POST" >
             <Combobox
-            data={customerComboBoxData}
-            bind:value={selectedCustomer}
-            label='Select a customer'
-            placeholder='Select...'
-            openOnClick={true}
-            onValueChange={(details) => {
-               selectedCustomer = details.value
-            }}
+               data={customerComboBoxData}
+               bind:value={selectedCustomer}
+               label='Select a customer'
+               placeholder='Select...'
+               openOnClick={true}
+               onValueChange={(details) => {
+                  selectedCustomer = details.value
+               }}
             />
             <input type="hidden" name="customerId" value={selectedCustomer}>
             <button class="btn preset-filled-primary-50-950 rounded-lg mt-2">Choose Customer</button>    
@@ -92,7 +92,7 @@
          {/snippet}
          {#snippet content()}
             <AddressForm data={data.addressForm} bind:addressModalOpen={addressModalOpen} userId={data.customer?.id}/>
-            <button class="btn " onclick={()=>addressModalOpen=false}>Close</button>
+            <button class="btn preset-tonal" onclick={()=>addressModalOpen=false}>Close</button>
          {/snippet}
       </Modal>
       {/if}
@@ -102,21 +102,21 @@
          {#if data.discount}
             <input type='hidden' name='discountId' value={data.discount.discountId} />
             {#if data.discount.percentage}
-               <div transition:fade={{duration:300}} class="grid grid-cols-2 w-80 gap-x-2">
+               <div in:fade={{duration:300}} class="grid grid-cols-2 w-80 gap-x-2">
                   <div class="text-right">Discount</div><div class="text-green-700 dark:text-green-500">{data.discount.amountOff}%</div>
                   <div class="text-right">Monthly Rent</div><div class="text-green-700 dark:text-green-500">{currencyFormatter.format(data.unit.advertisedPrice - (data.unit.advertisedPrice * (data.discount.amountOff / 100)))}</div>
                </div>
             {:else}
-               <div class="" transition:fade={{duration:300}}>
-                  Discount ${data.discount.amountOff}
-                  Monthly Rent: ${data.unit.advertisedPrice! - data.discount.amountOff}
+               <div class="grid grid-cols-2 w-80 gap-x-2" in:fade={{duration:300}}>
+                  <div>Discount</div> <div class="text-green-700 dark:text-green-500"> ${data.discount.amountOff}</div>
+                  <div>Monthly Rent:</div> <div class="text-green-700 dark:text-green-500"> ${data.unit.advertisedPrice! - data.discount.amountOff}</div>
                </div>
             {/if}
          {/if}
       {/if}
          <div class="flex flex-col w-80">
             {#if data.unit && data.address}
-            <div class="flex bg-primary-50 dark:bg-primary-950 mt-2 rounded-lg">
+            <div class="flex bg-primary-50-950 mt-2 rounded-lg justify-between">
                {#each Object.values(PaymentType) as paymentType}
                   <RadioButton
                      value={paymentType}

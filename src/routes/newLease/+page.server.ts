@@ -122,13 +122,15 @@ export const actions:Actions = {
          })
       }
       let price = unit.advertisedPrice;
+      let discountedAmount = 0;
       if(discount){
          if(discount.percentage){
-            price = unit.advertisedPrice * (discount.amountOff / 100)
+            discountedAmount = unit.advertisedPrice * (discount.amountOff / 100)
          } else {
-            price = unit.advertisedPrice - discount.amountOff
+            discountedAmount - discount.amountOff
          }
       }
+      price -= discountedAmount;
       const employee = employees[Math.floor(Math.random()*employees.length)];
       const lease = await prisma.lease.create({
          data:{
@@ -138,6 +140,8 @@ export const actions:Actions = {
             price,
             addressId:address?.addressId,
             leaseEffectiveDate: new Date(),
+            discountId: discount ? discount.discountId : undefined,
+            discountedAmount: discount ? discountedAmount : undefined
          }
       })
       await prisma.unit.update({
