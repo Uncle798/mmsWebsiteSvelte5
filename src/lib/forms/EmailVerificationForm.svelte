@@ -5,11 +5,10 @@
    import FormProgress from "$lib/formComponents/FormSubmitWithProgress.svelte";
    import FormMessage from "$lib/formComponents/FormMessage.svelte";
 	import { onMount } from "svelte";
-	import { BookDashed } from "lucide-svelte";
    
    interface Props {
       data: SuperValidated<Infer<EmailVerificationFormSchema>>; 
-      emailVerificationModalOpen: boolean;
+      emailVerificationModalOpen?: boolean;
       userId: string;
       redirect: string;
       classes?: string;
