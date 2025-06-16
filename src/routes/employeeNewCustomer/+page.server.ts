@@ -1,14 +1,15 @@
 import { superValidate } from 'sveltekit-superforms';
 import type { PageServerLoad } from './$types';
 import { valibot } from 'sveltekit-superforms/adapters';
-import { registerFormSchema } from '$lib/formSchemas/schemas';
+import { emailVerificationFormSchema, registerFormSchema } from '$lib/formSchemas/schemas';
 import { prisma } from '$lib/server/prisma';
 import { newLeaseSchema } from '$lib/formSchemas/schemas'
 import type { User } from '@prisma/client';
 
 export const load = (async (event) => {
    const registerForm = await superValidate(valibot(registerFormSchema));
-   const leaseForm = await superValidate(valibot(newLeaseSchema))
+   const emailVerificationForm = await superValidate(valibot(emailVerificationFormSchema));
+
    const userId = event.url.searchParams.get('userId');
    let customer:User | null = null;
    if(userId){
@@ -18,5 +19,5 @@ export const load = (async (event) => {
          }
       })
    }
-   return { registerForm, customer, leaseForm };
+   return { registerForm, customer, emailVerificationForm};
 }) satisfies PageServerLoad;
