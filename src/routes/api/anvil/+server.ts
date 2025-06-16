@@ -59,25 +59,6 @@ export const POST: RequestHandler = async (event) => {
                      leaseId: lease!.leaseId
                   }
                })
-               const stripeInvoice = await stripe.invoices.create({
-                  customer: customer?.stripeId ? customer.stripeId : undefined,
-                  collection_method: 'send_invoice',
-                  description: invoice.invoiceNotes ? invoice.invoiceNotes : undefined,
-                  auto_advance: false,
-                  metadata: {
-                     invoiceNum: invoice.invoiceNum
-                  },
-                  days_until_due: 7,
-               })
-               await stripe.invoiceItems.create({
-                  customer: customer!.stripeId!,
-                  amount: lease?.price ? lease.price*100 : undefined,
-                  description: invoice.invoiceNotes ? invoice.invoiceNotes : undefined,
-                  invoice: stripeInvoice.id,
-               })
-               await stripe.invoices.finalizeInvoice(stripeInvoice.id, {
-                  auto_advance: true,
-               })
             }
             createInvoice();
          }
