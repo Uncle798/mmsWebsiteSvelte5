@@ -83,12 +83,12 @@
          open={searchDrawerOpen}
          onOpenChange={(event)=>(searchDrawerOpen = event.open)}
          triggerBase='btn preset-filled-primary-50-950 rounded-lg fixed top-0 right-0 z-50'
-         contentBase='bg-surface-100-900 h-[140px] w-screen rounded-b-lg'
+         contentBase='bg-surface-100-900 h-[120px] w-screen rounded-b-lg'
          positionerJustify=''
          positionerAlign=''
          positionerPadding=''
-         transitionsPositionerIn={{y:-360, duration: 600}}
-         transitionsPositionerOut={{y:-360, duration: 600}}
+         transitionsPositionerIn={{y:-120, duration: 600}}
+         transitionsPositionerOut={{y:-120, duration: 600}}
          modal={false}
       >
       {#snippet trigger()}
@@ -97,12 +97,12 @@
       
       {#snippet content()}         
          <button onclick={()=>searchDrawerOpen=false} class='btn preset-filled-primary-50-950 rounded-lg m-1 absolute top-0 right-0'><PanelTopClose/></button>
-         <div class="w-full m-1 sm:m-2 mt-9 sm:mt-9">
+         <div class="m-1 sm:m-2 mt-9 sm:mt-9">
             <Combobox
                data={comboboxData}
                label='Filter by Size' 
                bind:value={selectedSize} 
-               positionerBase='overflow-auto h-44 limitedHeight:h-auto'
+               positionerBase='overflow-auto small:h-44 tall:h-96 venti:h-auto'
                placeholder='Select size...'
                onValueChange={(details) => {
                   searchDrawerOpen = false
