@@ -64,7 +64,6 @@ export async function sendPaymentReceipt(customer:User, paymentRecord:PaymentRec
 
 export async function sendInvoice(invoice:Invoice, customer:User) {
    try {
-      
       const response = await mailtrap.send({
          from: sender,
          to: [{email: customer.email!}],
@@ -88,8 +87,7 @@ export async function sendStatusEmail(admin:User, invoiceCount:number, totalInvo
          html: `Hello ${admin.givenName}<br/> ${invoiceCount} invoices were created this morning totaling ${currencyFormatter.format(totalInvoice)}.\
          There are ${emptyUnits} empty units as of this morning. <br/>`
       })
-      return response
-      
+      return response 
    } catch (error) {
       console.error(error)
       return error
