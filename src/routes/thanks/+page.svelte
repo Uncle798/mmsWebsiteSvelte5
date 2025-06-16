@@ -18,11 +18,11 @@
          {#await data.addressPromise}
             <span class="m-2">Thanks for your business!</span>
             {:then address} 
-               <span class="m-2 w-1/3">Thanks for your business!</span> 
+               <span class="m-2 sm:w-1/3">Thanks for your business!</span> 
                {#if paymentRecord}
                   <PaymentRecordCustomer {paymentRecord} />
                {/if}
-               <div class="m-2 w-1/3">
+               <div class="m-2 sm:w-1/3">
                   {#if customer}
                      <UserCustomer user={customer} />
                   {/if}
