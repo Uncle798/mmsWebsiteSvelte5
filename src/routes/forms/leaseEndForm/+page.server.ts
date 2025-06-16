@@ -20,8 +20,8 @@ export const actions: Actions = {
       const leaseEndForm = await superValidate(formData, valibot(leaseEndFormSchema));
       const { success, reset } = await ratelimit.employeeForm.limit(event.locals.user.id)
       if(!success) {
-          const timeRemaining = Math.floor((reset - Date.now()) /1000);
-          return message(leaseEndForm, `Please wait ${timeRemaining} seconds before trying again.`)
+         const timeRemaining = Math.floor((reset - Date.now()) /1000);
+         return message(leaseEndForm, `Please wait ${timeRemaining} seconds before trying again.`)
       }
       if(!leaseEndForm.valid){
          return message(leaseEndForm, 'not valid');

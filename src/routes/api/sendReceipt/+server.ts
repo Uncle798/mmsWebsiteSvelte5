@@ -1,16 +1,25 @@
 import { sendPaymentReceipt } from '$lib/server/mailtrap';
 import { prisma } from '$lib/server/prisma';
+import { ratelimit } from '$lib/server/rateLimit';
 import type { RequestHandler } from './$types';
 
 export const POST: RequestHandler = async (event) => {
+   if(!event.locals.user){
+      return new Response(JSON.stringify('Must be logged in to send email'), {status:401})
+   }
    const body = await event.request.json();
-   const { paymentRecordNum } = body;
-   if(!paymentRecordNum){
+   const { recordNum } = body;
+   const { success, reset } = await ratelimit.employeeForm.limit(event.locals.user.id)
+   if(!success){
+      const timeRemaining = Math.floor((reset - Date.now())/1000);
+      return new Response(JSON.stringify(`Please wait ${timeRemaining} seconds before trying again`), {status: 429})
+   }
+   if(!recordNum){
       return new Response(JSON.stringify('Payment number not provided'), { status:400 })
    }
    const paymentRecord = await prisma.paymentRecord.findUnique({
       where: {
-         paymentNumber: paymentRecordNum
+         paymentNumber: recordNum
       }
    })
    if(!paymentRecord){
