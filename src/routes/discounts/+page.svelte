@@ -24,7 +24,7 @@
 <div class="fixed top-9 w-screen bg-tertiary-50-950 rounded-b-lg">
    <Revenue amount={totalDiscounted(data.discountedLeases)} label='Total discounts' />
 </div>
-<div transition:fade={{duration:600}} class="mx-2 mt-18">
+<div in:fade={{duration:600}} out:fade={{duration:0}} class="mx-2 mt-18">
    <h3 class="h3">Current available Discounts</h3>
    {#each data.discounts as discount}
       <Discount {discount} classes='border border-primary-50-950 min-w-72 rounded-lg'/>
