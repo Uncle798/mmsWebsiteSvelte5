@@ -16,6 +16,7 @@
    import { Combobox, Modal } from '@skeletonlabs/skeleton-svelte';
    import { goto, onNavigate } from '$app/navigation';
    import { PanelTopClose, SearchIcon } from 'lucide-svelte';
+	import EmailCustomer from '$lib/emailCustomer.svelte';
    dayjs.extend(utc)
    let { data }: { data: PageData } = $props();
    let pageNum = $state(1);
@@ -148,7 +149,7 @@
                   </div>
                {/snippet}
             </Modal>
-            <div class="grid grid-cols-1 sm:m-2 m-1 gap-2 mt-26 sm:mt-20" in:fade={{duration:600}}>
+            <div class="grid grid-cols-1 sm:m-2 m-1 gap-2 mt-24 sm:mt-20" in:fade={{duration:600}} out:fade={{duration:0}}>
                {#each slicedInvoices(searchedInvoices(searchByUser(invoices, currentUsers(customers)))) as invoice}  
                {@const customer = customers.find((customer) => customer.id === invoice.customerId)}
                   <div class="sm:grid sm:grid-cols-2 border-2 border-primary-50-950 rounded-lg">
@@ -159,6 +160,14 @@
                               <UserEmployee user={customer} classes=''/>
                               {#if address}
                                     <Address {address} />
+                              {/if}
+                              {#if customer.email && customer.emailVerified}
+                                 <EmailCustomer
+                                    emailAddress={customer.email}
+                                    recordNum={invoice.invoiceNum}
+                                    buttonText='Email invoice'
+                                    apiEndPoint='/api/sendInvoice'
+                                 />
                               {/if}
                            </div>
                         {/if}

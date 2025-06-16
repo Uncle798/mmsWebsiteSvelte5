@@ -17,6 +17,7 @@
    import { Combobox, Modal } from '@skeletonlabs/skeleton-svelte';
    import { goto } from '$app/navigation';
 	import { SearchIcon, PanelTopCloseIcon } from 'lucide-svelte';
+	import EmailCustomer from '$lib/emailCustomer.svelte';
    dayjs.extend(utc)
    let { data }: { data: PageData } = $props();
    let pageNum = $state(1);
@@ -102,17 +103,17 @@
       modalOpen = true
    }
    let yearSelect = $state(['']);
-    interface ComboboxData {
-        label: string;
-        value: string;
-    }
-    let yearComboboxData:ComboboxData[] = [
-        {label:'Unpaid Invoices', value: 'unpaid'},
-    ]
-    data.years.forEach((year) => {
-        yearComboboxData.push({label:year.toString(), value: year.toString()})
-    })
-    let searchDrawerOpen = $state(false)
+   interface ComboboxData {
+      label: string;
+      value: string;
+   }
+   let yearComboboxData:ComboboxData[] = [
+      {label:'Unpaid Invoices', value: 'unpaid'},
+   ]
+   data.years.forEach((year) => {
+      yearComboboxData.push({label:year.toString(), value: year.toString()})
+   })
+   let searchDrawerOpen = $state(false);
 </script>
 <Modal
    bind:open={modalOpen}
@@ -161,24 +162,24 @@
                <Revenue 
                   label="Total revenue" 
                   amount={totalRevenue(searchedPayments(dateSearchPayments(paymentRecords)))} 
-                  classes='m-2'    
+                  classes='m-1 sm:m-2'    
                />
                <Revenue
                   label='Non-deposit revenue'
                   amount={totalRevenue(nonDeposits(paymentRecords))}
-                  classes='m-2'
+                  classes='m-1 sm:m-2'
                />
             </div>
             <Modal
                   open={searchDrawerOpen}
                   onOpenChange={(event)=>(searchDrawerOpen = event.open)}
-                  triggerBase='btn preset-filled-primary-50-950 rounded-lg fixed top-0 right-3 z-50'
+                  triggerBase='btn preset-filled-primary-50-950 rounded-lg fixed top-0 right-0 z-50'
                   contentBase='bg-surface-100-900 h-[400px] w-screen rounded-lg'
                   positionerJustify=''
                   positionerAlign=''
                   positionerPadding=''
-                  transitionsPositionerIn={{y:-360, duration: 600}}
-                  transitionsPositionerOut={{y:-360, duration: 600}}
+                  transitionsPositionerIn={{y:-400, duration: 600}}
+                  transitionsPositionerOut={{y:-400, duration: 600}}
                   modal={false}
             >
             {#snippet trigger()}
@@ -206,10 +207,13 @@
                   data={data.dateSearchForm}
                   classes='flex flex-col md:grid md:grid-cols-2 m-1 sm:m-2'    
                />
-               <button onclick={()=>sortBy = !sortBy} class="anchor col-span-full mx-2">Sort by date {sortBy ? 'starting earliest' : 'starting latest'}</button>
+               <button onclick={()=>{
+                  sortBy = !sortBy;
+                  searchDrawerOpen = false;
+                  }} class="anchor col-span-full mx-2">Sort by date {sortBy ? 'starting earliest' : 'starting latest'}</button>
             {/snippet}
             </Modal>
-               <div class="mt-26 sm:mt-20" in:fade={{duration:600}}>
+               <div class="mt-26 sm:mt-20" in:fade={{duration:600}} out:fade={{duration:0}}>
                   {#each slicedSource(dateSearchPayments(searchedPayments(sortedByDate(searchByUser(paymentRecords, currentUsers(customers)))))) as paymentRecord}
                   {@const customer = customers.find((customer) => customer.id === paymentRecord.customerId) }
                      <div class="rounded-lg border border-primary-50-950 grid sm:grid-cols-2 m-2">
@@ -221,10 +225,18 @@
                         </div>
                         {#if customer}
                         {@const address = addresses.find((address)=> address.userId === customer.id)}
-                           <div class="flex flex-col">
-                              <UserEmployee user={customer} classes='mx-2 mt-2'/>
+                           <div class="flex flex-col mx-2 mb-2">
+                              <UserEmployee user={customer} classes=''/>
                               {#if address}
-                                 <Address {address} classes='mx-2'/>
+                                 <Address {address} classes=''/>
+                              {/if}
+                              {#if customer.email && customer.emailVerified}
+                                 <EmailCustomer
+                                    emailAddress={customer.email}
+                                    recordNum={paymentRecord.paymentNumber}
+                                    apiEndPoint='/api/sendReceipt'
+                                    buttonText='Email receipt'
+                                 />
                               {/if}
                            </div>
                         {/if}
