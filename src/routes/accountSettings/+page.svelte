@@ -1,10 +1,8 @@
 <script lang="ts">
-    import { Modal, ProgressRing } from '@skeletonlabs/skeleton-svelte';
-    import type { PageData } from './$types';
-    import AddressForm from '$lib/forms/AddressForm.svelte';
-    import NameForm from '$lib/forms/NameChangeForm.svelte';
-    import EmailForm from '$lib/forms/EmailChangeForm.svelte';
-    import EmailVerification from '$lib/forms/EmailVerificationForm.svelte'
+   import { Modal, ProgressRing } from '@skeletonlabs/skeleton-svelte';
+   import type { PageData } from './$types';
+   import AddressForm from '$lib/forms/AddressForm.svelte';
+   import EmailVerification from '$lib/forms/EmailVerificationForm.svelte'
 	import AddressCustomer from '$lib/displayComponents/customerViews/AddressCustomer.svelte';
 	import Header from '$lib/Header.svelte';
 	import { BadgeCheck, } from 'lucide-svelte';
@@ -19,30 +17,30 @@
 	import NameChangeForm from '$lib/forms/NameChangeForm.svelte';
 	import EmailChangeForm from '$lib/forms/EmailChangeForm.svelte';
     
-    let {data}:{ data: PageData} = $props();
-    let globalModalOpen = $state(false);
-    let modalSelector = $state('')
-    let currentLeaseId = $state('');
-    let autoPaySpinner = $state(false);
-    let autoPayCancelSpinner = $state(false);
+   let {data}:{ data: PageData} = $props();
+   let globalModalOpen = $state(false);
+   let modalSelector = $state('')
+   let currentLeaseId = $state('');
+   let autoPaySpinner = $state(false);
+   let autoPayCancelSpinner = $state(false);
 
-    function setCurrentLeaseId(leaseId:string){
+   function setCurrentLeaseId(leaseId:string){
       currentLeaseId = leaseId;
       modalSelector = 'leaseEnd';
       globalModalOpen = true;
-    }
-    function autoPaySignUp(leaseId:string){
+   }
+   function autoPaySignUp(leaseId:string){
       currentLeaseId = leaseId;
       autoPaySpinner = true;
       console.log(leaseId)
       submit()
-    } 
-    function autoPayCancel(leaseId:string){
+   } 
+   function autoPayCancel(leaseId:string){
       currentLeaseId = leaseId;
       autoPayCancelSpinner = true;
       submit()
-    }
-    let { form, enhance, submit } = superForm(data.autoPayForm)
+   }
+   let { form, enhance, submit } = superForm(data.autoPayForm)
 </script>
 <Header title='Settings for {data.user?.givenName}' />
 <Modal
@@ -77,7 +75,7 @@
    {/snippet}
 </Modal>
 
-<div in:fade={{duration:600}} class="mx-2 mt-10 mb-24 sm:mb-14 lg:mb-9">
+<div in:fade={{duration:600}} class="mx-2 mt-10 mb-24 sm:mb-14 lg:mb-9 sm:mt-10 lg:mt-10">
    <div class="flex flex-col sm:flex-row gap-2">
       <div>
          {#if data.user}
