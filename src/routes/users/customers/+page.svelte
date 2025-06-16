@@ -12,7 +12,6 @@
    import Address from '$lib/displayComponents/AddressEmployee.svelte';
 	import { Modal } from '@skeletonlabs/skeleton-svelte';
 	import { PanelTopClose, SearchIcon } from 'lucide-svelte';
-
    let { data }: { data: PageData } = $props();
    let pageNum = $state(1);
    let size = $state(25);
