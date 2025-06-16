@@ -35,7 +35,7 @@
       <span>Currently Used discounts</span>
       {#each data.discountedLeases as lease}
       {@const user = data.customers.find((user) => lease.customerId === user.id)}
-         <div class="border border-primary-50-950 rounded-lg">
+         <div class="border border-primary-50-950 rounded-lg my-2">
             {#if user}
                <UserEmployee {user} classes='mx-2' />
             {/if}
