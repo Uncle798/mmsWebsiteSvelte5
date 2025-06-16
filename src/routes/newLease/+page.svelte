@@ -71,6 +71,7 @@
             <UnitCustomer unit={data.unit} classes='py-2 w-64'/>
             <input type="hidden" name="unitNum" value={data.unit.num}>
             {#if data.discount}
+                <input type="hidden" name="discountId" value={data.discount.discountId}>
                 <div class="py-2" in:fade={{duration:300}}>
                     {#if data.discount.percentage}
                         Discount: <span class="text-green-700 dark:text-green-500">{data.discount.amountOff}%</span>
@@ -89,7 +90,7 @@
         </div>
     </form>
     {#if !data.discount}
-        <div transition:fade={{duration:600}}>
+        <div in:fade={{duration:600}} out:fade={{duration:0}}>
             <LeaseDiscountForm data={data.leaseDiscountForm} unitNum={data.unitNum} classes='w-72'/>
         </div>
     {/if}

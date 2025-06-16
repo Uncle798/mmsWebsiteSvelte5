@@ -140,10 +140,11 @@ export const actions:Actions = {
             price,
             addressId:address?.addressId,
             leaseEffectiveDate: new Date(),
-            discountId: discount ? discount.discountId : undefined,
-            discountedAmount: discount ? discountedAmount : undefined
+            discountId: discount?.discountId,
+            discountedAmount: discountedAmount
          }
       })
+      console.log(lease)
       await prisma.unit.update({
          where: {
             num: unit.num
