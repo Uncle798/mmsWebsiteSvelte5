@@ -82,7 +82,7 @@ model Lease {
   addressId          String
   unitNum            String
   price              Float
-  discount           Float?
+  discountedAmount   Float?
   discountId         String?
   leaseCreatedAt     DateTime      @default(now())
   leaseReturnedAt    DateTime?
@@ -96,7 +96,7 @@ model Lease {
   customer           User          @relation("customer", fields: [customerId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   employee           User          @relation("employee", fields: [employeeId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   unit               Unit          @relation(fields: [unitNum], references: [num])
-  discountCode       DiscountCode? @relation(fields: [discount, discountId], references: [amountOff, discountId])
+  discountCode       DiscountCode? @relation(fields: [discountId], references: [discountId])
 
   @@unique([leaseId, unitNum, price])
   @@index([leaseId, leaseCreatedAt(sort: Desc)])
