@@ -16,5 +16,33 @@ export const load = (async (event) => {
          discountEnded: null
       }
    });
-   return { discounts, newDiscountForm, discountEndForm };
+   const discountedLeases = await prisma.lease.findMany({
+      where: {
+         AND:[
+            { leaseEnded: null },
+            { discountId: {
+               not: null
+            }}
+         ]
+      }
+   })
+   const customers = await prisma.user.findMany({
+      where: {
+         AND: [
+            { customerLeases: {
+               some: {
+                  leaseEnded: null
+               }
+            }},
+            { customerLeases: {
+               some: {
+                  discountId: {
+                     not: null
+                  }
+               }
+            }}
+         ]
+      }
+   })
+   return { discounts, newDiscountForm, discountEndForm, discountedLeases, customers };
 }) satisfies PageServerLoad;
