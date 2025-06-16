@@ -12,6 +12,7 @@
 	import NewInvoiceForm from "./NewInvoiceForm.svelte";
 	import { onMount } from "svelte";
 	import TextArea from "$lib/formComponents/TextArea.svelte";
+	import RadioButton from "$lib/formComponents/RadioButton.svelte";
 
    interface Props {
       data: SuperValidated<Infer<NewPaymentRecordFormSchema>>;
@@ -29,7 +30,8 @@
    let { form, errors, message, constraints, enhance, delayed, timeout} = superForm(data, {
       onSubmit({formData}) {
          formData.set('customerId', selectedCustomer[0]);
-         formData.set('invoiceNum', selectedInvoice[0])
+         formData.set('invoiceNum', selectedInvoice[0]);
+
       },
    });
    let selectedCustomer = $state([defaultCustomer]);
@@ -49,14 +51,6 @@
       })
       return data
    })
-   const paymentTypeComboBoxData:ComboBoxData[] = [];
-   for(const paymentType of Object.values(PaymentType)){
-      paymentTypeComboBoxData.push({
-         label: paymentType.substring(0,1)+paymentType.substring(1).toLowerCase(),
-         value: paymentType
-      })
-   }
-   let selectedPaymentType = $state([''])
    for(const customer of customers){
       const label = `${customer.givenName} ${customer.familyName}`;
       const value = customer.id;
@@ -150,17 +144,18 @@
             label='Payment amount: $'
             name='paymentAmount'
          />
-         <Combobox
-            data={paymentTypeComboBoxData}
-            bind:value={selectedPaymentType}
-            onValueChange={(details) =>{
-               $form.paymentType = details.value[0] as PaymentType
-            }}
-            label='Payment Type'
-            placeholder='Select Payment type'
-            openOnClick={true}
-            
-         />
+         <div class="flex">
+            {#each Object.values(PaymentType) as paymentType}
+               <RadioButton
+                  value={paymentType}
+                  groupName='paymentType'
+                  id={paymentType}
+                  errors={$errors.paymentType}
+                  constraints={$constraints.paymentType}
+                  label={paymentType.substring(0,1) + paymentType.substring(1).toLowerCase()}
+               />
+            {/each}
+         </div>
          <input type="hidden" name='employeeId' value={employeeId} />
          <TextArea
             bind:value={$form.paymentNotes}
