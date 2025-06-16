@@ -1,13 +1,17 @@
 <script lang="ts">
-    import NewInvoiceForm from '$lib/forms/NewInvoiceForm.svelte';
+	import EmailVerificationForm from '$lib/forms/EmailVerificationForm.svelte';
+   import NewInvoiceForm from '$lib/forms/NewInvoiceForm.svelte';
 	import RegisterForm from '$lib/forms/RegisterForm.svelte';
 	import Header from '$lib/Header.svelte';
-    import type { PageData } from './$types';
-    import { Modal } from '@skeletonlabs/skeleton-svelte';
-    import { blur, fade } from 'svelte/transition';
+   import type { PageData } from './$types';
+   import { Modal } from '@skeletonlabs/skeleton-svelte';
+   import { fade } from 'svelte/transition';
 
-    let { data }: { data: PageData } = $props();
-    let registerFormModalOpen = $state(false);
+   let { data }: { data: PageData } = $props();
+   let registerFormModalOpen = $state(false);
+   if(data.customer){
+      registerFormModalOpen = true;
+   }
 </script>
 
 
@@ -16,14 +20,26 @@
    contentBase="card bg-surface-400-600 p-4 space-y-4 shadow-xl max-w-(--breakpoint-sm)"
    backdropClasses="backdrop-blur-xs"
 >
-    {#snippet content()}
-        <RegisterForm data={data.registerForm} registerFormModalOpen={registerFormModalOpen} formType='employee'/>
-        <button class="btn preset-filled-primary-50-950 rounded-lg h-fit" onclick={()=>registerFormModalOpen=false}>Cancel</button>
-    {/snippet}
+   {#snippet content()}
+      {#if data.customer}     
+         {#if data.customer[0].email}
+         <EmailVerificationForm data={data.emailVerificationForm} userId={data.customer[0].id} redirect='false'/>
+         {/if}
+      {:else}
+         <RegisterForm data={data.registerForm} registerFormModalOpen={registerFormModalOpen} formType='employee' redirectTo='invoices/new' />
+         <button class="btn preset-filled-primary-50-950 rounded-lg h-fit" onclick={()=>registerFormModalOpen=false}>Cancel</button>
+      {/if}
+   {/snippet}
 </Modal>
 <Header title="New Invoice" />
-<div in:fade={{duration:600}} class="mt-10">
-    <button class="btn preset-filled-primary-50-950 rounded-lg m-2" type="button" onclick={()=>registerFormModalOpen = true}>Create New Customer</button>
-    <div class="mx-2">Or,</div>
-    <NewInvoiceForm data={data.newInvoiceForm} employeeId={data.user?.id} customers={data.customers} leases={data.leases} classes='px-2'/>
-</div>
+{#if data.customers}   
+   <div in:fade={{duration:600}} out:fade={{duration:0}} class="mt-10">
+      <button class="btn preset-filled-primary-50-950 rounded-lg m-2" type="button" onclick={()=>registerFormModalOpen = true}>Create New Customer</button>
+      <div class="mx-2">Or,</div>
+      {#if data.customers}
+         <NewInvoiceForm data={data.newInvoiceForm} employeeId={data.user?.id} customers={data.customers} leases={data.leases} classes='px-2'/>
+      {/if}
+   </div>
+{:else if data.customer}
+   <NewInvoiceForm data={data.newInvoiceForm} employeeId={data.user?.id} customers={data.customer} leases={data.leases} defaultCustomer={data.customer[0].id}/>
+{/if}
