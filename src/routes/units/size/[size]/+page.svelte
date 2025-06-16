@@ -12,6 +12,7 @@
 	import Address from '$lib/displayComponents/AddressEmployee.svelte';
 	import { goto } from '$app/navigation';
    import { browser } from '$app/environment';
+	import { PanelTopClose, SearchIcon } from 'lucide-svelte';
    let { data }: { data: PageData } = $props();
    const currencyFormatter = new Intl.NumberFormat('en-US', {style: 'currency', currency: 'USD'})
    let unitPricingModalOpen = $state(false);
@@ -58,6 +59,7 @@
       })
    }
    let selectedSize = $state(['']);
+   let searchDrawerOpen = $state(false);
 </script>
 <Header title='All {data.size.replace(/^0+/gm,'').replace(/0x/gm,'x')} units' />
 
@@ -71,25 +73,45 @@
       <button class="btn preset-filled-primary-50-950 rounded-lg" onclick={()=>unitPricingModalOpen = false}>Close</button>
    {/snippet}
 </Modal>
-<div class="mx-2 fixed top-14 left-0 bg-surface-50-950 w-full flex border-b-2 border-primary-50-950 gap-2 items-center">
-   <Combobox
-      data={comboboxData}
-      label='Select Size'
-      value={selectedSize}
-      onValueChange={(event) =>{
-         if(event.value[0] === 'all'){
-            if(browser){
-               goto('/units')
-            }
-         }
-         if(browser){
-            goto(`/units/size/${event.value[0]}`)
-         }
-      }}
-      classes='m-2'
-   />
-   <button class="btn preset-filled-primary-50-950 rounded-lg mt-5" onclick={()=>openModal(currentOldPrice)}>Change All {data.size.replace(/^0+/gm, '').replace(/x0/gm,'x')} prices</button>
-</div>
+<Modal 
+   open={searchDrawerOpen}
+   onOpenChange={(event)=>(searchDrawerOpen = event.open)}
+   triggerBase='btn preset-filled-primary-50-950 rounded-lg fixed top-0 right-0 z-50'
+   contentBase='bg-surface-100-900 h-[170px] w-screen rounded-b-lg'
+   positionerJustify=''
+   positionerAlign=''
+   positionerPadding=''
+   transitionsPositionerIn={{y:-170, duration: 600}}
+   transitionsPositionerOut={{y:-170, duration: 600}}
+   modal={false}
+>
+   {#snippet trigger()}
+      <SearchIcon aria-label='search' />
+   {/snippet}
+   {#snippet content()}   
+      <button onclick={()=>searchDrawerOpen=false} class='btn preset-filled-primary-50-950 rounded-lg m-1 absolute top-0 right-0'><PanelTopClose/></button>
+      <div class="mx-2 mt-9">
+         <Combobox
+            data={comboboxData}
+            label='Select Size'
+            value={selectedSize}
+            onValueChange={(event) =>{
+               if(event.value[0] === 'all'){
+                  if(browser){
+                     goto('/units')
+                  }
+               }
+               if(browser){
+                  goto(`/units/size/${event.value[0]}`)
+               }
+            }}
+            positionerBase=''
+            positionerClasses='overflow-auto h-24 small:h-44 tall:h-96 grande:h-128 venti:h-auto'
+         />
+         <button class="btn preset-filled-primary-50-950 rounded-lg mt-5" onclick={()=>openModal(currentOldPrice)}>Change All {data.size.replace(/^0+/gm, '').replace(/x0/gm,'x')} prices</button>
+      </div>
+   {/snippet}
+</Modal>
 
 {#await data.units}
 <div class="relative m-1 sm:m-2 mt-10">
@@ -102,8 +124,8 @@
 </div>
 {:then leases} 
 {#if units.length > 0 }
-   <div class="flex fixed top-9 bg-tertiary-50-950 rounded-b-lg w-screen justify-between">
-      <Revenue amount={currentRevenue(units)} label='Current revenue from {data.size.replace(/^0+/gm, '').replace(/x0/gm,'x')} units' classes='w-1/3'/>
+   <div class="flex fixed top-9 bg-tertiary-50-950 rounded-b-lg w-screen">
+      <Revenue amount={currentRevenue(units)} label='Current revenue from {data.size.replace(/^0+/gm, '').replace(/x0/gm,'x')} units' />
          <span class="mx-1 sm:mx-2 w-1/3">Available: {availableUnits(units, leases).length} of {units.length} ({Math.round((availableUnits(units, leases).length*100)/units.length)}%)</span>
          <span class="mx-1 sm:mx-2 w-1/3">Open revenue: {currencyFormatter.format(lostRevenue(availableUnits(units, leases)))}</span>
    </div>
@@ -122,7 +144,7 @@
             Loading addresses
          </div>
          {:then addresses}
-            <div class="grid grid-cols-1 gap-3 m-1 sm:m-2 sm:mt-36">
+            <div class="grid grid-cols-1 gap-3 m-1 sm:m-2 mt-28 sm:mt-22">
                {#each units as unit}
                {@const lease = leases.find((lease) => lease.unitNum === unit.num)}
                {@const customer = customers.find((customer)=> customer.id === lease?.customerId)}
