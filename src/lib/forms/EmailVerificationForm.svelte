@@ -76,4 +76,7 @@
    {:else}
       Sending verification...
    {/if}
+   {#if emailVerificationModalOpen !== undefined}
+      <button class="btn preset-filled-primary-50-950 rounded-lg" onclick={()=> emailVerificationModalOpen = false}>Close</button>
+   {/if}
 </div>
