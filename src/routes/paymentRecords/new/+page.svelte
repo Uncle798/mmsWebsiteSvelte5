@@ -21,20 +21,20 @@
     {/snippet}
 </Modal>
 
-<div transition:fade={{duration:600}} class="mt-8">
-    {#if !customerSelected}
-        <button class="btn preset-filled-primary-50-950 rounded-lg mx-1 sm:mx-2 mt-4" type="button" onclick={()=>registerFormModalOpen = true}>Create New Customer</button>
-    {/if}
-    <NewPaymentRecordForm 
-        data={data.newPaymentRecordForm} 
-        invoices={data.invoices} 
-        customers={data.customers}
-        employeeId={data.user?.id}
-        leases={data.leases}
-        invoiceForm={data.invoiceForm}
-        defaultCustomer={data.defaultCustomer}
-        defaultInvoice={data.defaultInvoice}
-        classes='sm:m-2 m-1'
-        bind:customerSelected={customerSelected}
-    />
+<div in:fade={{duration:600}} out:fade={{duration:0}} class="mt-8">
+   {#if !customerSelected}
+      <button class="btn preset-filled-primary-50-950 rounded-lg mx-1 sm:mx-2 mt-4" type="button" onclick={()=>registerFormModalOpen = true}>Create New Customer</button>
+   {/if}
+   <NewPaymentRecordForm 
+      data={data.newPaymentRecordForm} 
+      invoices={data.invoices} 
+      customers={data.customers}
+      employeeId={data.user?.id}
+      leases={data.leases}
+      invoiceForm={data.invoiceForm}
+      defaultCustomer={data.defaultCustomer}
+      defaultInvoice={data.defaultInvoice}
+      classes='sm:m-2 m-1'
+      bind:customerSelected={customerSelected}
+   />
 </div>
