@@ -3,7 +3,7 @@ import {redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
-import { newInvoiceFormSchema, newPaymentRecordFormSchema, registerFormSchema } from '$lib/formSchemas/schemas';
+import { emailVerificationFormSchema, newInvoiceFormSchema, newPaymentRecordFormSchema, registerFormSchema } from '$lib/formSchemas/schemas';
 
 export const load = (async (event) => {
    if(!event.locals.user?.employee){
@@ -42,13 +42,22 @@ export const load = (async (event) => {
    const newPaymentRecordForm = await superValidate(valibot(newPaymentRecordFormSchema));
    const registerForm = await superValidate(valibot(registerFormSchema));
    const invoiceForm = await superValidate(valibot(newInvoiceFormSchema));
+   const emailVerificationForm = await superValidate(valibot(emailVerificationFormSchema));
    let defaultCustomer = event.url.searchParams.get('defaultCustomer');
    let defaultInvoice = event.url.searchParams.get('defaultInvoice');
-   if(!defaultCustomer){
-      defaultCustomer = ''
+   const userId = event.url.searchParams.get('userId');
+   if(userId){
+      defaultCustomer = userId
    }
-   if(!defaultInvoice){
-      defaultInvoice = ''
-   }
-   return { customers, invoices, newPaymentRecordForm, registerForm, leases, invoiceForm, defaultCustomer, defaultInvoice };
+   return { 
+      customers, 
+      invoices, 
+      newPaymentRecordForm, 
+      registerForm, 
+      leases, 
+      invoiceForm, 
+      defaultCustomer, 
+      defaultInvoice, 
+      emailVerificationForm 
+   };
 }) satisfies PageServerLoad;
