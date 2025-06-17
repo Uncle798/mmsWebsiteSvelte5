@@ -78,25 +78,31 @@
 </script>
 {#await wrapper}
     <Header title='Loading invoices' />
-    Loading {numberFormatter.format(data.invoiceCount)} invoices, 
-    <Placeholder numCols={1} numRows={size} heightClass='h-40'/>
+    <div class="mt-10">
+        Loading {numberFormatter.format(data.invoiceCount)} invoices, 
+        <Placeholder numCols={1} numRows={size} heightClass='h-40'/>
+    </div>
     {:then invoices}
         {#await data.customers}
             <Header title='Loading customers' />
-            Loading customers...
-            <Placeholder numCols={1} numRows={size} heightClass='h-40'/>
+            <div class="mt-10">
+                Loading customers...
+                <Placeholder numCols={1} numRows={size} heightClass='h-40'/>
+            </div>
         {:then customers}
         {#await data.addresses}
-            Loading addresses...
-            <Placeholder numCols={1} numRows={size} heightClass='h-40'/>
+            <div class="mt-10">
+                Loading addresses...
+                <Placeholder numCols={1} numRows={size} heightClass='h-40'/>
+            </div>
         {:then addresses}
             {#if invoices.length >0}       
                 <Header title='Unpaid invoices' />
-                <Revenue label="Current Unpaid Invoice total" amount={totalRevenue(searchedInvoices(dateSearchedInvoices(invoices)))} classes="bg-tertiary-50-950 w-full rounded-b-lg fixed top-8 left-0 p-2 z-40"/>
+                <Revenue label="Current Unpaid Invoice total" amount={totalRevenue(searchedInvoices(dateSearchedInvoices(invoices)))} classes="bg-tertiary-50-950 w-screen rounded-b-lg fixed top-9 p-1 left-0 z-40"/>
                 <Modal
                     open={searchDrawerOpen}
                     onOpenChange={(event)=>(searchDrawerOpen = event.open)}
-                    triggerBase='btn preset-filled-primary-50-950 rounded-lg fixed top-0 sm:right-0 right-12 z-50'
+                    triggerBase='btn preset-filled-primary-50-950 rounded-lg fixed top-0 right-0 z-50'
                     contentBase='bg-surface-100-900 h-[360px] w-screen rounded-lg'
                     positionerJustify=''
                     positionerAlign=''
@@ -106,10 +112,10 @@
                     modal={false}
                 >
                     {#snippet trigger()}
-                        <SearchIcon />
+                        <SearchIcon aria-label='Search' />
                     {/snippet}
                     {#snippet content()}  
-                            <button onclick={()=>searchDrawerOpen=false} class='btn preset-filled-primary-50-950 rounded-lg m-1 absolute top-0 sm:right-0 right-12'><PanelTopClose/></button>
+                            <button onclick={()=>searchDrawerOpen=false} class='btn preset-filled-primary-50-950 rounded-lg m-1 absolute top-0 sm:right-0 right-0'><PanelTopClose aria-label='Close'/></button>
                             <div class="mt-8">
                                 <Search data={data.searchForm} bind:search={search} searchType='invoice number' classes='m-1 sm:m-2 '/>
                                 <Search data={data.searchForm} bind:search={nameSearch} searchType='Customer' classes='m-1 sm:m-2 '/>
