@@ -125,7 +125,7 @@
                      </div>
                   {/snippet}
                </Modal>
-               <div class="grid grid-cols-1 gap-y-3 gap-x-1 mx-1 sm:mx-2 mt-26 sm:mt-20" in:fade={{duration:600}}>
+               <div class="grid grid-cols-1 gap-y-3 gap-x-1 mx-1 sm:mx-2 mt-20 sm:mt-20" in:fade={{duration:600}} out:fade={{duration:0}}>
                   {#each  slicedInvoices(searchedInvoices(searchByUser(invoices, customers))) as invoice}  
                   {@const customer = customers.find((customer) => customer.id === invoice.customerId)}  
                      <div class="rounded-lg border border-primary-50-950 grid sm:grid-cols-2">                            
