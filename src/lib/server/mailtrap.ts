@@ -1,5 +1,5 @@
 import { PUBLIC_COMPANY_NAME, PUBLIC_URL } from "$env/static/public";
-import type { Invoice, PaymentRecord, User } from "@prisma/client";
+import type { Invoice, PaymentRecord, RefundRecord, User } from "@prisma/client";
 import { MailtrapClient } from "mailtrap";
 import dayjs from "dayjs";
 
@@ -89,6 +89,22 @@ export async function sendStatusEmail(admin:User, invoiceCount:number, totalInvo
       })
       return response 
    } catch (error) {
+      console.error(error)
+      return error
+   }
+}
+
+export async function sendRefundEmail(customer:User, refund:RefundRecord) {
+   try {
+      const response = await mailtrap.send({
+         from: sender,
+         to: [{email:customer.email as string}],
+         subject: `${PUBLIC_COMPANY_NAME} refund record ${refund.refundNumber}`,
+         html: `Hello ${customer.givenName}<br/>Please visit <a href="${PUBLIC_URL}/refundRecords/${refund.refundNumber}">Refund ${refund.refundNumber}</a> to view your refund record.`
+      })
+      console.log(response)
+      return response;
+   } catch (error){
       console.error(error)
       return error
    }
