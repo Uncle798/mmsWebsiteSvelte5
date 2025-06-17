@@ -27,7 +27,7 @@
 </script>
 <div class={classes}>
    {#if emailed}
-      <div class="my-2">An email receipt has been sent to {emailAddress}</div>
+      <div class="my-2">An email has been sent to {emailAddress}</div>
    {:else if emailing}
       <div class="m-2">Sending email...</div>
    {:else if !emailing}
