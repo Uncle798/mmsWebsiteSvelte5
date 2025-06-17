@@ -21,9 +21,9 @@
     {/snippet}
 </Modal>
 
-<div in:fade={{duration:600}} out:fade={{duration:0}} class="mt-8">
+<div in:fade={{duration:600}} out:fade={{duration:0}} class="mt-10 mx-1 sm:mt-10 sm:mx-2">
    {#if !customerSelected}
-      <button class="btn preset-filled-primary-50-950 rounded-lg mx-1 sm:mx-2 mt-4" type="button" onclick={()=>registerFormModalOpen = true}>Create New Customer</button>
+      <button class="btn preset-filled-primary-50-950 rounded-lg" type="button" onclick={()=>registerFormModalOpen = true}>Create New Customer</button>
    {/if}
    <NewPaymentRecordForm 
       data={data.newPaymentRecordForm} 
@@ -34,7 +34,6 @@
       invoiceForm={data.invoiceForm}
       defaultCustomer={data.defaultCustomer}
       defaultInvoice={data.defaultInvoice}
-      classes='sm:m-2 m-1'
       bind:customerSelected={customerSelected}
    />
 </div>
