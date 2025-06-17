@@ -11,6 +11,8 @@
 	import UserEmployee from '$lib/displayComponents/UserEmployee.svelte';
 	import AddressEmployee from '$lib/displayComponents/AddressEmployee.svelte';
    import { PanelTopClose, SearchIcon } from 'lucide-svelte';
+	import { fade } from 'svelte/transition';
+	import { includes } from 'valibot';
     interface Props {
         data: PageData;
     }
@@ -40,16 +42,14 @@
         })
         return totalRevenue;
     })
-    let customers:User[]
-    let userWrapper = new Promise<User[]>(async res => {
-        customers =  await data.customers
-        res(customers)
-    })
+
     let nameSearch = $state('')
     let currentUsers = $derived((users:User[]) => users.filter((user) => {
-        return user.givenName?.toLowerCase().includes(nameSearch.toLowerCase()) || user.familyName?.toLowerCase().includes(nameSearch.toLowerCase());
+        return user.givenName?.toLowerCase().includes(nameSearch.toLowerCase()) 
+        || user.familyName?.toLowerCase().includes(nameSearch.toLowerCase()) 
+        || user.organizationName?.toLowerCase().includes(nameSearch.toLowerCase());
     }))
-    const searchByUser = $derived((paymentRecords:PaymentRecord[]) => {
+    const searchByUser = $derived((paymentRecords:PaymentRecord[], customers:User[]) => {
         const users = currentUsers(customers);
         const records:PaymentRecord[] = []
         users.forEach((user) => {
@@ -79,21 +79,21 @@
 </Modal>
 
 {#await data.deposits}
-    <div class="mt-12 m-1 sm:m-2">
-        loading {numberFormatter.format(data.depositCount)} deposits
+    <div class="mt-10 sm:mt-10 m-1 sm:m-2">
+        Loading {numberFormatter.format(data.depositCount)} deposits
     </div>
 {:then deposits} 
-   {#await userWrapper}
-      <div class="mt-12">
-         loading customers
+   {#await data.customers}
+      <div class="mt-10">
+         Loading customers...
       </div>
    {:then customers} 
       {#await data.addresses}
-         <div class="mt-12">
-               loading addresses
+         <div class="mt-10">
+               Loading addresses...
          </div>
       {:then addresses} 
-         <Revenue amount={totalRevenue(searchedPaymentRecords(deposits))} label='Amount of deposits' classes='bg-tertiary-50-950 w-screen rounded-b-lg fixed top-8 p-2' />
+         <Revenue amount={totalRevenue(searchedPaymentRecords(deposits))} label='Amount of deposits' classes='bg-tertiary-50-950 w-screen rounded-b-lg fixed top-9 p-2' />
          <Modal
             open={searchDrawerOpen}
             onOpenChange={(event)=>(searchDrawerOpen = event.open)}
@@ -102,8 +102,8 @@
             positionerJustify=''
             positionerAlign=''
             positionerPadding=''
-            transitionsPositionerIn={{y:-360, duration: 600}}
-            transitionsPositionerOut={{y:-360, duration: 600}}
+            transitionsPositionerIn={{y:-340, duration: 600}}
+            transitionsPositionerOut={{y:-340, duration: 600}}
             modal={false}
          >
             {#snippet trigger()}
@@ -118,24 +118,24 @@
                </div>
             {/snippet}
          </Modal>
-         <div class="grid grid-cols-1 sm:grid-cols-2 gap-1 mb-24 sm:mb-14 lg:mb-9 mt-20">
-               {#each slicedSource(searchedPaymentRecords(searchByNotes(searchByUser(deposits)))) as deposit}
-               {@const user = customers.find((customer) => customer.id === deposit.customerId)}
-                  <div class="flex flex-col border-2 border-primary-50-950 rounded-lg mx-1 sm:mx-2">
-                     <PaymentRecordEmployee paymentRecord={deposit} classes='px-2'/>
-                     <button type="button" class="btn rounded-lg preset-filled-primary-50-950 m-2" onclick={() => refundModal(deposit)}>Refund this deposit</button>
-                     <div class="m-2">
-                           {#if user}
-                           {@const address = addresses.find((address) => address.userId === user.id)}
-                              <UserEmployee {user} />
-                              {#if address}
-                                 <AddressEmployee {address} />
-                              {/if}
+         <div class="grid grid-cols-1 sm:grid-cols-2 gap-1 mt-20" in:fade={{duration:600}} out:fade={{duration:0}}>
+            {#each slicedSource(searchedPaymentRecords(searchByNotes(searchByUser(deposits, customers)))) as deposit}
+            {@const user = customers.find((customer) => customer.id === deposit.customerId)}
+               <div class="flex flex-col border-2 border-primary-50-950 rounded-lg mx-1 sm:mx-2">
+                  <PaymentRecordEmployee paymentRecord={deposit} classes='px-2'/>
+                  <button type="button" class="btn rounded-lg preset-filled-primary-50-950 m-2" onclick={() => refundModal(deposit)}>Refund this deposit</button>
+                  <div class="m-2">
+                        {#if user}
+                        {@const address = addresses.find((address) => address.userId === user.id)}
+                           <UserEmployee {user} />
+                           {#if address}
+                              <AddressEmployee {address} />
                            {/if}
-                     </div>
+                        {/if}
                   </div>
-               {/each}
-               <Pagination pageNum={pageNum} size={size} array={searchedPaymentRecords(searchByNotes(searchByUser(deposits)))} label='invoices' classes='col-span-full' />
+               </div>
+            {/each}
+            <Pagination pageNum={pageNum} size={size} array={searchedPaymentRecords(searchByNotes(searchByUser(deposits, customers)))} label='invoices' classes='col-span-full' />
          </div>
       {/await}
    {/await}
