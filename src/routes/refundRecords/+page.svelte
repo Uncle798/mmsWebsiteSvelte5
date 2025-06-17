@@ -13,6 +13,7 @@
 	import Address from '$lib/displayComponents/AddressEmployee.svelte';
 	import { fade } from 'svelte/transition';
 	import { Modal } from '@skeletonlabs/skeleton-svelte';
+	import EmailCustomer from '$lib/emailCustomer.svelte';
 	let { data }: { data: PageData } = $props();
 	let size = $state(25);
 	let pageNum = $state(1);
@@ -29,11 +30,6 @@
 		endDate = maxDate;
 		res(refunds);
 	});
-	let customers:User[]
-	const customerWrapper = new Promise<User[]>(async res => {
-		customers = await data.customers
-		res(customers)
-	}) 
 	const numberFormatter = new Intl.NumberFormat('en-US');
 	let slicedRefunds = $derived((refunds: RefundRecord[]) =>
 		refunds.slice((pageNum - 1) * size, pageNum * size)
@@ -59,7 +55,6 @@
 	const refundsNotDeposits = $derived((refunds: RefundRecord[]) => {
 		let totalRevenue: number = 0;
 		refunds.forEach((refund) => {
-			
 			if(!refund.deposit)
 			totalRevenue += refund.refundAmount;
 		});
@@ -163,7 +158,7 @@
 			{/snippet}
 		</Modal>
 			<div class="grid grid-cols-1 mx-2 mt-24 sm:mt-18 gap-3 shadow-lg" in:fade={{duration:600}}>
-				{#each slicedRefunds(searchRefunds(dateSearchRefunds(searchByUser(refunds, customers)))) as refund (refund.refundNumber)}
+				{#each slicedRefunds(searchRefunds(dateSearchRefunds(searchByUser(refunds, currentUsers(customers))))) as refund (refund.refundNumber)}
 				{@const customer = customers.find((customer) => customer.id === refund.customerId)}
 					<div class="border rounded-lg border-primary-50-950 sm:grid sm:grid-cols-2">
 						<RefundRecordEmployee refundRecord={refund} classes='mx-2 mt-2 '/>
@@ -175,11 +170,18 @@
 									<Address {address} classes='mx-2'/>
 								{/if}
 							</div>
+							<EmailCustomer
+								emailAddress={customer.email!}
+								recordNum={refund.refundNumber}
+								apiEndPoint='/api/sendRefund'
+								buttonText='Send Refund email'
+								classes='mx-2'
+							/>
 						{/if}
 					</div>
 				{/each}
 			</div>
-			<Pagination bind:size bind:pageNum label="refund records" array={searchRefunds(dateSearchRefunds(searchByUser(refunds, customers)))} />
+			<Pagination bind:size bind:pageNum label="refund records" array={searchRefunds(dateSearchRefunds(searchByUser(refunds, currentUsers(customers))))} />
 		{/await}
 	{/await}
 {/await}
