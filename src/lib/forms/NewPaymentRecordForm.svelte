@@ -21,12 +21,12 @@
       customers: User[];
       invoices: Invoice[];
       leases: Lease[];
-      defaultCustomer?: string;
-      defaultInvoice?: string;
+      defaultCustomer?: string | null;
+      defaultInvoice?: string | null;
       classes?: string;
       customerSelected: boolean;
    }
-   let { data, employeeId, customers, invoices,  invoiceForm, leases, defaultCustomer='', defaultInvoice='', classes, customerSelected=$bindable(false) }:Props = $props();
+   let { data, employeeId, customers, invoices,  invoiceForm, leases, defaultCustomer, defaultInvoice, classes, customerSelected=$bindable(false) }:Props = $props();
    let { form, errors, message, constraints, enhance, delayed, timeout} = superForm(data, {
       onSubmit({formData}) {
          formData.set('customerId', selectedCustomer[0]);
@@ -34,8 +34,8 @@
 
       },
    });
-   let selectedCustomer = $state([defaultCustomer]);
-   let selectedInvoice = $state([defaultInvoice])
+   let selectedCustomer = $state<string[]>([defaultCustomer ? defaultCustomer : '']);
+   let selectedInvoice = $state<string[]>([defaultInvoice ? defaultInvoice : ''])
    interface ComboBoxData {
       label: string;
       value: string;
