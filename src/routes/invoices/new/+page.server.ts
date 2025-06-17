@@ -12,19 +12,19 @@ export const load = (async (event) => {
    const newInvoiceForm = await superValidate(valibot(newInvoiceFormSchema));
    const registerForm = await superValidate(valibot(registerFormSchema));
    const emailVerificationForm = await superValidate(valibot(emailVerificationFormSchema));
-   const customerId = event.url.searchParams.get('customerId');
-   if(customerId){
+   const userId = event.url.searchParams.get('userId');
+   if(userId){
       const customer = await prisma.user.findMany({
          where: {
-            id: customerId
+            id: userId
          }
       })
       const leases = await prisma.lease.findMany({
          where: {
-            customerId,
+            customerId: userId,
          }
       });
-      return { customer, leases, newInvoiceForm, registerForm, emailVerificationForm}
+      return { customer, leases, newInvoiceForm, registerForm, emailVerificationForm }
    }
    const customers = await prisma.user.findMany({
       orderBy: {
