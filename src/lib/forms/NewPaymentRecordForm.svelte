@@ -103,7 +103,7 @@
             placeholder='Select customer...'
             openOnClick={true}
             onValueChange={(details)=>{
-               if(selectedCustomer[0].length > 0){
+               if(selectedCustomer.length > 0){
                   customerSelected = true;
                }
                selectedCustomer[0]=details.value[0]
