@@ -9,7 +9,7 @@
 
    let { data }: { data: PageData } = $props();
    let registerFormModalOpen = $state(false);
-   if(data.customer){
+   if(data.customer && !data.customer[0].emailVerified){
       registerFormModalOpen = true;
    }
 </script>
@@ -22,9 +22,7 @@
 >
    {#snippet content()}
       {#if data.customer}     
-         {#if data.customer[0].email}
-         <EmailVerificationForm data={data.emailVerificationForm} userId={data.customer[0].id} redirect='false'/>
-         {/if}
+         <EmailVerificationForm data={data.emailVerificationForm} userId={data.customer[0].id} redirect='false' bind:emailVerificationModalOpen={registerFormModalOpen}/>
       {:else}
          <RegisterForm data={data.registerForm} registerFormModalOpen={registerFormModalOpen} formType='employee' redirectTo='invoices/new' />
          <button class="btn preset-filled-primary-50-950 rounded-lg h-fit" onclick={()=>registerFormModalOpen=false}>Cancel</button>
@@ -41,5 +39,5 @@
       {/if}
    </div>
 {:else if data.customer}
-   <NewInvoiceForm data={data.newInvoiceForm} employeeId={data.user?.id} customers={data.customer} leases={data.leases} defaultCustomer={data.customer[0].id}/>
+   <NewInvoiceForm data={data.newInvoiceForm} employeeId={data.user?.id} customers={data.customer} leases={data.leases} defaultCustomer={data.customer[0].id} classes='mt-10 m-1 sm:m-2'/>
 {/if}
