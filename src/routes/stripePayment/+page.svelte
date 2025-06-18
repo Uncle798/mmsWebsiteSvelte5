@@ -1,4 +1,4 @@
-<script lang="ts">
+<!-- <script lang="ts">
     import { PUBLIC_STRIPE_TEST, PUBLIC_URL } from '$env/static/public';
     import { onMount } from 'svelte';
     import { loadStripe } from '@stripe/stripe-js'
@@ -98,4 +98,4 @@
         {:else}
         <div bind:this={wrapper} class="mt-10 m-2" in:fade={{duration:600}}></div>
     {/if}
-{/if}
+{/if} -->
