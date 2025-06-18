@@ -2,7 +2,7 @@ import { PUBLIC_COMPANY_NAME } from "$env/static/public";
 import type { Address, PaymentRecord, User } from "@prisma/client";
 import dayjs from "dayjs";
 import PdfPrinter from "pdfmake"
-import type { ContentText, ContentUnorderedList, Style, StyleDictionary, StyleReference, TDocumentDefinitions } from "pdfmake/interfaces";
+import type { ContentText, ContentUnorderedList,  StyleDictionary, TDocumentDefinitions } from "pdfmake/interfaces";
 
 const currencyFormatter = new Intl.NumberFormat('en-US', {style:'currency', currency:'USD'});
 
@@ -15,10 +15,15 @@ const fonts = {
    },
 }
 const printer = new PdfPrinter(fonts);
+
 const styles:StyleDictionary = {
    header: {
       fontSize:18,
-      bold: true
+      bold: true,
+      font: 'Helvetica'
+   },
+   basic: {
+      font: 'Helvetica'
    }
 }
 function makeAddress(address:Address){
@@ -27,15 +32,17 @@ function makeAddress(address:Address){
          address.address1,
          `${address.city}, ${address.state} ${address.postalCode}`
       ],
+      style: 'basic'
    }
    if(address.address2){
       pdfAddress = {
-      ul: [
-         address.address1,
-         address.address2,
-         `${address.city}, ${address.state} ${address.postalCode}`
-      ] 
-   }
+         ul: [
+            address.address1,
+            address.address2,
+            `${address.city}, ${address.state} ${address.postalCode}`
+         ], 
+         style: 'basic'
+      }
    }
    return pdfAddress
 }
@@ -47,19 +54,22 @@ function makeNamePlate(user:User){
       pdfNamePlate = {
          text: [
             user.givenName,
-         ]
+         ],
+         style: 'basic'
       }
    }
    if(user.familyName){
       pdfNamePlate = {
          text: [
             user.familyName,
-         ]
+         ],
+         style: 'basic'
       }
    }
    if(user.givenName && user.familyName){
       pdfNamePlate = {
-         text: `${user.givenName} ${user.familyName}`
+         text: `${user.givenName} ${user.familyName}`,
+         style: 'basic'
       }
    }
    return pdfNamePlate
@@ -79,16 +89,23 @@ export function makeReceiptPdf(paymentRecord:PaymentRecord, customer:User, addre
                {text:[
                   'Amount',
                   'Payment type',
-                  'Payment Completed'
-               ]},
+                  'Payment Completed',
+               ],
+               style: 'basic'
+               },
                {text: [
                   currencyFormatter.format(paymentRecord.paymentAmount),
                   paymentRecord.paymentType.toString(),
                   dayjs(paymentRecord.paymentCompleted).format('MMMM YYYY'),
-               ]}
+               ],
+                  style: 'basic'
+               }
             ]
          }
       ],
       styles: styles,
    }
+   console.log(receiptDocDef)
+   const pdf = printer.createPdfKitDocument(receiptDocDef, {});
+   return pdf
 }

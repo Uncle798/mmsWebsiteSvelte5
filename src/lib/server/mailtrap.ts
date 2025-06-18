@@ -1,7 +1,8 @@
 import { PUBLIC_COMPANY_NAME, PUBLIC_URL } from "$env/static/public";
-import type { Invoice, PaymentRecord, RefundRecord, User } from "@prisma/client";
+import type { Address, Invoice, PaymentRecord, RefundRecord, User } from "@prisma/client";
 import { MailtrapClient } from "mailtrap";
 import dayjs from "dayjs";
+import { makeReceiptPdf } from "./pdfMake";
 
 const token = process.env.MAILTRAP_TOKEN!;
 const currencyFormatter = new Intl.NumberFormat('en-us', {style: 'currency', currency:'USD'})
@@ -47,17 +48,27 @@ export async function sendMagicLinkEmail(magicLink:string, email:string) {
    }
 }
 
-export async function sendPaymentReceipt(customer:User, paymentRecord:PaymentRecord) {
+export async function sendPaymentReceipt(customer:User, paymentRecord:PaymentRecord, address:Address){
+   const pdf = makeReceiptPdf(paymentRecord, customer, address);
+   
+   // pdf.pipe()
+   // pdf.end()
    try {      
       const response = await mailtrap.send({
          from: sender,
          to: [{email: customer.email!}],
          subject: `${PUBLIC_COMPANY_NAME} receipt number ${paymentRecord.paymentNumber}`,
          html: `Hello ${customer.givenName} <br/>Please visit <a href="${PUBLIC_URL}/paymentRecords/${paymentRecord.paymentNumber}">Record number ${paymentRecord.paymentNumber}</a> to view your receipt.`,
+         attachments: [
+            {
+               filename: `Receipt ${paymentRecord.paymentNumber} ${PUBLIC_COMPANY_NAME}.pdf`,
+               content:`` 
+            }
+         ]
       })
       return response
    } catch (error) {
-      console.error(error)
+      console.error(error) 
       return error
    }
 }
