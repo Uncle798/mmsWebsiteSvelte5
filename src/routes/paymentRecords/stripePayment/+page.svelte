@@ -1,4 +1,4 @@
-<script lang="ts">
+<!-- <script lang="ts">
    import type { PageData } from './$types';
 	import { loadStripe, type StripeElements, type Stripe } from '@stripe/stripe-js';
 	import { onMount } from 'svelte';
@@ -67,9 +67,7 @@
         <div class="p-4">
             <form onsubmit={submit}>
                 <Elements {stripe} clientSecret={clientSecret} bind:elements >
-                    <!-- {#if data.user?.email}
-                    <LinkAuthenticationElement defaultValues={{email:data.user.email}} />
-                    {/if} -->
+
                     <PaymentElement />
                     {#if processing}
                      processing...
@@ -80,4 +78,4 @@
             </form>
         </div>
     {/if}
-{/if}
+{/if} -->
