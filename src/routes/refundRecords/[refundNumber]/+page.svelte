@@ -1,16 +1,12 @@
 <script lang="ts">
 	import AddressEmployee from '$lib/displayComponents/AddressEmployee.svelte';
 	import AddressCustomer from '$lib/displayComponents/customerViews/AddressCustomer.svelte';
-	import InvoiceCustomer from '$lib/displayComponents/customerViews/InvoiceCustomer.svelte';
-	import PaymentRecordCustomer from '$lib/displayComponents/customerViews/PaymentRecordCustomer.svelte';
 	import RefundRecordCustomer from '$lib/displayComponents/customerViews/RefundRecordCustomer.svelte';
 	import UserCustomer from '$lib/displayComponents/customerViews/UserCustomer.svelte';
-	import HorizontalDivider from '$lib/displayComponents/HorizontalDivider.svelte';
-	import InvoiceEmployee from '$lib/displayComponents/InvoiceEmployee.svelte';
-	import PaymentRecordEmployee from '$lib/displayComponents/PaymentRecordEmployee.svelte';
     import RefundRecordEmployee from '$lib/displayComponents/RefundRecordEmployee.svelte';
 	import UserEmployee from '$lib/displayComponents/UserEmployee.svelte';
 	import Header from '$lib/Header.svelte';
+    import EmailCustomer from '$lib/emailCustomer.svelte';
     import type { PageData } from './$types';
 
     let { data }: { data: PageData } = $props();
@@ -42,23 +38,15 @@
                 </div>
             {/if}
         </div>
-        <HorizontalDivider />
-        <div class="sm:flex">
-            {#if data.paymentRecord}
-                {#if data.user?.employee}
-                    <PaymentRecordEmployee paymentRecord={data.paymentRecord} classes='sm:w-1/2'/>
-                {:else}
-                    <PaymentRecordCustomer paymentRecord={data.paymentRecord} />
-                {/if}
-            {/if}
-            {#if data.invoice}
-                {#if data.user?.employee}
-                    <InvoiceEmployee invoice={data.invoice} />
-                {:else}
-                    <InvoiceCustomer invoice={data.invoice} />
-                {/if}
-            {/if}
-        </div>
+        {#if customer.email && customer.emailVerified}
+            <EmailCustomer
+                emailAddress={customer.email}
+                recordNum={data.refundRecord.refundNumber}
+                apiEndPoint='/api/sendRefund'
+                buttonText='Send Refund email'
+                classes='mx-2'
+            />
+        {/if}
     </div>
 {/if}
 

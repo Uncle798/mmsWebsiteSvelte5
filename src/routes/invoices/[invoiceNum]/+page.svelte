@@ -3,6 +3,7 @@
 	import InvoiceCustomer from '$lib/displayComponents/customerViews/InvoiceCustomer.svelte';
     import InvoiceEmployee from '$lib/displayComponents/InvoiceEmployee.svelte';
     import UserEmployee from '$lib/displayComponents/UserEmployee.svelte';
+	import EmailCustomer from '$lib/emailCustomer.svelte';
 	import Header from '$lib/Header.svelte';
     import type { PageData } from './$types';
 
@@ -11,7 +12,7 @@
 {#if data.user?.employee}
     {#if data.invoice}      
         <Header title="Invoice number {data.invoice.invoiceNum}" />
-        <div class="flex flex-col sm:flex-row gap-x-1 mx-1 sm:mx-2 mt-10 border-2 dark:border-primary-950 border-primary-50 rounded-lg">
+        <div class="flex flex-col sm:flex-row gap-x-1 mx-1 sm:mx-2 mt-10 border-2 border-primary-50-950 rounded-lg">
             <InvoiceEmployee invoice={data.invoice} classes="min-w-64 " />
             <div class="flex flex-col min-w-64"> 
                 {#if data.customer}
@@ -21,6 +22,14 @@
                     <Address address={data.address} classes='px-2'/>
                 {/if}
             </div>
+            {#if data.customer?.email && data.customer?.emailVerified}         
+                <EmailCustomer
+                    recordNum={data.invoice.invoiceNum}
+                    apiEndPoint='/api/sendInvoice'
+                    emailAddress={data.customer?.email}
+                    buttonText='Send invoice'
+                />
+            {/if}
         </div>
     {/if}
 {:else}
@@ -34,6 +43,14 @@
                 {/if}
                 {#if data.address}
                     <Address address={data.address} classes='px-2'/>
+                {/if}
+                {#if data.customer?.email && data.customer?.emailVerified}         
+                    <EmailCustomer
+                        recordNum={data.invoice.invoiceNum}
+                        apiEndPoint='/api/sendInvoice'
+                        emailAddress={data.customer?.email}
+                        buttonText='Send invoice'
+                    />
                 {/if}
             </div>
         </div>

@@ -2,7 +2,7 @@ import { PUBLIC_COMPANY_NAME, PUBLIC_URL } from "$env/static/public";
 import type { Address, Invoice, PaymentRecord, RefundRecord, User } from "@prisma/client";
 import { MailtrapClient } from "mailtrap";
 import dayjs from "dayjs";
-import { makeReceiptPdf } from "./pdfMake";
+import { makeInvoicePdf, makeReceiptPdf, makeRefundPdf } from "./pdfMake";
 import { buffer } from "stream/consumers";
 
 const token = process.env.MAILTRAP_TOKEN!;
@@ -51,7 +51,6 @@ export async function sendMagicLinkEmail(magicLink:string, email:string) {
 
 export async function sendPaymentReceipt(customer:User, paymentRecord:PaymentRecord, address:Address){
    const pdf = await makeReceiptPdf(paymentRecord, customer, address);
-   pdf.end()
    const buf = await buffer(pdf)
    try {      
       const response = await mailtrap.send({
@@ -75,14 +74,23 @@ export async function sendPaymentReceipt(customer:User, paymentRecord:PaymentRec
    }
 }
 
-export async function sendInvoice(invoice:Invoice, customer:User) {
+export async function sendInvoice(invoice:Invoice, customer:User, address:Address) {
+   const pdf = await makeInvoicePdf(invoice, customer, address);
+   const buf = await buffer(pdf);
    try {
       const response = await mailtrap.send({
          from: sender,
          to: [{email: customer.email!}],
          subject: `${PUBLIC_COMPANY_NAME} invoice number: ${invoice.invoiceNum}`,
          html: `Hello ${customer.givenName} <br/>Please visit <a href="${PUBLIC_URL}/invoices/${invoice.invoiceNum}">Invoice number ${invoice.invoiceNum}</a>\
-         to view your invoice from ${PUBLIC_COMPANY_NAME}. This invoice is due ${dayjs(invoice.invoiceCreated).add(1, 'month').format('M/D/YYYY')}`
+         to view your invoice from ${PUBLIC_COMPANY_NAME}. This invoice is due ${dayjs(invoice.invoiceCreated).add(1, 'month').format('M/D/YYYY')}`,
+         attachments: [
+            {
+               filename: `Invoice ${invoice.invoiceNum} ${PUBLIC_COMPANY_NAME}.pdf`,
+               content: buf.toString('base64'),
+               type: 'application/pdf',
+            }
+         ]
       })
       return response
    } catch (error) {
@@ -107,13 +115,22 @@ export async function sendStatusEmail(admin:User, invoiceCount:number, totalInvo
    }
 }
 
-export async function sendRefundEmail(customer:User, refund:RefundRecord) {
+export async function sendRefundEmail(refund:RefundRecord, customer:User, address:Address) {
+   const pdf = await makeRefundPdf(refund, customer, address);
+   const buf = await buffer(pdf);
    try {
       const response = await mailtrap.send({
          from: sender,
          to: [{email:customer.email as string}],
          subject: `${PUBLIC_COMPANY_NAME} refund record ${refund.refundNumber}`,
-         html: `Hello ${customer.givenName}<br/>Please visit <a href="${PUBLIC_URL}/refundRecords/${refund.refundNumber}">Refund ${refund.refundNumber}</a> to view your refund record.`
+         html: `Hello ${customer.givenName}<br/>Please visit <a href="${PUBLIC_URL}/refundRecords/${refund.refundNumber}">Refund ${refund.refundNumber}</a> to view your refund record.`,
+         attachments: [
+            {
+               filename: `Refund Record ${refund.refundNumber} ${PUBLIC_COMPANY_NAME}.pdf`,
+               content: buf.toString('base64'),
+               type: 'application/pdf'
+            }
+         ]
       })
       console.log(response)
       return response;

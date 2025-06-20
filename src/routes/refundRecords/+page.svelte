@@ -170,13 +170,15 @@
 									<Address {address} classes='mx-2'/>
 								{/if}
 							</div>
-							<EmailCustomer
-								emailAddress={customer.email!}
-								recordNum={refund.refundNumber}
-								apiEndPoint='/api/sendRefund'
-								buttonText='Send Refund email'
-								classes='mx-2'
-							/>
+							{#if customer.email && customer.emailVerified}
+								<EmailCustomer
+									emailAddress={customer.email}
+									recordNum={refund.refundNumber}
+									apiEndPoint='/api/sendRefund'
+									buttonText='Send Refund email'
+									classes='mx-2'
+								/>
+							{/if}
 						{/if}
 					</div>
 				{/each}

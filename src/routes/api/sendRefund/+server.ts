@@ -33,6 +33,17 @@ export const POST: RequestHandler = async (event) => {
    if(!customer){
       return new Response(JSON.stringify('Customer not found'), {status:500})
    }
-   const res = sendRefundEmail(customer, refund);
+   const address = await prisma.address.findFirst({
+      where: {
+         AND: [
+            {softDelete: false},
+            {userId: customer.id}
+         ]
+      }
+   });
+   if(!address){
+      return new Response(JSON.stringify('Address not found'), {status:500})
+   }
+   const res = sendRefundEmail(refund, customer, address);
    return new Response(JSON.stringify(res), {status:200});
 };
