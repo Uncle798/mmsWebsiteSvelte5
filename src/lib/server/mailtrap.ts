@@ -3,6 +3,7 @@ import type { Address, Invoice, PaymentRecord, RefundRecord, User } from "@prism
 import { MailtrapClient } from "mailtrap";
 import dayjs from "dayjs";
 import { makeReceiptPdf } from "./pdfMake";
+import { buffer } from "stream/consumers";
 
 const token = process.env.MAILTRAP_TOKEN!;
 const currencyFormatter = new Intl.NumberFormat('en-us', {style: 'currency', currency:'USD'})
@@ -49,10 +50,9 @@ export async function sendMagicLinkEmail(magicLink:string, email:string) {
 }
 
 export async function sendPaymentReceipt(customer:User, paymentRecord:PaymentRecord, address:Address){
-   const pdf = makeReceiptPdf(paymentRecord, customer, address);
-   
-   // pdf.pipe()
-   // pdf.end()
+   const pdf = await makeReceiptPdf(paymentRecord, customer, address);
+   pdf.end()
+   const buf = await buffer(pdf)
    try {      
       const response = await mailtrap.send({
          from: sender,
@@ -62,10 +62,12 @@ export async function sendPaymentReceipt(customer:User, paymentRecord:PaymentRec
          attachments: [
             {
                filename: `Receipt ${paymentRecord.paymentNumber} ${PUBLIC_COMPANY_NAME}.pdf`,
-               content:`` 
+               content: buf.toString('base64'),
+               type: 'application/pdf'
             }
          ]
       })
+      console.log(response)
       return response
    } catch (error) {
       console.error(error) 

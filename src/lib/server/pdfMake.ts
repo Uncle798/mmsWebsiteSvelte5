@@ -2,7 +2,7 @@ import { PUBLIC_COMPANY_NAME } from "$env/static/public";
 import type { Address, PaymentRecord, User } from "@prisma/client";
 import dayjs from "dayjs";
 import PdfPrinter from "pdfmake"
-import type { ContentText, ContentUnorderedList,  StyleDictionary, TDocumentDefinitions } from "pdfmake/interfaces";
+import type { ContentTable, ContentText, StyleDictionary, TDocumentDefinitions } from "pdfmake/interfaces";
 
 const currencyFormatter = new Intl.NumberFormat('en-US', {style:'currency', currency:'USD'});
 
@@ -20,26 +20,27 @@ const styles:StyleDictionary = {
    header: {
       fontSize:18,
       bold: true,
-      font: 'Helvetica'
+      font: 'Helvetica',
+      alignment: 'center'
    },
    basic: {
       font: 'Helvetica'
    }
 }
 function makeAddress(address:Address){
-   let pdfAddress:ContentUnorderedList = {
-      ul: [
-         address.address1,
-         `${address.city}, ${address.state} ${address.postalCode}`
+   let pdfAddress:ContentText = {
+      text: [
+         address.address1+'\n',
+         `${address.city}, ${address.state} ${address.postalCode}\n`
       ],
       style: 'basic'
    }
    if(address.address2){
       pdfAddress = {
-         ul: [
-            address.address1,
-            address.address2,
-            `${address.city}, ${address.state} ${address.postalCode}`
+         text: [
+            address.address1 + '\n',
+            address.address2 + '\n',
+            `${address.city}, ${address.state} ${address.postalCode}\n`
          ], 
          style: 'basic'
       }
@@ -75,37 +76,50 @@ function makeNamePlate(user:User){
    return pdfNamePlate
 }
 
-export function makeReceiptPdf(paymentRecord:PaymentRecord, customer:User, address:Address){
+export async function makeReceiptPdf(paymentRecord:PaymentRecord, customer:User, address:Address){
+   const header = {
+      text: `${PUBLIC_COMPANY_NAME} Payment receipt number ${paymentRecord.paymentNumber}`,
+      style: 'header'
+   }
+   let table:ContentTable = {
+      layout: 'noBorders',
+      table: {
+         headerRows: 0,
+         widths: [150, '*'],
+         body: [
+            ['Amount', currencyFormatter.format(paymentRecord.paymentAmount)],
+            ['Date', dayjs(paymentRecord.paymentCompleted).format('MMMM D YYYY')],
+            ['Type', paymentRecord.paymentType],
+         ]
+      },
+      style: {
+         alignment: 'justify'
+      }
+   } 
+   if(paymentRecord.paymentNotes){
+      table.table.body.push([
+         'Notes', paymentRecord.paymentNotes
+      ])
+   };
+   if(paymentRecord.payee){
+      table.table.body.push([
+         'Payee', paymentRecord.payee
+      ])
+   }
    const receiptDocDef:TDocumentDefinitions = {
       content: [
-         {
-            text: `${PUBLIC_COMPANY_NAME} Payment receipt number ${paymentRecord.paymentNumber}`,
-            style: 'header'
-         },
+         header,
+         '\n',
          makeNamePlate(customer),
          makeAddress(address), 
-         {
-            columns: [
-               {text:[
-                  'Amount',
-                  'Payment type',
-                  'Payment Completed',
-               ],
-               style: 'basic'
-               },
-               {text: [
-                  currencyFormatter.format(paymentRecord.paymentAmount),
-                  paymentRecord.paymentType.toString(),
-                  dayjs(paymentRecord.paymentCompleted).format('MMMM YYYY'),
-               ],
-                  style: 'basic'
-               }
-            ]
-         }
+         '\n',
+         table,
       ],
+      defaultStyle: {
+         font: 'Helvetica'
+      },
       styles: styles,
    }
-   console.log(receiptDocDef)
    const pdf = printer.createPdfKitDocument(receiptDocDef, {});
    return pdf
 }
