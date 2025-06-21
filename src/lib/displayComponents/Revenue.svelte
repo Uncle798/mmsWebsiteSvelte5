@@ -9,5 +9,5 @@
    const currencyFormatter = new Intl.NumberFormat('en-US', {style:'currency', currency:'USD'});
 </script>
 <div class="flex {classes}">
-   <div class="label-text">{label}:</div><div class="font-medium mx-2 sm:mx-0">{currencyFormatter.format(amount)}</div>
+   <div class="">{label}:</div><div class="font-medium mx-2">{currencyFormatter.format(amount)}</div>
 </div>
