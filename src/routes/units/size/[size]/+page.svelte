@@ -116,12 +116,12 @@
 
 {#await data.units}
    <div class="relative m-1 sm:m-2 mt-10">
-      Loading units
+      Loading units...
    </div>
 {:then units}
    {#await data.leases}
    <div class="relative m-1 sm:m-2 mt-4">
-      Loading leases
+      Loading leases...
    </div>
    {:then leases} 
       {#if units.length > 0 }

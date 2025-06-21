@@ -79,9 +79,6 @@
 </script>
 
 <Header title="All units" />
-
-
-
 {#await data.units}
 	<div class="mt-10 m-1 sm:m-2">
 		Loading units...

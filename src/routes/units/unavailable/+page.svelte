@@ -51,8 +51,8 @@
    positionerJustify=''
    positionerAlign=''
    positionerPadding=''
-   transitionsPositionerIn={{y:-360, duration: 600}}
-   transitionsPositionerOut={{y:-360, duration: 600}}
+   transitionsPositionerIn={{y:-230, duration: 600}}
+   transitionsPositionerOut={{y:-230, duration: 600}}
    modal={false}
 >
    {#snippet trigger()}
