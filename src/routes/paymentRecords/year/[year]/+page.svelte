@@ -41,13 +41,13 @@
    });
    let wrapper = new Promise<PaymentRecord[]>(async res => {
       const paymentRecords = await data.paymentRecords
-      res(paymentRecords)
       if(paymentRecords.length > 0){
          startDate = dayjs.utc(paymentRecords[0].paymentCreated).startOf('year').toDate();
          minDate = startDate;
          endDate = dayjs.utc(paymentRecords[paymentRecords.length-1].paymentCreated).endOf('year').toDate();
          maxDate = endDate;
       }
+      res(paymentRecords);
    })
    const numberFormatter = new Intl.NumberFormat('en-US');
    let slicedSource = $derived((paymentRecords:PaymentRecord[]) => paymentRecords.slice((pageNum -1) * size, pageNum*size));
