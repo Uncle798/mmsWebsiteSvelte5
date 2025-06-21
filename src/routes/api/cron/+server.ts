@@ -28,6 +28,20 @@ export const GET: RequestHandler = async ({request}) => {
             email: MY_EMAIL
          }
       })
+      const addresses = await prisma.address.findMany({
+         where: {
+            AND: [
+               {softDelete: false},
+               {user: {
+                  customerLeases: {
+                     some: {
+                        leaseEnded: null
+                     }
+                  }
+               }}
+            ]
+         }
+      })
       // const customers = await prisma.user.findMany({
       //    where:{
       //       customerLeases: {
@@ -53,8 +67,9 @@ export const GET: RequestHandler = async ({request}) => {
          totalInvoiced += invoice.invoiceAmount
       }
       for await(const invoice of invoices){
-         // const customer = customers.find((customer) => customer.id === invoice.customerId)
-         await sendInvoice(invoice, customer!)
+         // const customer = customers.find((customer) => customer.id === invoice.customerId);
+         const address = addresses.find((address) => address.userId === customer?.id)
+         await sendInvoice(invoice, customer!, address!)
       }
       const availableUnits = await prisma.unit.count({
          where: {
