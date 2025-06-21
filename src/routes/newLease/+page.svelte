@@ -12,7 +12,7 @@
 	import FormMessage from '$lib/formComponents/FormMessage.svelte';
 	import Header from '$lib/Header.svelte';
 	import LeaseDiscountForm from '$lib/forms/LeaseDiscountForm.svelte';
-	import { fade, crossfade, blur } from 'svelte/transition';
+	import { fade, } from 'svelte/transition';
 	import UserCustomer from '$lib/displayComponents/customerViews/UserCustomer.svelte';
     
     let { data }: {data:PageData} = $props();
