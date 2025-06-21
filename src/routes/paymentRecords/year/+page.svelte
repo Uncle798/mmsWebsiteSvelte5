@@ -1,22 +1,32 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
     import type { PageData } from './$types';
-
+    import {Combobox } from '@skeletonlabs/skeleton-svelte'
     let { data }: { data: PageData } = $props();
-    let currentYear = $state('');
-    function onSelect(event:Event){
-        const select = event.target as HTMLSelectElement;
-        const year = select.value;
-        goto(`/paymentRecords/year/${year}`);
-    }
+    let yearSelect = $state(['']);
+   interface ComboboxData {
+      label: string;
+      value: string;
+   }
+   let yearComboboxData:ComboboxData[] = [
+      {label:'Unpaid Invoices', value: 'unpaid'},
+   ]
+   data.years.forEach((year) => {
+      yearComboboxData.push({label:year.toString(), value: year.toString()})
+   })
 </script>
-<div class="mt-10 m-1 sm:m-2 sm:mt-10">
-    <label for="selectYear" class="label-text"> 
-        Select year:
-        <select name="selectYear" id="selectYear" class="select" bind:value={currentYear} onchange={onSelect}>
-            {#each data.years as year}
-            <option value={year}>{year}</option>
-            {/each}
-        </select> 
-    </label>
+<div class="mx-1 sm:mx-2 mt-10 sm:mt-10">
+    {#if data.years}
+        <Combobox
+        data={yearComboboxData}
+        bind:value={yearSelect}
+        label='Select year'
+        placeholder='Select year ...'
+        openOnChange={true}
+        onValueChange={(details) => {
+            goto(`/paymentRecords/year/${details.value[0]}`)
+        }}
+        zIndex='50'
+        />
+    {/if}
 </div>

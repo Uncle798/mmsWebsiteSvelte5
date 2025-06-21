@@ -22,7 +22,7 @@ export const load = (async (event) => {
    const years = arrayOfYears(firstPayment?.paymentCreated.getFullYear())
    const paymentRecords = prisma.paymentRecord.findMany({
       orderBy: {
-         paymentCreated: 'asc'
+         paymentCreated: 'desc'
       },
    });
    const customers = prisma.user.findMany({});

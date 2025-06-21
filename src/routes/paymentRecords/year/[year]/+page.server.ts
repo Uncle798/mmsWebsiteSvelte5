@@ -2,7 +2,7 @@ import { prisma } from '$lib/server/prisma';
 import { superValidate } from 'sveltekit-superforms';
 import type { PageServerLoad } from './$types';
 import { valibot } from 'sveltekit-superforms/adapters';
-import { dateSearchFormSchema, searchFormSchema } from '$lib/formSchemas/schemas';
+import { dateSearchFormSchema, refundFormSchema, searchFormSchema } from '$lib/formSchemas/schemas';
 import { redirect } from '@sveltejs/kit';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc'
@@ -16,6 +16,7 @@ export const load = (async (event) => {
     }
     const searchForm = await superValidate(valibot(searchFormSchema));
     const dateSearchForm = await superValidate(valibot(dateSearchFormSchema));
+    const refundForm = await superValidate(valibot(refundFormSchema));
     const year = event.params.year;
     const startDate = dayjs.utc(year).startOf('year').toDate();
     const endDate = dayjs.utc(year).endOf('year').toDate();
@@ -71,5 +72,5 @@ export const load = (async (event) => {
       }
     });
     const months = arrayOfMonths(startDate, endDate);
-    return { paymentRecords, searchForm, paymentRecordCount, customers, months, dateSearchForm, addresses };
+    return { paymentRecords, searchForm, paymentRecordCount, customers, months, dateSearchForm, addresses, refundForm, year };
 }) satisfies PageServerLoad;
