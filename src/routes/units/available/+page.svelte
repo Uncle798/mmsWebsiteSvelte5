@@ -96,7 +96,7 @@
       {/snippet}
       
       {#snippet content()}         
-         <button onclick={()=>searchDrawerOpen=false} class='btn preset-filled-primary-50-950 rounded-lg m-1 absolute top-0 right-0'><PanelTopClose/></button>
+         <button onclick={()=>searchDrawerOpen=false} class='btn preset-filled-primary-50-950 rounded-lg m-1 absolute top-0 right-0'><PanelTopClose aria-label='Close'/></button>
          <div class="m-1 sm:m-2 mt-9 sm:mt-9">
             <Combobox
                data={comboboxData}

@@ -47,7 +47,7 @@
       {/snippet}
       {#snippet content()}
       <div class="mx-2 mt-9">
-         <button onclick={()=>searchDrawerOpen=false} class='btn preset-filled-primary-50-950 rounded-lg m-1 absolute top-0 right-0'><PanelTopClose/></button>
+         <button onclick={()=>searchDrawerOpen=false} class='btn preset-filled-primary-50-950 rounded-lg m-1 absolute top-0 right-0'><PanelTopClose aria-label='Close'/></button>
          <Search data={data.searchForm} bind:search={search} searchType='user' />
       </div>
       {/snippet}

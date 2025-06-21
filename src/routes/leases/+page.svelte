@@ -66,10 +66,10 @@
             modal={false}
          >
             {#snippet trigger()}
-               <SearchIcon />
+               <SearchIcon aria-label='Close'/>
             {/snippet}
             {#snippet content()}
-               <button onclick={()=>searchDrawerOpen=false} class='btn preset-filled-primary-50-950 rounded-lg m-1 absolute top-0 right-0'><PanelTopClose/></button>
+               <button onclick={()=>searchDrawerOpen=false} class='btn preset-filled-primary-50-950 rounded-lg m-1 absolute top-0 right-0'><PanelTopClose aria-label='Close'/></button>
                <Search search={search} searchType='lease id' data={data.searchForm} classes='mt-10 mx-1'/>
                <Search search={customerSearch} searchType='customer name' data={data.searchForm} classes='mx-1' />
             {/snippet}

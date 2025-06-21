@@ -65,7 +65,7 @@
                   <SearchIcon aria-label='search' />
                {/snippet}
                {#snippet content()}
-                  <button onclick={()=>searchDrawerOpen=false} class='btn preset-filled-primary-50-950 rounded-lg m-1 absolute top-0 right-0'><PanelTopClose/></button>
+                  <button onclick={()=>searchDrawerOpen=false} class='btn preset-filled-primary-50-950 rounded-lg m-1 absolute top-0 right-0'><PanelTopClose aria-label='Close'/></button>
                   <Search bind:search={search} searchType='customer name' data={data.userSearchForm} classes='mx-2 mt-9'/>
                {/snippet}
             </Modal>
