@@ -107,6 +107,7 @@
             }}
             positionerBase=''
             positionerClasses='overflow-auto h-24 small:h-44 tall:h-96 grande:h-128 venti:h-auto'
+            openOnClick={true}
          />
          <button class="btn preset-filled-primary-50-950 rounded-lg mt-5" onclick={()=>openModal(currentOldPrice)}>Change All {data.size.replace(/^0+/gm, '').replace(/x0/gm,'x')} prices</button>
       </div>
@@ -114,35 +115,35 @@
 </Modal>
 
 {#await data.units}
-<div class="relative m-1 sm:m-2 mt-10">
-   Loading units
-</div>
+   <div class="relative m-1 sm:m-2 mt-10">
+      Loading units
+   </div>
 {:then units}
-{#await data.leases}
-<div class="relative m-1 sm:m-2 mt-4">
-   Loading leases
-</div>
-{:then leases} 
-{#if units.length > 0 }
-   <div class="flex fixed top-9 bg-tertiary-50-950 rounded-b-lg w-screen">
-      <Revenue amount={currentRevenue(units)} label='Current revenue from {data.size.replace(/^0+/gm, '').replace(/x0/gm,'x')} units' />
-         <span class="mx-1 sm:mx-2 w-1/3">Available: {availableUnits(units, leases).length} of {units.length} ({Math.round((availableUnits(units, leases).length*100)/units.length)}%)</span>
-         <span class="mx-1 sm:mx-2 w-1/3">Open revenue: {currencyFormatter.format(lostRevenue(availableUnits(units, leases)))}</span>
+   {#await data.leases}
+   <div class="relative m-1 sm:m-2 mt-4">
+      Loading leases
    </div>
-{:else}
-   <div class="top-16 mx-2">
-      Unit size not found
-   </div>
-{/if}
-   {#await data.customers}
-      <div class="m-1 sm:m-2 mt-4">
-         Loading customers
-      </div>
-   {:then customers} 
-      {#await data.addresses}
-         <div class="m-1 sm:m-2 mt-4">
-            Loading addresses
+   {:then leases} 
+      {#if units.length > 0 }
+         <div class="flex fixed top-9 bg-tertiary-50-950 rounded-b-lg w-screen">
+            <Revenue amount={currentRevenue(units)} label='Current revenue from {data.size.replace(/^0+/gm, '').replace(/x0/gm,'x')} units' />
+               <span class="mx-1 sm:mx-2 w-1/3">Available: {availableUnits(units, leases).length} of {units.length} ({Math.round((availableUnits(units, leases).length*100)/units.length)}%)</span>
+               <span class="mx-1 sm:mx-2 w-1/3">Open revenue: {currencyFormatter.format(lostRevenue(availableUnits(units, leases)))}</span>
          </div>
+      {:else}
+         <div class="top-16 mx-2">
+            Unit size not found
+         </div>
+      {/if}
+      {#await data.customers}
+         <div class="m-1 sm:m-2 mt-4">
+            Loading customers
+         </div>
+      {:then customers} 
+         {#await data.addresses}
+            <div class="m-1 sm:m-2 mt-4">
+               Loading addresses
+            </div>
          {:then addresses}
             <div class="grid grid-cols-1 gap-3 m-1 sm:m-2 mt-28 sm:mt-22">
                {#each units as unit}
@@ -153,12 +154,12 @@
                      {#if lease}
                         <LeaseEmployee {lease} classes="border-1 border-primary-50-950 rounded-md m-2"/>
                      {:else}
-                        <div class="col-span-2"><span>Open Unit</span></div>
+                        <div class="col-span-2 m-2"><span>Open Unit</span></div>
                      {/if}
                      {#if customer}
                      {@const address = addresses.find((address) => address.userId === customer.id)}
                         <div class="border-1 border-primary-50-950 rounded-md m-2">
-                           <UserEmployee user={customer} classes="mx-2" />
+                           <UserEmployee user={customer} classes="mx-2 truncate" />
                            {#if address}
                               <Address {address} classes='mx-2'/>
                            {/if}
