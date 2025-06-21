@@ -44,12 +44,12 @@
    </div>
 {:then leases}
    {#await wrapper}
-      <div class="mt-10">
+      <div class="mt-10 mx-1">
          Loading customers...
       </div>
    {:then customers} 
       {#await data.addresses}
-         <div class="mt-10">
+         <div class="mt-10 mx-1">
             Loading addresses...
          </div>
       {:then addresses}

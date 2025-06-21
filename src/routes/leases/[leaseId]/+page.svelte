@@ -5,6 +5,7 @@
    import LeaseEmployee from '$lib/displayComponents/LeaseEmployee.svelte';
    import UserEmployee from '$lib/displayComponents/UserEmployee.svelte';
    import Header from '$lib/Header.svelte';
+	import { fade } from 'svelte/transition';
    import type { PageData } from './$types';
 
    let { data }: { data: PageData } = $props();
@@ -12,7 +13,7 @@
 
 <Header title='Lease {data.lease?.leaseId}' />
 {#if data.user?.employee}   
-   <div class="grid sm:grid-cols-2 m-1 sm:m-2 border-2 border-primary-50-950 rounded-lg">
+   <div class="grid sm:grid-cols-2 m-1 sm:m-2 border-2 border-primary-50-950 rounded-lg mt-10 sm:mt-10">
       {#if data.lease}
          <LeaseEmployee lease={data.lease} classes='border-b border-primary-50-950'/>
       {/if}
@@ -38,7 +39,7 @@
       </div>
    </div>
 {:else}
-   <div class="flex flex-col sm:flex-row mt-10 mx-1 sm:mx-2">
+   <div class="flex flex-col sm:flex-row mt-12 sm:mt-10 mx-1 sm:mx-2" in:fade={{duration:600}} out:fade={{duration:0}}>
       {#if data.lease}
          <LeaseCustomer lease={data.lease} />
       {/if}
