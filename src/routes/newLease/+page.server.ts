@@ -8,9 +8,6 @@ import { ratelimit } from "$lib/server/rateLimit";
 import { fail } from "@sveltejs/kit";
 import { qStash } from "$lib/server/qStash";
 import { PUBLIC_URL } from "$env/static/public";
-import { stripe } from "$lib/server/stripe";
-import dayjs from "dayjs";
-import { MY_EMAIL } from "$env/static/private";
 
 export const load:PageServerLoad = (async (event) =>{
    const unitNum = event.url.searchParams.get('unitNum');
@@ -163,74 +160,11 @@ export const actions:Actions = {
             invoiceDue: new Date()
          }
       })
-      let name:string = `${customer.givenName} ${customer.familyName}`
-      if(customer.organizationName){
-         name= customer.organizationName;
-      }
-      const existingStripeCustomer = await stripe.customers.search({
-         query: `email:'${customer.email}'`
-      })
-      let stripeId:string = '';
-      if(existingStripeCustomer.data.length === 0){
-         const stripeCustomer = await stripe.customers.create({
-            name: name,
-            email: MY_EMAIL,  // test mode
-            // email: customer.email ? customer.email : undefined, // prod mode
-            address: {
-               line1: address.address1,
-               line2: address.address2 ? address.address2 : undefined,
-               city: address.city,
-               state: address.state,
-               postal_code: address.postalCode,
-               country: address.country,
-            },
-            description: `Unit number ${unit.num.replace(/^0+/gm, '')} starting ${dayjs(lease.leaseCreatedAt).format('M/YYYY')}`,
-            metadata: {
-               customerId: customer.id
-            }
-         })
-         
-         stripeId = stripeCustomer.id
-         prisma.user.update({
-            where: {
-               id: customer.id
-            },
-            data: {
-               stripeId
-            }
-         })
-      } else {
-         stripeId = existingStripeCustomer.data[0].id
-         const stripeCustomer = await stripe.customers.update(existingStripeCustomer.data[0].id, {
-            name: name,
-            address: {
-               line1: address.address1,
-               line2: address.address2 ? address.address2 : undefined,
-               city: address.city,
-               state: address.state,
-               postal_code: address.postalCode,
-               country: address.country,
-            },
-            description: `Unit number ${unit.num.replace(/^0+/gm, '')} starting ${dayjs(lease.leaseCreatedAt).format('M/YYYY')}`,
-            metadata: {
-               customerId: customer.id
-            }
-         });
-         stripeId = stripeCustomer.id
-      }
-      prisma.user.update({
-         where: {
-            id: customer.id
-         },
-         data: {
-            stripeId
-         }
-      })
        await qStash.trigger({
          url: `${PUBLIC_URL}/api/upstash/workflow`,
          body:  { leaseId:lease.leaseId },
          workflowRunId: lease.leaseId
       })
-      redirect(303, `/makePayment?invoiceNum=${invoice.invoiceNum}&stripeId=${stripeId}&newLease=true&leaseId=${lease.leaseId}`)
+      redirect(303, `/makePayment?invoiceNum=${invoice.invoiceNum}&newLease=true&leaseId=${lease.leaseId}`)
    }
 }
