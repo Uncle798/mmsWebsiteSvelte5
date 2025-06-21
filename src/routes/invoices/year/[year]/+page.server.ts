@@ -67,5 +67,5 @@ export const load = (async (event) => {
             ]
         }
     })
-    return { invoices, invoiceCount, months, customers, searchForm, dateSearchForm, addresses };
+    return { invoices, invoiceCount, months, customers, searchForm, dateSearchForm, addresses, year };
 }) satisfies PageServerLoad;
