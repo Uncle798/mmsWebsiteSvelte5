@@ -21,7 +21,12 @@ export const load = (async (event) => {
       })
       const leases = await prisma.lease.findMany({
          where: {
-            customerId: userId,
+            AND: [
+               {customerId: userId},
+               {leaseEnded: {
+                  not: null
+               }}
+            ]
          }
       });
       return { customer, leases, newInvoiceForm, registerForm, emailVerificationForm }
@@ -30,6 +35,9 @@ export const load = (async (event) => {
       orderBy: {
          familyName: 'asc'
       },
+      where: {
+         archive: false
+      }
    });
    const leases = await prisma.lease.findMany({
       orderBy: {

@@ -37,7 +37,11 @@ export const load = (async (event) => {
          invoiceNum:'asc'
       }
    })
-   const customers = prisma.user.findMany();
+   const customers = prisma.user.findMany({
+      where: {
+         archive: false
+      }
+   });
    const addresses = prisma.address.findMany({
       where: {
          softDelete: false
