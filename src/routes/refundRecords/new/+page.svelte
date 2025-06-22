@@ -52,7 +52,7 @@
             <Search bind:search={search} searchType='Payment notes' data={data.searchForm} classes='col-span-full' />
             {#if allPayments.length > 0}
                {#each slicedPayments(allPayments) as paymentRecord}
-                  <div class="flex flex-col border-2 border-primary-50 dark:border-primary-950 rounded-lg">
+                  <div class="flex flex-col border-2 border-primary-50-950 rounded-lg">
                      <PaymentRecordEmployee {paymentRecord} />
                      <button class="btn preset-filled-primary-50-950 rounded-lg m-2" onclick={()=>{selectedPayment=paymentRecord}} >Refund this payment</button>
                   </div>
@@ -64,7 +64,7 @@
          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 mt-10 m-2">
             {#if allPayments.length > 0}
                {#each allPayments as paymentRecord}
-                  <div class="flex flex-col border-2 border-primary-50 dark:border-primary-950 rounded-lg">
+                  <div class="flex flex-col border-2 border-primary-50-950 rounded-lg">
                      <PaymentRecordEmployee {paymentRecord} />
                      <button class="btn preset-filled-primary-50-950 rounded-lg m-2" onclick={()=>{selectedPayment=paymentRecord}} >Refund this payment</button>
                   </div>

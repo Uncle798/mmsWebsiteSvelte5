@@ -73,7 +73,7 @@
                {#each slicedSource(searchedSource(customers)) as customer}
                {@const address = addresses.find((address) => address.userId === customer.id)}
                {@const lease = leases.find((lease) => lease.customerId === customer.id)}
-                  <div class="border rounded-lg border-primary-50 dark:border-primary-950 sm:grid sm:grid-cols-2">
+                  <div class="border rounded-lg border-primary-50-950 sm:grid sm:grid-cols-2">
                      <div class="p-2">
                         <UserEmployee user={customer} classes=''/>
                         {#if address}

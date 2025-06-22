@@ -55,7 +55,7 @@
    <div in:fade={{duration:600}} class="m-2 mt-10">
       <div class="grid grid-cols-1 gap-y-3 gap-x-1">
          {#each slicedSource(searchedUsers(users)) as user (user.id)}
-            <div class="rounded-lg border border-primary-50 dark:border-primary-950 flex flex-row">
+            <div class="rounded-lg border border-primary-50-950 flex flex-row">
                <UserAdmin {user} classes=" p-2 w-1/2"/>
                <EmploymentChangeForm 
                   data={data.employmentChangeForm} 

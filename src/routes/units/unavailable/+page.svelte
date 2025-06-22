@@ -77,7 +77,7 @@
 </Modal>
 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 m-1 sm:m-2 sm:mt-20 mt-32">
    {#each filterSize(data.units) as unit}
-      <div class="border-2 border-primary-50 dark:border-primary-950 rounded-lg">
+      <div class="border-2 border-primary-50-950 rounded-lg">
          <UnitEmployee {unit}/>
          <div class="text-center sm:col-span-2">
             <a href="/employeeNewLease?unitNum={unit.num}" class="anchor">Rent this unit</a>

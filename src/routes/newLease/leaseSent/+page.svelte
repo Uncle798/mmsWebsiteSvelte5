@@ -18,5 +18,5 @@
     </div>
 {/if}
 {#if data.paymentRecord}
-    <PaymentRecordCustomer paymentRecord={data.paymentRecord} classes='m-2 w-72 border border-primary-50 dark:border-primary-950 rounded-lg'/>
+    <PaymentRecordCustomer paymentRecord={data.paymentRecord} classes='m-2 w-72 border border-primary-50-950 rounded-lg'/>
 {/if}

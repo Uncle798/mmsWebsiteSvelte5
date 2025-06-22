@@ -33,7 +33,7 @@
 </Modal>
     {#if unit}
         <Header title='Unit number: {unit.num}' />
-        <Revenue label='Total revenue from this unit' amount={data.totalRevenue} classes="flex sticky top-9 dark:bg-tertiary-950 bg-tertiary-50 rounded-b-lg w-full p-2"/>
+        <Revenue label='Total revenue from this unit' amount={data.totalRevenue} classes="flex sticky top-9 bg-tertiary-50-950 rounded-b-lg w-full p-2"/>
         <div transition:fade={{duration:600}} class="m-1 sm:m-2 pt-8">
             <UnitEmployee {unit} classes=''/>
             <UnitNotesForm data={data.unitNotesForm} {unit} classes=''/>
@@ -42,7 +42,7 @@
                 {#each data.leases as lease}
                 {@const customer = data.customers.find((customer) => customer.id === lease.customerId)}
                     {#if !lease.leaseEnded}
-                        <div class="rounded-lg border-2 border-primary-50 dark:border-primary-950">
+                        <div class="rounded-lg border-2 border-primary-50-950">
                             <div class="flex flex-col ">
                                 <LeaseEmployee {lease}/>
                                 <button class="btn rounded-lg preset-filled-primary-50-950 mx-2" onclick={()=>{modalOpen=true; currentLeaseId=lease.leaseId}}>End lease</button>
@@ -58,7 +58,7 @@
                             {/if}
                         </div>
                     {:else}
-                        <div class="rounded-lg border-2 border-primary-50 dark:border-primary-950">
+                        <div class="rounded-lg border-2 border-primary-50-950">
                             <LeaseEmployee {lease} classes=''/>
                             {#if customer}
                             {@const address = data.addresses.find((address) => address.userId === customer.id)}

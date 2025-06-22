@@ -114,7 +114,7 @@
       </Modal>
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 m-1 sm:m-2 bg-surface-50-950 mt-24 sm:mt-18">
          {#each filteredUnits(availableUnits) as unit}
-            <div class="border-2 border-primary-50 dark:border-primary-950 rounded-lg">
+            <div class="border-2 border-primary-50-950 rounded-lg">
                <UnitEmployee {unit}/>
                <div class="text-center sm:col-span-2">
                   <a href="/employeeNewLease?unitNum={unit.num}" class="btn preset-filled-primary-50-950 rounded-lg m-2 text-wrap">Rent this unit</a>
@@ -137,7 +137,7 @@
             </label>
          </div>
          {#each filterSize(availableUnits) as unit}
-            <div class="border border-primary-50 dark:border-primary-950 rounded-lg">
+            <div class="border border-primary-50-950 rounded-lg">
                <UnitCustomer {unit}/>
                <div class="text-center sm:col-span-2">
                   <a href="/newLease?unitNum={unit.num}" class="btn preset-filled-primary-50-950 rounded-lg m-2 text-wrap">Rent this unit</a>
