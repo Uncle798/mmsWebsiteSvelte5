@@ -103,46 +103,46 @@
 		</article>
 	{/snippet}
 	</Modal>
-		<div class="bg-tertiary-50-950 fixed w-screen top-0 left-0 h-9 text-center font-bold z-40 ">{PUBLIC_COMPANY_NAME}</div>
+		<div class="bg-tertiary-50-950 fixed w-screen top-0 left-0 h-9 text-center font-bold z-40 "><a href="/">{PUBLIC_COMPANY_NAME}</a></div>
 	</header>
 {:else}
 	<header> 
-	<Modal
-		bind:open={menuOpen}
-		triggerBase="btn bg-primary-50-950 hover:shadow-xl hover:border-2 border-secondary-50-950 fixed top-0 left-0 z-50"
-		contentBase="bg-surface-100-900 p-2 space-y-2 shadow-xl w-[125px] h-screen"
-		positionerJustify="justify-start"
-		positionerAlign=""
-		positionerPadding=""
-		transitionsPositionerIn={{ x: -280, duration: 400 }}
-		transitionsPositionerOut={{ x: -280, duration: 400 }}
-	>
-	{#snippet trigger()}
-			<Menu class='mx-2 border-2 z-50' />	
-	{/snippet}
-	{#snippet content()}
-		<article class="">
-			<button class="absolute top-1 left-[90px] btn-icon" onclick={()=>{menuOpen=false}}><XCircleIcon aria-label='close' class=''/></button>
-			<ul>
-				{#each customerLinks as link}
-					<a href={link.link} class="anchor">{link.label}</a>
-				{/each}
-				<div class="absolute bottom-0 m-1 sm:m-2 mb-2  bg-surface-100-900">
-					{#if data.user}
-					<li><a href="/accountSettings" class="anchor">Settings</a></li>
-						<form action="/logout" method="post" use:enhance>
-							<li><button class="anchor" type="submit">Logout</button></li>
-						</form>
-					{:else}
-						<li><a class="anchor" href="/login">Login</a></li>
-					{/if}
-				</div>
-			</ul>
-			
-		</article>
-	{/snippet}
-	</Modal>
-		<div class="bg-tertiary-50-950 fixed w-screen top-0 left-0 h-9 text-center font-bold z-40 ">{PUBLIC_COMPANY_NAME}</div>
+		<Modal
+			bind:open={menuOpen}
+			triggerBase="btn bg-primary-50-950 hover:shadow-xl hover:border-2 border-secondary-50-950 fixed top-0 left-0 z-50"
+			contentBase="bg-surface-100-900 p-2 space-y-2 shadow-xl w-[125px] h-screen"
+			positionerJustify="justify-start"
+			positionerAlign=""
+			positionerPadding=""
+			transitionsPositionerIn={{ x: -280, duration: 400 }}
+			transitionsPositionerOut={{ x: -280, duration: 400 }}
+		>
+		{#snippet trigger()}
+			<Menu class='mx-2 border-2 z-50' aria-label='Main Menu'/>	
+		{/snippet}
+		{#snippet content()}
+			<article class="">
+				<button class="absolute top-1 left-[90px] btn-icon" onclick={()=>{menuOpen=false}}><XCircleIcon aria-label='close' class=''/></button>
+				<ul>
+					{#each customerLinks as link}
+						<a href={link.link} class="anchor">{link.label}</a>
+					{/each}
+					<div class="absolute bottom-0 m-1 sm:m-2 mb-2  bg-surface-100-900">
+						{#if data.user}
+						<li><a href="/accountSettings" class="anchor">Settings</a></li>
+							<form action="/logout" method="post" use:enhance>
+								<li><button class="anchor" type="submit">Logout</button></li>
+							</form>
+						{:else}
+							<li><a class="anchor" href="/login">Login</a></li>
+						{/if}
+					</div>
+				</ul>
+				
+			</article>
+		{/snippet}
+		</Modal>
+		<div class="bg-tertiary-50-950 fixed w-screen top-0 left-0 h-9 text-center font-bold z-40 "><a href="/" class="anchor">{PUBLIC_COMPANY_NAME}</a></div>
 	</header>
 {/if}
 	<ToastProvider placement='top-start'>
