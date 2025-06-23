@@ -18,7 +18,7 @@ export const GET: RequestHandler = async ({request}) => {
       });
       const todaysLeases:Lease[] =[];
       for(const lease of leases){
-         if(lease.leaseEffectiveDate.getDate() === new Date().getDate()){
+         if(lease.leaseEffectiveDate.getDate() === new Date().getDate() && !lease.subscriptionId){
             todaysLeases.push(lease);
          }
       }
