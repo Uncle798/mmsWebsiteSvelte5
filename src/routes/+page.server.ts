@@ -18,7 +18,8 @@ export const load:PageServerLoad = (async () => {
       },
       orderBy: {
          size: 'asc'
-      }
+      },
+      distinct: ['size']
    })
    const sizes:string[] = [];
    pricingData.forEach((datum) => {
