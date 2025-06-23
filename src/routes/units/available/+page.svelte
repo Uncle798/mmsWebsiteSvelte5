@@ -73,45 +73,45 @@
       ...loading available units
    </div>
 {:then availableUnits}   
+   <Modal
+      open={searchDrawerOpen}
+      onOpenChange={(event)=>(searchDrawerOpen = event.open)}
+      triggerBase='btn preset-filled-primary-50-950 rounded-lg fixed top-0 right-0 z-50'
+      contentBase='bg-surface-100-900 h-[120px] w-screen rounded-b-lg'
+      positionerJustify=''
+      positionerAlign=''
+      positionerPadding=''
+      transitionsPositionerIn={{y:-120, duration: 600}}
+      transitionsPositionerOut={{y:-120, duration: 600}}
+      modal={false}
+   >
+   {#snippet trigger()}
+      <SearchIcon aria-label='Search' />
+   {/snippet}
+
+   {#snippet content()}         
+      <button onclick={()=>searchDrawerOpen=false} class='btn preset-filled-primary-50-950 rounded-lg m-1 absolute top-0 right-0'><PanelTopClose aria-label='Close'/></button>
+      <div class="m-1 sm:m-2 mt-9 sm:mt-9">
+         <Combobox
+            data={comboboxData}
+            label='Filter by Size' 
+            bind:value={selectedSize} 
+            positionerBase='overflow-auto small:h-44 tall:h-96 venti:h-auto'
+            placeholder='Select size...'
+            onValueChange={(details) => {
+               searchDrawerOpen = false
+               selectedSize=details.value
+            }}
+         />
+      </div>
+   {/snippet}
+   </Modal>
    {#if data.user?.employee}
       <div class="flex fixed bg-tertiary-50-950 rounded-b-lg z-40 w-full top-9">
          <span class="m-1">Available: {availableUnits.length} of {data.unitCount}</span>
          <span class="m-1">Percentage: {Math.round((availableUnits.length*100)/data.unitCount)}%</span>
          <span class="m-1">Open revenue per month: {currencyFormatter.format(lostRevenue(availableUnits))}</span>
       </div>
-      <Modal
-         open={searchDrawerOpen}
-         onOpenChange={(event)=>(searchDrawerOpen = event.open)}
-         triggerBase='btn preset-filled-primary-50-950 rounded-lg fixed top-0 right-0 z-50'
-         contentBase='bg-surface-100-900 h-[120px] w-screen rounded-b-lg'
-         positionerJustify=''
-         positionerAlign=''
-         positionerPadding=''
-         transitionsPositionerIn={{y:-120, duration: 600}}
-         transitionsPositionerOut={{y:-120, duration: 600}}
-         modal={false}
-      >
-      {#snippet trigger()}
-         <SearchIcon aria-label='Search' />
-      {/snippet}
-      
-      {#snippet content()}         
-         <button onclick={()=>searchDrawerOpen=false} class='btn preset-filled-primary-50-950 rounded-lg m-1 absolute top-0 right-0'><PanelTopClose aria-label='Close'/></button>
-         <div class="m-1 sm:m-2 mt-9 sm:mt-9">
-            <Combobox
-               data={comboboxData}
-               label='Filter by Size' 
-               bind:value={selectedSize} 
-               positionerBase='overflow-auto small:h-44 tall:h-96 venti:h-auto'
-               placeholder='Select size...'
-               onValueChange={(details) => {
-                  searchDrawerOpen = false
-                  selectedSize=details.value
-               }}
-            />
-         </div>
-      {/snippet}
-      </Modal>
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 m-1 sm:m-2 bg-surface-50-950 mt-24 sm:mt-18">
          {#each filteredUnits(availableUnits) as unit}
             <div class="border-2 border-primary-50-950 rounded-lg">
@@ -124,18 +124,8 @@
          {/each}
       </div>
    {:else}
-      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 m-1 sm:m-2 pt-8" transition:fade={{duration:600}}>
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 m-1 sm:m-2 pt-8" in:fade={{duration:600}} out:fade={{duration:0}}>
          <span class="col-span-full h2 text-center">Available Units</span>
-         <div class="col-span-full">
-            <label for="sizeFilter" class="label-text">Filter by size
-               <select name="sizeFilter" id="sizeFilter" class="select col-span-full">
-                  <option value="">All</option>
-                  {#each data.sizes as size}
-                     <option value={size}>{size.replace(/^0/gm, '').replace(/x0/gm, 'x')}</option>
-                  {/each}
-               </select>
-            </label>
-         </div>
          {#each filterSize(availableUnits) as unit}
             <div class="border border-primary-50-950 rounded-lg">
                <UnitCustomer {unit}/>
