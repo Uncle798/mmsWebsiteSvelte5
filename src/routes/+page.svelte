@@ -4,27 +4,15 @@
    import PalouseHills from '$lib/Photos/Palouse_hills_northeast_of_Walla_Walla.jpg'
    import Header from "$lib/Header.svelte";
    import type { PageData } from "./$types";
-   import type { Address, Unit } from '@prisma/client'
+   import type { Unit } from '@prisma/client'
 	import UnitCustomer from "$lib/displayComponents/customerViews/UnitCustomer.svelte";
 	import { fade } from "svelte/transition";
 	import Placeholder from "$lib/displayComponents/Placeholder.svelte";
-	import AddressCustomer from "$lib/displayComponents/customerViews/AddressCustomer.svelte";
-	import type { PartialAddress } from "$lib/server/partialTypes";
    interface Props {
       data: PageData;
    }
    let { data }: Props = $props();
-   const wrapper = new Promise<Unit[]>(async res => {
-      const allAvailableUnits = await data.availableUnits;
-      const shownUnits:Unit[] = []
-      allAvailableUnits.forEach((unit) => {
-         const alreadyAdded = shownUnits.find((u) => unit.size === u.size)
-         if(!alreadyAdded){
-            shownUnits.push(unit)
-         } 
-      })
-      res(shownUnits);
-   })
+
    let sizeFilter = $state('');
    const filterSize = $derived((units:Unit[]) => units.filter((unit) => unit.size.includes(sizeFilter)))
    function setSizeFilter(event:Event){
@@ -37,7 +25,7 @@
 </script>
 
 <Header title='Home' />
-{#await wrapper}
+{#await data.availableUnits}
    <article class="m-2 mt-10">
       <div>
          <p>
@@ -49,7 +37,7 @@
          </p>
       </div>
    </article>
-   <div in:fade={{duration:600}}>
+   <div in:fade={{duration:600}} out:fade={{duration:0}}>
       <span>Loading available units...</span>
       <Placeholder numCols={1} numRows={4} heightClass='h-34' classes='z-0 sm:hidden'/>
       <Placeholder numCols={2} numRows={4} heightClass='h-34' classes='z-0 hidden sm:block md:hidden' />
@@ -81,7 +69,7 @@
          </label>
       </div>
       {#each filterSize(units) as unit}
-         <div class="flex flex-col border rounded-lg border-primary-50-950 justify-between">
+         <div class="flex flex-col border rounded-lg border-primary-50-950 justify-between" in:fade={{duration:600}}>
             <UnitCustomer {unit}/>
             <a class="btn preset-filled-primary-50-950 m-2" href="/newLease?unitNum={unit.num}">Rent this Unit</a>
          </div>
