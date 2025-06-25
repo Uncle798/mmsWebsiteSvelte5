@@ -205,7 +205,7 @@ export const dateSearchFormSchema = v.object({
 export type DateSearchFormSchema = typeof dateSearchFormSchema;
 
 export const blankFormSchema = v.object({});
-export type BlankFormSchema = typeof blankFormSchema
+export type BlankFormSchema = typeof blankFormSchema;
 
 export const creditCardFormSchema = v.object({
    ccNum: v.pipe(v.string(), v.creditCard()),
