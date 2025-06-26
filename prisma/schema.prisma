@@ -144,7 +144,6 @@ model Invoice {
 
 model RefundRecord {
   refundNumber     Int             @id @unique @default(autoincrement())
-  stripeId         String?         @unique
   customerId       String
   refundAmount     Float
   employeeId       String?
