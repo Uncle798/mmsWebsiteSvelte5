@@ -1,4 +1,4 @@
-import {  PrismaClient, User, PaymentType, Unit, Address, Lease, PaymentRecord, } from '@prisma/client';
+import {  PrismaClient, User, PaymentType, Unit, Address, Lease, PaymentRecord, RefundRecord, } from '@prisma/client';
 import { faker } from '@faker-js/faker';
 import dayjs  from 'dayjs';
 import  unitData from './unitData'
@@ -7,7 +7,7 @@ import sizeDescription  from './sizeDescription'
 import { PartialAddress, PartialLease, PartialInvoice, PartialPaymentRecord, PartialUnit,  PartialDiscount } from '../src/lib/server/partialTypes'
 
 const numUsers=unitData.length + 1500;
-const earliestStarting = new Date('2018-01-01');
+const earliestStarting = new Date('2020-01-01');
 
 const prisma = new PrismaClient({
    log: [
@@ -263,6 +263,20 @@ function makeInvoice(lease:Lease, month:Date, deposit:boolean){
    return invoice;
 }
 
+function makeLocalRefund(paymentRecord:PaymentRecord){
+   const refund:Omit<RefundRecord, 'refundNumber'> = {
+      customerId: paymentRecord.customerId,
+      employeeId: paymentRecord.employeeId,
+      refundAmount: paymentRecord.paymentAmount,
+      paymentRecordNum: paymentRecord.paymentNumber,
+      refundNotes: `Refund of payment record number ${paymentRecord.paymentNumber}.\n${paymentRecord.paymentNotes}`,
+      refundCreated: dayjs(paymentRecord.paymentCreated).add(1, 'months').toDate(),
+      refundCompleted: dayjs(paymentRecord.paymentCreated).add(1, 'months').toDate(),
+      deposit: paymentRecord.deposit,
+      refundType: paymentRecord.paymentType
+   }
+   return refund;
+}
 
 async function makeRefund(paymentRecord:PaymentRecord){
    const refund = await prisma.refundRecord.create({
@@ -439,6 +453,7 @@ async function  main (){
    const dbPayments = await prisma.paymentRecord.createManyAndReturn({
       data: paymentRecords
    });
+   const localRefunds:Omit<RefundRecord, 'refundNumber'>[] = [];
    for await(const record of dbPayments){
       await prisma.invoice.update({
          where: {
@@ -452,10 +467,23 @@ async function  main (){
          const invoice = dbInvoices.find((invoice) => invoice.invoiceNum === record.invoiceNum);
          const lease = dbLeases.find((lease) => lease.leaseId === invoice?.leaseId);
          if(lease?.leaseEnded){
-             await makeRefund(record)
+            localRefunds.push(makeLocalRefund(record))
          }
       }
-   }                 
+   }
+   const dbRefunds = await prisma.refundRecord.createManyAndReturn({
+      data: localRefunds
+   });
+   for(const refund of dbRefunds){
+      await prisma.paymentRecord.update({
+         where: {
+            paymentNumber: refund.paymentRecordNum,
+         },
+         data: {
+            refundNumber: refund.refundNumber,
+         }
+      })
+   }            
    const paymentEndTime = dayjs();
    const totalRecords = await countAll();
    console.log(`🧾 ${paymentRecords.length} payment records created in ${paymentEndTime.diff(invoiceEndTime, 'second')} seconds`);
