@@ -5,7 +5,6 @@
    import dialCodes from '$lib/dialCodes.json'
 	import { type AddressFormSchema } from '$lib/formSchemas/schemas';
 	import { invalidateAll } from '$app/navigation';
-	import { onMount } from 'svelte';
 	import FormProgress from '$lib/formComponents/FormSubmitWithProgress.svelte';
 	import FormMessage from '$lib/formComponents/FormMessage.svelte';
 
