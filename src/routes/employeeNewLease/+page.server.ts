@@ -8,11 +8,8 @@ import { prisma } from '$lib/server/prisma';
 import type { PartialUser } from '$lib/server/partialTypes';
 import type { Address, DiscountCode } from '@prisma/client';
 import { ratelimit } from '$lib/server/rateLimit';
-import { stripe } from "$lib/server/stripe";
-import dayjs from "dayjs";
 import { qStash } from '$lib/server/qStash';
 import { PUBLIC_URL } from '$env/static/public';
-import { MY_EMAIL } from '$env/static/private';
 
 export const load = (async (event) => {
    const unitNum = event.url.searchParams.get('unitNum');
@@ -223,59 +220,7 @@ export const actions: Actions = {
       if(customer!.organizationName){
          name=customer!.organizationName;
       }
-      const existingStripeCustomer = await stripe.customers.search({
-         query: `email:'${customer!.email}'`
-      })
-      let stripeId:string | null =  null;
-      if(existingStripeCustomer.data[0]){
-         stripeId = existingStripeCustomer.data[0].id
-      }
-      if(existingStripeCustomer.data.length === 0){
-         const stripeCustomer = await stripe.customers.create({
-            name: name ? name : undefined,
-            email: MY_EMAIL, // test mode
-            // email: customer!.email ? customer?.email : undefined, // prod mode
-            address: {
-               line1: address!.address1,
-               line2: address!.address2 ? address!.address2 : undefined,
-               city: address!.city,
-               state: address!.state,
-               postal_code: address!.postalCode,
-               country: address!.country,
-            },
-            description: `Unit number ${unit!.num.replace(/^0+/gm, '')} starting ${dayjs(lease.leaseCreatedAt).format('M/YYYY')}`,
-            metadata: {
-               customerId: customer!.id
-            }
-         })
-         stripeId = stripeCustomer.id
-      } else {
-         await stripe.customers.update(existingStripeCustomer.data[0].id, {
-            name: name,
-            address: {
-               line1: address!.address1,
-               line2: address!.address2 ? address!.address2 : undefined,
-               city: address!.city,
-               state: address!.state,
-               postal_code: address!.postalCode,
-               country: address!.country,
-            },
-            description: `Unit number ${unit!.num.replace(/^0+/gm, '')} starting ${dayjs(lease.leaseCreatedAt).format('M/YYYY')}`,
-            metadata: {
-               customerId: customer!.id
-            }
-         })
-      }
-      await prisma.user.update({
-         where: {
-            id: customer!.id
-         },
-         data: {
-            stripeId
-         }
-      })
-
-      redirect(303, `/makePayment?invoiceNum=${invoice.invoiceNum}&stripeId=${stripeId}&newLease=true`)
+      redirect(303, `/makePayment?invoiceNum=${invoice.invoiceNum}&newLease=true`)
    },
    selectCustomer: async (event ) => {
       if(!event.locals.user?.employee){
