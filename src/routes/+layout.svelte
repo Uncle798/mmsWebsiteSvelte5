@@ -48,7 +48,6 @@
 	]
 	let adminLinks:Link[] = [
 		{link: '/users', label:'All Users'},
-
 	]
 	let menuOpen = $state(false);
 
