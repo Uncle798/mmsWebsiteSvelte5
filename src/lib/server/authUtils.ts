@@ -80,7 +80,7 @@ export async function invalidateSession(sessionId:string):Promise<void> {
 }
 
 export function setSessionTokenCookie(event: RequestEvent, token:string, expiresAt: Date):void {
-   event.cookies.set('session', token, {
+   event.cookies.set('demoSession', token, {
       httpOnly: true,
       path: '/',
       secure: import.meta.env.PROD,
@@ -90,7 +90,7 @@ export function setSessionTokenCookie(event: RequestEvent, token:string, expires
 }
 
 export function deleteSessionTokenCookie(event: RequestEvent):void {
-   event.cookies.set('session', '', {
+   event.cookies.set('demoSession', '', {
       httpOnly: true,
       path: '/',
       secure: import.meta.env.PROD,
