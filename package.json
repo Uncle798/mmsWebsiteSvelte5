@@ -10,12 +10,12 @@
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
 		"format": "prettier --write .",
 		"lint": "prettier --check . && eslint .",
-		"postinstall": "prisma generate && prisma db demoSeed",
+		"postinstall": "prisma generate && prisma db seed",
 		"prepare": "svelte-kit sync",
 		"price": "tsx stripe/prices.ts"
 	},
 	"prisma": {
-		"seed": "tsx prisma/seed.ts",
+		"seed": "tsx prisma/demoSeed.ts",
 		"demoSeed": "tsx prisma/demoSeed.ts"
 	},
 	"devDependencies": {
