@@ -4,7 +4,7 @@ import { validateSessionToken } from "$lib/server/authUtils";
 import type { Handle } from "@sveltejs/kit";
 
 export const handle: Handle = async ({ event, resolve }) => {
-   const token = event.cookies.get('session') ?? null;
+   const token = event.cookies.get('demoSession') ?? null;
    if(!token){
       event.locals.user = null;
       event.locals.session = null;
