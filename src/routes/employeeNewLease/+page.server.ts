@@ -4,9 +4,8 @@ import { fail, message, superValidate} from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import { newLeaseSchema, registerFormSchema, addressFormSchema, leaseDiscountFormSchema  } from '$lib/formSchemas/schemas'
 import type { PageServerLoad, Actions } from './$types';
-import { prisma } from '$lib/server/prisma';
-import type { PartialUser } from '$lib/server/partialTypes';
-import type { Address, DiscountCode } from '@prisma/client';
+import { prisma } from '$lib/server/prisma'; 
+import type { Address, DiscountCode, User } from '@prisma/client';
 import { ratelimit } from '$lib/server/rateLimit';
 import { qStash } from '$lib/server/qStash';
 import { PUBLIC_URL } from '$env/static/public';
@@ -31,8 +30,8 @@ export const load = (async (event) => {
          num: unitNum
       }
    })
-   let customer:PartialUser | null = null;
-   let customers:PartialUser[] = [];
+   let customer:User | null = null;
+   let customers:User[] = [];
    let address:Address | null = null;
    let discount:DiscountCode | null = null;
    if(userId){
