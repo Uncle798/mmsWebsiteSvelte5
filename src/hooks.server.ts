@@ -16,7 +16,7 @@ export const handle: Handle = async ({ event, resolve }) => {
    }
    const { session, user } = await validateSessionToken(token);
    if(session){
-      event.cookies.set('session', token, {
+      event.cookies.set('demoSession', token, {
          httpOnly: true,
          path: '/',
          secure: import.meta.env.PROD,
@@ -24,7 +24,7 @@ export const handle: Handle = async ({ event, resolve }) => {
          expires: session.expiresAt
       })
    } else {      
-      event.cookies.set('session', '', {
+      event.cookies.set('demoSession', '', {
          httpOnly: true,
          path: '/',
          secure: import.meta.env.PROD,
