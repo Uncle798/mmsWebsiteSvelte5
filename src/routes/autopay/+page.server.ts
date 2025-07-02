@@ -1,7 +1,6 @@
-import { fail, redirect } from '@sveltejs/kit';
+import { error, redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { prisma } from '$lib/server/prisma';
-import dayjs from 'dayjs';
 import { superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import { creditCardFormSchema } from '$lib/formSchemas/schemas';
@@ -13,7 +12,7 @@ export const load = (async (event) => {
       redirect(302, `/login?toast=unauthorized&redirectTo=${redirectTo}&leaseId=${leaseId}`)
    }
    if(!leaseId){
-      fail(400)
+      error(400)
    }
    const lease = await prisma.lease.findUnique({
       where: {
@@ -21,7 +20,7 @@ export const load = (async (event) => {
       }
    })
    if(!lease){
-      fail(404)
+      error(404)
    }
    const customer = await prisma.user.findUnique({
       where: {
@@ -29,7 +28,7 @@ export const load = (async (event) => {
       }
    })
    if(!customer){
-      fail(404)
+      error(404)
    }
    const invoiceNum = await event.fetch('/api/newAutoPay', {
       method: 'POST',
@@ -45,7 +44,7 @@ export const load = (async (event) => {
       }
    })
    if(!invoice){
-      fail(404)
+      error(404)
    }
    const creditCardForm = await superValidate(valibot(creditCardFormSchema))
    return { customer, lease, redirectTo, invoice, creditCardForm };

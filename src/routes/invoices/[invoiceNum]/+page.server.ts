@@ -1,11 +1,11 @@
 import { prisma } from '$lib/server/prisma';
 import type { PageServerLoad } from './$types';
-import { fail, redirect } from '@sveltejs/kit';
+import { error, redirect } from '@sveltejs/kit';
 
 export const load = (async (event) => {
    const invoiceNum = event.params.invoiceNum;
    if(!invoiceNum){
-      fail(404);
+      error(404);
    }
    if(!event.locals.user){
       redirect(302, `/login?toast=unauthorized&redirectTo=invoice&invoiceNum=${invoiceNum}`)
@@ -18,7 +18,7 @@ export const load = (async (event) => {
             },
          })
          if(!invoice){
-            fail(404)
+            error(404)
          }
          const customer = await prisma.user.findFirst({
             where: {
@@ -38,10 +38,10 @@ export const load = (async (event) => {
                },
             })
             if(!invoice){
-               fail(404)
+               error(404)
             }
             if(invoice?.customerId !== event.locals.user.id){
-               fail(400);
+               error(400);
             }
             const customer = await prisma.user.findFirst({
                where: {

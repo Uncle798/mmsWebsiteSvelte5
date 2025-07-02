@@ -1,6 +1,6 @@
 import { prisma } from '$lib/server/prisma';
 import { arrayOfYears } from '$lib/server/utils';
-import { fail } from '@sveltejs/kit';
+import { error, fail } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 
 export const load = (async () => {
@@ -10,7 +10,7 @@ export const load = (async () => {
         }
     })
     if(!earliestRecord){
-        fail(404);
+        error(404);
     }
     const years = arrayOfYears(earliestRecord!.paymentCreated.getFullYear())
     return {years};

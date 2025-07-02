@@ -1,5 +1,5 @@
 import { prisma } from '$lib/server/prisma';
-import { fail, redirect } from '@sveltejs/kit';
+import { error, redirect } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
 import type { RefundRecord } from '@prisma/client';
 import { message, superValidate } from 'sveltekit-superforms';
@@ -13,7 +13,7 @@ export const load = (async (event) => {
       redirect(302, `/login?toast=unauthorized?redirectTo=paymentRecord&paymentRecordNum=${paymentRecordNum}`)
    }
    if(!paymentRecordNum){
-      return fail(404)
+      error(404)
    }
    if(paymentRecordNum){
       if(event.locals.user.employee){
@@ -56,7 +56,7 @@ export const load = (async (event) => {
             },
          })
          if(paymentRecord?.customerId !== event.locals.user.id){
-            fail(400)
+            error(400)
          }
          const customer = await prisma.user.findUnique({
             where: {
@@ -116,7 +116,16 @@ export const actions: Actions = {
       if(!customer){
          message(form, 'Customer not found')
       }
-      await sendPaymentReceipt(customer!, paymentRecord!)
+      const address = await prisma.address.findFirst({
+         where: {
+            AND: [
+               {softDelete: false},
+               {userId: customer!.id}
+            ]
+         }
+      })
+
+      await sendPaymentReceipt(customer!, paymentRecord!, address!)
       return {form}
    }
 }

@@ -1,5 +1,5 @@
 import type { PageServerLoad, Actions } from './$types';
-import { fail, redirect } from '@sveltejs/kit';
+import { error, redirect } from '@sveltejs/kit';
 import { prisma } from '$lib/server/prisma'
 import { message, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
@@ -21,7 +21,7 @@ export const load = (async (event) => {
          }
       })
       if(!paymentRecord){
-         fail(404);
+         error(404);
       }
       return { paymentRecord, refundForm, searchForm }
    }

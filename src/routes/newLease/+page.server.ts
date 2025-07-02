@@ -3,9 +3,8 @@ import type { Actions, PageServerLoad } from './$types';
 import {superValidate, message } from 'sveltekit-superforms';
 import { addressFormSchema, leaseDiscountFormSchema, nameFormSchema, newLeaseSchema } from "$lib/formSchemas/schemas";
 import { valibot } from 'sveltekit-superforms/adapters';
-import { redirect } from "@sveltejs/kit";
+import { error, redirect } from "@sveltejs/kit";
 import { ratelimit } from "$lib/server/rateLimit";
-import { fail } from "@sveltejs/kit";
 import { qStash } from "$lib/server/qStash";
 import { PUBLIC_URL } from "$env/static/public";
 
@@ -81,7 +80,7 @@ export const actions:Actions = {
          console.error(err);
       })
       if(!unit){
-         return fail(404, {message: 'Unit not found'})
+         error(404, {message: 'Unit not found'})
       }
       const currentLease = await prisma.lease.findFirst({
          where:{
@@ -103,7 +102,7 @@ export const actions:Actions = {
          }
       })
       if(!address){
-         return fail(400, {message: 'unable to find address'})
+         error(400, {message: 'unable to find address'})
       }
       const employees = await prisma.user.findMany({
          where:{

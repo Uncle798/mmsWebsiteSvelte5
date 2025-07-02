@@ -1,8 +1,8 @@
-import { superValidate, message, fail } from 'sveltekit-superforms';
+import { superValidate, message } from 'sveltekit-superforms';
 import type { Actions } from './$types';
 import { valibot } from 'sveltekit-superforms/adapters';
 import { newDiscountFormSchema } from '$lib/formSchemas/schemas';
-import { redirect } from '@sveltejs/kit';
+import { error, redirect } from '@sveltejs/kit';
 import { ratelimit } from '$lib/server/rateLimit';
 import { prisma } from '$lib/server/prisma';
 
@@ -20,7 +20,7 @@ export const actions: Actions = {
          return message(newDiscountForm, `Please wait ${timeRemaining}s before trying again.`)
       }
       if(!newDiscountForm.valid){
-         fail(400, newDiscountForm);
+         error(400);
       }
       await prisma.discountCode.create({
          data: {

@@ -1,11 +1,10 @@
-import { redirect } from '@sveltejs/kit';
+import { error, redirect } from '@sveltejs/kit';
 import { superValidate, message } from 'sveltekit-superforms';
 import { ratelimit } from "$lib/server/rateLimit";
 import { valibot } from 'sveltekit-superforms/adapters';
 import type { PageServerLoad, Actions } from './$types';
 import { leaseEndFormSchema } from '$lib/formSchemas/schemas';
 import { prisma } from '$lib/server/prisma';
-import { fail } from '@sveltejs/kit';
 
 export const load = (async () => {
     return {};
@@ -32,7 +31,7 @@ export const actions: Actions = {
          }
       })
       if(!lease){
-         return fail(404)
+         error(404)
       }
       if(lease.customerId !== event.locals.user.id && !event.locals.user.employee){
          return message(leaseEndForm, 'Not your lease')

@@ -1,6 +1,6 @@
 
-import { redirect } from '@sveltejs/kit';
-import { fail, message, superValidate} from 'sveltekit-superforms';
+import { error, redirect } from '@sveltejs/kit';
+import { message, superValidate} from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import { newLeaseSchema, registerFormSchema, addressFormSchema, leaseDiscountFormSchema  } from '$lib/formSchemas/schemas'
 import type { PageServerLoad, Actions } from './$types';
@@ -102,7 +102,7 @@ export const actions: Actions = {
          }
       })
       if(!customer){
-         return fail(404, {leaseForm});
+         error(404);
       }
       const unit = await prisma.unit.findUnique({
          where: {
@@ -110,7 +110,7 @@ export const actions: Actions = {
          }
       })
       if(!unit){
-         return fail(404, {leaseForm})
+         error(404)
       }
       const currentLease = await prisma.lease.findFirst({
          where:{
@@ -133,7 +133,7 @@ export const actions: Actions = {
          }
       })
       if(!address){
-         return fail(400, {leaseForm ,message: 'unable to find address'})
+         error(400, {message: 'unable to find address'})
       }
       const employee = await prisma.user.findUnique({
          where:{

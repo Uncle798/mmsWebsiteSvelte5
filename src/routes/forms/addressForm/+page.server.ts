@@ -4,7 +4,7 @@ import type { PageServerLoad, Actions } from './$types';
 import { valibot } from 'sveltekit-superforms/adapters';
 import { addressFormSchema } from '$lib/formSchemas/schemas';
 import { prisma } from '$lib/server/prisma';
-import { fail, redirect } from '@sveltejs/kit';
+import { error, redirect } from '@sveltejs/kit';
 import { DEV_ME_KEY } from '$env/static/private';
 
 export const load:PageServerLoad = (async () => {
@@ -20,7 +20,7 @@ export const actions: Actions = {
       }
       const userId = event.url.searchParams.get('userId');
       if(!userId){
-         return fail(400, {message: 'User not specified'})
+         error(400, {message: 'User not specified'})
       }
       const formData = await event.request.formData();
       const addressForm = await superValidate(formData, valibot(addressFormSchema));
@@ -30,7 +30,7 @@ export const actions: Actions = {
 			return message(addressForm, `Please wait ${timeRemaining}s before trying again.`)
 		}
       if( !event.locals.user.employee && userId !== event.locals.user.id){
-         return fail(403, {message: 'Not your address to change'});
+         error(403, {message: 'Not your address to change'});
       }
       let oldAddress = await prisma.address.findFirst({
          where: {

@@ -3,7 +3,7 @@ import { superValidate, message } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import { ratelimit } from '$lib/server/rateLimit';
 import { prisma } from '$lib/server/prisma';
-import { fail, redirect } from '@sveltejs/kit';
+import { error, redirect } from '@sveltejs/kit';
 import { unitPricingFormSchema } from '$lib/formSchemas/schemas';
 
 export const actions: Actions = {
@@ -15,7 +15,7 @@ export const actions: Actions = {
       const unitPricingForm = await superValidate(formData, valibot(unitPricingFormSchema));
       
       if(!unitPricingForm.valid){
-         return fail(400, {unitPricingForm});
+         error(400);
       }
       const { success, reset } = await ratelimit.employeeForm.limit(event.locals.user?.id)
 		if(!success) {

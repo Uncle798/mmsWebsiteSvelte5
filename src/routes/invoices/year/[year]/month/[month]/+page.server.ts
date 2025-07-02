@@ -1,4 +1,4 @@
-import { fail, redirect } from '@sveltejs/kit';
+import { error, redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc'
@@ -20,7 +20,7 @@ export const load = (async (event) => {
       monthWithLeadingZero = '0'+ monthWithLeadingZero
    }
    if(parseInt(monthWithLeadingZero, 10) > 12) {
-      fail(404)
+      error(404)
    }
    const startDate = dayjs.utc(`${year}-${monthWithLeadingZero}`).startOf('month').toDate()
    const endDate = dayjs.utc(`${year}-${monthWithLeadingZero}`).endOf('month').toDate()

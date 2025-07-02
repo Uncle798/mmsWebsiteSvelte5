@@ -3,8 +3,7 @@ import { prisma } from '$lib/server/prisma';
 import { decryptRSA } from '@anvilco/encryption';
 import { ANVIL_RSA_PRIVATE_KEY_BASE64 } from '$env/static/private';
 import type { RequestHandler } from './$types';
-import { stripe } from '$lib/server/stripe';
-import { fail } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import dayjs from 'dayjs';
 
 const key = Buffer.from(ANVIL_RSA_PRIVATE_KEY_BASE64, 'base64').toString('ascii');
@@ -42,7 +41,7 @@ export const POST: RequestHandler = async (event) => {
                   }
                })
                if(!lease){
-                  fail(404)
+                  error(404)
                }
                const customer = await prisma.user.findUnique({
                   where: {
