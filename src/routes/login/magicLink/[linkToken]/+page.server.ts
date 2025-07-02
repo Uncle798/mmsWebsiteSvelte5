@@ -21,7 +21,7 @@ export const load = (async (event) => {
       }
    })
    if(!user){
-      error(500)
+      error(500, {message: 'User not found'})
    }
    const token =  generateSessionToken();
    const session = await createSession(token, user.id!);
