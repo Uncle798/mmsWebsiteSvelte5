@@ -18,6 +18,9 @@
 		"seed": "tsx prisma/demoSeed.ts",
 		"demoSeed": "tsx prisma/demoSeed.ts"
 	},
+	"pnpm": {
+    	"neverBuiltDependencies": []
+  	},
 	"devDependencies": {
 		"@faker-js/faker": "^8.4.1",
 		"@skeletonlabs/skeleton": "3.0.0-next.11",
