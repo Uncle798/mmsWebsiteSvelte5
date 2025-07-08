@@ -30,27 +30,28 @@ export const load = (async (event) => {
    const unitNum = event.url.searchParams.get('unitNum');
    const invoiceNum = event.url.searchParams.get('invoiceNum');
    const paymentRecordNum = event.url.searchParams.get('paymentRecordNum');
-   switch (redirectTo) {
-      case 'home':
-         redirect(303, '/');
-      case 'newLease':
-         redirect(302, `/newLease?unitNum=${unitNum}`);
-      case 'units':
-         if(unitNum){
-            redirect(302, `/units/${unitNum}`);
-         }
-         redirect(302, '/units');
-      case 'invoice':
-         if(invoiceNum){
-            redirect(302, `/invoices/${invoiceNum}`);
-         }
-         redirect(302, `/invoices`);
-      case 'paymentRecord':
-         if(paymentRecordNum){
-            redirect(302, `/paymentRecords/${paymentRecordNum}`);
-         }
-         redirect(302, '/paymentRecords');
-      default:
-         redirect(302, '/');
-   }
+   // switch (redirectTo) {
+   //    case 'home':
+   //       redirect(303, '/');
+   //    case 'newLease':
+   //       redirect(302, `/newLease?unitNum=${unitNum}`);
+   //    case 'units':
+   //       if(unitNum){
+   //          redirect(302, `/units/${unitNum}`);
+   //       }
+   //       redirect(302, '/units');
+   //    case 'invoice':
+   //       if(invoiceNum){
+   //          redirect(302, `/invoices/${invoiceNum}`);
+   //       }
+   //       redirect(302, `/invoices`);
+   //    case 'paymentRecord':
+   //       if(paymentRecordNum){
+   //          redirect(302, `/paymentRecords/${paymentRecordNum}`);
+   //       }
+   //       redirect(302, '/paymentRecords');
+   //    default:
+   //       redirect(302, '/');
+   // }
+   return {}
 }) satisfies PageServerLoad;

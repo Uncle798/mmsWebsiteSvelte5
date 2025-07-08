@@ -81,9 +81,10 @@ export async function invalidateSession(sessionId:string):Promise<void> {
 
 export function setSessionTokenCookie(event: RequestEvent, token:string, expiresAt: Date):void {
    event.cookies.set('demoSession', token, {
+      domain: 'ministoragemanagementsoftware.com',
       httpOnly: true,
       path: '/',
-      secure: import.meta.env.PROD,
+      secure: true,
       sameSite: 'lax',
       expires: expiresAt
    })
@@ -91,9 +92,10 @@ export function setSessionTokenCookie(event: RequestEvent, token:string, expires
 
 export function deleteSessionTokenCookie(event: RequestEvent):void {
    event.cookies.set('demoSession', '', {
+      domain: 'ministoragemanagementsoftware.com',
       httpOnly: true,
       path: '/',
-      secure: import.meta.env.PROD,
+      secure: true,
       sameSite: 'lax',
       maxAge: 0
    })
