@@ -42,6 +42,8 @@ export async function validateSessionToken(token:string):Promise<SessionValidati
          id: session?.userId
       },
    })
+   console.log('user', user)
+   console.log('session', session)
    if(!session){
       return {session: null, user: null};
    }
