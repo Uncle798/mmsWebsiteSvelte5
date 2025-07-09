@@ -1,6 +1,6 @@
 
 import { PrismaClient } from "@prisma/client";
-import { encodeBase32LowerCaseNoPadding } from '@oslojs/encoding';
+import { createSession } from '../src/lib/server/authUtils'
 import dayjs from "dayjs";
 
 const prisma = new PrismaClient();
@@ -24,20 +24,18 @@ async function main() {
             }
          });
       }
+      console.log('user', user)
       let session = await prisma.session.findFirst({
          where: {
             userId: user.id
          }
       })
       if(!session){
-         session = await prisma.session.create({
-            data: {
-               userId: user.id,
-               expiresAt: dayjs().add(1, 'month').toDate(),
-               id: process.env.DEMO_SESSION_TOKEN!,
-            }
-         })
+         if(process.env.DEMO_SESSION_TOKEN){
+            const session = createSession(process.env.DEMO_SESSION_TOKEN!, user.id)
+         }
       }
+      console.log('session', session)
    }
 }
 
