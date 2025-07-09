@@ -1,5 +1,6 @@
 <script lang="ts">
 
 </script>
-
-...loading
+<div class="mt-10">
+   ...loading
+</div>
