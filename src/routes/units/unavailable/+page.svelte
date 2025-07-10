@@ -5,7 +5,8 @@
 	import { Combobox, Modal } from '@skeletonlabs/skeleton-svelte';
    import type { PageData } from './$types';
    import type { Unit } from '@prisma/client';
-	import { SearchIcon, PanelTopClose } from 'lucide-svelte';
+	import { SearchIcon, PanelTopClose, XCircle } from 'lucide-svelte';
+	import { onMount } from 'svelte';
    let { data }: { data: PageData } = $props();
    let sizeFilter = $state('');
    const filterSize = $derived((units:Unit[]) => units.filter((unit) => unit.size.includes(sizeFilter)))
@@ -37,6 +38,10 @@
    }
 	let searchDrawerOpen = $state(false);
 	let selectedSize = $state(['']);
+   let descriptionModalOpen = $state(true);
+   onMount(()=>{
+      setTimeout(()=>(descriptionModalOpen = false), 3000)
+   })
 </script>
 <div class="flex fixed bg-tertiary-50-950 w-full rounded-b-lg top-9" transition:fade={{duration:600}}>
    <span class="m-2">Unavailable: {data.units.length} of {data.unitCount}</span>
@@ -73,6 +78,19 @@
             }}
          />
    </div>
+   {/snippet}
+</Modal>
+<Modal
+   open={descriptionModalOpen}
+   onOpenChange={(event) =>(descriptionModalOpen = event.open)}
+   contentBase='card bg-surface-100-900 p-2 space-y-4 shadow-xl max-w-screen-sm'
+   backdropClasses='backdrop-blur-sm'
+>
+   {#snippet content()}
+      <div>
+         Need to clean a unit? Mark it unavailable and it will show up here. This is a todo list.
+         <button class="btn" onclick={()=>(descriptionModalOpen=false)}>Close</button>
+      </div>
    {/snippet}
 </Modal>
 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 m-1 sm:m-2 sm:mt-20 mt-32">
