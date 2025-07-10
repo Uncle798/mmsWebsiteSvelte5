@@ -33,9 +33,11 @@
       openDelay={200}
    >
       {#snippet trigger()}
-         <div class="text-right col-start-1">Description</div>
-         <div class="font-medium col-start-2 text-wrap ">{unit.description}</div>
-      {/snippet}
+         <div class="grid grid-cols-2 gap-x-2">
+            <div class="text-right col-start-1">Description</div>
+            <div class="font-medium col-start-2 text-wrap ">{unit.description}</div>
+         </div>
+            {/snippet}
       {#snippet content()}
          We can customize this description.
       {/snippet}
