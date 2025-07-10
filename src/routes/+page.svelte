@@ -64,7 +64,9 @@
             open={copyTooltipOpen}
             onOpenChange={(e) => copyTooltipOpen = e.open}
             positioning={{placement: 'top'}}
+            contentBase="card preset-filled p-4"
             openDelay={200}
+            zIndex='40'
          >
             {#snippet trigger()}
                <p>
