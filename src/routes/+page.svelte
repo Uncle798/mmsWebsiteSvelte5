@@ -64,7 +64,7 @@
             open={copyTooltipOpen}
             onOpenChange={(e) => copyTooltipOpen = e.open}
             positioning={{placement: 'top'}}
-            contentBase="card preset-filled p-4"
+            contentBase="card preset-filled p-2"
             openDelay={200}
             zIndex='40'
          >
@@ -76,7 +76,7 @@
                <p>
                   Family owned and operated, you can contact us at 
                   <a href="tel:{PUBLIC_PHONE}" class="anchor">
-                     { formattedPhone }</a>, or <a href="mailto:{PUBLIC_COMPANY_EMAIL}" class="anchor">{PUBLIC_COMPANY_EMAIL}</a> the office and gates are open 8:00 am to 8:00 pm.
+                     { formattedPhone }</a>, or <a href="mailto:{PUBLIC_COMPANY_EMAIL}" class="anchor">{PUBLIC_COMPANY_EMAIL}</a>. The office and gates are open 8:00 am to 8:00 pm.
                </p>
             {/snippet}
             {#snippet content()}
