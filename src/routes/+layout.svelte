@@ -108,7 +108,7 @@
 	<header> 
 		<Modal
 			bind:open={menuOpen}
-			triggerBase="btn bg-primary-50-950 hover:shadow-xl hover:border-2 border-secondary-50-950 fixed top-0 left-0 z-50 h-12 sm:h-auto"
+			triggerBase="btn bg-primary-50-950 hover:shadow-xl hover:border-2 border-secondary-50-950 fixed top-0 left-0 z-50 h-12 sm:h-9"
 			contentBase="bg-surface-100-900 p-2 space-y-2 shadow-xl w-[125px] h-screen"
 			positionerJustify="justify-start"
 			positionerAlign=""
