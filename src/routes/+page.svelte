@@ -67,10 +67,12 @@
             openDelay={200}
          >
             {#snippet trigger()}
-               
-               Thank you for visiting {PUBLIC_COMPANY_NAME}!
-               Conveniently located, {PUBLIC_COMPANY_NAME} is the place to safely and securely store your belongings.
-               <p>Family owned and operated, you can contact us at 
+               <p>
+                  Thank you for visiting {PUBLIC_COMPANY_NAME}!
+                  Conveniently located, {PUBLIC_COMPANY_NAME} is the place to safely and securely store your belongings.
+               </p>
+               <p>
+                  Family owned and operated, you can contact us at 
                   <a href="tel:{PUBLIC_PHONE}" class="anchor">
                      { formattedPhone }</a>, or <a href="mailto:{PUBLIC_COMPANY_EMAIL}" class="anchor">{PUBLIC_COMPANY_EMAIL}</a> the office and gates are open 8:00 am to 8:00 pm.
                </p>

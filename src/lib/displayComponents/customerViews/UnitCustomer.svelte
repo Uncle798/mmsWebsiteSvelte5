@@ -29,11 +29,12 @@
       open={unitCustomerDescriptionTooltipOpen}
       onOpenChange={(e) => unitCustomerDescriptionTooltipOpen = e.open}
       positioning={{placement: 'top-end'}}
+      contentBase="card preset-filled p-4"
       openDelay={200}
    >
       {#snippet trigger()}
-         <div>{unit.description}</div>
-         <div class="text-right text-wrap">Description</div>
+         <div class="text-right">Description</div>
+         <div class="font-medium text-wrap">{unit.description}</div>
       {/snippet}
       {#snippet content()}
          We can customize this description.
