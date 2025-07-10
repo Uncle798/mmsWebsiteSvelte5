@@ -40,7 +40,7 @@
 	let selectedSize = $state(['']);
    let descriptionModalOpen = $state(true);
    onMount(()=>{
-      setTimeout(()=>(descriptionModalOpen = false), 3000)
+      setTimeout(()=>(descriptionModalOpen = false), 5000)
    })
 </script>
 <div class="flex fixed bg-tertiary-50-950 w-full rounded-b-lg top-9" transition:fade={{duration:600}}>
@@ -84,7 +84,7 @@
    open={descriptionModalOpen}
    onOpenChange={(event) =>(descriptionModalOpen = event.open)}
    contentBase='card bg-surface-100-900 p-2 space-y-4 shadow-xl max-w-screen-sm'
-   backdropClasses='backdrop-blur-sm'
+   backdropClasses='backdrop-blur-lg'
 >
    {#snippet content()}
       <div>
