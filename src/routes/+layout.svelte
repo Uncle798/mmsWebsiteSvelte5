@@ -23,7 +23,7 @@
 	]
 	let employeeLinks:Link[] = [
 		{link: '/', label: 'Home'},
-		{link: '/units', label:'Units'},
+		{link: '/units', label:'All Units'},
 		{link: '/units/available', label:'Available Units'},
 		{link: '/units/unavailable', label: 'Unavailable units'},
 		{link: '/units/recentlyMovedOut', label: 'Recently moved out Units'},

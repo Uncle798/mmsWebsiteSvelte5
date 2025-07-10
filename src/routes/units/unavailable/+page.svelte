@@ -87,10 +87,8 @@
    backdropClasses='backdrop-blur-lg'
 >
    {#snippet content()}
-      <div>
-         Need to clean a unit? Mark it unavailable and it will show up here. This is a todo list.
-         <button class="btn" onclick={()=>(descriptionModalOpen=false)}>Close</button>
-      </div>
+      Need to clean a unit? Unit have a broken door? Mark it unavailable on its page or, <a href="/units" class="anchor">all units</a> and it will show up here. This is a todo list.
+      <button class="btn" onclick={()=>(descriptionModalOpen=false)}>Close</button>
    {/snippet}
 </Modal>
 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 m-1 sm:m-2 sm:mt-20 mt-32">
