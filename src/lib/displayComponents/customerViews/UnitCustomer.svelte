@@ -1,12 +1,14 @@
 <script lang="ts">
    import type { Unit, Lease } from '@prisma/client';
 	import HorizontalDivider from '../HorizontalDivider.svelte';
+	import { Tooltip } from '@skeletonlabs/skeleton-svelte';
    interface Props {
       unit: Unit,
       classes?: string;
    }
    let { unit, classes }:Props = $props();
    const currencyFormatter = new Intl.NumberFormat('en-US', {style:'currency', currency:'USD'});
+   let unitCustomerDescriptionTooltipOpen = $state(false)
 </script>
 
 <div class="grid grid-cols-2 gap-x-2 {classes}">
@@ -23,6 +25,19 @@
    <div class="text-right">Deposit</div>
    <div>{currencyFormatter.format(unit.deposit)}</div>
    <HorizontalDivider classes='col-span-2'/>
-   <div class="text-right text-wrap">Description</div>
-   <div>{unit.description}</div>
+   <Tooltip
+      open={unitCustomerDescriptionTooltipOpen}
+      onOpenChange={(e) => unitCustomerDescriptionTooltipOpen = e.open}
+      positioning={{placement: 'top-end'}}
+      openDelay={200}
+   >
+      {#snippet trigger()}
+         <div>{unit.description}</div>
+         <div class="text-right text-wrap">Description</div>
+      {/snippet}
+      {#snippet content()}
+         We can customize this description.
+      {/snippet}
+   </Tooltip>
+   
 </div>

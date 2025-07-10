@@ -8,6 +8,7 @@
 	import UnitCustomer from "$lib/displayComponents/customerViews/UnitCustomer.svelte";
 	import { fade } from "svelte/transition";
 	import Placeholder from "$lib/displayComponents/Placeholder.svelte";
+	import { Tooltip } from "@skeletonlabs/skeleton-svelte";
    interface Props {
       data: PageData;
    }
@@ -21,20 +22,32 @@
       sizeFilter = size;
    }
    const formattedPhone = PUBLIC_PHONE.substring(0,1) +'-'+ PUBLIC_PHONE.substring(1,4)+'-'+PUBLIC_PHONE.substring(4,7)+'-'+PUBLIC_PHONE.substring(7)
-
+   let copyTooltipOpen = $state(false);
 </script>
 
 <Header title='Home' />
 {#await data.availableUnits}
    <article class="m-2 mt-10">
       <div>
-         <p>
-            Thank you for visiting {PUBLIC_COMPANY_NAME}!
-            Conveniently located, {PUBLIC_COMPANY_NAME} is the place to safely and securely store your belongings.</p>
-            <p>Family owned and operated, you can contact us at 
-            <a href="tel:{PUBLIC_PHONE}" class="anchor">
-               { formattedPhone }</a>, or <a href="mailto:{PUBLIC_COMPANY_EMAIL}" class="anchor">{PUBLIC_COMPANY_EMAIL}</a> the office and gates are open 8:00 am to 8:00 pm.
-         </p>
+         <Tooltip
+            open={copyTooltipOpen}
+            onOpenChange={(e) => copyTooltipOpen = e.open}
+            positioning={{placement: 'top'}}
+            openDelay={200}
+         >
+            {#snippet trigger()}
+               
+               Thank you for visiting {PUBLIC_COMPANY_NAME}!
+               Conveniently located, {PUBLIC_COMPANY_NAME} is the place to safely and securely store your belongings.
+               <p>Family owned and operated, you can contact us at 
+                  <a href="tel:{PUBLIC_PHONE}" class="anchor">
+                     { formattedPhone }</a>, or <a href="mailto:{PUBLIC_COMPANY_EMAIL}" class="anchor">{PUBLIC_COMPANY_EMAIL}</a> the office and gates are open 8:00 am to 8:00 pm.
+               </p>
+            {/snippet}
+            {#snippet content()}
+               Tell your story here. We can customize copy to your exact specifications
+            {/snippet}
+         </Tooltip>
       </div>
    </article>
    <div in:fade={{duration:600}} out:fade={{duration:0}}>
@@ -47,13 +60,25 @@
 {:then units} 
       <article class="m-2 mt-10">
          <div>
-            <p>
+            <Tooltip
+            open={copyTooltipOpen}
+            onOpenChange={(e) => copyTooltipOpen = e.open}
+            positioning={{placement: 'top'}}
+            openDelay={200}
+         >
+            {#snippet trigger()}
+               
                Thank you for visiting {PUBLIC_COMPANY_NAME}!
-               Conveniently located, {PUBLIC_COMPANY_NAME} is the place to safely and securely store your belongings.</p>
+               Conveniently located, {PUBLIC_COMPANY_NAME} is the place to safely and securely store your belongings.
                <p>Family owned and operated, you can contact us at 
-               <a href="tel:{PUBLIC_PHONE}" class="anchor">
-                  { formattedPhone }</a>, or <a href="mailto:{PUBLIC_COMPANY_EMAIL}" class="anchor">{PUBLIC_COMPANY_EMAIL}</a> the office and gates are open 8:00 am to 8:00 pm.
-            </p>
+                  <a href="tel:{PUBLIC_PHONE}" class="anchor">
+                     { formattedPhone }</a>, or <a href="mailto:{PUBLIC_COMPANY_EMAIL}" class="anchor">{PUBLIC_COMPANY_EMAIL}</a> the office and gates are open 8:00 am to 8:00 pm.
+               </p>
+            {/snippet}
+            {#snippet content()}
+               Tell your story here. We can customize copy to your exact specifications
+            {/snippet}
+         </Tooltip>
          </div>
       </article>
    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-1 mx-2 mb-24 sm:mb-14 lg:mb-9" in:fade={{duration:600}}>
