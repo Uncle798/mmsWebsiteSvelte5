@@ -141,7 +141,11 @@
 			</article>
 		{/snippet}
 		</Modal>
-		<div class="bg-tertiary-50-950 fixed w-screen top-0 left-0 h-12 text-wrap sm:h-9 text-center font-bold z-30 "><a href="/" class="anchor">{PUBLIC_COMPANY_NAME}</a></div>
+		<div class="bg-tertiary-50-950 fixed w-screen top-0 left-0 h-12 sm:h-9 text-center font-bold z-30 ">
+			<div class="fixed top-0 left-[90px] w-[200px] text-wrap">
+				<a href="/" class="anchor">{PUBLIC_COMPANY_NAME}</a>
+			</div>
+		</div>
 	</header>
 {/if}
 	<ToastProvider placement='top-start'>
