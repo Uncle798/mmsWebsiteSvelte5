@@ -33,17 +33,17 @@
 </script>
 <Header title='Current Customers'/>
 {#await data.customers}
-   <div class="mt-10 m-1">
+   <div class="mt-12 sm:mt10 m-1">
       Loading {data.customerCount} customers...
    </div>
 {:then customers}
    {#await data.leases}
-      <div class="mt-10">
+      <div class="mt-12 sm:mt10">
          Loading leases...
       </div>   
    {:then leases} 
       {#await data.addresses}
-         <div class="mt-10">
+         <div class="mt-12 sm:mt10">
             Loading addresses...
          </div>
       {:then addresses}    

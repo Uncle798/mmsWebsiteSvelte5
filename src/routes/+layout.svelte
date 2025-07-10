@@ -121,7 +121,7 @@
 		{/snippet}
 		{#snippet content()}
 			<article class="">
-				<button class="absolute top-1 left-[90px] btn-icon" onclick={()=>{menuOpen=false}}><XCircleIcon aria-label='close' class=''/></button>
+				<button class="absolute top-1 left-[90px] btn-icon" onclick={()=>{menuOpen=false}}><XCircleIcon aria-label='close' class='h-12 sm:h-9'/></button>
 				<ul>
 					{#each customerLinks as link}
 						<a href={link.link} class="anchor">{link.label}</a>

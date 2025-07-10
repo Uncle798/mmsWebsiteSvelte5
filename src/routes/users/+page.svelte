@@ -26,7 +26,7 @@
 </script>
 <Header title='All users' />
 {#await data.users}
-   <div class="mt-10">
+   <div class="mt-12 sm:mt10">
       ...loading {data.userCount} users
    </div>
 {:then users }
@@ -52,7 +52,7 @@
       </div>
       {/snippet}
    </Modal>
-   <div in:fade={{duration:600}} class="m-2 mt-10">
+   <div in:fade={{duration:600}} class="m-2 mt-12 sm:mt10">
       <div class="grid grid-cols-1 gap-y-3 gap-x-1">
          {#each slicedSource(searchedUsers(users)) as user (user.id)}
             <div class="rounded-lg border border-primary-50-950 flex flex-row">

@@ -8,7 +8,7 @@
     let { data }: { data: PageData } = $props();
 </script>
 <Header title='Lease Sent' />
-<div class='m-2 mt-10'>
+<div class='m-2 mt-12 sm:mt10'>
    The lease has been sent to {data.customer?.email}. Please check {data.user?.email} and sign the lease.
 </div>
 {#if data.paymentRecord}

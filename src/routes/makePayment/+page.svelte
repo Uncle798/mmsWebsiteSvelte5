@@ -35,11 +35,11 @@
    }
 </script>
 {#if !mounted}
-   <div class="m-2 mt-10">
+   <div class="m-2 mt-12 sm:mt10">
       Loading...
    </div>
 {:else}
-   <div class="flex flex-col m-2 gap-2 mt-10">
+   <div class="flex flex-col m-2 gap-2 mt-12 sm:mt10">
       <InvoiceCustomer
          invoice={data.invoice}
          classes='border border-primary-50-950 rounded-lg'

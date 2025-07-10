@@ -83,7 +83,7 @@
 
 <Header title="All Refunds" />
 {#await wrapper}
-	<div class="mt-10">
+	<div class="mt-12 sm:mt10">
 		Loading {numberFormatter.format(data.refundCount)} refunds...
 		{#if data.years}
 			or select year:
@@ -95,13 +95,13 @@
 		<Placeholder numCols={2} numRows={size} heightClass='h-44'/>
 	{:then refunds}
 	{#await data.customers}
-		<div class="mt-10">
+		<div class="mt-12 sm:mt10">
 			Loading customers...
 		</div>
 		<Placeholder numCols={2} numRows={size} heightClass='h-44'/>
 	{:then customers}
 		{#await data.addresses}
-			<div class="mt-10">
+			<div class="mt-12 sm:mt10">
 				Loading addresses...
 			</div>
 			<Placeholder numCols={2} numRows={size} heightClass='h-44'/>

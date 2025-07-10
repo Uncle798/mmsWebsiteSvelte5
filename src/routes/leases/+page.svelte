@@ -39,17 +39,17 @@
 <Header title='All leases' />
 
 {#await data.leases}
-   <div class="mt-10">
+   <div class="mt-12 sm:mt10">
       Loading {data.leaseCount} leases...
    </div>
 {:then leases}
    {#await wrapper}
-      <div class="mt-10 mx-1">
+      <div class="mt-12 sm:mt10 mx-1">
          Loading customers...
       </div>
    {:then customers} 
       {#await data.addresses}
-         <div class="mt-10 mx-1">
+         <div class="mt-12 sm:mt10 mx-1">
             Loading addresses...
          </div>
       {:then addresses}
@@ -70,11 +70,11 @@
             {/snippet}
             {#snippet content()}
                <button onclick={()=>searchDrawerOpen=false} class='btn preset-filled-primary-50-950 rounded-lg m-1 absolute top-0 right-0'><PanelTopClose aria-label='Close'/></button>
-               <Search search={search} searchType='lease id' data={data.searchForm} classes='mt-10 mx-1'/>
+               <Search search={search} searchType='lease id' data={data.searchForm} classes='mt-12 sm:mt10 mx-1'/>
                <Search search={customerSearch} searchType='customer name' data={data.searchForm} classes='mx-1' />
             {/snippet}
          </Modal>
-         <div class="rounded-lg mt-10 sm:mt-10">
+         <div class="rounded-lg mt-12 sm:mt10 sm:mt-12 sm:mt10">
             {#each slicedLeases(searchByCustomer(searchedLeases(leases))) as lease}
             {@const customer = customers.find((customer) => customer.id === lease.customerId)}
             {@const leaseAddress = addresses.find((address) => address.addressId === lease.addressId)}

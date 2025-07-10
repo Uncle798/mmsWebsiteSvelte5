@@ -21,7 +21,7 @@
    }
    let selectedSize = $state(['']);
 </script>
-<div class="mt-10 mx-2">
+<div class="mt-12 sm:mt10 mx-2">
    <Combobox
       data={comboboxData}
       label='Select Size'

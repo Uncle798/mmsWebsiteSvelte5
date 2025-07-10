@@ -78,20 +78,20 @@
 </script>
 {#await wrapper}
     <Header title='Loading invoices' />
-    <div class="mt-10">
+    <div class="mt-12 sm:mt10">
         Loading {numberFormatter.format(data.invoiceCount)} invoices, 
         <Placeholder numCols={1} numRows={size} heightClass='h-40'/>
     </div>
     {:then invoices}
         {#await data.customers}
             <Header title='Loading customers' />
-            <div class="mt-10">
+            <div class="mt-12 sm:mt10">
                 Loading customers...
                 <Placeholder numCols={1} numRows={size} heightClass='h-40'/>
             </div>
         {:then customers}
         {#await data.addresses}
-            <div class="mt-10">
+            <div class="mt-12 sm:mt10">
                 Loading addresses...
                 <Placeholder numCols={1} numRows={size} heightClass='h-40'/>
             </div>
