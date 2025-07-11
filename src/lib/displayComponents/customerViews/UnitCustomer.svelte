@@ -25,18 +25,17 @@
    <div class="text-right">Deposit</div>
    <div>{currencyFormatter.format(unit.deposit)}</div>
    <HorizontalDivider classes='col-span-2'/>
+   <div class="text-right col-start-1">Description</div>
    <Tooltip
       open={unitCustomerDescriptionTooltipOpen}
       onOpenChange={(e) => unitCustomerDescriptionTooltipOpen = e.open}
       positioning={{placement: 'top-end'}}
-      contentBase="card preset-filled p-2 grid grid-cols-2"
+      contentBase="card preset-filled p-2"
       openDelay={200}
       zIndex='30'
-      base='col-span-2'
    >
       {#snippet trigger()}
-         <div class="text-right col-start-1">Description</div>
-         <div class="font-medium text-wrap col-start-2">{unit.description}</div>
+         <div class="font-medium text-wrap">{unit.description}</div>
       {/snippet}
       {#snippet content()}
          We can customize this description.
