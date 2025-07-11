@@ -32,7 +32,7 @@
       contentBase="card preset-filled p-2 "
       openDelay={200}
       zIndex='30'
-      base='col-span-2 grid grid-cols-subgrid'
+      base='col-span-2 grid grid-cols-2'
    >
       {#snippet trigger()}
          <div class="text-right">Description</div>
