@@ -35,7 +35,7 @@
       zIndex='30'
    >
       {#snippet trigger()}
-         <div class="font-medium text-wrap">{unit.description}</div>
+         <div class="font-medium text-left text-wrap">{unit.description}</div>
       {/snippet}
       {#snippet content()}
          We can customize this description.
