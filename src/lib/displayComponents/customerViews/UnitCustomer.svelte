@@ -29,9 +29,10 @@
       open={unitCustomerDescriptionTooltipOpen}
       onOpenChange={(e) => unitCustomerDescriptionTooltipOpen = e.open}
       positioning={{placement: 'top-end'}}
-      contentBase="card preset-filled p-2 col-span-2"
+      contentBase="card preset-filled p-2 "
       openDelay={200}
       zIndex='30'
+      base='col-span-2'
    >
       {#snippet trigger()}
          <div class="text-right col-start-1">Description</div>
