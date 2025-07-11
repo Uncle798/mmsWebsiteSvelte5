@@ -12,7 +12,6 @@
 	import AddressEmployee from '$lib/displayComponents/AddressEmployee.svelte';
    import { PanelTopClose, SearchIcon } from 'lucide-svelte';
 	import { fade } from 'svelte/transition';
-	import { includes } from 'valibot';
     interface Props {
         data: PageData;
     }
