@@ -11,7 +11,6 @@
 {#if data.customer}
    <UserEmployee user={data.customer} classes='mt-12 sm:mt10 mx-2'/>
    <EmailVerificationForm data={data.emailVerificationForm} userId={data.customer.id} classes='mx-2' redirect='false'/>
-
 {:else}
    <RegisterForm data={data.registerForm} formType='employee' redirectTo='employeeNewCustomer' classes='mt-12 sm:mt10 sm:mt-12 sm:mt10 m-1 sm:m-2' />
 {/if}
