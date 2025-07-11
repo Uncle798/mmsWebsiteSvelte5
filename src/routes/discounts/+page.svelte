@@ -31,6 +31,7 @@
    <Revenue amount={totalDiscounted(data.discountedLeases)} label='Total discounts' />
 </div>
 <Modal
+   open={descriptionModalOpen}
    onOpenChange={(event) =>(descriptionModalOpen = event.open)}
    contentBase='card bg-surface-100-900 p-2 space-y-4 shadow-xl max-w-screen-sm'
    backdropClasses='backdrop-blur-lg'
