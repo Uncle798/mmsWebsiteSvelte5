@@ -79,7 +79,7 @@
 				{#if data.user?.employee}
 					{#each employeeLinks as employeeLink}
 						{#if employeeLink.toolTip}
-							<Tooltip
+							<li><Tooltip
 								open={tooltipOpenIdentifier === employeeLink.link}
 								onOpenChange={(event) => {
 									if(event.open){
@@ -97,9 +97,10 @@
 									{employeeLink.toolTip}
 								{/snippet}
 								{#snippet trigger()}
-									<li><a class="anchor" href={employeeLink.link}>{employeeLink.label}</a></li>
+									<a class="anchor" href={employeeLink.link}>{employeeLink.label}</a>
 								{/snippet}
 							</Tooltip>
+							</li>
 						{:else if !employeeLink.toolTip}
 							<li><a class="anchor" href={employeeLink.link}>{employeeLink.label}</a></li>
 						{/if}
