@@ -27,7 +27,7 @@
 
 <Header title='Home' />
 {#await data.availableUnits}
-   <article class="m-2 mt-12 sm:mt10">
+   <article class="m-2 mt-12 sm:mt-10">
       <div>
          <Tooltip
             open={copyTooltipOpen}
@@ -58,7 +58,7 @@
       <Placeholder numCols={4} numRows={4} heightClass='h-34' classes='z-0 hidden lg:block' />     
    </div>
 {:then units} 
-      <article class="m-2 mt-12 sm:mt10">
+      <article class="m-2 mt-12 sm:mt-10">
          <div>
             <Tooltip
             open={copyTooltipOpen}

@@ -31,7 +31,7 @@
 </Modal>
 <Header title="New Invoice" />
 {#if data.customers}   
-   <div in:fade={{duration:600}} out:fade={{duration:0}} class="mt-12 sm:mt10">
+   <div in:fade={{duration:600}} out:fade={{duration:0}} class="mt-12 sm:mt-10">
       <button class="btn preset-filled-primary-50-950 rounded-lg m-2" type="button" onclick={()=>registerFormModalOpen = true}>Create New Customer</button>
       <div class="mx-2">Or,</div>
       {#if data.customers}
@@ -39,5 +39,5 @@
       {/if}
    </div>
 {:else if data.customer}
-   <NewInvoiceForm data={data.newInvoiceForm} employeeId={data.user?.id} customers={data.customer} leases={data.leases} defaultCustomer={data.customer[0].id} classes='mt-12 sm:mt10 m-1 sm:m-2'/>
+   <NewInvoiceForm data={data.newInvoiceForm} employeeId={data.user?.id} customers={data.customer} leases={data.leases} defaultCustomer={data.customer[0].id} classes='mt-12 sm:mt-10 m-1 sm:m-2'/>
 {/if}

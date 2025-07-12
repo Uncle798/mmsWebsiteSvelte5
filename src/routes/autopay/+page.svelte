@@ -23,9 +23,9 @@
 </script>
 <Header title="Sign up for auto pay" />
 {#if !mounted}
-    <div class="mt-12 sm:mt10 m-1">Loading...</div>
+    <div class="mt-12 sm:mt-10 m-1">Loading...</div>
 {:else}
-    <div class="mt-12 sm:mt10 sm:mt-12 sm:mt10 m-1 sm:m-2">
+    <div class="mt-12 sm:mt-10 sm:mt-12 sm:mt-10 m-1 sm:m-2">
         {#if data.invoice}
             <InvoiceCustomer invoice={data.invoice} />
             <CreditCardForm data={data.creditCardForm} invoice={data.invoice} sessionToken={sessionToken} subscription={true} buttonText={`Start Auto pay of $${data.invoice.invoiceAmount}`}/>

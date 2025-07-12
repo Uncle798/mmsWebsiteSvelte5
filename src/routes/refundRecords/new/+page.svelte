@@ -38,17 +38,17 @@
 </script>
 
 {#if selectedPayment}
-   <PaymentRecordEmployee paymentRecord={selectedPayment} classes='mt-12 sm:mt10'/>
+   <PaymentRecordEmployee paymentRecord={selectedPayment} classes='mt-12 sm:mt-10'/>
    <HorizontalDivider />   
    <NewRefundForm data={data.refundForm} paymentRecord={selectedPayment} classes='p-2'/>
 {:else}
    {#await depositWrapper}
-      <div class="mt-12 sm:mt10 mx-2">
+      <div class="mt-12 sm:mt-10 mx-2">
          loading deposits ...
       </div>
    {:then deposits}
       {#await paymentsWrapper}
-         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 mt-12 sm:mt10 m-2">
+         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 mt-12 sm:mt-10 m-2">
             <Search bind:search={search} searchType='Payment notes' data={data.searchForm} classes='col-span-full' />
             {#if allPayments.length > 0}
                {#each slicedPayments(allPayments) as paymentRecord}
@@ -61,7 +61,7 @@
             {/if}
          </div>
       {:then paymentRecords} 
-         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 mt-12 sm:mt10 m-2">
+         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 mt-12 sm:mt-10 m-2">
             {#if allPayments.length > 0}
                {#each allPayments as paymentRecord}
                   <div class="flex flex-col border-2 border-primary-50-950 rounded-lg">

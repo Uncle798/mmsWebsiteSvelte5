@@ -21,7 +21,7 @@
     {/snippet}
 </Modal>
 
-<div in:fade={{duration:600}} out:fade={{duration:0}} class="mt-12 sm:mt10 mx-1 sm:mt-12 sm:mt10 sm:mx-2">
+<div in:fade={{duration:600}} out:fade={{duration:0}} class="mt-12 sm:mt-10 mx-1 sm:mt-12 sm:mt-10 sm:mx-2">
    {#if !customerSelected}
       <button class="btn preset-filled-primary-50-950 rounded-lg" type="button" onclick={()=>registerFormModalOpen = true}>Create New Customer</button>
    {/if}

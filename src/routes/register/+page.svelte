@@ -27,7 +27,7 @@
 	})
 </script>
 <Header title='Register a new account' />
-<div class="m-2 mt-12 sm:mt10" in:fade={{duration:600}}>
+<div class="m-2 mt-12 sm:mt-10" in:fade={{duration:600}}>
    <RegisterForm data={data.registerForm} formType='customer'/>
 	<div class="flex flex-col">
 		Or, 

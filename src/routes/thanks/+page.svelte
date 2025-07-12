@@ -8,7 +8,7 @@
 </script>
 
 <Header title="Thanks!" />
-<div class="flex flex-col sm:flex-row border-2 border-primary-50-950 m-1 sm:m-2 rounded-lg mt-12 sm:mt10 sm:mt-12 sm:mt10">
+<div class="flex flex-col sm:flex-row border-2 border-primary-50-950 m-1 sm:m-2 rounded-lg mt-12 sm:mt-10 sm:mt-12 sm:mt-10">
    {#await data.customerPromise}
       <span class="m-2">Thanks for your business!</span>
    {:then customer} 

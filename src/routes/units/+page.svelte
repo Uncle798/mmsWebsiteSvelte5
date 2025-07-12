@@ -80,26 +80,26 @@
 
 <Header title="All units" />
 {#await data.units}
-	<div class="mt-12 sm:mt10 m-1 sm:m-2">
+	<div class="mt-12 sm:mt-10 m-1 sm:m-2">
 		Loading units...
 		<Placeholder numCols={1} numRows={6} heightClass='h-96' classes='sm:hidden'/>
 		<Placeholder numCols={1} numRows={6} heightClass='h-76' classes='hidden sm:block'/>
 	</div>
 {:then units} 
 	{#await data.leases}
-		<div class="mt-12 sm:mt10 sm:mt-12 sm:mt10 m-1 sm:m-2">
+		<div class="mt-12 sm:mt-10 sm:mt-12 sm:mt-10 m-1 sm:m-2">
 			Loading leases...
 		</div>
 		<Placeholder numCols={1} numRows={3} heightClass='h-96'/>
 	{:then leases} 
 		{#await data.customers}
-			<div class="mt-12 sm:mt10 sm:mt-12 sm:mt10 m-1 sm:m-2">
+			<div class="mt-12 sm:mt-10 sm:mt-12 sm:mt-10 m-1 sm:m-2">
 				Loading customers...
 			</div>
 			<Placeholder numCols={1} numRows={3} heightClass='h-96'/>
 		{:then customers}
 			{#await data.addresses}
-				<div class="mt-12 sm:mt10 m-1 sm:m-2">
+				<div class="mt-12 sm:mt-10 m-1 sm:m-2">
 					Loading addresses...
 				</div>
 			{:then addresses} 
