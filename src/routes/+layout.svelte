@@ -1,6 +1,6 @@
 <script lang="ts">
 	import '../app.css';
-	import { ToastProvider } from '@skeletonlabs/skeleton-svelte';
+	import { ToastProvider, Tooltip } from '@skeletonlabs/skeleton-svelte';
 	import type { PageData } from './$types';
 	import { Modal } from '@skeletonlabs/skeleton-svelte';
 	import Menu from 'lucide-svelte/icons/menu';
@@ -17,15 +17,16 @@
 	interface Link {
 		link: string;
 		label: string;
+		toolTip?: string;
 	}
 	let customerLinks:Link[] =[
-		{link: '/', label: 'Home'},
+		{link: '/', label: 'Home', },
 	]
 	let employeeLinks:Link[] = [
-		{link: '/', label: 'Home'},
-		{link: '/units', label:'All Units'},
-		{link: '/units/available', label:'Available Units'},
-		{link: '/units/unavailable', label: 'Unavailable units'},
+		{link: '/', label: 'Home', toolTip: 'Where to display your story and available sizes'},
+		{link: '/units', label:'All Units', toolTip: 'See all your units in one place and keep notes about their status'},
+		{link: '/units/available', label:'Available Units', toolTip: 'All your available units with open revenue'},
+		{link: '/units/unavailable', label: 'Unavailable units', toolTip: ''},
 		{link: '/units/recentlyMovedOut', label: 'Recently moved out Units'},
 		{link: '/units/size', label: 'Units by size'},
 		{link: '/discounts', label: 'Discounts'},
@@ -39,7 +40,6 @@
 		{link: '/paymentRecords', label: 'Payment Records'},
 		{link: '/paymentRecords/new', label: 'New Payment Record'},
 		{link: '/paymentRecords/deposits', label: 'Deposits'},
-		{link: '/paymentRecords/incomplete', label:'Incomplete Payment Records'},
 		{link: '/paymentRecords/year', label: 'Payment Records by year'},
 		{link: '/refundRecords', label:'Refund Records'},
 		{link: '/refundRecords/year', label: 'Refunds by year'},
@@ -47,14 +47,15 @@
 		{link: '/employeeNewCustomer', label:'New customer'},
 	]
 	let adminLinks:Link[] = [
-		{link: '/users', label:'All Users'},
+		{link: '/users', label:'All Users', toolTip: 'Change the employment status of a user here'},
 	]
 	let menuOpen = $state(false);
 
 	beforeNavigate(() =>{
 		menuOpen = false;
 	})
-	const formattedPhone = PUBLIC_PHONE.substring(0,1) +'-'+ PUBLIC_PHONE.substring(1,4)+'-'+PUBLIC_PHONE.substring(4,7)+'-'+PUBLIC_PHONE.substring(7)
+	const formattedPhone = PUBLIC_PHONE.substring(0,1) +'-'+ PUBLIC_PHONE.substring(1,4)+'-'+PUBLIC_PHONE.substring(4,7)+'-'+PUBLIC_PHONE.substring(7);
+	let tooltipOpenIdentifier = $state<string|null>(null);
 </script>
 
 {#if data.user?.employee}
@@ -77,19 +78,71 @@
 			<ul class="overflow-auto h-8/9 m-1">
 				{#if data.user?.employee}
 					{#each employeeLinks as employeeLink}
+						{#if employeeLink.toolTip}
+							<Tooltip
+								open={tooltipOpenIdentifier === employeeLink.link}
+								onOpenChange={(event) => {
+									if(event.open){
+										tooltipOpenIdentifier = employeeLink.link
+									} else if (tooltipOpenIdentifier === employeeLink.link){
+										tooltipOpenIdentifier = null
+									}
+								}}
+								positioning={{placement: 'top-end'}}
+								contentBase="card preset-filled p-2"
+								openDelay={200}
+								zIndex='30'
+							>
+								{#snippet content()}
+									{employeeLink.toolTip}
+								{/snippet}
+								{#snippet trigger()}
+									<li><a class="anchor" href={employeeLink.link}>{employeeLink.label}</a></li>
+								{/snippet}
+							</Tooltip>
+						{/if}
 						<li><a class="anchor" href={employeeLink.link}>{employeeLink.label}</a></li>
 					{/each}
 				{/if}
 				{#if data.user?.admin}
 					{#each adminLinks as adminLink}
-						<li><a class="anchor" href={adminLink.link}>{adminLink.label}</a></li>
+						<Tooltip
+							open={tooltipOpenIdentifier === adminLink.link}
+							onOpenChange={(event) => {
+								if(event.open){
+									tooltipOpenIdentifier = adminLink.link
+								} else if (tooltipOpenIdentifier === adminLink.link){
+									tooltipOpenIdentifier = null
+								}
+							}}
+							positioning={{placement: 'top-end'}}
+							contentBase="card preset-filled p-2"
+							openDelay={200}
+							zIndex='30'
+						>
+						{#snippet content()}
+							{adminLink.toolTip}
+						{/snippet}
+						{#snippet trigger()}
+							<li><a class="anchor" href={adminLink.link}>{adminLink.label}</a></li>
+						{/snippet}
+						</Tooltip>
 					{/each}
 				{/if}
 			</ul>
 			<div class="fixed w-[240px] bottom-0 bg-surface-100-900 border-1 border-primary-50-950 rounded-lg">
 				<ul class="m-1">
 					{#if data.user}
-					<li><a href="/accountSettings" class="anchor">Settings</a></li>
+					<Tooltip
+
+					>
+						{#snippet content()}
+							Change your name or address here. View all invoices, payment receipts, and refund records. Best of all, sign up for Auto-pay here.
+						{/snippet}
+						{#snippet trigger()}
+							<li><a href="/accountSettings" class="anchor">Settings</a></li>
+						{/snippet}
+					</Tooltip>
 						<form action="/logout" method="post" use:enhance>
 							<li><button class="anchor" type="submit">Logout</button></li>
 						</form>
