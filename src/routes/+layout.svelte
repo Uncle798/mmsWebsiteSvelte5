@@ -26,7 +26,7 @@
 		{link: '/', label: 'Home', toolTip: 'Where to display your story and available sizes'},
 		{link: '/units', label:'All Units', toolTip: 'See all your units in one place and keep notes about their status'},
 		{link: '/units/available', label:'Available Units', toolTip: 'All your available units with open revenue'},
-		{link: '/units/unavailable', label: 'Unavailable units', toolTip: ''},
+		{link: '/units/unavailable', label: 'Unavailable units', toolTip: 'See which units you\'ve marked unavailable'},
 		{link: '/units/recentlyMovedOut', label: 'Recently moved out Units'},
 		{link: '/units/size', label: 'Units by size'},
 		{link: '/discounts', label: 'Discounts'},
@@ -100,8 +100,9 @@
 									<li><a class="anchor" href={employeeLink.link}>{employeeLink.label}</a></li>
 								{/snippet}
 							</Tooltip>
+						{:else if !employeeLink.toolTip}
+							<li><a class="anchor" href={employeeLink.link}>{employeeLink.label}</a></li>
 						{/if}
-						<li><a class="anchor" href={employeeLink.link}>{employeeLink.label}</a></li>
 					{/each}
 				{/if}
 				{#if data.user?.admin}
