@@ -79,8 +79,8 @@
 				<ul class="overflow-auto h-8/9 m-1">
 					{#if data.user?.employee}
 						{#each employeeLinks as employeeLink}
-							{#if employeeLink.toolTip}
-								<li><Tooltip
+							<li>
+								<Tooltip
 									open={tooltipOpenIdentifier === employeeLink.link}
 									onOpenChange={(event) => {
 										if(event.open){
@@ -101,10 +101,7 @@
 										<a class="anchor" href={employeeLink.link}>{employeeLink.label}</a>
 									{/snippet}
 								</Tooltip>
-								</li>
-							{:else if !employeeLink.toolTip}
-								<li><a class="anchor" href={employeeLink.link}>{employeeLink.label}</a></li>
-							{/if}
+							</li>
 						{/each}
 					{/if}
 					{#if data.user?.admin}
