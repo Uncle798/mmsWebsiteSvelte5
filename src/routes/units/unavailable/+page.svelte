@@ -5,16 +5,13 @@
 	import { Combobox, Modal } from '@skeletonlabs/skeleton-svelte';
    import type { PageData } from './$types';
    import type { Unit } from '@prisma/client';
-	import { SearchIcon, PanelTopClose, XCircle } from 'lucide-svelte';
+	import { SearchIcon, PanelTopClose, } from 'lucide-svelte';
 	import { onMount } from 'svelte';
+	import { page } from '$app/state';
+	import Header from '$lib/Header.svelte';
    let { data }: { data: PageData } = $props();
    let sizeFilter = $state('');
    const filterSize = $derived((units:Unit[]) => units.filter((unit) => unit.size.includes(sizeFilter)))
-   function setSizeFilter(event:Event){
-      const select = event.target as HTMLSelectElement;
-      const size = select.value
-      sizeFilter = size;
-   }
    let lostRevenue = $state(0);
    data.units.forEach((unit) => {
       if(unit.size !== 'ours'){
@@ -40,8 +37,13 @@
 	let selectedSize = $state(['']);
    let descriptionModalOpen = $state(true);
    onMount(()=>{
-      setTimeout(()=>(descriptionModalOpen = false), 5000)
-   })
+      console.log(data.cookie)
+      if(data.cookie){
+         descriptionModalOpen=false
+      } else {
+         setTimeout(()=>(descriptionModalOpen = false), 5000)
+      }
+   });
 </script>
 <div class="flex fixed bg-tertiary-50-950 w-full rounded-b-lg top-9" transition:fade={{duration:600}}>
    <span class="m-2">Unavailable: {data.units.length} of {data.unitCount}</span>
@@ -91,6 +93,7 @@
       <button class="btn" onclick={()=>(descriptionModalOpen=false)}>Close</button>
    {/snippet}
 </Modal>
+<Header title='Unavailable Units' />
 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 m-1 sm:m-2 sm:mt-20 mt-32">
    {#each filterSize(data.units) as unit}
       <div class="border-2 border-primary-50-950 rounded-lg">
