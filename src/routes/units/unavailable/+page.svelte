@@ -37,10 +37,10 @@
 	let selectedSize = $state(['']);
    let descriptionModalOpen = $state(true);
    onMount(()=>{
-      console.log(data.cookie)
       if(data.cookie){
          descriptionModalOpen=false
       } else {
+         fetch('/api/demoSetCookie?=demoPage=/units/unavailable')
          setTimeout(()=>(descriptionModalOpen = false), 5000)
       }
    });
