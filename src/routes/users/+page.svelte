@@ -9,6 +9,7 @@
 	import Search from '$lib/forms/Search.svelte';
 	import { Modal } from '@skeletonlabs/skeleton-svelte';
 	import { SearchIcon, PanelTopClose } from 'lucide-svelte';
+	import { onMount } from 'svelte';
 
    let { data }: { data: PageData } = $props();
    let search = $state('')
@@ -22,7 +23,13 @@
          user.familyName?.toLowerCase().includes(search.toLowerCase());
       })
    )
-   let searchDrawerOpen = $state(false)
+   let searchDrawerOpen = $state(false);
+   let explainerModalOpen = $state(true);
+   onMount(()=>{
+      setTimeout(()=>(
+         explainerModalOpen = false
+      ), 5000)
+   })
 </script>
 <Header title='All users' />
 {#await data.users}
@@ -50,6 +57,16 @@
          <button onclick={()=>searchDrawerOpen=false} class='btn preset-filled-primary-50-950 rounded-lg m-1 absolute top-0 right-0'><PanelTopClose aria-label='Close'/></button>
          <Search data={data.searchForm} bind:search={search} searchType='user' />
       </div>
+      {/snippet}
+   </Modal>
+   <Modal
+      open={explainerModalOpen}
+      onOpenChange={(event) =>(explainerModalOpen = event.open)}
+      contentBase='card bg-surface-100-900 p-2 space-y-4 shadow-xl max-w-screen-sm'
+      backdropClasses='backdrop-blur-lg'
+   >
+      {#snippet content()}
+         Admins can change the employment status of a user, Employees can't, otherwise they're the same. 
       {/snippet}
    </Modal>
    <div in:fade={{duration:600}} class="m-2 mt-12 sm:mt-10">
