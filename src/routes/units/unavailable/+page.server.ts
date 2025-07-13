@@ -27,7 +27,5 @@ export const load = (async (event) => {
       }
    })
    const cookie = event.cookies.get('unavailableDemoComplete');
-   console.log(cookie);
-   event.cookies.set('unavailableDemoComplete', 'true', {path: '/', maxAge:60*60*24});
    return { units, unitNotesForm, unitCount, sizes, cookie };
 }) satisfies PageServerLoad;
