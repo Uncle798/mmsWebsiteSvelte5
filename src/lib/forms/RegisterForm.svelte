@@ -5,7 +5,6 @@
    import FormSubmitWithProgress from "$lib/formComponents/FormSubmitWithProgress.svelte";
    import { superForm, type Infer, type SuperValidated } from "sveltekit-superforms";
 	import type { RegisterFormSchema } from "$lib/formSchemas/schemas";
-	import { invalidateAll } from "$app/navigation";
    
    interface Props {
       data: SuperValidated<Infer<RegisterFormSchema>>
