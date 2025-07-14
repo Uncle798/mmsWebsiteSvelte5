@@ -1,4 +1,4 @@
-import {  PrismaClient, User, PaymentType, Unit, Address, Lease, PaymentRecord, RefundRecord, } from '@prisma/client';
+import {  PrismaClient, User, PaymentType, Unit, Address, Lease, PaymentRecord, RefundRecord, DiscountCode, } from '@prisma/client';
 import { faker } from '@faker-js/faker';
 import dayjs  from 'dayjs';
 import  unitData from './unitData'
@@ -184,17 +184,19 @@ function arrayOfMonths(startDate:Date, endDate:Date){
    return dateArray;
 }
 
-async function createLease(unit: Unit, leaseStart:Date, leaseEnd: Date | null, randEmployee: User, customer: User, address:Address) {
+async function createLease(unit: Unit, leaseStart:Date, leaseEnd: Date | null, randEmployee: User, customer: User, address:Address, discount?:DiscountCode) {
    const leaseEnded:Date | null = leaseEnd;
    const lease:PartialLease = {
-       customerId: customer.id,
-       employeeId: randEmployee.id,
-       addressId: address.addressId,
-       unitNum: unit.num,
-       price: unit.advertisedPrice,
-       leaseEffectiveDate: leaseStart,
-       leaseReturnedAt: leaseStart,
-       leaseEnded,
+      customerId: customer.id,
+      employeeId: randEmployee.id,
+      addressId: address.addressId,
+      unitNum: unit.num,
+      price: unit.advertisedPrice,
+      leaseEffectiveDate: leaseStart,
+      leaseReturnedAt: leaseStart,
+      leaseEnded,
+      discountId: discount?.discountId ? discount.discountId : null,
+      discountedAmount: discount?.amountOff ? discount.amountOff : null,
    };
    return lease;
  }
@@ -348,6 +350,9 @@ async function  main (){
          employee: true
       }
    })
+   const discount = await prisma.discountCode.create({
+      data: makeDiscount(employees[0])
+   })
    for await (const unit of units) {
       let leaseStart = dayjs(earliestStarting).add(Math.floor(Math.random()*30), 'days');
       const today = dayjs();
@@ -357,12 +362,18 @@ async function  main (){
       let leaseEnd = leaseStart.add(lengthOfLease, 'months');
       let customer = users.pop();
       numMonthsLeft = today.diff(leaseStart, 'months');
+      const discounted = Math.floor(Math.random()*100) >= 95
       if(!customer){
          break
       }
       let contact = dbContacts.find((c) => c.userId === customer!.id);
       while(numMonthsLeft > 3 ){
-         const lease = await createLease(unit, leaseStart.toDate(), leaseEnd.toDate(), randEmployee, customer!, contact!);
+         let lease:PartialLease;
+         if(discounted){
+            lease = await createLease(unit, leaseStart.toDate(), leaseEnd.toDate(), randEmployee, customer!, contact!, discount);
+         } else {
+            lease = await createLease(unit, leaseStart.toDate(), leaseEnd.toDate(), randEmployee, customer!, contact!)
+         }
          leases.push(lease);
          customer = users.pop();
          if(!customer){
@@ -402,10 +413,6 @@ async function  main (){
          }
       })
    }
-   const discount = makeDiscount(employees[0])
-   await prisma.discountCode.create({
-      data: discount
-   })
    const leaseEndTime = dayjs();
    console.log(`🎫 ${leases.length} leases created in ${leaseEndTime.diff(unitEndTime, 'second')} seconds`);
    const invoices: PartialInvoice[] = [];

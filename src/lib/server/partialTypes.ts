@@ -38,7 +38,9 @@ export const partialLease = Prisma.validator<Prisma.LeaseDefaultArgs>()({
       price: true,
       leaseEffectiveDate: true,
       leaseReturnedAt: true, 
-      leaseEnded: true
+      leaseEnded: true,
+      discountId: true,
+      discountedAmount: true,
    }
 })
 export type PartialLease = Prisma.LeaseGetPayload<typeof partialLease>
