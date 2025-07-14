@@ -66,7 +66,6 @@ export async function sendPaymentReceipt(customer:User, paymentRecord:PaymentRec
             }
          ]
       })
-      console.log(response)
       return response
    } catch (error) {
       console.error(error) 
@@ -132,7 +131,6 @@ export async function sendRefundEmail(refund:RefundRecord, customer:User, addres
             }
          ]
       })
-      console.log(response)
       return response;
    } catch (error){
       console.error(error)

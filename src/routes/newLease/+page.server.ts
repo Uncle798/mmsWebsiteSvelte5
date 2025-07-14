@@ -140,7 +140,6 @@ export const actions:Actions = {
             discountedAmount: discountedAmount
          }
       })
-      console.log(lease)
       await prisma.unit.update({
          where: {
             num: unit.num

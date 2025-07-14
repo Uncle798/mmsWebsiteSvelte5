@@ -42,7 +42,6 @@ export const actions: Actions = {
             body: JSON.stringify({leaseId: lease.leaseId})
          })
          if(response){
-            console.log(await response.json())
             await prisma.lease.update({
                where: {
                   leaseId: lease.leaseId
