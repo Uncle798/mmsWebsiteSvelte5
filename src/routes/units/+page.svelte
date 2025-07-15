@@ -87,21 +87,22 @@
 	</div>
 {:then units} 
 	{#await data.leases}
-		<div class="mt-14 sm:mt-10 sm:mt-14 sm:mt-10 m-1 sm:m-2">
+		<div class="mt-14 sm:mt-10 m-1 sm:m-2">
 			Loading leases...
 		</div>
 		<Placeholder numCols={1} numRows={3} heightClass='h-96'/>
 	{:then leases} 
 		{#await data.customers}
-			<div class="mt-14 sm:mt-10 sm:mt-14 sm:mt-10 m-1 sm:m-2">
+			<div class="mt-14 sm:mt-10 m-1 sm:m-2">
 				Loading customers...
 			</div>
 			<Placeholder numCols={1} numRows={3} heightClass='h-96'/>
-		{:then customers}
+			{:then customers}
 			{#await data.addresses}
-				<div class="mt-14 sm:mt-10 m-1 sm:m-2">
-					Loading addresses...
-				</div>
+			<div class="mt-14 sm:mt-10 m-1 sm:m-2">
+				Loading addresses...
+			</div>
+			<Placeholder numCols={1} numRows={3} heightClass='h-96'/>
 			{:then addresses} 
             {#if units}
 					<Revenue label='Current leased monthly revenue' amount={totalRevenue(leases)} classes='bg-tertiary-50-950 w-full rounded-b-lg fixed top-9 z-40'/>
@@ -141,7 +142,7 @@
 						{/snippet}
 					</Modal>
             	<div class=" sm:m-2 m-1 sm:mt-18 mt-24" in:fade={{duration:1600}}>
-               	{#each slicedUnits(filteredUnits(searchedUnits(units))) as unit (unit.num)}
+               	{#each slicedUnits(filteredUnits(searchedUnits(units))) as unit}
                	{@const lease = leases?.find((lease) => lease.unitNum === unit.num)}
 							<div class="border-2 border-primary-50-950 rounded-lg grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 my-2 gap-2">
 								<div class="flex flex-col">
@@ -160,9 +161,9 @@
 									<div class="flex flex-col">
 										{#if customer}
 										{@const address = addresses.find((address) => address.userId === customer.id)}
-											<UserEmployee user={customer} classes=''/>
+											<UserEmployee user={customer} classes='truncate'/>
 											{#if address}
-												<Address {address} classes='' />
+												<Address {address} classes='truncate' />
 											{/if}
 										{/if}
 									</div>
