@@ -9,7 +9,6 @@ import type { User } from '@prisma/client';
 export const load = (async (event) => {
    const registerForm = await superValidate(valibot(registerFormSchema));
    const emailVerificationForm = await superValidate(valibot(emailVerificationFormSchema));
-
    const userId = event.url.searchParams.get('userId');
    let customer:User | null = null;
    if(userId){
