@@ -88,10 +88,10 @@
          </Modal>
          {#if paymentRecords}
             {#if customers}                
-               <div class="mt-12 sm:mt-10 mx-1 sm:mx-2 ">
+               <div class="mt-12 sm:mt-10 mx-1 sm:mx-2 gap-y-2">
                   {#each slicedPayments(searchedPayments(searchByUser(paymentRecords, currentUsers(customers)))) as paymentRecord}
                   {@const customer = customers.find((customer) => customer.id === paymentRecord.customerId)}
-                     <div class="border-2 border-primary-50-950 rounded-lg grid grid-cols-2">
+                     <div class="border-2 border-primary-50-950 rounded-lg grid grid-cols-2 ">
                         <PaymentRecordEmployee {paymentRecord} />
                         {#if customer}
                            <UserEmployee user={customer} />
