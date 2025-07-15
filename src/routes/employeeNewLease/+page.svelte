@@ -116,26 +116,30 @@
       {/if}
          <div class="flex flex-col w-80">
             {#if data.unit && data.address}
-            <div class="flex bg-primary-50-950 mt-2 rounded-lg justify-between">
-               {#each Object.values(PaymentType) as paymentType}
-                  <RadioButton
-                     value={paymentType}
-                     errors={$errors.paymentType}
-                     constraints={$constraints.paymentType}
-                     groupName='paymentType'
-                     id={paymentType}
-                     label={paymentType.substring(0,1) + paymentType.substring(1).toLowerCase()}
-                  />
-               {/each}
-            </div>
-            <FormSubmitWithProgress 
-               delayed={$delayed} 
-               timeout={$timeout} 
-               buttonText='The above is correct charge ${data.unit.deposit} deposit'
-               classes=''  
-            />
+               <div class="flex bg-primary-50-950 mt-2 rounded-lg justify-between">
+                  {#each Object.values(PaymentType) as paymentType}
+                     <RadioButton
+                        value={paymentType}
+                        errors={$errors.paymentType}
+                        constraints={$constraints.paymentType}
+                        groupName='paymentType'
+                        id={paymentType}
+                        label={paymentType.substring(0,1) + paymentType.substring(1).toLowerCase()}
+                     />
+                  {/each}
+               </div>
+               <FormSubmitWithProgress 
+                  delayed={$delayed} 
+                  timeout={$timeout} 
+                  buttonText='The above is correct charge ${data.unit.deposit} deposit'
+                  classes=''  
+               />
+            {:else if data.unit}
+               Please add address.
+            {:else}
+               Please select unit.
             {/if}
-            </div>
+         </div>
       </form>
       {#if !data.discount}
          <div transition:fade={{duration:600}}>
