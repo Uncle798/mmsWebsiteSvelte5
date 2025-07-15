@@ -78,6 +78,12 @@
                   data={data.searchForm}
                   classes='m-1 sm:m-2 mt-9'
                />
+               <Search
+                  bind:search={search}
+                  searchType='payment notes'
+                  data={data.searchForm}
+                  classes='m-1 sm:m-2 mt-9'
+               />
             {/snippet}
          </Modal>
          {#if paymentRecords}
