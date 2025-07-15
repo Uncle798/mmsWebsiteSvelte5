@@ -78,7 +78,7 @@
 </Modal>
 
 {#await data.deposits}
-    <div class="mt-12 sm:mt-10 sm:mt-12 sm:mt-10 m-1 sm:m-2">
+    <div class="mt-12 sm:mt-10 m-1 sm:m-2">
         Loading {numberFormatter.format(data.depositCount)} deposits
     </div>
 {:then deposits} 

@@ -118,7 +118,7 @@
 </Modal>
 <Header title='Payment Records' />
 {#await wrapper}
-   <div class="mx-1 sm:mx-2 mt-12 sm:mt-10 sm:mt-12 sm:mt-10">
+   <div class="mx-1 sm:mx-2 mt-12 sm:mt-10">
       Loading {numberFormatter.format(data.paymentRecordCount)} payment records...
       <Placeholder numCols={1} numRows={size} heightClass='h-32' classes='z-0'/>
    </div>
