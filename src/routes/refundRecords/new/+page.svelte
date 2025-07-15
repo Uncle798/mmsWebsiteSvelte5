@@ -9,6 +9,7 @@
 	import Search from '$lib/forms/Search.svelte';
 	import Header from '$lib/Header.svelte';
 	import { PanelTopClose, SearchIcon } from 'lucide-svelte';
+	import UserEmployee from '$lib/displayComponents/UserEmployee.svelte';
    let { data }: { data: PageData } = $props();
    let selectedPayment = $state<PaymentRecord>();
    let allPayments = $state<PaymentRecord[]>([]);
@@ -80,24 +81,28 @@
                />
             {/snippet}
          </Modal>
-         <div class="mt-12 sm:mt-10 mx-1 sm:mx-2">
-            {#if paymentRecords}
-               {#if customers}                
+         {#if paymentRecords}
+            {#if customers}                
+               <div class="mt-12 sm:mt-10 mx-1 sm:mx-2 grid grid-cols-2">
                   {#each slicedPayments(searchedPayments(searchByUser(paymentRecords, currentUsers(customers)))) as paymentRecord}
-                     <div class="border-2 border-primary-50-950">
+                  {@const customer = customers.find((customer) => customer.id === paymentRecord.customerId)}
+                     <div class="border-2 border-primary-50-950 rounded-lg">
                         <PaymentRecordEmployee {paymentRecord} />
-                        <button class="btn preset-filled-primary-50-950">Refund this payment</button>
+                        {#if customer}
+                           <UserEmployee user={customer} />
+                        {/if}
+                        <button class="btn preset-filled-primary-50-950 col-span-2">Refund this payment</button>
                      </div>
                   {/each}
-                  <Pagination 
-                     bind:size={size} 
-                     bind:pageNum={pageNum} 
-                     array={searchedPayments(searchByUser(paymentRecords, currentUsers(customers)))}
-                     label='payment records'
-                  />
-               {/if}
+               </div>
+               <Pagination 
+                  bind:size={size} 
+                  bind:pageNum={pageNum} 
+                  array={searchedPayments(searchByUser(paymentRecords, currentUsers(customers)))}
+                  label='payment records'
+               />
             {/if}
-         </div>
+         {/if}
       {/await}
    {/await}
 {/if}
