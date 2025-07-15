@@ -74,7 +74,7 @@
    {/snippet}
 </Modal>
 
-<div in:fade={{duration:600}} class="mx-2 mb-24 sm:mb-14 lg:mb-9 sm:mt-12">
+<div in:fade={{duration:600}} class="mx-2 mb-24 sm:mb-14 lg:mb-9 sm:mt-14">
    <div class="flex flex-col sm:flex-row gap-2">
       <div>
          {#if data.user}

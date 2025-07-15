@@ -41,17 +41,17 @@
 </script>
 <Header title='New Refund' />
 {#if selectedPayment}
-   <PaymentRecordEmployee paymentRecord={selectedPayment} classes='mt-12 sm:mt-10'/>
+   <PaymentRecordEmployee paymentRecord={selectedPayment} classes='mt-14 sm:mt-10'/>
    <HorizontalDivider />   
    <NewRefundForm data={data.refundForm} paymentRecord={selectedPayment} classes='p-2'/>
 {:else}
    {#await data.paymentRecords}
-      <div class="mt-12 sm:mt-10 mx-1 sm:mx-2">
+      <div class="mt-14 sm:mt-10 mx-1 sm:mx-2">
          Loading deposits ...
       </div>
    {:then paymentRecords}
       {#await data.customers}
-         <div class="mt-12 sm:mt-10 mx-1 sm:mx-2">
+         <div class="mt-14 sm:mt-10 mx-1 sm:mx-2">
             Loading customers...
          </div>
       {:then customers} 
@@ -88,7 +88,7 @@
          </Modal>
          {#if paymentRecords}
             {#if customers}                
-               <div class="mt-12 sm:mt-10 mx-1 sm:mx-2 grid grid-cols-1 gap-y-2">
+               <div class="mt-14 sm:mt-10 mx-1 sm:mx-2 grid grid-cols-1 gap-y-2">
                   {#each slicedPayments(searchedPayments(searchByUser(paymentRecords, currentUsers(customers)))) as paymentRecord}
                   {@const customer = customers.find((customer) => customer.id === paymentRecord.customerId)}
                      <div class="border-2 border-primary-50-950 rounded-lg grid grid-cols-1 sm:grid-cols-2 ">

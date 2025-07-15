@@ -87,7 +87,7 @@
 </script>
 {#await wrapper}
    <Header title='Loading invoices' />
-   <div class="mx-1 sm:mx-2 mt-12 sm:mt-10" in:fade={{duration:600}}>
+   <div class="mx-1 sm:mx-2 mt-14 sm:mt-10" in:fade={{duration:600}}>
       Loading {numberFormatter.format(data.invoiceCount)} invoices, 
       <Combobox
          data={yearComboboxData}
@@ -107,13 +107,13 @@
    {:then invoices}
    {#await data.customers}
       <Header title='Loading customers' />
-      <div class="mt-12 sm:mt-10">
+      <div class="mt-14 sm:mt-10">
          Loading customers...
       </div>
       <Placeholder numCols={1} numRows={size} heightClass='h-40'/>
    {:then customers}
       {#await data.addresses}
-         <div class="mt-12 sm:mt-10">
+         <div class="mt-14 sm:mt-10">
                Loading addresses...
          </div>
          <Placeholder numCols={1} numRows={size} heightClass='h-40'/>

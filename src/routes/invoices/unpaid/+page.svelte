@@ -78,20 +78,20 @@
 </script>
 {#await wrapper}
     <Header title='Loading invoices' />
-    <div class="mt-12 sm:mt-10">
+    <div class="mt-14 sm:mt-10">
         Loading {numberFormatter.format(data.invoiceCount)} invoices, 
         <Placeholder numCols={1} numRows={size} heightClass='h-40'/>
     </div>
     {:then invoices}
         {#await data.customers}
             <Header title='Loading customers' />
-            <div class="mt-12 sm:mt-10">
+            <div class="mt-14 sm:mt-10">
                 Loading customers...
                 <Placeholder numCols={1} numRows={size} heightClass='h-40'/>
             </div>
         {:then customers}
         {#await data.addresses}
-            <div class="mt-12 sm:mt-10">
+            <div class="mt-14 sm:mt-10">
                 Loading addresses...
                 <Placeholder numCols={1} numRows={size} heightClass='h-40'/>
             </div>
@@ -123,7 +123,7 @@
                             </div>
                     {/snippet}
                 </Modal>
-                <div class="grid grid-cols-1 gap-y-3 gap-x-1 m-2 sm:mt-12 mt-20 z-30" in:fade={{duration:600}} out:fade={{duration:0}}>
+                <div class="grid grid-cols-1 gap-y-3 gap-x-1 m-2 sm:mt-14 mt-20 z-30" in:fade={{duration:600}} out:fade={{duration:0}}>
                     {#each  slicedInvoices(searchedInvoices(searchByUser(invoices))) as invoice}  
                     {@const customer = customers.find((customer) => customer.id === invoice.customerId)}  
                         <div class="rounded-lg border border-primary-50-950 grid sm:grid-cols-2">                            

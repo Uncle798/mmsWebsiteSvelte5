@@ -132,7 +132,7 @@
 </Modal>
 <Header title='Payment Records' />
 {#await wrapper}
-   <div class="mx-1 sm:mx-2 mt-12 sm:mt-10">
+   <div class="mx-1 sm:mx-2 mt-14 sm:mt-10">
       Loading {numberFormatter.format(data.paymentRecordCount)} payment records...
       {#if data.months}
          <Combobox
@@ -151,12 +151,12 @@
    </div>
 {:then paymentRecords} 
    {#await data.customers}
-      <div class="mt-12 sm:mt-10">
+      <div class="mt-14 sm:mt-10">
          Loading customers...
       </div>
    {:then customers} 
       {#await data.addresses}
-         <div class="mt-12 sm:mt-10">
+         <div class="mt-14 sm:mt-10">
             Loading contacts...
          </div>
       {:then addresses}         

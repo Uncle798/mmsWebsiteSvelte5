@@ -166,8 +166,8 @@
 				</article>
 			{/snippet}
 		</Modal>
-		<div class="bg-tertiary-50-950 fixed w-screen top-0 left-0 h-12 sm:h-9 text-center font-bold z-30 ">
-			<div class="fixed top-0 left-[95px] w-[225px] sm:w-screen text-center sm:left-0 text-wrap">
+		<div class="bg-tertiary-50-950 fixed w-screen top-0 left-0 h-12 sm:h-9 text-center font-bold z-30 rounded-b-lg">
+			<div class="fixed top-0 left-[90px] w-[225px] sm:w-screen text-center sm:left-0 text-wrap">
 				<a href="/" class="anchor">{PUBLIC_COMPANY_NAME}</a>
 			</div>
 		</div>
@@ -209,8 +209,8 @@
 			</article>
 		{/snippet}
 		</Modal>
-		<div class="bg-tertiary-50-950 fixed w-screen top-0 left-0 h-12 sm:h-9 text-center font-bold z-30 ">
-			<div class="fixed top-0 left-[95px] w-[225px] sm:w-screen text-center sm:left-0 text-wrap">
+		<div class="bg-tertiary-50-950 fixed w-screen top-0 left-0 h-12 sm:h-9 text-center font-bold z-30 rounded-b-lg">
+			<div class="fixed top-0 left-[90px] w-[225px] sm:w-screen text-center sm:left-0 text-wrap">
 				<a href="/" class="anchor">{PUBLIC_COMPANY_NAME}</a>
 			</div>
 		</div>

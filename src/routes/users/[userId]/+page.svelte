@@ -54,7 +54,7 @@
 
 {#if data.dbUser}
    <Header title='{data.dbUser.givenName} {data.dbUser.familyName}' />
-   <UserEmployee user={data.dbUser} classes='mx-2 mt-12 sm:mt-10' />
+   <UserEmployee user={data.dbUser} classes='mx-2 mt-14 sm:mt-10' />
 {:else}
 ...loading user
 {/if}

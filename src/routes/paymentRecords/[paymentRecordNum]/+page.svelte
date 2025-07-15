@@ -14,7 +14,7 @@
 </script>
 {#if data.paymentRecord }
    <Header title='Payment Record Num: {data.paymentRecord}' />
-   <div class="grid grid-cols-1 m-1 sm:m-2 mt-12 sm:mt-10 mb-22 sm:mb-12 lg:mb-7 border-2 border-primary-50-950 rounded-lg w-fit">
+   <div class="grid grid-cols-1 m-1 sm:m-2 mt-14 sm:mt-10 mb-22 sm:mb-12 lg:mb-7 border-2 border-primary-50-950 rounded-lg w-fit">
          {#if data.user?.employee}
             <PaymentRecordEmployee paymentRecord={data.paymentRecord} classes=''/>
          {:else}

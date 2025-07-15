@@ -115,7 +115,7 @@
 </Modal>
 
 {#await data.units}
-   <div class="relative m-1 sm:m-2 mt-12 sm:mt-10">
+   <div class="relative m-1 sm:m-2 mt-14 sm:mt-10">
       Loading units...
    </div>
 {:then units}

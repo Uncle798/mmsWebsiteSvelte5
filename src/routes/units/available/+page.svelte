@@ -69,7 +69,7 @@
 </script>
 <Header title='Available Units' />
 {#await data.availableUnits}
-   <div class="m-2 mt-12 sm:mt-10">
+   <div class="m-2 mt-14 sm:mt-10">
       ...loading available units
    </div>
 {:then availableUnits}   

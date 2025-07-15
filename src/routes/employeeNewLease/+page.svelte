@@ -40,7 +40,7 @@
 
 
 <Header title="Employee New Lease" />
-<div in:fade={{duration:600}} out:fade={{duration:0}} class="mx-2 mt-12 sm:mt-10">
+<div in:fade={{duration:600}} out:fade={{duration:0}} class="mx-2 mt-14 sm:mt-10">
    {#if !data.customer}
       <div class="m-2">
          <a href="/employeeNewCustomer" class="btn rounded-lg preset-filled-primary-50-950">Create new customer</a>

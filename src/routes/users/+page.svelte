@@ -33,8 +33,8 @@
 </script>
 <Header title='All users' />
 {#await data.users}
-   <div class="mt-12 sm:mt-10">
-      ...loading {data.userCount} users
+   <div class="mt-14 sm:mt-10">
+      Loading {data.userCount} users...
    </div>
 {:then users }
    <Modal
@@ -69,7 +69,7 @@
          Admins can change the employment status of a user, Employees can't, otherwise they're the same. 
       {/snippet}
    </Modal>
-   <div in:fade={{duration:600}} class="m-2 mt-12 sm:mt-10">
+   <div in:fade={{duration:600}} class="m-2 mt-14 sm:mt-10">
       <div class="grid grid-cols-1 gap-y-3 gap-x-1">
          {#each slicedSource(searchedUsers(users)) as user (user.id)}
             <div class="rounded-lg border border-primary-50-950 flex flex-row">
