@@ -12,12 +12,11 @@
 	import UserEmployee from '$lib/displayComponents/UserEmployee.svelte';
    let { data }: { data: PageData } = $props();
    let selectedPayment = $state<PaymentRecord>();
-   let allPayments = $state<PaymentRecord[]>([]);
    let size = $state(25);
    let pageNum = $state(1);
-   let search = $state('')
+   let search = $state('');
    const slicedPayments = $derived((paymentRecords:PaymentRecord[]) => paymentRecords.slice((pageNum -1) * size, pageNum*size));
-   const searchedPayments = $derived((paymentRecords:PaymentRecord[]) => paymentRecords.filter((paymentRecord) => paymentRecord.paymentNotes?.includes(search)));
+   const searchedPayments = $derived((paymentRecords:PaymentRecord[]) => paymentRecords.filter((paymentRecord) => paymentRecord.paymentNotes?.toLowerCase().includes(search.toLowerCase())));
    let searchDrawerOpen = $state(false);
    let nameSearch = $state('');
    const searchByUser = $derived((paymentRecords:PaymentRecord[], customers:User[]) =>{
@@ -38,7 +37,7 @@
          user.familyName?.toLowerCase().includes(nameSearch.toLowerCase()) || 
          user.organizationName?.toLowerCase().includes(nameSearch.toLowerCase())
       })
-   )
+   );
 </script>
 <Header title='New Refund' />
 {#if selectedPayment}
@@ -60,7 +59,7 @@
             open={searchDrawerOpen}
             onOpenChange={(event)=>(searchDrawerOpen = event.open)}
             triggerBase='btn preset-filled-primary-50-950 rounded-lg fixed top-0 right-0 z-50'
-            contentBase='bg-surface-100-900 h-[400px] w-screen rounded-lg'
+            contentBase='bg-surface-100-900 h-[150px] w-screen rounded-lg'
             positionerJustify=''
             positionerAlign=''
             positionerPadding=''
@@ -86,12 +85,12 @@
                <div class="mt-12 sm:mt-10 mx-1 sm:mx-2 grid grid-cols-2">
                   {#each slicedPayments(searchedPayments(searchByUser(paymentRecords, currentUsers(customers)))) as paymentRecord}
                   {@const customer = customers.find((customer) => customer.id === paymentRecord.customerId)}
-                     <div class="border-2 border-primary-50-950 rounded-lg">
+                     <div class="border-2 border-primary-50-950 rounded-lg col-span-2">
                         <PaymentRecordEmployee {paymentRecord} />
                         {#if customer}
                            <UserEmployee user={customer} />
                         {/if}
-                        <button class="btn preset-filled-primary-50-950 col-span-2">Refund this payment</button>
+                        <button class="btn preset-filled-primary-50-950 justify-between">Refund this payment</button>
                      </div>
                   {/each}
                </div>
