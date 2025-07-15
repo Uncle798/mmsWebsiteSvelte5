@@ -63,7 +63,7 @@
 	<header> 
 		<Modal
 			bind:open={menuOpen}
-			triggerBase="btn bg-primary-50-950 hover:shadow-xl hover:border-2 border-secondary-50-950 fixed top-0 left-0 z-50"
+			triggerBase="btn bg-primary-50-950 hover:shadow-xl hover:border-2 border-secondary-50-950 fixed top-0 left-0 z-50 h-14 sm:h-9"
 			contentBase="bg-surface-100-900 space-y-2 shadow-xl w-[240px] h-screen"
 			positionerJustify="justify-start"
 			positionerAlign=""
@@ -72,7 +72,7 @@
 			transitionsPositionerOut={{ x: -280, duration: 400 }}
 		>
 			{#snippet trigger()}
-				<Menu class='mx-2 border-2 z-50 h-12 sm:h-auto' />	
+				<Menu aria-label='Main Menu' />	
 			{/snippet}
 			{#snippet content()}
 				<article class="h-full">
