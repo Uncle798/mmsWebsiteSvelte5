@@ -13,5 +13,5 @@
 	{#if user.organizationName}
 		<span>{user.organizationName}</span>
 	{/if}
-	<span class=""><a href="mailto:{user.email}" class="anchor truncate">{user.email}</a></span>
+	<span class=""><a href="mailto:{user.email}" class="anchor">{user.email}</a></span>
 </div>
