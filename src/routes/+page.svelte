@@ -100,6 +100,9 @@
       {#each filterSize(units) as unit}
          <div class="flex flex-col border rounded-lg border-primary-50-950 justify-between" in:fade={{duration:600}}>
             <UnitCustomer {unit}/>
+            {#if data.user?.employee}
+               <a class="btn preset-filled-primary-50-950 m-2" href="/employeeNewLease?unitNum={unit.num}">Rent this Unit</a>
+            {/if}
             <a class="btn preset-filled-primary-50-950 m-2" href="/newLease?unitNum={unit.num}">Rent this Unit</a>
          </div>
       {/each}
