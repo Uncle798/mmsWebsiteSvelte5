@@ -72,7 +72,7 @@
 			transitionsPositionerOut={{ x: -280, duration: 400 }}
 		>
 			{#snippet trigger()}
-				<Menu class='mx-2 border-2 z-50' />	
+				<Menu class='mx-2 border-2 z-50 h-12 sm:h-auto' />	
 			{/snippet}
 			{#snippet content()}
 				<article class="h-full">
@@ -185,7 +185,7 @@
 			transitionsPositionerOut={{ x: -125, duration: 400 }}
 		>
 		{#snippet trigger()}
-			<Menu class='mx-2 border-2 z-50' aria-label='Main Menu'/>	
+			<Menu class='mx-2 border-2 z-50 h-12 sm:h-auto' aria-label='Main Menu'/>	
 		{/snippet}
 		{#snippet content()}
 			<article class="">
