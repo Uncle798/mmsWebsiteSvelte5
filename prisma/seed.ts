@@ -191,7 +191,7 @@ async function createLease(unit: Unit, leaseStart:Date, leaseEnd: Date | null, r
       employeeId: randEmployee.id,
       addressId: address.addressId,
       unitNum: unit.num,
-      price: unit.advertisedPrice,
+      price: discount ? unit.advertisedPrice-discount.amountOff : unit.advertisedPrice ,
       leaseEffectiveDate: leaseStart,
       leaseReturnedAt: leaseStart,
       leaseEnded,
