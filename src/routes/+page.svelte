@@ -45,7 +45,7 @@
                </p>
             {/snippet}
             {#snippet content()}
-               Tell your story here. We can customize copy to your exact specifications
+               Tell your story here. We can customize copy to your exact specifications.
             {/snippet}
          </Tooltip>
       </div>
