@@ -13,6 +13,7 @@
 	import { onMount } from "svelte";
 	import TextArea from "$lib/formComponents/TextArea.svelte";
 	import RadioButton from "$lib/formComponents/RadioButton.svelte";
+	import ExplainerModal from "$lib/demo/ExplainerModal.svelte";
 
    interface Props {
       data: SuperValidated<Infer<NewPaymentRecordFormSchema>>;
@@ -73,10 +74,12 @@
          }
       }
    })
+   let explainerModalOpen = $state(false);
 </script>
 
 <Modal
    bind:open={invoiceFormOpen}
+   onOpenChange={(e) => invoiceFormOpen = e.open}
    contentBase="card bg-surface-400-600 p-4 space-y-4 shadow-xl max-w-(--breakpoint-sm)"
    backdropClasses="backdrop-blur-xs"
 >
@@ -91,6 +94,10 @@
       <button class="btn" onclick={()=>invoiceFormOpen=false}>Cancel</button>
    {/snippet}
 </Modal>
+<ExplainerModal
+   bind:modalOpen={explainerModalOpen}
+   copy='Please choose Cash or Check for the demo. Credit card just means you have to enter a bunch of numbers.'
+/>
 
 <div class={classes}>
    <FormMessage message={$message} />

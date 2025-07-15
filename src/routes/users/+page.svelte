@@ -10,6 +10,7 @@
 	import { Modal } from '@skeletonlabs/skeleton-svelte';
 	import { SearchIcon, PanelTopClose } from 'lucide-svelte';
 	import { onMount } from 'svelte';
+	import ExplainerModal from '$lib/demo/ExplainerModal.svelte';
 
    let { data }: { data: PageData } = $props();
    let search = $state('')
@@ -59,16 +60,10 @@
       </div>
       {/snippet}
    </Modal>
-   <Modal
-      open={explainerModalOpen}
-      onOpenChange={(event) =>(explainerModalOpen = event.open)}
-      contentBase='card bg-surface-100-900 p-2 space-y-4 shadow-xl max-w-screen-sm'
-      backdropClasses='backdrop-blur-lg'
-   >
-      {#snippet content()}
-         Admins can change the employment status of a user, Employees can't, otherwise they're the same. 
-      {/snippet}
-   </Modal>
+   <ExplainerModal
+      bind:modalOpen={explainerModalOpen}
+      copy="Admins can change the employment status of a user, Employees can't, otherwise they're the same."
+   />
    <div in:fade={{duration:600}} class="m-2 mt-14 sm:mt-10">
       <div class="grid grid-cols-1 gap-y-3 gap-x-1">
          {#each slicedSource(searchedUsers(users)) as user (user.id)}
