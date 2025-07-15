@@ -96,7 +96,7 @@
                         {#if customer}
                            <UserEmployee user={customer} />
                         {/if}
-                        <button class="btn preset-filled-primary-50-950 justify-between">Refund this payment</button>
+                        <button class="btn preset-filled-primary-50-950 justify-between m-1">Refund this payment</button>
                      </div>
                   {/each}
                </div>
