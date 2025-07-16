@@ -128,56 +128,20 @@
                }
             }}
          />
-      <!-- {:else if selectedCustomer[0].length > 0}
-      {@const customer = customers.find((customer) => customer.id === selectedCustomer[0])}
-      {@const lease = leases.find((lease) => lease.leaseId === selectedLease[0])}
-         {#if lease}
-            <LeaseEmployee {lease} classes='border border-primary-50-950 rounded-lg my-2'/>
-         {/if}
-         {#if customer}
-            <UserEmployee user={customer} classes='border border-primary-50-950 rounded-lg my-2'/>
-         {/if}
-         <TextArea
-            bind:value={$form.invoiceNotes}
-            errors={$errors.invoiceNotes}
-            constraints={$constraints.invoiceNotes}
-            label="Invoice notes"
-            name='invoiceNotes'
-            rows={2}
-         />
-         <NumberInput
-            bind:value={$form.invoiceAmount}
-            errors={$errors.invoiceAmount}
-            constraints={$constraints.invoiceAmount}
-            label='Invoice amount: $'
-            name='invoiceAmount'
-         />
-         <DateInput
-            bind:value={$form.invoiceDue}
-            errors={$errors.invoiceDue}
-            constraints={$constraints.invoiceDue}
-            label='Invoice Due Date'
-            name='invoiceDue'
-            min={dayjs().subtract(1, 'year').toDate()}
-            max={dayjs().add(1, 'year').toDate()}
-         />
-         <Switch name='deposit' bind:checked={$form.deposit} label='Deposit' classes='mt-2'>
-            Deposit
-         </Switch>
-         <input type="hidden" name='employeeId' value={employeeId}/>
-         <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} buttonText='Create Invoice'/> -->
       {/if}
       {#if leaseSelected}
       {@const customer = customers.find((customer) => {
          return customer.id === selectedCustomer[0]
          })}
       {@const lease = leases.find((lease) => lease.leaseId === selectedLease[0])}
-         {#if lease}
-            <LeaseEmployee {lease} classes='border border-primary-50-950 rounded-lg m-2'/>
-         {/if}
-         {#if customer}
-            <UserEmployee user={customer} classes='border border-primary-50-950 rounded-lg m-2' />
-         {/if}
+         <div class="border border-primary-50-950 rounded-lg ">
+            {#if lease}
+               <LeaseEmployee {lease} classes='m-2'/>
+            {/if}
+            {#if customer}
+               <UserEmployee user={customer} classes='m-2' />
+            {/if}
+         </div>
          <TextArea
             bind:value={$form.invoiceNotes}
             errors={$errors.invoiceNotes}
