@@ -13,6 +13,7 @@
 	import { onMount } from "svelte";
 	import Header from "$lib/Header.svelte";
 	import UserEmployee from "$lib/displayComponents/UserEmployee.svelte";
+	import LeaseEmployee from "$lib/displayComponents/LeaseEmployee.svelte";
 
    interface Props {
       data: SuperValidated<Infer<NewInvoiceFormSchema>>;
@@ -101,7 +102,6 @@
                   console.log(lease)
                   if(lease){
                      selectedCustomer[0] = lease.customerId;
-                     console.log(selectedCustomer)
                      $form.invoiceAmount=lease.price
                      const date = dayjs(new Date()).format('MMMM YYYY')
                      $form.invoiceNotes=`Rent for Unit Number ${lease.unitNum.replace(/^0+/gm,'')} for ${date}`
@@ -111,7 +111,7 @@
             />
          {/if}
       {/if}
-      {#if customerLeaseComboBoxData.length > 0 }
+      {#if customerLeaseComboBoxData.length > 0 && !leaseSelected}
          <Combobox
             data={customerLeaseComboBoxData.sort()}
             bind:value={selectedCustomerLease}
@@ -130,9 +130,12 @@
          />
       {:else if selectedCustomer[0].length > 0}
       {@const customer = customers.find((customer) => customer.id === selectedCustomer[0])}
-      {@debug customer}
+      {@const lease = leases.find((lease) => lease.leaseId === selectedLease[0])}
+         {#if lease}
+            <LeaseEmployee {lease} classes='border border-primary-50-950 rounded-lg my-2'/>
+         {/if}
          {#if customer}
-            <UserEmployee user={customer} />
+            <UserEmployee user={customer} classes='border border-primary-50-950 rounded-lg my-2'/>
          {/if}
          <TextArea
             bind:value={$form.invoiceNotes}
@@ -168,7 +171,10 @@
       {@const customer = customers.find((customer) => {
          return customer.id === selectedCustomer[0]
          })}
-      {@debug customer, selectedCustomer}
+      {@const lease = leases.find((lease) => lease.leaseId === selectedLease[0])}
+         {#if lease}
+            <LeaseEmployee {lease} classes='border border-primary-50-950 rounded-lg my-2'/>
+         {/if}
          {#if customer}
             <UserEmployee user={customer} />
          {/if}
