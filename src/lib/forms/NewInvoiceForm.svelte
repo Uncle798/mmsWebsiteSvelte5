@@ -14,6 +14,7 @@
 	import { onMount } from "svelte";
 	import Header from "$lib/Header.svelte";
 	import { title } from "process";
+	import UserEmployee from "$lib/displayComponents/UserEmployee.svelte";
 
    interface Props {
       data: SuperValidated<Infer<NewInvoiceFormSchema>>;
@@ -76,37 +77,39 @@
 <div class={classes}>
    <FormMessage message={$message} />
    <form action="/forms/newInvoiceForm" method="POST" use:enhance>
-      <Combobox
-         data={customerComboBoxData}
-         bind:value={selectedCustomer}
-         label='Select Customer'
-         placeholder='Select...'
-         openOnClick={true}
-         onValueChange={(detail) => {
-            selectedCustomer=detail.value
-         }}
-      />
-      {#if customerLeaseComboBoxData.length === 0}
-         or,
+      {#if !leaseSelected}         
          <Combobox
-            data={leaseComboBoxData}
-            bind:value={selectedLease}
-            label='Select Unit'
+            data={customerComboBoxData}
+            bind:value={selectedCustomer}
+            label='Select Customer'
             placeholder='Select...'
             openOnClick={true}
             onValueChange={(detail) => {
-               selectedLease = detail.value
-               const lease = leases.find((lease) => lease.leaseId === detail.value[0]);
-               console.log(lease)
-               if(lease){
-                  selectedCustomer[0] === lease.customerId;
-                  $form.invoiceAmount=lease.price
-                  const date = dayjs(new Date()).format('MMMM YYYY')
-                  $form.invoiceNotes=`Rent for Unit Number ${lease.unitNum.replace(/^0+/gm,'')} for ${date}`
-                  leaseSelected = true
-               }
+               selectedCustomer=detail.value
             }}
          />
+         {#if customerLeaseComboBoxData.length === 0}
+            or,
+            <Combobox
+               data={leaseComboBoxData}
+               bind:value={selectedLease}
+               label='Select Unit'
+               placeholder='Select...'
+               openOnClick={true}
+               onValueChange={(detail) => {
+                  selectedLease = detail.value
+                  const lease = leases.find((lease) => lease.leaseId === detail.value[0]);
+                  console.log(lease)
+                  if(lease){
+                     selectedCustomer[0] === lease.customerId;
+                     $form.invoiceAmount=lease.price
+                     const date = dayjs(new Date()).format('MMMM YYYY')
+                     $form.invoiceNotes=`Rent for Unit Number ${lease.unitNum.replace(/^0+/gm,'')} for ${date}`
+                     leaseSelected = true
+                  }
+               }}
+            />
+         {/if}
       {/if}
       {#if customerLeaseComboBoxData.length > 0 }
          <Combobox
@@ -126,6 +129,10 @@
             }}
          />
       {:else if selectedCustomer[0].length > 0}
+      {@const customer = customers.find((customer) => customer.id === selectedCustomer[0])}
+         {#if customer}
+            <UserEmployee user={customer} />
+         {/if}
          <TextArea
             bind:value={$form.invoiceNotes}
             errors={$errors.invoiceNotes}
