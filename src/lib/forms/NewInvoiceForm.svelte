@@ -101,6 +101,7 @@
                   console.log(lease)
                   if(lease){
                      selectedCustomer[0] === lease.customerId;
+                     console.log(selectedCustomer)
                      $form.invoiceAmount=lease.price
                      const date = dayjs(new Date()).format('MMMM YYYY')
                      $form.invoiceNotes=`Rent for Unit Number ${lease.unitNum.replace(/^0+/gm,'')} for ${date}`
@@ -164,8 +165,10 @@
          <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} buttonText='Create Invoice'/>
       {/if}
       {#if leaseSelected}
-      {@const customer = customers.find((customer) => customer.id === selectedCustomer[0])}
-      {@debug customer}
+      {@const customer = customers.find((customer) => {
+         return customer.id === selectedCustomer[0]
+         })}
+      {@debug customer, selectedCustomer}
          {#if customer}
             <UserEmployee user={customer} />
          {/if}
