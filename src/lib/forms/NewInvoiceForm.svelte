@@ -81,7 +81,7 @@
       {#if !leaseSelected}         
          <Combobox
             data={customerComboBoxData}
-            bind:value={selectedCustomer}
+            value={selectedCustomer}
             label='Select Customer'
             placeholder='Select...'
             openOnClick={true}
@@ -94,7 +94,7 @@
             or,
             <Combobox
                data={leaseComboBoxData}
-               bind:value={selectedLease}
+               value={selectedLease}
                label='Select Unit'
                placeholder='Select...'
                openOnClick={true}
@@ -115,7 +115,7 @@
          {#if customerLeaseComboBoxData.length > 0}
             <Combobox
                data={customerLeaseComboBoxData}
-               bind:value={selectedCustomerLease}
+               value={selectedCustomerLease}
                label="Select a unit"
                placeholder="Select..."
                openOnClick={true}
@@ -174,7 +174,7 @@
             name='invoiceAmount'
 
          />
-         <Switch name='deposit' bind:checked={$form.deposit} label='Deposit' classes='mt-2'>
+         <Switch name='deposit' checked={$form.deposit} onCheckedChange={(e)=> $form.deposit=e.checked} label='Deposit' classes='mt-2'>
             Deposit
          </Switch>
          <DateInput
