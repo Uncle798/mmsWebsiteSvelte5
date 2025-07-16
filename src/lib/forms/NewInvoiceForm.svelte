@@ -6,14 +6,12 @@
 	import type { Lease, User } from "@prisma/client";
 	import type { SuperValidated, Infer } from "sveltekit-superforms";
    import { superForm } from "sveltekit-superforms";
-
    import { Combobox, Switch } from "@skeletonlabs/skeleton-svelte";
 	import dayjs from "dayjs";
 	import TextArea from "$lib/formComponents/TextArea.svelte";
 	import DateInput from "$lib/formComponents/DateInput.svelte";
 	import { onMount } from "svelte";
 	import Header from "$lib/Header.svelte";
-	import { title } from "process";
 	import UserEmployee from "$lib/displayComponents/UserEmployee.svelte";
 
    interface Props {
@@ -163,8 +161,11 @@
          <input type="hidden" name='employeeId' value={employeeId}/>
          <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} buttonText='Create Invoice'/>
       {/if}
-      {#if leaseSelected && selectedCustomer[0].length === 0}
-         selectedCustomer[0].length === 0
+      {#if leaseSelected}
+      {@const customer = customers.find((customer) => customer.id === selectedCustomer[0])}
+         {#if customer}
+            <UserEmployee user={customer} />
+         {/if}
          <TextArea
             bind:value={$form.invoiceNotes}
             errors={$errors.invoiceNotes}
