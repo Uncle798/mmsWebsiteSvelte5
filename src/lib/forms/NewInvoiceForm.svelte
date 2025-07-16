@@ -100,7 +100,7 @@
                   const lease = leases.find((lease) => lease.leaseId === detail.value[0]);
                   console.log(lease)
                   if(lease){
-                     selectedCustomer[0] === lease.customerId;
+                     selectedCustomer[0] = lease.customerId;
                      console.log(selectedCustomer)
                      $form.invoiceAmount=lease.price
                      const date = dayjs(new Date()).format('MMMM YYYY')
