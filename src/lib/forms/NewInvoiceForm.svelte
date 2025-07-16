@@ -12,6 +12,8 @@
 	import TextArea from "$lib/formComponents/TextArea.svelte";
 	import DateInput from "$lib/formComponents/DateInput.svelte";
 	import { onMount } from "svelte";
+	import Header from "$lib/Header.svelte";
+	import { title } from "process";
 
    interface Props {
       data: SuperValidated<Infer<NewInvoiceFormSchema>>;
@@ -38,7 +40,7 @@
       value: string;
    }
    const customerComboBoxData:ComboBoxData[] = [];
-   const leaseComboBoxData:ComboBoxData[] = $derived.by(() =>{
+   const customerLeaseComboBoxData:ComboBoxData[] = $derived.by(() =>{
       const customerLeases = leases.filter((lease) => lease.customerId === selectedCustomer[0]);
       const data:ComboBoxData[]=[]
       customerLeases.forEach((lease) =>{
@@ -48,6 +50,7 @@
       })
       return data
    })
+   let selectedCustomerLease = $state(['']);
    customers.forEach((customer)=>{
       const label = `${customer.givenName} ${customer.familyName}`;
       const value = customer.id;
@@ -57,10 +60,19 @@
       }
       customerComboBoxData.push(datum);
    });
+   const leaseComboBoxData:ComboBoxData[] = [];
+   for(const lease of leases){
+      const label = lease.unitNum.replace(/^0+/gm, '');
+      const value = lease.leaseId;
+      leaseComboBoxData.push({
+         label,
+         value,
+      })
+   }
    let leaseSelected = $state(false)
 </script>
 
-
+<Header title='New Invoice' />
 <div class={classes}>
    <FormMessage message={$message} />
    <form action="/forms/newInvoiceForm" method="POST" use:enhance>
@@ -74,10 +86,27 @@
             selectedCustomer=detail.value
          }}
       />
-      {#if leaseComboBoxData.length > 0 }
+      {#if customerLeaseComboBoxData.length === 0}
+         or,
          <Combobox
-            data={leaseComboBoxData.sort()}
+            data={leaseComboBoxData}
             bind:value={selectedLease}
+            label='Select Unit'
+            placeholder='Select...'
+            openOnClick={true}
+            onValueChange={(detail) => {
+               selectedLease = detail.value
+               const lease = leases.find((lease) => lease.leaseId === detail.value[0]);
+               if(lease){
+                  selectedCustomer[0] === lease.customerId
+               }
+            }}
+         />
+      {/if}
+      {#if customerLeaseComboBoxData.length > 0 }
+         <Combobox
+            data={customerLeaseComboBoxData.sort()}
+            bind:value={selectedCustomerLease}
             label="Select a unit"
             placeholder="Select..."
             openOnClick={true}
@@ -122,7 +151,7 @@
          <input type="hidden" name='employeeId' value={employeeId}/>
          <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} buttonText='Create Invoice'/>
       {/if}
-      {#if leaseSelected}
+      {#if leaseSelected && selectedCustomer[0].length === 0}
          <TextArea
             bind:value={$form.invoiceNotes}
             errors={$errors.invoiceNotes}
