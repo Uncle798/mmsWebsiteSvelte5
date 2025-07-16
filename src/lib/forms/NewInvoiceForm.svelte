@@ -40,7 +40,7 @@
       value: string;
    }
    const customerComboBoxData:ComboBoxData[] = [];
-   const customerLeaseComboBoxData:ComboBoxData[] = $derived.by(() =>{
+   const customerLeaseComboBoxData:ComboBoxData[] = $derived.by(() => {
       const customerLeases = leases.filter((lease) => lease.customerId === selectedCustomer[0]);
       const data:ComboBoxData[]=[]
       customerLeases.forEach((lease) =>{
@@ -110,24 +110,24 @@
                }}
             />
          {/if}
-      {/if}
-      {#if customerLeaseComboBoxData.length > 0 && !leaseSelected}
-         <Combobox
-            data={customerLeaseComboBoxData.sort()}
-            bind:value={selectedCustomerLease}
-            label="Select a unit"
-            placeholder="Select..."
-            openOnClick={true}
-            onValueChange={(details) =>{
-               const lease = leases.find((lease) => lease.leaseId === details.value[0]);
-               if(lease){
-                  $form.invoiceAmount=lease.price
-                  const date = dayjs(new Date()).format('MMMM YYYY')
-                  $form.invoiceNotes=`Rent for Unit Number ${lease.unitNum.replace(/^0+/gm,'')} for ${date}`
-                  leaseSelected = true
-               }
-            }}
-         />
+         {#if customerLeaseComboBoxData.length > 0}
+            <Combobox
+               data={customerLeaseComboBoxData}
+               bind:value={selectedCustomerLease}
+               label="Select a unit"
+               placeholder="Select..."
+               openOnClick={true}
+               onValueChange={(details) =>{
+                  const lease = leases.find((lease) => lease.leaseId === details.value[0]);
+                  if(lease){
+                     $form.invoiceAmount=lease.price
+                     const date = dayjs(new Date()).format('MMMM YYYY')
+                     $form.invoiceNotes=`Rent for Unit Number ${lease.unitNum.replace(/^0+/gm,'')} for ${date}`
+                     leaseSelected = true
+                  }
+               }}
+            />
+         {/if}
       {/if}
       {#if leaseSelected}
       {@const customer = customers.find((customer) => {
