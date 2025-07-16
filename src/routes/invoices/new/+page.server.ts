@@ -27,6 +27,9 @@ export const load = (async (event) => {
                   not: null
                }}
             ]
+         },
+         orderBy: {
+            unitNum: 'asc'
          }
       });
       return { customer, leases, newInvoiceForm, registerForm, emailVerificationForm }
