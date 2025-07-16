@@ -1,7 +1,6 @@
 import { serve } from '@upstash/workflow/svelte';
 import { env } from '$env/dynamic/private';
 import { prisma } from '$lib/server/prisma';
-import { stripe } from '$lib/server/stripe';
 
 type InitialPayload = {
    leaseId: string
@@ -28,7 +27,9 @@ export const { POST } = serve<InitialPayload>(
             })
             console.log('upstash 1st step')
          })
-         await context.waitForEvent('wait for lease sent or 15 min', leaseId, 15*60);
+         await context.waitForEvent('wait for lease sent or 15 min', leaseId, {
+            timeout: '15m'
+         });
          await context.run("second-step", async () => {
             const lease = await prisma.lease.findUnique({
                where: {
