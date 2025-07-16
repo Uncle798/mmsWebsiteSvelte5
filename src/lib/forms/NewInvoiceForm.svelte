@@ -86,6 +86,7 @@
             openOnClick={true}
             onValueChange={(detail) => {
                selectedCustomer=detail.value
+               console.log(selectedCustomer)
             }}
          />
          {#if customerLeaseComboBoxData.length === 0}
