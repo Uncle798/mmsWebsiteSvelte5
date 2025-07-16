@@ -69,6 +69,7 @@
       })
    }
    let leaseSelected = $state(false)
+   $inspect(selectedCustomer[0], selectedLease[0])
 </script>
 
 <Header title='New Invoice' />
@@ -128,6 +129,7 @@
          />
       {:else if selectedCustomer[0].length > 0}
       {@const customer = customers.find((customer) => customer.id === selectedCustomer[0])}
+      {@debug customer}
          {#if customer}
             <UserEmployee user={customer} />
          {/if}
@@ -163,6 +165,7 @@
       {/if}
       {#if leaseSelected}
       {@const customer = customers.find((customer) => customer.id === selectedCustomer[0])}
+      {@debug customer}
          {#if customer}
             <UserEmployee user={customer} />
          {/if}
