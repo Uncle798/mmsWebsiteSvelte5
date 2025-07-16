@@ -1,6 +1,7 @@
 <script lang="ts">
 	import '../app.css';
-	import { ToastProvider, Tooltip } from '@skeletonlabs/skeleton-svelte';
+	import { Toaster, Tooltip } from '@skeletonlabs/skeleton-svelte';
+	import { toaster } from './toaster';
 	import type { PageData } from './$types';
 	import { Modal } from '@skeletonlabs/skeleton-svelte';
 	import Menu from 'lucide-svelte/icons/menu';
@@ -58,11 +59,12 @@
 	const formattedPhone = PUBLIC_PHONE.substring(0,1) +'-'+ PUBLIC_PHONE.substring(1,4)+'-'+PUBLIC_PHONE.substring(4,7)+'-'+PUBLIC_PHONE.substring(7);
 	let tooltipOpenIdentifier = $state<string|null>(null);
 </script>
-
+<Toaster {toaster} ></Toaster>
 {#if data.user?.employee}
 	<header> 
 		<Modal
-			bind:open={menuOpen}
+			open={menuOpen}
+			onOpenChange={(e)=> menuOpen=e.open}
 			triggerBase="btn bg-primary-50-950 hover:shadow-xl hover:border-2 border-secondary-50-950 fixed top-0 left-0 z-50 h-12 sm:h-9"
 			contentBase="bg-surface-100-900 space-y-2 shadow-xl w-[240px] h-screen"
 			positionerJustify="justify-start"
@@ -175,7 +177,8 @@
 {:else}
 	<header> 
 		<Modal
-			bind:open={menuOpen}
+			open={menuOpen}
+			onOpenChange={(e)=> menuOpen= e.open}
 			triggerBase="btn bg-primary-50-950 hover:shadow-xl hover:border-2 border-secondary-50-950 fixed top-0 left-0 z-50 h-12 sm:h-9"
 			contentBase="bg-surface-100-900 p-2 space-y-2 shadow-xl w-[125px] h-screen"
 			positionerJustify="justify-start"
@@ -216,9 +219,8 @@
 		</div>
 	</header>
 {/if}
-	<ToastProvider placement='top-start'>
-		{@render children()}
-	</ToastProvider>
+
+{@render children()}
 
 {#if !data.user?.employee}
 	<footer class="bg-tertiary-50-950 fixed bottom-0 right-0 w-screen px-2 h-20 sm:h-12 lg:h-7">
