@@ -97,8 +97,13 @@
             onValueChange={(detail) => {
                selectedLease = detail.value
                const lease = leases.find((lease) => lease.leaseId === detail.value[0]);
+               console.log(lease)
                if(lease){
-                  selectedCustomer[0] === lease.customerId
+                  selectedCustomer[0] === lease.customerId;
+                  $form.invoiceAmount=lease.price
+                  const date = dayjs(new Date()).format('MMMM YYYY')
+                  $form.invoiceNotes=`Rent for Unit Number ${lease.unitNum.replace(/^0+/gm,'')} for ${date}`
+                  leaseSelected = true
                }
             }}
          />
@@ -116,8 +121,8 @@
                   $form.invoiceAmount=lease.price
                   const date = dayjs(new Date()).format('MMMM YYYY')
                   $form.invoiceNotes=`Rent for Unit Number ${lease.unitNum.replace(/^0+/gm,'')} for ${date}`
+                  leaseSelected = true
                }
-               leaseSelected = true
             }}
          />
       {:else if selectedCustomer[0].length > 0}
