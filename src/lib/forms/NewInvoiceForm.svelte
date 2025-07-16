@@ -42,7 +42,8 @@
    const customerComboBoxData:ComboBoxData[] = [];
    const customerLeaseComboBoxData:ComboBoxData[] = $derived.by(() => {
       const customerLeases = leases.filter((lease) => lease.customerId === selectedCustomer[0]);
-      const data:ComboBoxData[]=[]
+      $inspect(customerLeases)
+      const data:ComboBoxData[]=[];
       customerLeases.forEach((lease) =>{
          const label = lease.unitNum.replace(/^0+/gm,'');
          const value = lease.leaseId;
