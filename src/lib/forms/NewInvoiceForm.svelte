@@ -6,7 +6,7 @@
 	import type { Lease, User } from "@prisma/client";
 	import type { SuperValidated, Infer } from "sveltekit-superforms";
    import { superForm } from "sveltekit-superforms";
-   import { Combobox, Switch } from "@skeletonlabs/skeleton-svelte";
+   import { Combobox, Switch, Tooltip } from "@skeletonlabs/skeleton-svelte";
 	import dayjs from "dayjs";
 	import TextArea from "$lib/formComponents/TextArea.svelte";
 	import DateInput from "$lib/formComponents/DateInput.svelte";
@@ -69,8 +69,8 @@
          value,
       })
    }
-   let leaseSelected = $state(false)
-   $inspect(selectedCustomer[0], selectedLease[0])
+   let leaseSelected = $state(false);
+   let notesTooltipOpen = $state(false);
 </script>
 
 <Header title='New Invoice' />
@@ -142,13 +142,27 @@
                <UserEmployee user={customer} classes='m-2' />
             {/if}
          </div>
-         <TextArea
-            bind:value={$form.invoiceNotes}
-            errors={$errors.invoiceNotes}
-            constraints={$constraints.invoiceNotes}
-            label="Invoice notes"
-            name='invoiceNotes'
-         />
+         <Tooltip
+            open={notesTooltipOpen}
+            onOpenChange={(e) => notesTooltipOpen = e.open}
+            positioning={{placement: 'top-end'}}
+            contentBase="card preset-filled p-2"
+            openDelay={200}
+            zIndex='30'
+         >
+            {#snippet content()}
+               These are default notes that can be changed.
+            {/snippet}
+            {#snippet trigger()}             
+               <TextArea
+               bind:value={$form.invoiceNotes}
+               errors={$errors.invoiceNotes}
+               constraints={$constraints.invoiceNotes}
+               label="Invoice notes"
+               name='invoiceNotes'
+               />
+            {/snippet}
+         </Tooltip>
          <NumberInput
             bind:value={$form.invoiceAmount}
             errors={$errors.invoiceAmount}
