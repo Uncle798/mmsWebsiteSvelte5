@@ -5,7 +5,6 @@ import { valibot } from 'sveltekit-superforms/adapters';
 import { refundFormSchema } from '$lib/formSchemas/schemas';
 import { ratelimit } from '$lib/server/rateLimit';
 import { prisma } from '$lib/server/prisma';
-import { stripe } from '$lib/server/stripe';
 
 export const load = (async (event) => {
     if(!event.locals.user?.employee){
@@ -39,14 +38,9 @@ export const actions: Actions = {
             return message(refundForm, 'Payment record not found')
         }
         if(paymentRecord.paymentType === 'CREDIT'){
-            const refund = await stripe.refunds.create({
-                payment_intent: paymentRecord.transactionId!,
-                amount: refundForm.data.amount,
-            })
             const refundRecord = await prisma.refundRecord.create({
                 data: {
-                    stripeId: refund.id,
-                    refundAmount: refund.amount,
+                    refundAmount: refundForm.data.amount,
                     employeeId: event.locals.user.id!,
                     customerId: paymentRecord.customerId,
                     refundType: 'CREDIT',
