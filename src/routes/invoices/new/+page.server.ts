@@ -43,11 +43,11 @@ export const load = (async (event) => {
       }
    });
    const leases = await prisma.lease.findMany({
+      where: {
+         leaseEnded: null,
+      },
       orderBy: {
-         leaseEnded: { 
-               sort: 'desc', 
-               nulls: 'first'
-         }
+         unitNum: 'asc'
       }
    })
    return { newInvoiceForm, customers, leases, registerForm, emailVerificationForm };
