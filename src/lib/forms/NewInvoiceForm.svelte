@@ -128,7 +128,7 @@
                }
             }}
          />
-      {:else if selectedCustomer[0].length > 0}
+      <!-- {:else if selectedCustomer[0].length > 0}
       {@const customer = customers.find((customer) => customer.id === selectedCustomer[0])}
       {@const lease = leases.find((lease) => lease.leaseId === selectedLease[0])}
          {#if lease}
@@ -165,7 +165,7 @@
             Deposit
          </Switch>
          <input type="hidden" name='employeeId' value={employeeId}/>
-         <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} buttonText='Create Invoice'/>
+         <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} buttonText='Create Invoice'/> -->
       {/if}
       {#if leaseSelected}
       {@const customer = customers.find((customer) => {
@@ -173,10 +173,10 @@
          })}
       {@const lease = leases.find((lease) => lease.leaseId === selectedLease[0])}
          {#if lease}
-            <LeaseEmployee {lease} classes='border border-primary-50-950 rounded-lg my-2'/>
+            <LeaseEmployee {lease} classes='border border-primary-50-950 rounded-lg m-2'/>
          {/if}
          {#if customer}
-            <UserEmployee user={customer} />
+            <UserEmployee user={customer} classes='border border-primary-50-950 rounded-lg m-2' />
          {/if}
          <TextArea
             bind:value={$form.invoiceNotes}
