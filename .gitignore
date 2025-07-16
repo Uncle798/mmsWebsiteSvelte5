@@ -24,7 +24,6 @@ app.log
 .vscode/settings.json
 seed.log
 =======
-pnpm-lock.yaml
 >>>>>>> origin/main
 prisma/migrations/0_init/migration.sql
 log.txt
