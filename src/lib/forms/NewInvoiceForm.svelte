@@ -164,6 +164,7 @@
          <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} buttonText='Create Invoice'/>
       {/if}
       {#if leaseSelected && selectedCustomer[0].length === 0}
+         selectedCustomer[0].length === 0
          <TextArea
             bind:value={$form.invoiceNotes}
             errors={$errors.invoiceNotes}
