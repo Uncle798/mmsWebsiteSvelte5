@@ -87,7 +87,9 @@
             openOnClick={true}
             onValueChange={(detail) => {
                selectedCustomer=detail.value
-               console.log(selectedCustomer)
+               if(customerLeaseComboBoxData.length === 0){
+                  leaseSelected=true
+               }
             }}
          />
          {#if customerLeaseComboBoxData.length === 0}
@@ -149,7 +151,7 @@
             onOpenChange={(e) => notesTooltipOpen = e.open}
             positioning={{placement: 'top-end'}}
             contentBase="card preset-filled p-2 w-auto"
-            triggerBase='w-full m-2'
+            triggerBase='w-full'
             classes='w-screen'
             openDelay={200}
             zIndex='30'
