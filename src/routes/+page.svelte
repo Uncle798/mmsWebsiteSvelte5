@@ -51,7 +51,7 @@
       </div>
    </article>
    <div in:fade={{duration:600}} out:fade={{duration:0}}>
-      <span>Loading available units...</span>
+      <span class="mx-2">Loading available units...</span>
       <Placeholder numCols={1} numRows={4} heightClass='h-34' classes='z-0 sm:hidden'/>
       <Placeholder numCols={2} numRows={4} heightClass='h-34' classes='z-0 hidden sm:block md:hidden' />
       <Placeholder numCols={3} numRows={4} heightClass='h-34' classes='z-0 hidden md:block lg:hidden' />

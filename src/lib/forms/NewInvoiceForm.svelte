@@ -148,8 +148,9 @@
             open={notesTooltipOpen}
             onOpenChange={(e) => notesTooltipOpen = e.open}
             positioning={{placement: 'top-end'}}
-            contentBase="card preset-filled p-2"
-            triggerBase='w-screen m-2'
+            contentBase="card preset-filled p-2 w-auto"
+            triggerBase='w-full m-2'
+            classes='w-screen'
             openDelay={200}
             zIndex='30'
          >
