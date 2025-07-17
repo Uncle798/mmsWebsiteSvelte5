@@ -188,7 +188,7 @@
             name='invoiceDue'
             min={dayjs().subtract(1, 'year').toDate()}
             max={dayjs().add(1, 'year').toDate()}
-            placeholder={dayjs().format('MM/DD/YYYY')}
+            placeholder={dayjs().format('YYYY/MM/DD')}
          />
          <input type="hidden" name='employeeId' value={employeeId}/>
          <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} buttonText='Create Invoice'/>
