@@ -1,8 +1,5 @@
 import { prisma } from '../src/lib/server/prisma';
 import { createSession } from '../src/lib/server/authUtils'
-import dayjs from "dayjs";
-
-
 
 async function main() {
    if(process.env.VERCEL){
