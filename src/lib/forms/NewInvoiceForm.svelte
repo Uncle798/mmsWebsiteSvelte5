@@ -167,11 +167,9 @@
                      }
                   }}
                   {...$constraints.invoiceNotes}
-               >
-                  {$form.invoiceNotes}
-               </textarea>
+               >{$form.invoiceNotes}</textarea>
             </label>
-            {#if errors}<span class="invalid">{errors}</span>{/if}
+            {#if $errors.invoiceNotes}<span class="invalid">{$errors.invoiceNotes}</span>{/if}
          </div>
          <NumberInput
             bind:value={$form.invoiceAmount}
