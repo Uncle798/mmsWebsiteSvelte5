@@ -123,6 +123,7 @@
                placeholder="Select..."
                openOnClick={true}
                onValueChange={(details) =>{
+                  selectedLease=details.value
                   const lease = leases.find((lease) => lease.leaseId === details.value[0]);
                   if(lease){
                      $form.invoiceAmount=lease.price
