@@ -19,6 +19,7 @@ export const actions: Actions = {
          const timeRemaining = Math.floor((reset - Date.now()) / 1000);
          return message(newInvoiceForm, `Please wait ${timeRemaining}s before trying again.`)
       }
+      console.log(newInvoiceForm)
       if(!newInvoiceForm.valid){
         return message(newInvoiceForm, 'Unable to process')
       }

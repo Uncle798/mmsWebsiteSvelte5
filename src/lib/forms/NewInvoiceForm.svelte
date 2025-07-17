@@ -6,9 +6,8 @@
 	import type { Lease, User } from "@prisma/client";
 	import type { SuperValidated, Infer } from "sveltekit-superforms";
    import { superForm } from "sveltekit-superforms";
-   import { Combobox, Switch, Tooltip } from "@skeletonlabs/skeleton-svelte";
+   import { Combobox, Switch, } from "@skeletonlabs/skeleton-svelte";
 	import dayjs from "dayjs";
-	import TextArea from "$lib/formComponents/TextArea.svelte";
 	import DateInput from "$lib/formComponents/DateInput.svelte";
 	import { onMount } from "svelte";
 	import Header from "$lib/Header.svelte";
@@ -150,7 +149,7 @@
          </div>
          <ExplainerModal
             modalOpen={explainerModalOpen}
-            copy='Invoice notes are your place to keep information. MMS auto generates some but they can be changed, and we can change the default'
+            copy='Invoice notes are your place to keep information. MMS auto generates some but they can be changed, and we can change the defaults'
          />
          <div class="">
             <label class="label ">
@@ -158,8 +157,7 @@
                <textarea
                   class="input rounded-none h-auto"
                   rows=3
-                  name=invoiceNotes    
-                  aria-invalid={$errors.invoiceNotes ? 'true' : undefined}
+                  name="invoiceNotes"
                   onmouseover={()=>{
                      if(explainerFirstTime){
                         explainerModalOpen=true
