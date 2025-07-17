@@ -65,7 +65,8 @@
 </script>
 <Header title='Deposits' />
 <Modal
-   bind:open={refundModalOpen}
+   open={refundModalOpen}
+   onOpenChange={(e) => refundModalOpen = e.open}
    contentBase="card bg-surface-400-600 p-4 space-y-4 shadow-xl"
    backdropClasses=""
    modal={true}

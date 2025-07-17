@@ -70,7 +70,7 @@
       <div class="mx-2 mt-9">
          <Combobox data={comboboxData} 
             label='Select Size' 
-            bind:value={selectedSize} 
+            value={selectedSize} 
             positionerBase='overflow-auto h-44 '
             labelBase=''
             placeholder='Select size...'

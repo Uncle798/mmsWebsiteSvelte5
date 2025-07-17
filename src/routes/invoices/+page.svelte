@@ -91,7 +91,7 @@
       Loading {numberFormatter.format(data.invoiceCount)} invoices, 
       <Combobox
          data={yearComboboxData}
-         bind:value={yearSelect}
+         value={yearSelect}
          label='or select year'
          placeholder='Select year...'
          openOnClick={true}

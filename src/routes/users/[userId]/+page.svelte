@@ -12,7 +12,6 @@
    import type { Invoice, PaymentRecord } from '@prisma/client';
 	import RefundRecordDisplay from '$lib/displayComponents/RefundRecordEmployee.svelte';
 	import Pagination from '$lib/displayComponents/Pagination.svelte';
-	import dayjs from 'dayjs';
    let { data }: { data: PageData } = $props();
    let addressModalOpen = $state(false);
    let leaseEndModalOpen = $state(false);
@@ -61,7 +60,8 @@
 {#if data.address}
    <Address bind:address={data.address} classes='px-2'/>
    <Modal
-      bind:open={addressModalOpen}
+      open={addressModalOpen}
+      onOpenChange={(e) => addressModalOpen = e.open}
       triggerBase="btn preset-filled-primary-50-950 rounded-lg mx-2 "
       contentBase="card bg-surface-400-600 p-4 space-y-4 shadow-xl max-w-(--breakpoint-sm)"
       backdropClasses="backdrop-blur-xs"
@@ -85,7 +85,8 @@
          <LeaseEmployee lease={lease} classes='m-2'/>
          {#if !lease?.leaseEnded}
             <Modal
-               bind:open={leaseEndModalOpen}
+               open={leaseEndModalOpen}
+               onOpenChange={(e) => leaseEndModalOpen = e.open}
                triggerBase="btn preset-filled-primary-50-950 rounded-lg m-2"
                contentBase="card bg-surface-400-600 p-4 space-y-4 shadow-xl max-w-(--breakpoint-sm)"
                backdropClasses="backdrop-blur-xs"

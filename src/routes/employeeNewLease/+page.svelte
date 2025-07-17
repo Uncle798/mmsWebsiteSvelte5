@@ -50,7 +50,7 @@
          <form action="/employeeNewLease?/selectCustomer&unitNum={data.unitNum}" method="POST" >
             <Combobox
                data={customerComboBoxData}
-               bind:value={selectedCustomer}
+               value={selectedCustomer}
                label='Select a customer'
                placeholder='Select...'
                openOnClick={true}
@@ -82,7 +82,8 @@
          <Address address={data.address} />
       {:else}
          <Modal
-            bind:open={addressModalOpen}
+            open={addressModalOpen}
+            onOpenChange={(e)=> addressModalOpen = e.open}
             triggerBase="btn preset-tonal"
             contentBase="card bg-surface-400-600 p-4 space-y-4 shadow-xl max-w-(--breakpoint-sm)"
             backdropClasses="backdrop-blur-xs"

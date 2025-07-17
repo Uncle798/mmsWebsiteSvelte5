@@ -35,7 +35,8 @@
          name='amountOff'
       />
       <Switch 
-         bind:checked={$form.percentage}
+         checked={$form.percentage}
+         onCheckedChange={(e)=>$form.percentage=e.checked}
          name='percentage'
          classes='mt-2'
       >

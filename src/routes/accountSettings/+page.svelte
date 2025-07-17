@@ -44,6 +44,7 @@
 <Header title='Settings for {data.user?.givenName}' />
 <Modal
    open={globalModalOpen}
+   onOpenChange={(e)=> globalModalOpen = e.open}
    contentBase="card bg-surface-400-600 p-4 space-y-4 shadow-xl max-w-(--breakpoint-sm)"
    backdropClasses="backdrop-blur-xs"
 >

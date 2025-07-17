@@ -43,7 +43,8 @@
          classes='w-32'
       />
       <Switch
-         bind:checked={$form.changeDeposit}
+         checked={$form.changeDeposit}
+         onCheckedChange={(e)=> $form.changeDeposit = e.checked}
          name='changeDeposit'
          classes='my-2'
       >
@@ -51,9 +52,11 @@
       </Switch>
 
       <Switch
-         bind:checked={$form.lowerPrice}
+         checked={$form.lowerPrice}
+         onCheckedChange={(e)=> $form.lowerPrice = e.checked}
          name="lowerPrice"
-         label='Lower Price'>
+         label='Lower Price'
+      >
          Lower the price.
       </Switch>
       <input type="hidden" name="size" id="size" value={size}>

@@ -47,7 +47,8 @@
          name='notes'
       />
       <Switch 
-         bind:checked={unit.unavailable}
+         checked={unit.unavailable}
+         onCheckedChange={(e)=> $form.unavailable = e.checked}
          name='unavailable'  
          classes='p-4'
       >

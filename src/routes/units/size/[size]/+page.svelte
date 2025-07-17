@@ -64,7 +64,8 @@
 <Header title='All {data.size.replace(/^0+/gm,'').replace(/0x/gm,'x')} units' />
 
 <Modal
-   bind:open={unitPricingModalOpen}
+   open={unitPricingModalOpen}
+   onOpenChange={(e) => unitPricingModalOpen = e.open}
    contentBase="card bg-surface-400-600 p-4 shadow-xl m-1 w-fit"
    backdropClasses=""
 >  

@@ -95,7 +95,7 @@
          <Combobox
             data={comboboxData}
             label='Filter by Size' 
-            bind:value={selectedSize} 
+            value={selectedSize} 
             positionerBase='overflow-auto small:h-44 tall:h-96 venti:h-auto'
             placeholder='Select size...'
             onValueChange={(details) => {

@@ -11,7 +11,8 @@
 </script>
 
 <Modal
-   bind:open={registerFormModalOpen}
+   open={registerFormModalOpen}
+   onOpenChange={(e) => registerFormModalOpen = e.open}
    contentBase="card bg-surface-400-600 p-4 space-y-4 shadow-xl max-w-(--breakpoint-sm)"
    backdropClasses="backdrop-blur-xs"
 >

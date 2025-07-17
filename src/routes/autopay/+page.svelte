@@ -25,7 +25,7 @@
 {#if !mounted}
     <div class="mt-14 sm:mt-10 m-1">Loading...</div>
 {:else}
-    <div class="mt-14 sm:mt-10 sm:mt-14 sm:mt-10 m-1 sm:m-2">
+    <div class="mt-14 sm:mt-10 m-1 sm:m-2">
         {#if data.invoice}
             <InvoiceCustomer invoice={data.invoice} />
             <CreditCardForm data={data.creditCardForm} invoice={data.invoice} sessionToken={sessionToken} subscription={true} buttonText={`Start Auto pay of $${data.invoice.invoiceAmount}`}/>

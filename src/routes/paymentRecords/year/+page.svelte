@@ -19,7 +19,7 @@
     {#if data.years}
         <Combobox
         data={yearComboboxData}
-        bind:value={yearSelect}
+        value={yearSelect}
         label='Select year'
         placeholder='Select year ...'
         openOnChange={true}

@@ -74,7 +74,7 @@
                <Search search={customerSearch} searchType='customer name' data={data.searchForm} classes='mx-1' />
             {/snippet}
          </Modal>
-         <div class="rounded-lg mt-14 sm:mt-10 sm:mt-14 sm:mt-10">
+         <div class="rounded-lg mt-14 sm:mt-10">
             {#each slicedLeases(searchByCustomer(searchedLeases(leases))) as lease}
             {@const customer = customers.find((customer) => customer.id === lease.customerId)}
             {@const leaseAddress = addresses.find((address) => address.addressId === lease.addressId)}

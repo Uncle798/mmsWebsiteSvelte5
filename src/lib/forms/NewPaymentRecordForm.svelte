@@ -78,7 +78,7 @@
 </script>
 
 <Modal
-   bind:open={invoiceFormOpen}
+   open={invoiceFormOpen}
    onOpenChange={(e) => invoiceFormOpen = e.open}
    contentBase="card bg-surface-400-600 p-4 space-y-4 shadow-xl max-w-(--breakpoint-sm)"
    backdropClasses="backdrop-blur-xs"
@@ -105,7 +105,7 @@
       <div class="">
          <Combobox
             data={customerComboBoxData}
-            bind:value={selectedCustomer}
+            value={selectedCustomer}
             label='Select Customer'
             placeholder='Select customer...'
             openOnClick={true}
@@ -126,7 +126,7 @@
          {#if invoiceComboBoxData.length > 0 }
             <Combobox
                data={invoiceComboBoxData.sort()}
-               bind:value={selectedInvoice}
+               value={selectedInvoice}
                label="Select an invoice"
                placeholder="Select..."
                openOnClick={true}
@@ -173,7 +173,7 @@
             rows={2}
          />
          <div class="card p-4">
-            <Switch bind:checked={$form.deposit} name='deposit'>
+            <Switch checked={$form.deposit} onCheckedChange={(e) => $form.deposit = e.checked} name='deposit'>
                Deposit
             </Switch>
          </div>

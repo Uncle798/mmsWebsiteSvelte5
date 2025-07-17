@@ -128,7 +128,7 @@
 								<Search searchType='Unit number' data={data.searchForm} classes='' bind:search={search}/>
 								<Combobox data={comboboxData} 
 									label='Select Size' 
-									bind:value={selectedSize} 
+									value={selectedSize} 
 									positionerBase=''
 									positionerClasses='overflow-auto short:h-24 tall:h-48 grande:h-96 venti:h-auto'
 									labelBase=''
@@ -176,7 +176,8 @@
 					</div>
             	<Pagination pageNum={pageNum} size={size} array={filteredUnits(units)} label='units'/>
 					<Modal
-						bind:open={modalOpen}
+						open={modalOpen}
+						onOpenChange={(e) => modalOpen = e.open}
 						contentBase="card bg-surface-400-600 p-4 space-y-4 shadow-xl max-w-(--breakpoint-sm)"
 						backdropClasses="backdrop-blur-xs"
 					>
