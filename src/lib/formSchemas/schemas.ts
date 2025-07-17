@@ -160,7 +160,7 @@ export const newInvoiceFormSchema = v.object({
    employeeId: v.pipe(v.string(), v.cuid2()),
    invoiceNotes: v.string(),
    invoiceAmount: v.pipe(v.number(), v.gtValue(1)),
-   leaseId: v.pipe(v.string(), v.cuid2()),
+   leaseId: v.optional(v.pipe(v.string(), v.cuid2())),
    deposit: v.boolean(),
    invoiceDue: v.date(),
 })
