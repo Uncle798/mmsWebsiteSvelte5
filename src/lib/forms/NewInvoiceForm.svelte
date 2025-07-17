@@ -14,6 +14,7 @@
 	import Header from "$lib/Header.svelte";
 	import UserEmployee from "$lib/displayComponents/UserEmployee.svelte";
 	import LeaseEmployee from "$lib/displayComponents/LeaseEmployee.svelte";
+	import ExplainerModal from "$lib/demo/ExplainerModal.svelte";
 
    interface Props {
       data: SuperValidated<Infer<NewInvoiceFormSchema>>;
@@ -71,7 +72,8 @@
       })
    }
    let leaseSelected = $state(false);
-   let notesTooltipOpen = $state(false);
+   let explainerModalOpen = $state(false);
+   let explainerFirstTime = $state(true);
 </script>
 
 <Header title='New Invoice' />
@@ -146,29 +148,31 @@
                <UserEmployee user={customer} classes='m-2' />
             {/if}
          </div>
-         <Tooltip
-            open={notesTooltipOpen}
-            onOpenChange={(e) => notesTooltipOpen = e.open}
-            positioning={{placement: 'top-end'}}
-            contentBase="card preset-filled p-2 w-auto"
-            triggerBase='w-full'
-            classes='w-screen'
-            openDelay={200}
-            zIndex='30'
-         >
-            {#snippet content()}
-               These are default notes that can be changed.
-            {/snippet}
-            {#snippet trigger()}             
-               <TextArea
-               bind:value={$form.invoiceNotes}
-               errors={$errors.invoiceNotes}
-               constraints={$constraints.invoiceNotes}
-               label="Invoice notes"
-               name='invoiceNotes'
-               />
-            {/snippet}
-         </Tooltip>
+         <ExplainerModal
+            modalOpen={explainerModalOpen}
+            copy='Invoice notes are your place to keep information. MMS auto generates some but they can be changed, and we can change the default'
+         />
+         <div class="">
+            <label class="label ">
+                  <span class="label-text">Invoice notes</span>
+               <textarea
+                  class="input rounded-none h-auto"
+                  rows=3
+                  name=invoiceNotes    
+                  aria-invalid={$errors.invoiceNotes ? 'true' : undefined}
+                  onmouseover={()=>{
+                     if(explainerFirstTime){
+                        explainerModalOpen=true
+                        explainerFirstTime=false
+                     }
+                  }}
+                  {...$constraints.invoiceNotes}
+               >
+                  {$form.invoiceNotes}
+               </textarea>
+            </label>
+            {#if errors}<span class="invalid">{errors}</span>{/if}
+         </div>
          <NumberInput
             bind:value={$form.invoiceAmount}
             errors={$errors.invoiceAmount}
