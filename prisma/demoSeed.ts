@@ -1,9 +1,8 @@
-
-import { PrismaClient } from "@prisma/client";
+import { prisma } from '../src/lib/server/prisma';
 import { createSession } from '../src/lib/server/authUtils'
 import dayjs from "dayjs";
 
-const prisma = new PrismaClient();
+
 
 async function main() {
    if(process.env.VERCEL){
