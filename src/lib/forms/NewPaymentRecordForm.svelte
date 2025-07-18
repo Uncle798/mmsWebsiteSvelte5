@@ -1,6 +1,6 @@
 <script lang="ts">
    import type { SuperValidated, Infer } from "sveltekit-superforms";
-   import { type Lease, type User, PaymentType } from "@prisma/client";
+   import type { Lease, User, } from "@prisma/client";
    import type { NewInvoiceFormSchema, NewPaymentRecordFormSchema} from "$lib/formSchemas/schemas";
    import { superForm } from "sveltekit-superforms";
    import { Combobox, Modal, Switch } from "@skeletonlabs/skeleton-svelte";
@@ -73,8 +73,10 @@
             $form.deposit=invoice.deposit;
          }
       }
+      setTimeout(()=>{explainerModalOpen = false}, 4000)
    })
-   let explainerModalOpen = $state(false);
+   let explainerModalOpen = $state(true);
+   const paymentTypes = [ 'Cash', 'Check', 'Card']
 </script>
 
 <Modal
@@ -152,14 +154,14 @@
             name='paymentAmount'
          />
          <div class="flex">
-            {#each Object.values(PaymentType) as paymentType}
+            {#each paymentTypes as paymentType}
                <RadioButton
                   value={paymentType}
                   groupName='paymentType'
                   id={paymentType}
                   errors={$errors.paymentType}
                   constraints={$constraints.paymentType}
-                  label={paymentType.substring(0,1) + paymentType.substring(1).toLowerCase()}
+                  label={paymentType}
                />
             {/each}
          </div>
