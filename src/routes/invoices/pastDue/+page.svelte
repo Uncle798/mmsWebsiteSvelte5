@@ -129,16 +129,19 @@
                   {#each  slicedInvoices(searchedInvoices(searchByUser(invoices, customers))) as invoice}  
                   {@const customer = customers.find((customer) => customer.id === invoice.customerId)}  
                      <div class="rounded-lg border border-primary-50-950 grid sm:grid-cols-2">                            
-                           <InvoiceEmployee {invoice} classes='px-2' />
-                           {#if customer}
-                           {@const address = addresses.find((address) => address.userId === customer.id)}
-                              <div class="flex flex-col  px-2 pt-2">
-                                 <UserEmployee user={customer} classes=''/>
-                                 {#if address}
-                                       <Address {address} />
-                                 {/if}
-                              </div>
+                        <InvoiceEmployee {invoice} classes='px-2' />
+                        {#if customer}
+                        {@const address = addresses.find((address) => address.userId === customer.id)}
+                           <div class="flex flex-col  px-2 pt-2">
+                              <UserEmployee user={customer} classes=''/>
+                              {#if address}
+                                    <Address {address} />
+                              {/if}
+                           </div>
+                           {#if !invoice.paymentRecordNum}
+                              <a href="/paymentRecords/new?defaultCustomer={customer?.id}&defaultInvoice={invoice.invoiceNum}" class="btn preset-filled-primary-50-950">Make Payment Record For this invoice</a>
                            {/if}
+                        {/if}
                      </div>
                   {/each}
                </div>
