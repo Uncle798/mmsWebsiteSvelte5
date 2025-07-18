@@ -48,7 +48,7 @@
       const customerInvoices = invoices.filter((invoice)=> invoice.customerId === selectedCustomer[0]);
       const data:ComboBoxData[]=[]
       customerInvoices.forEach((invoice) =>{
-         const label = invoice.invoiceNotes ? `Invoice Number ${invoice.invoiceNum} `+invoice.invoiceNotes : `Invoice Number ${invoice.invoiceNum} `;
+         const label = invoice.invoiceNotes ? `Invoice ${invoice.invoiceNum} `+invoice.invoiceNotes : `Invoice ${invoice.invoiceNum} `;
          const value = invoice.invoiceNum.toString(10);
          data.push({label, value})
       })
