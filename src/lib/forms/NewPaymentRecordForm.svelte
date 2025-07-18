@@ -15,6 +15,7 @@
 	import RadioButton from "$lib/formComponents/RadioButton.svelte";
 	import ExplainerModal from "$lib/demo/ExplainerModal.svelte";
 	import UserEmployee from "$lib/displayComponents/UserEmployee.svelte";
+	import InvoiceEmployee from "$lib/displayComponents/InvoiceEmployee.svelte";
 
    interface Props {
       data: SuperValidated<Infer<NewPaymentRecordFormSchema>>;
@@ -126,7 +127,7 @@
          {#if selectedInvoice[0] === ''}
             <button class="btn preset-filled-primary-50-950 rounded-lg my-2" onclick={()=>invoiceFormOpen=true} type='button'>Create New Invoice</button>
          {/if}
-         {#if invoiceComboBoxData.length > 0 }
+         {#if invoiceComboBoxData.length > 1 }
             <Combobox
                data={invoiceComboBoxData.sort()}
                value={selectedInvoice}
@@ -144,6 +145,11 @@
                   invoiceSelected = true
                }}
             />
+         {:else}
+         {@const invoice = invoices.find((invoice) => invoice.invoiceNum === parseInt(selectedInvoice[0], 10))}
+            {#if invoice}
+               <InvoiceEmployee {invoice} />
+            {/if}
          {/if}
       </div>
       {#if selectedInvoice[0] !== ''}
