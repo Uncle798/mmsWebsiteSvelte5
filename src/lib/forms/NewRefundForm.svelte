@@ -35,7 +35,7 @@
       $form.notes = `Refund of payment record number: ${paymentRecord.paymentNumber}, ${paymentRecord.paymentNotes}`
       $form.refundType = paymentRecord.paymentType;
    })
-   const paymentTypes = [ 'CASH', 'CHECK', 'CARD'];
+   const paymentTypes = [ 'CASH', 'CHECK', 'CREDIT'];
 </script>
 <div class="{classes} flex flex-col gap-2">
    <PaymentRecordEmployee {paymentRecord} />

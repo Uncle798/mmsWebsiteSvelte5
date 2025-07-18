@@ -79,7 +79,7 @@
       setTimeout(()=>{explainerModalOpen = false}, 4000)
    })
    let explainerModalOpen = $state(true);
-   const paymentTypes = [ 'CASH', 'CHECK', 'CARD'];
+   const paymentTypes = [ 'CASH', 'CHECK', 'CREDIT'];
    let registerFormModalOpen = $state(false)
 </script>
 

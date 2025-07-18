@@ -19,7 +19,7 @@
             <Header title='Payment Record Num: {data.paymentRecord}' />
             <div class="m-1 sm:m-2 mt-14 sm:mt-10 mb-22 sm:mb-12 lg:mb-7 border-2 border-primary-50-950 rounded-lg">
                {#if data.user?.employee}
-                  <div class="grid grid-cols-1 sm:grid-cols-2">
+                  <div class="flex flex-col sm:flex-row">
                      <PaymentRecordEmployee paymentRecord={data.paymentRecord} classes=''/>
                      <div>
                         <UserEmployee user={data.customer} classes='truncate'/>
