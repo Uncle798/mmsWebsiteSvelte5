@@ -7,7 +7,9 @@
 	import NumberInput from "$lib/formComponents/NumberInput.svelte";
 	import { onMount } from "svelte";
 	import TextArea from "$lib/formComponents/TextArea.svelte";
+   import RadioButton from "$lib/formComponents/RadioButton.svelte";
 	import type { PaymentRecord } from "@prisma/client";
+	import PaymentRecordEmployee from "$lib/displayComponents/PaymentRecordEmployee.svelte";
    interface Props {
       data: SuperValidated<Infer<RefundFormSchema>>;
       refundFormModalOpen?: boolean;
@@ -33,8 +35,10 @@
       $form.notes = `Refund of payment record number: ${paymentRecord.paymentNumber}, ${paymentRecord.paymentNotes}`
       $form.refundType = paymentRecord.paymentType;
    })
+   const paymentTypes = [ 'CASH', 'CHECK', 'CARD'];
 </script>
 <div class="{classes} flex flex-col gap-2">
+   <PaymentRecordEmployee {paymentRecord} />
    <FormMessage message={$message} />
    <form action="/forms/refundForm" method="post" use:enhance>
       <TextArea 
@@ -51,14 +55,18 @@
          label='Refund amount'
          name='amount'
       />
-      <label for="refundType" class="label-text">Refund Type
-         <select name="refundType" bind:value={$form.refundType} class="select mt-2">
-            {#each ['Stripe', 'Cash', 'Check'] as type}
-
-                  <option value={type.toUpperCase()}>{type}</option>
-            {/each}
-         </select>
-      </label>
+      <div class="flex">
+         {#each paymentTypes as paymentType}
+            <RadioButton
+               value={paymentType}
+               groupName='refundType'
+               id={paymentType}
+               errors={$errors.refundType}
+               constraints={$constraints.refundType}
+               label={paymentType.substring(0,1)+paymentType.substring(1).toLowerCase()}
+            />
+         {/each}
+      </div>
       <input type="hidden" name="paymentRecordNumber" value={paymentRecord.paymentNumber}>
       <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} buttonText="Submit Refund"/>
    </form>
