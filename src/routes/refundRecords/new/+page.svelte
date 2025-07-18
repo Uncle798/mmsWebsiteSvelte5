@@ -11,7 +11,7 @@
 	import { PanelTopClose, SearchIcon } from 'lucide-svelte';
 	import UserEmployee from '$lib/displayComponents/UserEmployee.svelte';
    let { data }: { data: PageData } = $props();
-   let selectedPayment = $state<PaymentRecord>();
+   let selectedPayment = $state<PaymentRecord | undefined>(data.paymentRecord ? data.paymentRecord : undefined);
    let size = $state(25);
    let pageNum = $state(1);
    let search = $state('');
@@ -58,13 +58,13 @@
          <Modal
             open={searchDrawerOpen}
             onOpenChange={(event)=>(searchDrawerOpen = event.open)}
-            triggerBase='btn preset-filled-primary-50-950 rounded-lg fixed top-0 right-0 z-50'
-            contentBase='bg-surface-100-900 h-[150px] w-screen rounded-lg'
+            triggerBase='btn preset-filled-primary-50-950 rounded-lg fixed top-0 right-0 z-50 h-12 sm:h-auto'
+            contentBase='bg-surface-100-900 h-[350px] w-screen rounded-lg'
             positionerJustify=''
             positionerAlign=''
             positionerPadding=''
-            transitionsPositionerIn={{y:-400, duration: 600}}
-            transitionsPositionerOut={{y:-400, duration: 600}}
+            transitionsPositionerIn={{y:-350, duration: 600}}
+            transitionsPositionerOut={{y:-350, duration: 600}}
             modal={false}
          >
             {#snippet trigger()}
