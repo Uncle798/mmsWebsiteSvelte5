@@ -98,7 +98,7 @@
         {:then addresses}
             {#if invoices.length >0}       
                 <Header title='Unpaid invoices' />
-                <Revenue label="Current Unpaid Invoice total" amount={totalRevenue(searchedInvoices(dateSearchedInvoices(invoices)))} classes="bg-tertiary-50-950 w-screen rounded-b-lg fixed top-12 sm:top-9 p-1 left-0 z-40"/>
+                <Revenue label="Current Unpaid Invoice total" amount={totalRevenue(searchedInvoices(dateSearchedInvoices(invoices)))} classes="bg-tertiary-50-950 w-screen rounded-b-lg fixed top-11 sm:top-9 p-1 left-0 z-40"/>
                 <Modal
                     open={searchDrawerOpen}
                     onOpenChange={(event)=>(searchDrawerOpen = event.open)}
@@ -135,7 +135,7 @@
                                     {#if address}
                                         <Address {address} />
                                     {/if}
-                                    <a href="/paymentRecords/new?defaultCustomer={customer?.id}&defaultInvoice={invoice.invoiceNum}" class="btn preset-filled-primary-50-950">Make Payment Record For this invoice</a>
+                                    <a href="/paymentRecords/new?defaultCustomer={customer?.id}&defaultInvoice={invoice.invoiceNum}" class="btn preset-filled-primary-50-950 m-1">Make Payment Record For this invoice</a>
                                 </div>
                             {/if}
                         </div>
