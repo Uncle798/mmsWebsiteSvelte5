@@ -98,7 +98,7 @@
         {:then addresses}
             {#if invoices.length >0}       
                 <Header title='Unpaid invoices' />
-                <Revenue label="Current Unpaid Invoice total" amount={totalRevenue(searchedInvoices(dateSearchedInvoices(invoices)))} classes="bg-tertiary-50-950 w-screen rounded-b-lg fixed top-9 p-1 left-0 z-40"/>
+                <Revenue label="Current Unpaid Invoice total" amount={totalRevenue(searchedInvoices(dateSearchedInvoices(invoices)))} classes="bg-tertiary-50-950 w-screen rounded-b-lg fixed top-12 sm:top-9 p-1 left-0 z-40"/>
                 <Modal
                     open={searchDrawerOpen}
                     onOpenChange={(event)=>(searchDrawerOpen = event.open)}
@@ -123,7 +123,7 @@
                             </div>
                     {/snippet}
                 </Modal>
-                <div class="grid grid-cols-1 gap-y-3 gap-x-1 m-2 sm:mt-14 mt-20 z-30" in:fade={{duration:600}} out:fade={{duration:0}}>
+                <div class="grid grid-cols-1 gap-y-3 gap-x-1 m-1 sm:m-2 sm:mt-20 mt-24 z-30" in:fade={{duration:600}} out:fade={{duration:0}}>
                     {#each  slicedInvoices(searchedInvoices(searchByUser(invoices))) as invoice}  
                     {@const customer = customers.find((customer) => customer.id === invoice.customerId)}  
                         <div class="rounded-lg border border-primary-50-950 grid sm:grid-cols-2">                            
