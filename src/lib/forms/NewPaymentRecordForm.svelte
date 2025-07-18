@@ -1,7 +1,7 @@
 <script lang="ts">
    import type { SuperValidated, Infer } from "sveltekit-superforms";
    import type { Lease, User, } from "@prisma/client";
-   import type { NewInvoiceFormSchema, NewPaymentRecordFormSchema} from "$lib/formSchemas/schemas";
+   import type { NewInvoiceFormSchema, NewPaymentRecordFormSchema, RegisterFormSchema} from "$lib/formSchemas/schemas";
    import { superForm } from "sveltekit-superforms";
    import { Combobox, Modal, Switch } from "@skeletonlabs/skeleton-svelte";
    import FormMessage from "$lib/formComponents/FormMessage.svelte";
@@ -16,10 +16,12 @@
 	import ExplainerModal from "$lib/demo/ExplainerModal.svelte";
 	import UserEmployee from "$lib/displayComponents/UserEmployee.svelte";
 	import InvoiceEmployee from "$lib/displayComponents/InvoiceEmployee.svelte";
+   import RegisterForm from "./RegisterForm.svelte";
 
    interface Props {
       data: SuperValidated<Infer<NewPaymentRecordFormSchema>>;
       invoiceForm: SuperValidated<Infer<NewInvoiceFormSchema>>;
+      registerForm: SuperValidated<Infer<RegisterFormSchema>>;
       employeeId: string | undefined;
       customers: User[];
       invoices: Invoice[];
@@ -27,9 +29,8 @@
       defaultCustomer?: string | null;
       defaultInvoice?: string | null;
       classes?: string;
-      customerSelected: boolean;
    }
-   let { data, employeeId, customers, invoices,  invoiceForm, leases, defaultCustomer, defaultInvoice, classes, customerSelected=$bindable(false) }:Props = $props();
+   let { data, employeeId, customers, invoices,  invoiceForm, registerForm, leases, defaultCustomer, defaultInvoice, classes, }:Props = $props();
    let { form, errors, message, constraints, enhance, delayed, timeout} = superForm(data, {
       onSubmit({formData}) {
          formData.set('customerId', selectedCustomer[0]);
@@ -79,6 +80,7 @@
    })
    let explainerModalOpen = $state(true);
    const paymentTypes = [ 'Cash', 'Check', 'Card']
+   let registerFormModalOpen = $state(false)
 </script>
 
 <Modal
@@ -103,9 +105,22 @@
    copy='Please choose Cash or Check for the demo. Credit card just means you have to enter a bunch of numbers.'
 />
 
+<Modal
+   open={registerFormModalOpen}
+   onOpenChange={(e) => registerFormModalOpen = e.open}
+   contentBase="card bg-surface-400-600 p-4 space-y-4 shadow-xl max-w-(--breakpoint-sm)"
+   backdropClasses="backdrop-blur-xs"
+>
+    {#snippet content()}
+        <RegisterForm data={registerForm} registerFormModalOpen={registerFormModalOpen} formType='employee'/>
+        <button class="btn" onclick={()=>registerFormModalOpen=false}>Cancel</button>
+    {/snippet}
+</Modal>
 <div class={classes}>
    <FormMessage message={$message} />
    <form action="/forms/newPaymentRecordForm" method="POST" use:enhance>
+      <button class="btn preset-filled-primary-50-950 rounded-lg" type="button" onclick={()=>registerFormModalOpen = true}>Create New Customer</button>
+      or, 
       {#if !defaultCustomer}
          <Combobox
             data={customerComboBoxData}
