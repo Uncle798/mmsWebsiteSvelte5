@@ -79,7 +79,7 @@
       setTimeout(()=>{explainerModalOpen = false}, 4000)
    })
    let explainerModalOpen = $state(true);
-   const paymentTypes = [ 'Cash', 'Check', 'Card']
+   const paymentTypes = [ 'CASH', 'CHECK', 'CARD']
    let registerFormModalOpen = $state(false)
 </script>
 
@@ -119,9 +119,9 @@
 <div class={classes}>
    <FormMessage message={$message} />
    <form action="/forms/newPaymentRecordForm" method="POST" use:enhance>
-      <button class="btn preset-filled-primary-50-950 rounded-lg" type="button" onclick={()=>registerFormModalOpen = true}>Create New Customer</button>
-      or, 
       {#if !defaultCustomer}
+         <button class="btn preset-filled-primary-50-950 rounded-lg" type="button" onclick={()=>registerFormModalOpen = true}>Create New Customer</button>
+         <span class="label-text">or,</span> 
          <Combobox
             data={customerComboBoxData}
             value={selectedCustomer}
@@ -183,7 +183,7 @@
                   id={paymentType}
                   errors={$errors.paymentType}
                   constraints={$constraints.paymentType}
-                  label={paymentType}
+                  label={paymentType.substring(0,1)+paymentType.substring(1).toLowerCase()}
                />
             {/each}
          </div>
