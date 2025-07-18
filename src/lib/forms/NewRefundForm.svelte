@@ -33,14 +33,14 @@
    onMount(()=>{
       $form.amount = paymentRecord.paymentAmount;
       $form.notes = `Refund of payment record number: ${paymentRecord.paymentNumber}, ${paymentRecord.paymentNotes}`
-      $form.refundType = paymentRecord.paymentType;
+
    })
    const paymentTypes = [ 'CASH', 'CHECK', 'CREDIT'];
 </script>
 <div class="{classes} flex flex-col gap-2">
    <PaymentRecordEmployee {paymentRecord} />
    <FormMessage message={$message} />
-   <form action="/forms/refundForm" method="post" use:enhance>
+   <form action="/forms/newRefundForm" method="POST" use:enhance>
       <TextArea 
          bind:value={$form.notes}
          errors={$errors.notes}
