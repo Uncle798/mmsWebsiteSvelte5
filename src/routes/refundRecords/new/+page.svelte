@@ -4,14 +4,12 @@
    import NewRefundForm from '$lib/forms/NewRefundForm.svelte';
    import type { PaymentRecord, User } from '@prisma/client';
    import PaymentRecordEmployee from '$lib/displayComponents/PaymentRecordEmployee.svelte';
-   import HorizontalDivider  from '$lib/displayComponents/HorizontalDivider.svelte';
 	import Pagination from '$lib/displayComponents/Pagination.svelte';
 	import Search from '$lib/forms/Search.svelte';
 	import Header from '$lib/Header.svelte';
 	import { PanelTopClose, SearchIcon } from 'lucide-svelte';
 	import UserEmployee from '$lib/displayComponents/UserEmployee.svelte';
    let { data }: { data: PageData } = $props();
-   let selectedPayment = $state<PaymentRecord | undefined>(data.paymentRecord ? data.paymentRecord : undefined);
    let size = $state(25);
    let pageNum = $state(1);
    let search = $state('');
@@ -40,10 +38,9 @@
    );
 </script>
 <Header title='New Refund' />
-{#if selectedPayment}
-   <PaymentRecordEmployee paymentRecord={selectedPayment} classes='mt-14 sm:mt-10'/>
-   <HorizontalDivider />   
-   <NewRefundForm data={data.refundForm} paymentRecord={selectedPayment} classes='p-2'/>
+{#if data.paymentRecord}
+   <PaymentRecordEmployee paymentRecord={data.paymentRecord} classes='mt-14 sm:mt-10'/> 
+   <NewRefundForm data={data.refundForm} paymentRecord={data.paymentRecord} classes='p-2'/>
 {:else}
    {#await data.paymentRecords}
       <div class="mt-14 sm:mt-10 mx-1 sm:mx-2">
@@ -94,9 +91,9 @@
                      <div class="border-2 border-primary-50-950 rounded-lg grid grid-cols-1 sm:grid-cols-2 ">
                         <PaymentRecordEmployee {paymentRecord} />
                         {#if customer}
-                           <UserEmployee user={customer} />
+                           <UserEmployee user={customer} classes='mx-2'/>
                         {/if}
-                        <button class="btn preset-filled-primary-50-950 sm:col-span-2 m-1">Refund this payment</button>
+                        <a href="/refundRecords/new?paymentNumber={paymentRecord.paymentNumber}" class="btn preset-filled-primary-50-950 sm:col-span-2 m-1">Refund this payment</a>
                      </div>
                   {/each}
                </div>
