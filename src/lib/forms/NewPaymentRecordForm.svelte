@@ -14,6 +14,7 @@
 	import TextArea from "$lib/formComponents/TextArea.svelte";
 	import RadioButton from "$lib/formComponents/RadioButton.svelte";
 	import ExplainerModal from "$lib/demo/ExplainerModal.svelte";
+	import UserEmployee from "$lib/displayComponents/UserEmployee.svelte";
 
    interface Props {
       data: SuperValidated<Infer<NewPaymentRecordFormSchema>>;
@@ -46,7 +47,7 @@
       const customerInvoices = invoices.filter((invoice)=> invoice.customerId === selectedCustomer[0]);
       const data:ComboBoxData[]=[]
       customerInvoices.forEach((invoice) =>{
-         const label = invoice.invoiceNotes ? invoice.invoiceNotes : invoice.invoiceNum.toString(10);
+         const label = invoice.invoiceNotes ? `Invoice Number ${invoice.invoiceNum} `+invoice.invoiceNotes : `Invoice Number ${invoice.invoiceNum} `;
          const value = invoice.invoiceNum.toString(10);
          data.push({label, value})
       })
@@ -104,7 +105,7 @@
 <div class={classes}>
    <FormMessage message={$message} />
    <form action="/forms/newPaymentRecordForm" method="POST" use:enhance>
-      <div class="">
+      {#if !defaultCustomer}
          <Combobox
             data={customerComboBoxData}
             value={selectedCustomer}
@@ -112,17 +113,17 @@
             placeholder='Select customer...'
             openOnClick={true}
             onValueChange={(details)=>{
-               if(selectedCustomer.length > 0){
-                  customerSelected = true;
-               }
-               selectedCustomer[0]=details.value[0]
-               selectedInvoice[0]=''
-               invoiceSelected = false
+               selectedCustomer[0]=details.value[0];
             }}
          />
-      </div>
+      {:else}
+      {@const user = customers.find((customer)=> customer.id === selectedCustomer[0])}
+         {#if user}
+            <UserEmployee {user} />
+         {/if}
+      {/if}
       <div class="">
-         {#if !invoiceSelected}
+         {#if selectedInvoice[0] === ''}
             <button class="btn preset-filled-primary-50-950 rounded-lg my-2" onclick={()=>invoiceFormOpen=true} type='button'>Create New Invoice</button>
          {/if}
          {#if invoiceComboBoxData.length > 0 }
@@ -145,7 +146,7 @@
             />
          {/if}
       </div>
-      {#if invoiceSelected}
+      {#if selectedInvoice[0] !== ''}
          <NumberInput
             bind:value={$form.paymentAmount}
             errors={$errors.paymentAmount}
