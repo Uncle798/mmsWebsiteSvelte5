@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
-    import type { PageData } from './$types';
-    import {Combobox } from '@skeletonlabs/skeleton-svelte'
-    let { data }: { data: PageData } = $props();
-    let yearSelect = $state(['']);
+   import { goto } from '$app/navigation';
+   import type { PageData } from './$types';
+   import {Combobox } from '@skeletonlabs/skeleton-svelte'
+   let { data }: { data: PageData } = $props();
+   let yearSelect = $state(['']);
    interface ComboboxData {
       label: string;
       value: string;
@@ -16,17 +16,17 @@
    })
 </script>
 <div class="mx-1 sm:mx-2 mt-14 sm:mt-10 ">
-    {#if data.years}
-        <Combobox
-        data={yearComboboxData}
-        value={yearSelect}
-        label='Select year'
-        placeholder='Select year ...'
-        openOnChange={true}
-        onValueChange={(details) => {
-            goto(`/paymentRecords/year/${details.value[0]}`)
-        }}
-        zIndex='50'
-        />
-    {/if}
+   {#if data.years}
+      <Combobox
+      data={yearComboboxData}
+      value={yearSelect}
+      label='Select year'
+      placeholder='Select year...'
+      openOnChange={true}
+      onValueChange={(details) => {
+         goto(`/paymentRecords/year/${details.value[0]}`)
+      }}
+      zIndex='50'
+      />
+   {/if}
 </div>
