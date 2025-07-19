@@ -61,13 +61,13 @@
    <Modal
       open={searchDrawerOpen}
       onOpenChange={(event)=>(searchDrawerOpen = event.open)}
-      triggerBase='btn preset-filled-primary-50-950 rounded-lg fixed top-0 right-0 z-50'
-      contentBase='bg-surface-100-900 h-[140px] w-screen rounded-b-lg '
+      triggerBase='btn preset-filled-primary-50-950 rounded-lg fixed top-0 right-0 z-50 h-12 sm:h-auto'
+      contentBase='bg-surface-100-900 h-[180px] w-screen rounded-b-lg '
       positionerJustify=''
       positionerAlign=''
       positionerPadding=''
-      transitionsPositionerIn={{y:-140, duration: 600}}
-      transitionsPositionerOut={{y:-140, duration: 600}}
+      transitionsPositionerIn={{y:-180, duration: 600}}
+      transitionsPositionerOut={{y:-180, duration: 600}}
       modal={false}
    >
       {#snippet trigger()}
