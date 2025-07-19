@@ -2,55 +2,72 @@
 	import RefundRecordEmployee from '$lib/displayComponents/RefundRecordEmployee.svelte';
 	import UserEmployee from '$lib/displayComponents/UserEmployee.svelte';
 	import Search from '$lib/forms/Search.svelte';
-    import dayjs from 'dayjs';
-    import type { PageData } from './$types';
-    import type { RefundRecord } from '@prisma/client'
-	import DateSearch from '$lib/forms/DateSearch.svelte';
-	import Pagination from '$lib/displayComponents/Pagination.svelte';
-	import Revenue from '$lib/displayComponents/Revenue.svelte';
-	import Header from '$lib/Header.svelte';
-    import Address from '$lib/displayComponents/AddressEmployee.svelte';
-    
-    let { data }: { data: PageData } = $props();
-    let size = $state(25)
-    let pageNum = $state(1)
-    let search = $state('');
-    let startDate = $state<Date>(new Date());
-    let endDate = $state<Date>(new Date());
-    let maxDate = $state<Date>();
-    let minDate = $state<Date>();
-    let wrapper = new Promise<RefundRecord[]>(async res => {
-        const refunds = await data.refunds
-        res(refunds)
-        startDate = dayjs(refunds[0].refundCreated).startOf('year').toDate()
-        minDate = dayjs(refunds[0].refundCreated).startOf('year').toDate()
-        maxDate = dayjs(refunds[refunds.length-1].refundCreated).endOf('year').toDate()
-        endDate = dayjs(refunds[refunds.length-1].refundCreated).endOf('year').toDate()
-    })
-    const numberFormatter = new Intl.NumberFormat('en-US');
-    let slicedRefunds = $derived((refunds:RefundRecord[]) => refunds.slice((pageNum-1)*size, pageNum*size))
-    let searchRefunds = $derived((refunds:RefundRecord[]) => refunds.filter((refund) => refund.refundNumber.toString().includes(search)))
-    let dateSearchRefunds = $derived((refunds:RefundRecord[]) => refunds.filter((refund) => {
-        if(!startDate || !endDate){
-            return
-        }
-        return refund.refundCreated >= startDate && refund.refundCreated <= endDate
-    }))
-    let totalRevenue = $derived((refunds:RefundRecord[]) => {
-        let totalRevenue:number = 0;
-        
-        refunds.forEach((refund) =>{
-            totalRevenue += refund.refundAmount
-        })
-        return totalRevenue
-    })
+   import dayjs from 'dayjs';
+   import type { PageData } from './$types';
+   import type { RefundRecord } from '@prisma/client'
+   import DateSearch from '$lib/forms/DateSearch.svelte';
+   import Pagination from '$lib/displayComponents/Pagination.svelte';
+   import Revenue from '$lib/displayComponents/Revenue.svelte';
+   import Header from '$lib/Header.svelte';
+   import Address from '$lib/displayComponents/AddressEmployee.svelte';
+   import { Combobox } from '@skeletonlabs/skeleton-svelte';
+	import { goto } from '$app/navigation';
+   
+   let { data }: { data: PageData } = $props();
+   let size = $state(25)
+   let pageNum = $state(1)
+   let search = $state('');
+   let startDate = $state<Date>(new Date());
+   let endDate = $state<Date>(new Date());
+   let maxDate = $state<Date>();
+   let minDate = $state<Date>();
+   let wrapper = new Promise<RefundRecord[]>(async res => {
+      const refunds = await data.refunds
+      res(refunds)
+      startDate = dayjs(refunds[0].refundCreated).startOf('year').toDate()
+      minDate = dayjs(refunds[0].refundCreated).startOf('year').toDate()
+      maxDate = dayjs(refunds[refunds.length-1].refundCreated).endOf('year').toDate()
+      endDate = dayjs(refunds[refunds.length-1].refundCreated).endOf('year').toDate()
+   })
+   const numberFormatter = new Intl.NumberFormat('en-US');
+   let slicedRefunds = $derived((refunds:RefundRecord[]) => refunds.slice((pageNum-1)*size, pageNum*size))
+   let searchRefunds = $derived((refunds:RefundRecord[]) => refunds.filter((refund) => refund.refundNumber.toString().includes(search)))
+   let dateSearchRefunds = $derived((refunds:RefundRecord[]) => refunds.filter((refund) => {
+      if(!startDate || !endDate){
+         return
+      }
+      return refund.refundCreated >= startDate && refund.refundCreated <= endDate
+   }))
+   let totalRevenue = $derived((refunds:RefundRecord[]) => {
+      let totalRevenue:number = 0;
+      
+      refunds.forEach((refund) =>{
+         totalRevenue += refund.refundAmount
+      })
+      return totalRevenue
+   })
+   interface ComboboxData {
+      label: string;
+      value: string;
+   }
+   let monthComboBoxData:ComboboxData[] = []
+   for(const month of data.months){
+      monthComboBoxData.push({label:dayjs(month).format('MMMM'), value:month.toUTCString()})
+   }
 </script>
 
 {#await wrapper}
     <Header title='Refund Records' />
     Loading {numberFormatter.format(data.refundCount)} refund records or select month:
     {#each data.months as month}
-        <a href="/refundRecords/year/{dayjs(month).format('YYYY')}/month/{month.getMonth()+1}" class="btn">{dayjs(month).format('MMMM')}</a>
+      <Combobox
+         data={monthComboBoxData}
+         openOnClick={true}
+         onValueChange={(details) => {
+            const date = dayjs(parseInt(details.value[0]))
+            goto(`/refundRecords/year/${date.format('YYYY')}/month/${(date.get('month'))+1}`)
+         }}
+      />
     {/each}
     {:then refunds}
         {#await data.customers}
