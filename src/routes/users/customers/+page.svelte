@@ -66,7 +66,7 @@
                {/snippet}
                {#snippet content()}
                   <button onclick={()=>searchDrawerOpen=false} class='btn preset-filled-primary-50-950 rounded-lg m-1 absolute top-0 right-0'><PanelTopClose aria-label='Close'/></button>
-                  <Search bind:search={search} searchType='customer name' data={data.userSearchForm} classes='mx-2 mt-9'/>
+                  <Search bind:search={search} searchType='customer name' data={data.userSearchForm} classes='mx-2 mt-11'/>
                {/snippet}
             </Modal>
             <div class="grid grid-cols-1 mx-1 sm:mx-2 gap-y-2 gap-x-1 mt-18 sm:mt-18">

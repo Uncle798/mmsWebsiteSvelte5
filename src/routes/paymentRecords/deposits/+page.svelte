@@ -111,7 +111,7 @@
             {/snippet}
             {#snippet content()}
                <button onclick={()=>searchDrawerOpen=false} class='btn preset-filled-primary-50-950 rounded-lg m-1 absolute top-0 right-0'><PanelTopClose aria-label='Close'/></button>
-               <div class="mt-9 mx-1 sm:mx-2">
+               <div class="mt-11 mx-1 sm:mx-2">
                   <Search bind:search={search} searchType='payment record number' data={data.searchForm} classes=''/>
                   <Search bind:search={noteSearch} searchType='Payment notes' data={data.searchForm} classes=''/>
                   <Search bind:search={nameSearch} searchType='By user' data={data.searchForm} classes=''/>

@@ -168,7 +168,7 @@
                   bind:search={search} 
                   searchType='payment record number' 
                   data={data.searchForm}
-                  classes='m-1 sm:m-2 mt-9 sm:mt-9'
+                  classes='m-1 sm:m-2 mt-11 sm:mt-11'
                />
                <Search
                   bind:search={nameSearch}

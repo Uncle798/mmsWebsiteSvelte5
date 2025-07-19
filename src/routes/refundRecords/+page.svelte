@@ -106,7 +106,7 @@
 			</div>
 			<Placeholder numCols={2} numRows={size} heightClass='h-44'/>
 		{:then addresses}
-		<div class=" bg-tertiary-50-950 w-full rounded-b-lg fixed top-9 left-0 flex flex-col sm:flex-row z-50">
+		<div class=" bg-tertiary-50-950 w-full rounded-b-lg fixed top-11 left-0 flex flex-col sm:flex-row z-50">
 			<Revenue 
 				label="Total refunds" 
 				amount={totalRevenue(searchRefunds(dateSearchRefunds(refunds)))}

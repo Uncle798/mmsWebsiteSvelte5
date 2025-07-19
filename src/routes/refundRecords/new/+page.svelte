@@ -73,13 +73,13 @@
                   bind:search={nameSearch}
                   searchType='customer name'
                   data={data.searchForm}
-                  classes='m-1 sm:m-2 mt-9'
+                  classes='m-1 sm:m-2 mt-11'
                />
                <Search
                   bind:search={search}
                   searchType='payment notes'
                   data={data.searchForm}
-                  classes='m-1 sm:m-2 mt-9'
+                  classes='m-1 sm:m-2 mt-11'
                />
             {/snippet}
          </Modal>

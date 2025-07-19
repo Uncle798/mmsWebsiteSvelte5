@@ -123,7 +123,7 @@
 						{/snippet}
 						{#snippet content()}
 							<button onclick={()=>searchDrawerOpen=false} class='btn preset-filled-primary-50-950 rounded-lg m-1 absolute top-0 right-0'><PanelTopClose aria-label='Close'/></button>
-							<div class="mx-2 mt-9">
+							<div class="mx-2 mt-11">
 
 								<Search searchType='Unit number' data={data.searchForm} classes='' bind:search={search}/>
 								<Combobox data={comboboxData} 
