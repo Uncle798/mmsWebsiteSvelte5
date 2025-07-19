@@ -39,7 +39,6 @@
 </script>
 <Header title='New Refund' />
 {#if data.paymentRecord}
-   <PaymentRecordEmployee paymentRecord={data.paymentRecord} classes='mt-14 sm:mt-10'/> 
    <NewRefundForm data={data.refundForm} paymentRecord={data.paymentRecord} classes='p-2'/>
 {:else}
    {#await data.paymentRecords}
@@ -93,7 +92,7 @@
                         {#if customer}
                            <UserEmployee user={customer} classes='mx-2'/>
                         {/if}
-                        <a href="/refundRecords/new?paymentNumber={paymentRecord.paymentNumber}" class="btn preset-filled-primary-50-950 sm:col-span-2 m-1">Refund this payment</a>
+                        <a href="/refundRecords/new?paymentNum={paymentRecord.paymentNumber}" class="btn preset-filled-primary-50-950 sm:col-span-2 m-1">Refund this payment</a>
                      </div>
                   {/each}
                </div>
