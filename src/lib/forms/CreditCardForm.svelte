@@ -121,7 +121,7 @@
 >
    {#snippet content()}
       <p>
-         Please visit <a href="https://developer.elavon.com/products/xml-api/v1/test-cards" class="anchor">https://developer.elavon.com/products/xml-api/v1/test-cards</a> to view acceptable test cards
+         Please visit <a href="https://developer.elavon.com/products/xml-api/v1/test-cards" class="anchor" target="_blank">https://developer.elavon.com/products/xml-api/v1/test-cards</a> to view acceptable test cards
       </p>
       <button class="btn preset-tonal" onclick={()=>(explainerModalOpen=false)}>Close</button>
    {/snippet}
