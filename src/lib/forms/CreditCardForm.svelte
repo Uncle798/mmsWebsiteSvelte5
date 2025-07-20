@@ -10,12 +10,11 @@
 	import { browser } from '$app/environment';;
 	import { goto } from '$app/navigation';
    import { fade } from "svelte/transition";
-	import { ProgressRing, Progress, Tooltip } from "@skeletonlabs/skeleton-svelte";
+	import { ProgressRing, Progress, Tooltip, Modal } from "@skeletonlabs/skeleton-svelte";
 	import { valibot, } from "sveltekit-superforms/adapters";
 	import type { Invoice } from "@prisma/client";
    import Payment from "payment";
 	import { onMount } from "svelte";
-	import ExplainerModal from "$lib/demo/ExplainerModal.svelte";
 	import { Info } from "lucide-svelte";
 
    interface Props {
@@ -37,6 +36,7 @@
          if(form.valid){
             const {data} = form;
             let date:string = data.exp.substring(0, data.exp.indexOf(' ')) + data.exp.substring(data.exp.lastIndexOf(' ')+1);
+            console.log(date)
             const paymentData = {
                ssl_txn_auth_token: sessionToken, 
                ssl_card_number: data.ccNum,
@@ -113,10 +113,19 @@
    })
 </script>
 <FormMessage message={$message} />
-<ExplainerModal 
-   bind:modalOpen={explainerModalOpen}
-   copy='Please visit <a href="https://developer.elavon.com/products/xml-api/v1/test-cards" class="anchor">https://developer.elavon.com/products/xml-api/v1/test-cards</a>'
-/>
+<Modal
+   open={explainerModalOpen}
+   onOpenChange={(event) =>(explainerModalOpen = event.open)}
+   contentBase='card bg-surface-100-900 p-2 space-y-4 shadow-xl max-w-screen-sm'
+   backdropClasses='backdrop-blur-lg'
+>
+   {#snippet content()}
+      <p>
+         Please visit <a href="https://developer.elavon.com/products/xml-api/v1/test-cards" class="anchor">https://developer.elavon.com/products/xml-api/v1/test-cards</a> to view acceptable test cards
+      </p>
+      <button class="btn preset-tonal" onclick={()=>(explainerModalOpen=false)}>Close</button>
+   {/snippet}
+</Modal>
 <form method="POST" use:enhance>
    <div class='{classes}'> 
       <TextInput
@@ -145,7 +154,7 @@
                positioning={{placement: 'top-end'}}
                contentBase="card preset-filled p-2"
                openDelay={200}
-               closeDelay={1000}
+               closeDelay={2000}
                zIndex='30'
             >
                {#snippet trigger()}
@@ -178,7 +187,7 @@
                   positioning={{placement: 'top-end'}}
                   contentBase="card preset-filled p-2"
                   openDelay={200}
-                  closeDelay={1000}
+                  closeDelay={2000}
                   zIndex='30'
                >
                   {#snippet trigger()}
@@ -211,7 +220,7 @@
                   positioning={{placement: 'top-end'}}
                   contentBase="card preset-filled p-2"
                   openDelay={200}
-                  closeDelay={1000}
+                  closeDelay={2000}
                   zIndex='30'
                >
                   {#snippet trigger()}
@@ -244,7 +253,7 @@
                   positioning={{placement: 'top-end'}}
                   contentBase="card preset-filled p-2"
                   openDelay={200}
-                  closeDelay={1000}
+                  closeDelay={2000}
                   zIndex='30'
                >
                   {#snippet trigger()}
@@ -262,7 +271,7 @@
                   autocomplete="postal-code"
                   bind:value={$form.postalCode}
                   {...$constraints.postalCode}
-                  placeholder="123"
+                  placeholder="12345"
                />
             </label>
             {#if $errors.postalCode}
