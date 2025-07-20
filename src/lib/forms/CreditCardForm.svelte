@@ -16,6 +16,7 @@
    import Payment from "payment";
 	import { onMount } from "svelte";
 	import ExplainerModal from "$lib/demo/ExplainerModal.svelte";
+	import { Info } from "lucide-svelte";
 
    interface Props {
       data: SuperValidated<Infer<CreditCardFormSchema>>,
@@ -135,35 +136,36 @@
          placeholder='Bear'
          autocomplete='cc-family-name'
       />
-      <div>
-         <Tooltip
-            open={ccToolTipOpen}
-            onOpenChange={(e) => (ccToolTipOpen = e.open)}
-            positioning={{placement: 'top-end'}}
-            contentBase="card preset-filled p-2"
-            openDelay={200}
-            zIndex='30'
-         >
-            {#snippet trigger()}               
-               <label for="ccNum" class="label-text">Credit card number
-                  <input 
-                  name="ccNum" 
-                  id="ccNum" 
-                  bind:this={ccNumElement} 
-                  class="input" 
-                  bind:value={$form.ccNum} 
-                  autocomplete="cc-number"
-                  {...$constraints.ccNum}
-                  />
-               </label>
-               {#if $errors.ccNum}
-               <span class="invalid">{$errors.ccNum}</span>
-               {/if}
-            {/snippet}
-            {#snippet content()}
-               I've hard coded a test CC number for this demo
-            {/snippet}
-         </Tooltip>
+      <div>        
+         <label for="ccNum" class="label-text">Credit card number
+            <Tooltip
+               open={ccToolTipOpen}
+               onOpenChange={(e) => ccToolTipOpen = e.open}
+               positioning={{placement: 'top-end'}}
+               contentBase="card preset-filled p-2"
+               openDelay={200}
+               zIndex='30'
+            >
+               {#snippet trigger()}
+                  <Info aria-label='Credit card number tool tip' />
+               {/snippet}
+               {#snippet content()}
+                  Please use 4000000000000002 or any of the card numbers from <a href="https://developer.elavon.com/products/xml-api/v1/test-cards" class="anchor">https://developer.elavon.com/products/xml-api/v1/test-cards</a>
+               {/snippet}
+            </Tooltip>
+            <input 
+            name="ccNum" 
+            id="ccNum" 
+            bind:this={ccNumElement} 
+            class="input" 
+            bind:value={$form.ccNum} 
+            autocomplete="cc-number"
+            {...$constraints.ccNum}
+            />
+         </label>
+         {#if $errors.ccNum}
+         <span class="invalid">{$errors.ccNum}</span>
+         {/if}
       </div>
       <div class="flex gap-2 flex-row">
          <div>
