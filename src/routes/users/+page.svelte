@@ -101,7 +101,7 @@
    </Modal>
    <ExplainerModal
       bind:modalOpen={explainerModalOpen}
-      copy="Admins can change the employment status of a user, Employees can't, otherwise they're the same."
+      copy="Admins can change the employment status of a user, Employees can't, otherwise they're the same. All Admins should also be employees."
    />
    <div in:fade={{duration:600}} class="m-2 mt-14 sm:mt-10">
       <div class="grid grid-cols-1 gap-y-3 gap-x-1">
