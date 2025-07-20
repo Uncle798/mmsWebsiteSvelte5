@@ -69,6 +69,7 @@
    onMount(()=>{
       if(defaultInvoice){
          const invoice = invoices.find((invoice) => invoice.invoiceNum.toString() === defaultInvoice)
+
          if(invoice){
             invoiceSelected = true
             $form.paymentAmount=invoice.invoiceAmount;
@@ -139,6 +140,7 @@
          {/if}
       {/if}
       <div class="">
+         {@debug selectedInvoice}
          {#if selectedInvoice[0] === ''}
             <button class="btn preset-filled-primary-50-950 rounded-lg my-2" onclick={()=>invoiceFormOpen=true} type='button'>Create New Invoice</button>
          {/if}
