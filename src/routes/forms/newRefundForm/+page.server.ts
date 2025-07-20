@@ -37,7 +37,7 @@ export const actions: Actions = {
         if(!paymentRecord){
             return message(refundForm, 'Payment record not found')
         }
-        if(paymentRecord.paymentType === 'CREDIT'){
+        if(refundForm.data.refundType === 'CREDIT'){
             const res = await fetch('/api/elavon/refundCredit', {
                 method: 'POST',
                 body: JSON.stringify({paymentNum: paymentRecord.paymentNumber})
@@ -45,7 +45,7 @@ export const actions: Actions = {
             const body = await res.json();
             redirect(302, `/refundRecords/${body.refundNumber}`)
         }
-        if(paymentRecord.paymentType === 'CASH' || paymentRecord.paymentType === 'CHECK'){
+        if(refundForm.data.refundType === 'CASH' || refundForm.data.refundType === 'CHECK'){
             const refundRecord = await prisma.refundRecord.create({
                 data: {
                     customerId: paymentRecord.customerId,
