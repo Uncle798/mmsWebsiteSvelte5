@@ -39,11 +39,13 @@
 </script>
 <Header title='New Refund' />
 {#if data.paymentRecord}
-   {#if data.customer}
-      <UserEmployee user={data.customer} />
-   {/if}
-   <PaymentRecordEmployee paymentRecord={data.paymentRecord} />
-   <NewRefundForm data={data.refundForm} paymentRecord={data.paymentRecord} classes='p-2'/>
+   <div class="mt-14 sm:mt-10 mx-1 sm:mx-2">
+      {#if data.customer}
+         <UserEmployee user={data.customer} />
+      {/if}
+      <PaymentRecordEmployee paymentRecord={data.paymentRecord} />
+      <NewRefundForm data={data.refundForm} paymentRecord={data.paymentRecord} classes='p-2'/>
+   </div>
 {:else}
    {#await data.paymentRecords}
       <div class="mt-14 sm:mt-10 mx-1 sm:mx-2">
