@@ -39,6 +39,10 @@
 </script>
 <Header title='New Refund' />
 {#if data.paymentRecord}
+   {#if data.customer}
+      <UserEmployee user={data.customer} />
+   {/if}
+   <PaymentRecordEmployee paymentRecord={data.paymentRecord} />
    <NewRefundForm data={data.refundForm} paymentRecord={data.paymentRecord} classes='p-2'/>
 {:else}
    {#await data.paymentRecords}
@@ -88,10 +92,10 @@
                   {#each slicedPayments(searchedPayments(searchByUser(paymentRecords, currentUsers(customers)))) as paymentRecord}
                   {@const customer = customers.find((customer) => customer.id === paymentRecord.customerId)}
                      <div class="border-2 border-primary-50-950 rounded-lg grid grid-cols-1 sm:grid-cols-2 ">
-                        <PaymentRecordEmployee {paymentRecord} />
                         {#if customer}
                            <UserEmployee user={customer} classes='mx-2'/>
                         {/if}
+                        <PaymentRecordEmployee {paymentRecord} />
                         <a href="/refundRecords/new?paymentNum={paymentRecord.paymentNumber}" class="btn preset-filled-primary-50-950 sm:col-span-2 m-1">Refund this payment</a>
                      </div>
                   {/each}

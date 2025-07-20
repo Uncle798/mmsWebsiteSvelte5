@@ -38,7 +38,6 @@
    const paymentTypes = [ 'CASH', 'CHECK', 'CREDIT'];
 </script>
 <div class="{classes} flex flex-col gap-2">
-   <PaymentRecordEmployee {paymentRecord} />
    <FormMessage message={$message} />
    <form action="/forms/newRefundForm" method="POST" use:enhance>
       <TextArea 

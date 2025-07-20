@@ -20,10 +20,15 @@ export const load = (async (event) => {
             paymentNumber: parseInt(paymentNum, 10)
          }
       })
+      const customer = await prisma.user.findUnique({
+         where: {
+            id: paymentRecord?.customerId
+         }
+      })
       if(!paymentRecord){
          error(404);
       }
-      return { paymentRecord, refundForm, searchForm }
+      return { paymentRecord, customer, refundForm, searchForm }
    }
    const paymentRecords = prisma.paymentRecord.findMany({
       where: {
