@@ -15,27 +15,27 @@
    {@const customer = data.refundRecord.customer}
    <Header title='Refund Record number: {data.refundRecord.refundNumber}' />
    <div class="m-2 mt-14 sm:mt-10 border border-primary-50-950 rounded-lg flex flex-col sm:flex-row mb-22 sm:mb-14 lg:mb-9">
-         {#if data.user?.employee}
-            <RefundRecordEmployee refundRecord={data.refundRecord} classes=''/>
-         {:else}
-            <RefundRecordCustomer refundRecord={data.refundRecord} />
-         {/if}
-         {#if customer}
-            <div class="flex flex-col p-2">
+      {#if data.user?.employee}
+         <RefundRecordEmployee refundRecord={data.refundRecord} classes=''/>
+      {:else}
+         <RefundRecordCustomer refundRecord={data.refundRecord} />
+      {/if}
+      {#if customer}
+         <div class="flex flex-col p-2">
+            {#if data.user?.employee}
+               <UserEmployee user={customer} classes=''/>
+            {:else}
+               <UserCustomer user={customer} />
+            {/if}
+            {#if data.address}
                {#if data.user?.employee}
-                  <UserEmployee user={customer} classes=''/>
+                  <AddressEmployee address={data.address} />
                {:else}
-                  <UserCustomer user={customer} />
+                  <AddressCustomer address={data.address} />
                {/if}
-               {#if data.address}
-                  {#if data.user?.employee}
-                     <AddressEmployee address={data.address} />
-                  {:else}
-                     <AddressCustomer address={data.address} />
-                  {/if}
-               {/if}
-            </div>
-         {/if}
+            {/if}
+         </div>
+      {/if}
       {#if customer.email && customer.emailVerified}
          <EmailCustomer
             emailAddress={customer.email}
