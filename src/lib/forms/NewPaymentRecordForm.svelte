@@ -53,7 +53,7 @@
          const value = invoice.invoiceNum.toString(10);
          data.push({label, value})
       })
-      return data
+      return data;
    })
    for(const customer of customers){
       const label = `${customer.givenName} ${customer.familyName}`;
@@ -131,6 +131,7 @@
             openOnClick={true}
             onValueChange={(details)=>{
                selectedCustomer[0]=details.value[0];
+               selectedInvoice[0]=invoiceComboBoxData[0].value;
             }}
          />
       {:else}

@@ -210,7 +210,7 @@ export type BlankFormSchema = typeof blankFormSchema;
 export const creditCardFormSchema = v.object({
    ccNum: v.pipe(v.string(), v.creditCard()),
    cvv: v.pipe(v.string(), v.digits(), v.minLength(3), v.maxLength(4)),
-   exp: v.pipe(v.string()),
+   exp: v.pipe(v.string(), v.digits()),
    postalCode: v.pipe(v.string(), v.digits(), v.minLength(5), v.maxLength(5)),
    billingGivenName: v.string(),
    billingFamilyName: v.string(),
