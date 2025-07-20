@@ -59,7 +59,7 @@ export const POST: RequestHandler = async (event) => {
                refundNumber: refund.refundNumber
             }
          })
-         return new Response(JSON.stringify('Refund completed'), {status: 200})
+         return new Response(JSON.stringify({refundNumber: refund.refundNumber}), {status: 200})
       }
    }
    return new Response(JSON.stringify('Payment num not provided'), {status:400})
