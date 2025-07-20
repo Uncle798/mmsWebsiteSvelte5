@@ -24,10 +24,10 @@
                      <div>
                         <UserEmployee user={data.customer} classes='truncate'/>
                         <AddressEmployee address={data.address} />
+                        {#if !data.paymentRecord.refunded}
+                           <a href='/refundRecords/new?paymentNum={data.paymentRecord.paymentNumber}' class="btn rounded-lg preset-filled-primary-50-950 m-2 col-span-2 h-8">Refund this payment</a>
+                        {/if}
                      </div>
-                     {#if !data.paymentRecord.refunded}
-                        <a href='/refundRecords/new?paymentNumber={data.paymentRecord.paymentNumber}' class="btn rounded-lg preset-filled-primary-50-950 m-2 col-span-2">Refund this payment</a>
-                     {/if}
                   </div>
                {:else}
                   <div class="grid grid-cols-1 sm:grid-cols-2">
