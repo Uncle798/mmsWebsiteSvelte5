@@ -38,26 +38,12 @@ export const actions: Actions = {
             return message(refundForm, 'Payment record not found')
         }
         if(paymentRecord.paymentType === 'CREDIT'){
-            const refundRecord = await prisma.refundRecord.create({
-                data: {
-                    refundAmount: refundForm.data.amount,
-                    employeeId: event.locals.user.id!,
-                    customerId: paymentRecord.customerId,
-                    refundType: 'CREDIT',
-                    refundNotes: `Refund of payment record number ${paymentRecord.paymentNumber}`,
-                    paymentRecordNum: paymentRecord.paymentNumber
-                }
+            const res = await fetch('/api/elavon/refundCredit', {
+                method: 'POST',
+                body: JSON.stringify({paymentNum: paymentRecord.paymentNumber})
             })
-            await prisma.paymentRecord.update({
-                where: {
-                    paymentNumber: paymentRecord.paymentNumber
-                },
-                data: {
-                    refunded: true,
-                    refundNumber: refundRecord.refundNumber
-                }
-            })
-            redirect(302, `/refundRecords/${refundRecord.refundNumber}`)
+            const body = await res.json();
+            redirect(302, `/refundRecords/${body.refundNumber}`)
         }
         if(paymentRecord.paymentType === 'CASH' || paymentRecord.paymentType === 'CHECK'){
             const refundRecord = await prisma.refundRecord.create({
