@@ -93,7 +93,7 @@
                Loading addresses...
          </div>
       {:then addresses} 
-         <Revenue amount={totalRevenue(searchedPaymentRecords(deposits))} label='Amount of deposits' classes='bg-tertiary-50-950 w-screen rounded-b-lg fixed top-11 p-2' />
+         <Revenue amount={totalRevenue(searchedPaymentRecords(deposits))} label='Amount of deposits' classes='bg-tertiary-50-950 w-screen rounded-b-lg fixed top-11 sm:top-9 p-2' />
          <Modal
             open={searchDrawerOpen}
             onOpenChange={(event)=>(searchDrawerOpen = event.open)}
