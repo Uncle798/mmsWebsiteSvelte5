@@ -53,6 +53,7 @@
    let slicedSource = $derived((paymentRecords:PaymentRecord[]) => paymentRecords.slice((pageNum -1) * size, pageNum*size));
    let searchedPayments = $derived((paymentRecords:PaymentRecord[]) => 
       paymentRecords.filter((paymentRecord) => paymentRecord.paymentNumber.toString().includes(search))
+   
    )
    let sortedByDate = $derived((paymentRecords:PaymentRecord[]) => paymentRecords.sort((a,b) => {
       if(a.paymentCreated > b.paymentCreated){
@@ -159,22 +160,22 @@
          </div>
       {:then addresses}         
          {#if paymentRecords.length >0}
-            <div class="bg-tertiary-50-950 w-screen rounded-b-lg fixed top-8 flex">
+            <div class="bg-tertiary-50-950 w-screen rounded-b-lg fixed top-12 sm:top-9 flex">
                <Revenue 
                   label="Total revenue" 
-                  amount={totalRevenue(searchedPayments(dateSearchPayments(paymentRecords)))} 
+                  amount={totalRevenue(searchedPayments(dateSearchPayments(searchByUser(paymentRecords, currentUsers(customers)))))} 
                   classes='m-1 sm:m-2'    
                />
                <Revenue
                   label='Non-deposit revenue'
-                  amount={totalRevenue(nonDeposits(paymentRecords))}
+                  amount={totalRevenue(nonDeposits(searchedPayments(searchByUser(paymentRecords, currentUsers(customers)))))}
                   classes='m-1 sm:m-2'
                />
             </div>
             <Modal
                   open={searchDrawerOpen}
                   onOpenChange={(event)=>(searchDrawerOpen = event.open)}
-                  triggerBase='btn preset-filled-primary-50-950 rounded-lg fixed top-0 right-0 z-50'
+                  triggerBase='btn preset-filled-primary-50-950 rounded-lg fixed top-0 right-0 z-50 h-12 sm:h-auto'
                   contentBase='bg-surface-100-900 h-[400px] w-screen rounded-lg'
                   positionerJustify=''
                   positionerAlign=''
@@ -215,7 +216,7 @@
             {/snippet}
             </Modal>
                <div class="mt-26 sm:mt-20" in:fade={{duration:600}} out:fade={{duration:0}}>
-                  {#each slicedSource(dateSearchPayments(searchedPayments(sortedByDate(searchByUser(paymentRecords, currentUsers(customers)))))) as paymentRecord}
+                  {#each slicedSource(sortedByDate(dateSearchPayments(searchedPayments(searchByUser(paymentRecords, currentUsers(customers)))))) as paymentRecord}
                   {@const customer = customers.find((customer) => customer.id === paymentRecord.customerId) }
                      <div class="rounded-lg border border-primary-50-950 grid sm:grid-cols-2 m-2">
                         <div>
