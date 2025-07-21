@@ -128,7 +128,7 @@
             <Modal
                open={searchDrawerOpen}
                onOpenChange={(event)=>(searchDrawerOpen = event.open)}
-               triggerBase='btn preset-filled-primary-50-950 rounded-lg fixed top-0 right-0 z-50'
+               triggerBase='btn preset-filled-primary-50-950 rounded-lg fixed top-0 right-0 z-50 h-12 sm:h-8'
                contentBase='bg-surface-100-900 h-[360px] w-screen rounded-lg'
                positionerJustify=''
                positionerAlign=''
@@ -149,10 +149,10 @@
                   </div>
                {/snippet}
             </Modal>
-            <div class="grid grid-cols-1 sm:m-2 m-1 gap-2 mt-24 sm:mt-20" in:fade={{duration:600}} out:fade={{duration:0}}>
+            <div class="grid grid-cols-1 sm:m-2 m-1 gap-2 mt-28 sm:mt-20" in:fade={{duration:600}} out:fade={{duration:0}}>
                {#each slicedInvoices(searchedInvoices(searchByUser(invoices, currentUsers(customers)))) as invoice}  
                {@const customer = customers.find((customer) => customer.id === invoice.customerId)}
-                  <div class="sm:grid sm:grid-cols-2 border-2 border-primary-50-950 rounded-lg">
+                  <div class="sm:grid sm:grid-cols-2 border-2 border-primary-50-950 rounded-lg ">
                         <InvoiceEmployee {invoice} classes=' px-2' />
                         {#if customer}
                         {@const address = addresses.find((address) => address.userId === customer.id)}
