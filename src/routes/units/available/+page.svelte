@@ -112,7 +112,7 @@
          <span class="m-1">Percentage: {Math.round((availableUnits.length*100)/data.unitCount)}%</span>
          <span class="m-1">Open revenue per month: {currencyFormatter.format(lostRevenue(availableUnits))}</span>
       </div>
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 m-1 sm:m-2 bg-surface-50-950 mt-24 sm:mt-18">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 m-1 sm:m-2 bg-surface-50-950 mt-28 sm:mt-18">
          {#each filteredUnits(availableUnits) as unit}
             <div class="border-2 border-primary-50-950 rounded-lg">
                <UnitEmployee {unit}/>
