@@ -47,6 +47,7 @@
    {/if}
    {#if paymentRecord.refunded}
       <HorizontalDivider classes='col-span-2' />
-      <div class="col-span-2 text-center px-2 font-medium">Refunded</div>
+      <div class="text-right">Refunded</div>
+      <div class="font-medium"><a href="/refundRecords/{paymentRecord.refundNumber}">{paymentRecord.refundNumber}</a></div>
    {/if}
 </div>
