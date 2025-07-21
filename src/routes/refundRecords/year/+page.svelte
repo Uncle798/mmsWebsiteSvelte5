@@ -13,7 +13,7 @@
       yearComboboxData.push({label:year.toString(), value:year.toString()})
    }
 </script>
-<div class="mt-14 sm:mt-12">
+<div class="mt-14 sm:mt-12 mx-1 sm:mx-2">
    {#if data.years}
       <Combobox
          data={yearComboboxData}
