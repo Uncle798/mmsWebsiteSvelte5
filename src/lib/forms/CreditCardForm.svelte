@@ -130,15 +130,6 @@
 </Modal>
 <form method="POST" use:enhance>
    <div class='{classes}'> 
-      <TextInput
-         bind:value={$form.billingGivenName}
-         errors={$errors.billingGivenName}
-         constraints={$constraints.billingGivenName}
-         label='Given name on credit card'
-         name='billingGivenName'
-         placeholder='Smokey'
-         autocomplete='cc-given-name'
-      />
       <div>        
          <label for="billingGivenName" class="label-text">Give name on credit card
             <Tooltip
@@ -161,7 +152,8 @@
             name="billingGivenName" 
             id="billingGivenName" 
             type="text"
-            class="input" 
+            class="input"
+            placeholder="Smokey" 
             bind:value={$form.billingGivenName} 
             autocomplete="cc-given-name"
             {...$constraints.billingGivenName}
@@ -193,7 +185,8 @@
             name="billingFamilyName" 
             id="billingFamilyName" 
             type="text"
-            class="input" 
+            class="input"
+            placeholder="Bear" 
             bind:value={$form.billingFamilyName} 
             autocomplete="cc-family-name"
             {...$constraints.billingFamilyName}
@@ -226,6 +219,7 @@
             id="ccNum" 
             bind:this={ccNumElement} 
             class="input" 
+            placeholder="4000000000000002"
             bind:value={$form.ccNum} 
             autocomplete="cc-number"
             {...$constraints.ccNum}
