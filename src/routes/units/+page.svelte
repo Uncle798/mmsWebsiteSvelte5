@@ -105,11 +105,11 @@
 			<Placeholder numCols={1} numRows={3} heightClass='h-96'/>
 			{:then addresses} 
             {#if units}
-					<Revenue label='Current leased monthly revenue' amount={totalRevenue(leases)} classes='bg-tertiary-50-950 w-full rounded-b-lg fixed top-9 z-40'/>
+					<Revenue label='Current leased monthly revenue' amount={totalRevenue(leases)} classes='bg-tertiary-50-950 w-full rounded-b-lg fixed top-12 sm:top-9 z-40'/>
 					<Modal
 						open={searchDrawerOpen}
 						onOpenChange={(event)=>(searchDrawerOpen = event.open)}
-						triggerBase='btn preset-filled-primary-50-950 rounded-lg fixed top-0 right-0 z-50'
+						triggerBase='btn preset-filled-primary-50-950 rounded-lg fixed top-0 right-0 z-50 h-12 sm:h-8'
 						contentBase='bg-surface-100-900 h-[230px] w-screen rounded-b-lg'
 						positionerJustify=''
 						positionerAlign=''
@@ -141,7 +141,7 @@
 						</div>
 						{/snippet}
 					</Modal>
-            	<div class=" sm:m-2 m-1 sm:mt-18 mt-24" in:fade={{duration:1600}}>
+            	<div class="sm:m-2 m-1 sm:mt-18 mt-20" in:fade={{duration:1600}}>
                	{#each slicedUnits(filteredUnits(searchedUnits(units))) as unit}
                	{@const lease = leases?.find((lease) => lease.unitNum === unit.num)}
 							<div class="border-2 border-primary-50-950 rounded-lg grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 my-2 gap-2">
