@@ -71,16 +71,12 @@
       }
       return 0
    }))
-   let dateSearchPayments = $derived((paymentRecords:PaymentRecord[]) => {
-      const returnedPayments = paymentRecords.filter((paymentRecord) => {
-         if(!startDate || !endDate){
-            return paymentRecord
-         }
-         return paymentRecord.paymentCreated >= startDate && paymentRecord.paymentCreated <= endDate;
-      })
-      console.log('dateSearchedPayments', returnedPayments)
-      return returnedPayments
-   })
+   let dateSearchPayments = $derived((paymentRecords:PaymentRecord[]) => paymentRecords.filter((paymentRecord) => {
+      if(!startDate || !endDate){
+         return
+      }
+      return paymentRecord.paymentCreated >= startDate && paymentRecord.paymentCreated <= endDate;
+   }))
    let nameSearch = $state('');
    let currentUsers = $derived((users:User[]) => users.filter((user) => {
       return user.givenName?.toLowerCase().includes(nameSearch.toLowerCase()) 
