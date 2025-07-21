@@ -105,7 +105,7 @@
 			<Placeholder numCols={1} numRows={3} heightClass='h-96'/>
 			{:then addresses} 
             {#if units}
-					<Revenue label='Current leased monthly revenue' amount={totalRevenue(leases)} classes='bg-tertiary-50-950 w-full rounded-b-lg fixed top-11 sm:top-8 z-40'/>
+					<Revenue label='Current leased monthly revenue' amount={totalRevenue(leases)} classes='bg-tertiary-50-950 w-full rounded-b-lg fixed top-11 sm:top-8 z-40 p-1'/>
 					<Modal
 						open={searchDrawerOpen}
 						onOpenChange={(event)=>(searchDrawerOpen = event.open)}
@@ -196,6 +196,7 @@
 									bind:unitPricingFormModalOpen={modalOpen}
 									size={currentSize}
 									oldPrice={currentOldPrice}
+									classes='m-1 sm:m-2'
 								/>
 							{/if}
 							<button class="btn" onclick={() => (modalOpen = false)}>Cancel</button>
