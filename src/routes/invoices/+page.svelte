@@ -123,7 +123,7 @@
             <Revenue 
                label="Total invoiced (not including deposits)" 
                amount={totalRevenue(searchedInvoices(dateSearchedInvoices(invoices)))} 
-               classes='bg-tertiary-50-950 w-full rounded-b-lg fixed top-8 p-2 z-40'
+               classes='bg-tertiary-50-950 w-full rounded-b-lg fixed top-11 sm:top-8 p-2 z-40'
             />
             <Modal
                open={searchDrawerOpen}
@@ -149,7 +149,7 @@
                   </div>
                {/snippet}
             </Modal>
-            <div class="grid grid-cols-1 sm:m-2 m-1 gap-2 mt-28 sm:mt-20" in:fade={{duration:600}} out:fade={{duration:0}}>
+            <div class="grid grid-cols-1 sm:m-2 m-1 gap-2 mt-26 sm:mt-20" in:fade={{duration:600}} out:fade={{duration:0}}>
                {#each slicedInvoices(dateSearchedInvoices(searchedInvoices(searchByUser(invoices, currentUsers(customers))))) as invoice}  
                {@const customer = customers.find((customer) => customer.id === invoice.customerId)}
                   <div class="sm:grid sm:grid-cols-2 border-2 border-primary-50-950 rounded-lg ">
