@@ -150,7 +150,7 @@
                {/snippet}
             </Modal>
             <div class="grid grid-cols-1 sm:m-2 m-1 gap-2 mt-28 sm:mt-20" in:fade={{duration:600}} out:fade={{duration:0}}>
-               {#each slicedInvoices(searchedInvoices(searchByUser(invoices, currentUsers(customers)))) as invoice}  
+               {#each slicedInvoices(dateSearchedInvoices(searchedInvoices(searchByUser(invoices, currentUsers(customers))))) as invoice}  
                {@const customer = customers.find((customer) => customer.id === invoice.customerId)}
                   <div class="sm:grid sm:grid-cols-2 border-2 border-primary-50-950 rounded-lg ">
                         <InvoiceEmployee {invoice} classes=' px-2' />
@@ -171,7 +171,7 @@
                               {/if}
                            </div>
                            {#if !invoice.paymentRecordNum}
-                              <a href="/paymentRecords/new?defaultCustomer={customer?.id}&defaultInvoice={invoice.invoiceNum}" class="btn preset-filled-primary-50-950">Make Payment Record For this invoice</a>
+                              <a href="/paymentRecords/new?defaultCustomer={customer?.id}&defaultInvoice={invoice.invoiceNum}" class="btn preset-filled-primary-50-950 m-1 justify-between">Make Payment Record For this invoice</a>
                            {/if}
                         {/if}
                   </div>
