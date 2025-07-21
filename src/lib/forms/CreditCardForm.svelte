@@ -106,6 +106,8 @@
    let cvvToolTipOpen = $state(false);
    let zipcodeToolTipOpen = $state(false);
    let explainerModalOpen = $state(true);
+   let familyNameToolTipOpen = $state(false);
+   let givenNameTooltipOpen = $state(false);
    onMount(()=>{
       setTimeout(()=>{
          explainerModalOpen=false
@@ -137,15 +139,70 @@
          placeholder='Smokey'
          autocomplete='cc-given-name'
       />
-      <TextInput
-         bind:value={$form.billingFamilyName}
-         errors={$errors.billingFamilyName}
-         constraints={$constraints.billingFamilyName}
-         label='Family name on credit card'
-         name='billingFamilyName'
-         placeholder='Bear'
-         autocomplete='cc-family-name'
-      />
+      <div>        
+         <label for="billingGivenName" class="label-text">Give name on credit card
+            <Tooltip
+               open={givenNameTooltipOpen}
+               onOpenChange={(e) => givenNameTooltipOpen = e.open}
+               positioning={{placement: 'top-end'}}
+               contentBase="card preset-filled p-2"
+               openDelay={200}
+               closeDelay={2000}
+               zIndex='30'
+            >
+               {#snippet trigger()}
+                  <Info aria-label='Given name number tool tip' size={15} />
+               {/snippet}
+               {#snippet content()}
+                  Please use any name
+               {/snippet}
+            </Tooltip>
+            <input 
+            name="billingGivenName" 
+            id="billingGivenName" 
+            type="text"
+            class="input" 
+            bind:value={$form.billingGivenName} 
+            autocomplete="cc-given-name"
+            {...$constraints.billingGivenName}
+            />
+         </label>
+         {#if $errors.billingFamilyName}
+         <span class="invalid">{$errors.billingFamilyName}</span>
+         {/if}
+      </div>
+      <div>        
+         <label for="billingFamilyName" class="label-text">Family name on credit card
+            <Tooltip
+               open={familyNameToolTipOpen}
+               onOpenChange={(e) => familyNameToolTipOpen = e.open}
+               positioning={{placement: 'top-end'}}
+               contentBase="card preset-filled p-2"
+               openDelay={200}
+               closeDelay={2000}
+               zIndex='30'
+            >
+               {#snippet trigger()}
+                  <Info aria-label='Family name number tool tip' size={15} />
+               {/snippet}
+               {#snippet content()}
+                  Please use any name
+               {/snippet}
+            </Tooltip>
+            <input 
+            name="billingFamilyName" 
+            id="billingFamilyName" 
+            type="text"
+            class="input" 
+            bind:value={$form.billingFamilyName} 
+            autocomplete="cc-family-name"
+            {...$constraints.billingFamilyName}
+            />
+         </label>
+         {#if $errors.billingFamilyName}
+         <span class="invalid">{$errors.billingFamilyName}</span>
+         {/if}
+      </div>
       <div>        
          <label for="ccNum" class="label-text">Credit card number
             <Tooltip
