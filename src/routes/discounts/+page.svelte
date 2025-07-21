@@ -33,8 +33,11 @@
 </div>
 <ExplainerModal
    bind:modalOpen={explainerModalOpen}
-   copy='Want to give all non-profits $5 off? Want to give Terry down the street a good deal? Manage that here. Set discounts by percentage or a flat amount off.'
-/>
+>
+   {#snippet copy()}
+      Want to give all non-profits $5 off? Want to give Terry down the street a good deal? Manage that here. Set discounts by percentage or a flat amount off.
+   {/snippet}
+</ExplainerModal>
 <div in:fade={{duration:600}} out:fade={{duration:0}} class="mx-2 mt-18">
    <h3 class="h3">Current available Discounts</h3>
    {#each data.discounts as discount}

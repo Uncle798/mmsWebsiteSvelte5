@@ -1,8 +1,9 @@
 <script lang='ts'>
    import { Modal } from "@skeletonlabs/skeleton-svelte";
+	import type { Snippet } from "svelte";
    interface Props {
       modalOpen: boolean
-      copy: string
+      copy: Snippet
    }
    let { modalOpen=$bindable(), copy }:Props = $props()
 </script>
@@ -14,9 +15,7 @@
    backdropClasses='backdrop-blur-lg'
 >
    {#snippet content()}
-      <p>
-         {copy}
-      </p>
+      {@render copy()}
       <button class="btn preset-tonal" onclick={()=>(modalOpen=false)}>Close</button>
    {/snippet}
 </Modal>

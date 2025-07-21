@@ -150,8 +150,11 @@
          </div>
          <ExplainerModal
             modalOpen={explainerModalOpen}
-            copy='Invoice notes are your place to keep information. MMS auto generates some but they can be changed, and we can change the defaults'
-         />
+         >
+            {#snippet copy()}
+               Invoice notes are your place to keep information. MMS auto generates some but they can be changed, and we can change the defaults
+            {/snippet}
+         </ExplainerModal>
          <div class="">
             <label class="label ">
                   <span class="label-text">Invoice notes</span>

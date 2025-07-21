@@ -103,9 +103,11 @@
 </Modal>
 <ExplainerModal
    bind:modalOpen={explainerModalOpen}
-   copy='Please choose Cash or Check for the demo. Credit card just means you have to enter a bunch of numbers.'
-/>
-
+>
+   {#snippet copy()}
+      Please choose Cash or Check for the demo. Credit card just means you have to enter a bunch of numbers.
+   {/snippet}
+</ExplainerModal>
 <Modal
    open={registerFormModalOpen}
    onOpenChange={(e) => registerFormModalOpen = e.open}
