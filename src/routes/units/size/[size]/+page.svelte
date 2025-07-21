@@ -127,7 +127,7 @@
          {/snippet}
       </Modal>
       {#if units.length > 0 }
-         <div class="flex fixed top-12 sm:top-9 bg-tertiary-50-950 rounded-b-lg w-screen">
+         <div class="flex fixed top-11 sm:top-8 p-1 bg-tertiary-50-950 rounded-b-lg w-screen">
             <Revenue amount={currentRevenue(units)} label='Current revenue from {data.size.replace(/^0+/gm, '').replace(/x0/gm,'x')} units' />
                <span class="mx-1 sm:mx-2 w-1/3">Available: {availableUnits(units, leases).length} of {units.length} ({Math.round((availableUnits(units, leases).length*100)/units.length)}%)</span>
                <span class="mx-1 sm:mx-2 w-1/3">Open revenue: {currencyFormatter.format(lostRevenue(availableUnits(units, leases)))}</span>
@@ -147,7 +147,7 @@
                Loading addresses
             </div>
          {:then addresses}
-            <div class="grid grid-cols-1 gap-3 m-1 sm:m-2 mt-28 sm:mt-22">
+            <div class="grid grid-cols-1 gap-3 m-1 sm:m-2 mt-30 sm:mt-22">
                {#each units as unit}
                {@const lease = leases.find((lease) => lease.unitNum === unit.num)}
                {@const customer = customers.find((customer)=> customer.id === lease?.customerId)}

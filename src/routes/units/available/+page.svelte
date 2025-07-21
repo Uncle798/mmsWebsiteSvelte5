@@ -104,6 +104,7 @@
                searchDrawerOpen = false
                selectedSize=details.value
             }}
+            openOnClick={true}
          />
       </div>
    {/snippet}
