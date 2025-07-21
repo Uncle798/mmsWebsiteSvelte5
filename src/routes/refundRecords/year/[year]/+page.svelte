@@ -61,7 +61,6 @@
 {#await wrapper}
    <Header title='Refund Records' />
    Loading {numberFormatter.format(data.refundCount)} refund records or select month:
-   {#each data.months as month}
    <Combobox
       data={monthComboBoxData}
       openOnClick={true}
@@ -70,7 +69,6 @@
          goto(`/refundRecords/year/${date.format('YYYY')}/month/${(date.get('month'))+1}`)
       }}
    />
-   {/each}
    {:then refunds}
       {#await data.customers}
          Loading customers
