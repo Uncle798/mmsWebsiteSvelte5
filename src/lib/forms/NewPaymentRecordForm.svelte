@@ -134,7 +134,8 @@
                selectedInvoice[0]=invoiceComboBoxData[0].value;
             }}
          />
-      {:else}
+      {/if}
+      {#if selectedCustomer[0] !== ''}
       {@const user = customers.find((customer)=> customer.id === selectedCustomer[0])}
          {#if user}
             <UserEmployee {user} />
