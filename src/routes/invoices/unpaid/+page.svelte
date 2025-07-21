@@ -98,11 +98,11 @@
         {:then addresses}
             {#if invoices.length >0}       
                 <Header title='Unpaid invoices' />
-                <Revenue label="Current Unpaid Invoice total" amount={totalRevenue(searchedInvoices(dateSearchedInvoices(invoices)))} classes="bg-tertiary-50-950 w-screen rounded-b-lg fixed top-11 sm:top-9 p-1 left-0 z-40"/>
+                <Revenue label="Current Unpaid Invoice total" amount={totalRevenue(searchedInvoices(dateSearchedInvoices(invoices)))} classes="bg-tertiary-50-950 w-screen rounded-b-lg fixed top-10 sm:top-9 p-2 left-0 z-40"/>
                 <Modal
                     open={searchDrawerOpen}
                     onOpenChange={(event)=>(searchDrawerOpen = event.open)}
-                    triggerBase='btn preset-filled-primary-50-950 rounded-lg fixed top-0 right-0 z-50'
+                    triggerBase='btn preset-filled-primary-50-950 rounded-lg fixed top-0 right-0 z-50 h-12 sm:h-8'
                     contentBase='bg-surface-100-900 h-[360px] w-screen rounded-lg'
                     positionerJustify=''
                     positionerAlign=''
