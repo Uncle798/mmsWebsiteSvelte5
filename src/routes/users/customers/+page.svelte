@@ -48,11 +48,11 @@
          </div>
       {:then addresses}    
          <div in:fade={{duration:600}}>
-            <Revenue label='Current monthly invoiced' amount={totalLeased(leases)} classes='fixed top-12 sm:top-9 w-screen left-0 bg-tertiary-50-950 rounded-b-lg'/>
+            <Revenue label='Current monthly invoiced' amount={totalLeased(leases)} classes='fixed top-11 sm:top-9 w-screen left-0 bg-tertiary-50-950 rounded-b-lg'/>
             <Modal
                open={searchDrawerOpen}
                onOpenChange={(event)=>(searchDrawerOpen = event.open)}
-               triggerBase='btn preset-filled-primary-50-950 rounded-lg fixed top-0 right-0 z-50'
+               triggerBase='btn preset-filled-primary-50-950 rounded-lg fixed top-0 right-0 z-50 h-12 sm:h-8'
                contentBase='bg-surface-100-900 h-[140px] w-screen rounded-b-lg'
                positionerJustify=''
                positionerAlign=''
@@ -69,7 +69,7 @@
                   <Search bind:search={search} searchType='customer name' data={data.userSearchForm} classes='mx-2 mt-11'/>
                {/snippet}
             </Modal>
-            <div class="grid grid-cols-1 mx-1 sm:mx-2 gap-y-2 gap-x-1 mt-18 sm:mt-18">
+            <div class="grid grid-cols-1 mx-1 sm:mx-2 gap-y-2 gap-x-1 mt-20 sm:mt-18">
                {#each slicedSource(searchedSource(customers)) as customer}
                {@const address = addresses.find((address) => address.userId === customer.id)}
                {@const lease = leases.find((lease) => lease.customerId === customer.id)}
