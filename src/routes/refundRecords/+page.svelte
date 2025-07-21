@@ -173,7 +173,7 @@
 				classes=''	
 			/>
 		</div>
-			<div class="grid grid-cols-1 mx-2 mt-24 sm:mt-18 gap-3 shadow-lg" in:fade={{duration:600}}>
+			<div class="grid grid-cols-1 mx-2 mt-26 sm:mt-18 gap-3 shadow-lg" in:fade={{duration:600}}>
 				{#each slicedRefunds(searchRefunds(dateSearchRefunds(searchByUser(refunds, currentUsers(customers))))) as refund (refund.refundNumber)}
 				{@const customer = customers.find((customer) => customer.id === refund.customerId)}
 					<div class="border rounded-lg border-primary-50-950 sm:grid sm:grid-cols-2">

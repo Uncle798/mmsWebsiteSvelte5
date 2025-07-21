@@ -53,7 +53,7 @@
    let slicedSource = $derived((paymentRecords:PaymentRecord[]) => paymentRecords.slice((pageNum -1) * size, pageNum*size));
    let searchedPayments = $derived((paymentRecords:PaymentRecord[]) => {
       const returnedPayments = paymentRecords.filter((paymentRecord) => paymentRecord.paymentNumber.toString().includes(search))
-      console.log(returnedPayments);
+      console.log('returnedPayments', returnedPayments);
       return returnedPayments;
    })
    let sortedByDate = $derived((paymentRecords:PaymentRecord[]) => paymentRecords.sort((a,b) => {
@@ -79,7 +79,9 @@
    }))
    let nameSearch = $state('');
    let currentUsers = $derived((users:User[]) => users.filter((user) => {
-      return user.givenName?.toLowerCase().includes(nameSearch.toLowerCase()) || user.familyName?.toLowerCase().includes(nameSearch.toLowerCase()) || user.organizationName?.toLowerCase().includes(nameSearch.toLowerCase())
+      return user.givenName?.toLowerCase().includes(nameSearch.toLowerCase()) 
+      || user.familyName?.toLowerCase().includes(nameSearch.toLowerCase()) 
+      || user.organizationName?.toLowerCase().includes(nameSearch.toLowerCase())
    }));
    const searchByUser = $derived((paymentRecords:PaymentRecord[], customers:User[]) => {
       const customerPayments:PaymentRecord[] = [];
@@ -91,7 +93,6 @@
             customerPayments.push(payment)
          }
       }
-      console.log(currentPaymentRecord)
       return customerPayments;
    })
    let totalRevenue = $derived((paymentRecords:PaymentRecord[]) => {
