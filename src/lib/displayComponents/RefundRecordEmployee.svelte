@@ -31,7 +31,7 @@
 	<HorizontalDivider classes='col-span-2' />
 	<div class="text-right">Notes</div>
 	{#if refundRecord.paymentRecordNum}
-		<div class="text-left font-medium"><a href="/paymentRecords/{refundRecord.paymentRecordNum}">{refundRecord.refundNotes}</a></div>
+		<div class="text-left font-medium"><a href="/paymentRecords/{refundRecord.paymentRecordNum}" class="anchor">{refundRecord.refundNotes}</a></div>
 	{:else}
 		<div class="text-left font-medium">{refundRecord.refundNotes}</div>
 	{/if}
