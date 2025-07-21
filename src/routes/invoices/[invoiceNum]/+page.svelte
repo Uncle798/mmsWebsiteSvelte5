@@ -15,14 +15,16 @@
         <Header title="Invoice number {data.invoice.invoiceNum}" />
         <div class="flex flex-col sm:flex-row gap-x-1 mx-1 sm:mx-2 mt-14 sm:mt-10 border-2 border-primary-50-950 rounded-lg">
             <InvoiceEmployee invoice={data.invoice} classes="min-w-64 " />
-            <a href="/paymentRecords/new?defaultInvoice={data.invoice.invoiceNum}" class="btn preset-filled-primary-50-950 rounded-lg m-1">Make a payment record for this invoice</a>
             <div class="flex flex-col min-w-64"> 
-                {#if data.customer}
-                    <UserEmployee user={data.customer} classes="px-2 pt-2" />
-                {/if}
-                {#if data.address}
-                    <Address address={data.address} classes='px-2'/>
-                {/if}
+               {#if data.customer}
+                  <UserEmployee user={data.customer} classes="px-2 pt-2" />
+               {/if}
+               {#if data.address}
+                  <Address address={data.address} classes='px-2'/>
+               {/if}
+               {#if !data.invoice.paymentRecordNum}
+                  <a href="/paymentRecords/new?defaultInvoice={data.invoice.invoiceNum}" class="btn preset-filled-primary-50-950 rounded-lg m-1">Make a payment record for this invoice</a>
+               {/if}
             </div>
             {#if data.customer?.email && data.customer?.emailVerified}         
                 <EmailCustomer
