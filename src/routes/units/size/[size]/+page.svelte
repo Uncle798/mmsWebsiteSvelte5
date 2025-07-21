@@ -147,7 +147,7 @@
                Loading addresses
             </div>
          {:then addresses}
-            <div class="grid grid-cols-1 gap-3 m-1 sm:m-2 mt-30 sm:mt-22">
+            <div class="grid grid-cols-1 gap-3 m-1 sm:m-2 mt-32 sm:mt-22">
                {#each units as unit}
                {@const lease = leases.find((lease) => lease.unitNum === unit.num)}
                {@const customer = customers.find((customer)=> customer.id === lease?.customerId)}
