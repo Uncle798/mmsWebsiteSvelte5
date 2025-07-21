@@ -107,7 +107,7 @@
    {/snippet}
    </Modal>
    {#if data.user?.employee}
-      <div class="flex fixed bg-tertiary-50-950 rounded-b-lg z-40 w-full top-12 sm:top-9">
+      <div class="flex fixed bg-tertiary-50-950 rounded-b-lg z-40 w-full top-11 sm:top-8">
          <span class="m-1">Available: {availableUnits.length} of {data.unitCount}</span>
          <span class="m-1">Percentage: {Math.round((availableUnits.length*100)/data.unitCount)}%</span>
          <span class="m-1">Open revenue per month: {currencyFormatter.format(lostRevenue(availableUnits))}</span>
