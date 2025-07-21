@@ -51,9 +51,9 @@
    })
    const numberFormatter = new Intl.NumberFormat('en-US');
    let slicedSource = $derived((paymentRecords:PaymentRecord[]) => paymentRecords.slice((pageNum -1) * size, pageNum*size));
-   let searchedPayments = $derived((paymentRecords:PaymentRecord[]) => {
-      return paymentRecords.filter((paymentRecord) => paymentRecord.paymentNumber.toString().includes(search)) || paymentRecords.filter((paymentRecord) => paymentRecord.paymentNotes!.includes(search));
-   })
+   let searchedPayments = $derived((paymentRecords:PaymentRecord[]) => 
+      paymentRecords.filter((paymentRecord) => paymentRecord.paymentNumber.toString().includes(search))
+   )
    let sortedByDate = $derived((paymentRecords:PaymentRecord[]) => paymentRecords.sort((a,b) => {
       if(a.paymentCreated > b.paymentCreated){
          if(sortBy){
