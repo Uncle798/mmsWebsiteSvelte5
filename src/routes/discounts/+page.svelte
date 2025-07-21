@@ -28,7 +28,7 @@
    })
 </script>
 <Header title="Discounts" />
-<div class="fixed top-9 w-screen bg-tertiary-50-950 rounded-b-lg">
+<div class="fixed top-12 sm:top-9 w-screen bg-tertiary-50-950 rounded-b-lg">
    <Revenue amount={totalDiscounted(data.discountedLeases)} label='Total discounts' />
 </div>
 <ExplainerModal

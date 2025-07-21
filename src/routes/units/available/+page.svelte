@@ -76,7 +76,7 @@
    <Modal
       open={searchDrawerOpen}
       onOpenChange={(event)=>(searchDrawerOpen = event.open)}
-      triggerBase='btn preset-filled-primary-50-950 rounded-lg fixed top-0 right-0 z-50'
+      triggerBase='btn preset-filled-primary-50-950 rounded-lg fixed top-0 right-0 z-50 h-12 sm:h-auto'
       contentBase='bg-surface-100-900 h-[120px] w-screen rounded-b-lg'
       positionerJustify=''
       positionerAlign=''
@@ -107,7 +107,7 @@
    {/snippet}
    </Modal>
    {#if data.user?.employee}
-      <div class="flex fixed bg-tertiary-50-950 rounded-b-lg z-40 w-full top-9">
+      <div class="flex fixed bg-tertiary-50-950 rounded-b-lg z-40 w-full top-12 sm:top-9">
          <span class="m-1">Available: {availableUnits.length} of {data.unitCount}</span>
          <span class="m-1">Percentage: {Math.round((availableUnits.length*100)/data.unitCount)}%</span>
          <span class="m-1">Open revenue per month: {currencyFormatter.format(lostRevenue(availableUnits))}</span>

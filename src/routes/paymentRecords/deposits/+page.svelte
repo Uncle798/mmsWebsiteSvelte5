@@ -97,7 +97,7 @@
          <Modal
             open={searchDrawerOpen}
             onOpenChange={(event)=>(searchDrawerOpen = event.open)}
-            triggerBase='btn preset-filled-primary-50-950 rounded-lg fixed top-0 right-0 z-50'
+            triggerBase='btn preset-filled-primary-50-950 rounded-lg fixed top-0 right-0 z-50 h-12 sm:h-auto'
             contentBase='bg-surface-100-900 h-[340px] w-screen rounded-lg'
             positionerJustify=''
             positionerAlign=''

@@ -80,7 +80,7 @@
                <Modal
                   open={searchDrawerOpen}
                   onOpenChange={(e) => searchDrawerOpen = e.open}
-                  triggerBase='btn preset-filled-primary-50-950 rounded-lg fixed top-0 right-3 z-50'
+                  triggerBase='btn preset-filled-primary-50-950 rounded-lg fixed top-0 right-0 z-50 h-12 sm:h-auto'
                   contentBase='bg-surface-100-900 h-[400px] w-screen rounded-lg'
                   positionerJustify=''
                   positionerAlign=''
@@ -113,9 +113,9 @@
                <Revenue 
                   label="Total refunds" 
                   amount={totalRevenue(searchRefunds(dateSearchRefunds(refunds)))}
-                  classes='bg-tertiary-50-950 w-full rounded-b-lg fixed top-8 p-2 z-40'	
+                  classes='bg-tertiary-50-950 w-full rounded-b-lg fixed top-12 sm:top-9 p-2 z-40'	
                />
-               <div class="mt-24 sm:mt-20 mx-1 sm:mx-2">
+               <div class="mt-22 sm:mt-18 mx-1 sm:mx-2">
                   {#each slicedRefunds(searchRefunds(dateSearchRefunds(refunds))) as refund (refund.refundNumber)}
                   {@const customer = customers.find((customer) => customer.id === refund.customerId)}
                      <div class="border-2 rounded-lg border-primary-50-950 my-2"> 

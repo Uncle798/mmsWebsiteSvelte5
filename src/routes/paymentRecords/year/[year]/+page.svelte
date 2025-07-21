@@ -162,7 +162,7 @@
          </div>
       {:then addresses}         
          {#if paymentRecords.length >0}
-            <div class="bg-tertiary-50-950 w-screen rounded-b-lg fixed top-8 flex">
+            <div class="bg-tertiary-50-950 w-screen rounded-b-lg fixed sm:top-12 top-9 flex">
                <Revenue 
                   label="Total revenue" 
                   amount={totalRevenue(searchedPayments(dateSearchPayments(paymentRecords)))} 
@@ -217,7 +217,7 @@
                   }} class="anchor col-span-full mx-2">Sort by date {sortBy ? 'starting earliest' : 'starting latest'}</button>
             {/snippet}
             </Modal>
-               <div class="mt-30 sm:mt-20" in:fade={{duration:600}} out:fade={{duration:0}}>
+               <div class="mt-24 sm:mt-20" in:fade={{duration:600}} out:fade={{duration:0}}>
                   {#each slicedSource(dateSearchPayments(searchedPayments(sortedByDate(searchByUser(paymentRecords, currentUsers(customers)))))) as paymentRecord}
                   {@const customer = customers.find((customer) => customer.id === paymentRecord.customerId) }
                      <div class="rounded-lg border border-primary-50-950 grid sm:grid-cols-2 m-2">

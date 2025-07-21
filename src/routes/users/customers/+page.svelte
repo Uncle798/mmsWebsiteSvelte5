@@ -48,7 +48,7 @@
          </div>
       {:then addresses}    
          <div in:fade={{duration:600}}>
-            <Revenue label='Current monthly invoiced' amount={totalLeased(leases)} classes='fixed top-9 w-screen left-0 bg-tertiary-50-950 rounded-b-lg'/>
+            <Revenue label='Current monthly invoiced' amount={totalLeased(leases)} classes='fixed top-12 sm:top-9 w-screen left-0 bg-tertiary-50-950 rounded-b-lg'/>
             <Modal
                open={searchDrawerOpen}
                onOpenChange={(event)=>(searchDrawerOpen = event.open)}
