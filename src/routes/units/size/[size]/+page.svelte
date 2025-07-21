@@ -74,46 +74,7 @@
       <button class="btn preset-filled-primary-50-950 rounded-lg" onclick={()=>unitPricingModalOpen = false}>Close</button>
    {/snippet}
 </Modal>
-<Modal 
-   open={searchDrawerOpen}
-   onOpenChange={(event)=>(searchDrawerOpen = event.open)}
-   triggerBase='btn preset-filled-primary-50-950 rounded-lg fixed top-0 right-0 z-50'
-   contentBase='bg-surface-100-900 h-[170px] w-screen rounded-b-lg'
-   positionerJustify=''
-   positionerAlign=''
-   positionerPadding=''
-   transitionsPositionerIn={{y:-170, duration: 600}}
-   transitionsPositionerOut={{y:-170, duration: 600}}
-   modal={false}
->
-   {#snippet trigger()}
-      <SearchIcon aria-label='search' />
-   {/snippet}
-   {#snippet content()}   
-      <button onclick={()=>searchDrawerOpen=false} class='btn preset-filled-primary-50-950 rounded-lg m-1 absolute top-0 right-0'><PanelTopClose aria-label='Close'/></button>
-      <div class="mx-2 mt-11">
-         <Combobox
-            data={comboboxData}
-            label='Select Size'
-            value={selectedSize}
-            onValueChange={(event) =>{
-               if(event.value[0] === 'all'){
-                  if(browser){
-                     goto('/units')
-                  }
-               }
-               if(browser){
-                  goto(`/units/size/${event.value[0]}`)
-               }
-            }}
-            positionerBase=''
-            positionerClasses='overflow-auto h-24 small:h-44 tall:h-96 grande:h-128 venti:h-auto'
-            openOnClick={true}
-         />
-         <button class="btn preset-filled-primary-50-950 rounded-lg mt-5" onclick={()=>openModal(currentOldPrice)}>Change All {data.size.replace(/^0+/gm, '').replace(/x0/gm,'x')} prices</button>
-      </div>
-   {/snippet}
-</Modal>
+
 
 {#await data.units}
    <div class="relative m-1 sm:m-2 mt-14 sm:mt-10">
@@ -125,8 +86,48 @@
       Loading leases...
    </div>
    {:then leases} 
+      <Modal 
+         open={searchDrawerOpen}
+         onOpenChange={(event)=>(searchDrawerOpen = event.open)}
+         triggerBase='btn preset-filled-primary-50-950 rounded-lg fixed top-0 right-0 z-50 h-12 sm:h-8'
+         contentBase='bg-surface-100-900 h-[170px] w-screen rounded-b-lg'
+         positionerJustify=''
+         positionerAlign=''
+         positionerPadding=''
+         transitionsPositionerIn={{y:-170, duration: 600}}
+         transitionsPositionerOut={{y:-170, duration: 600}}
+         modal={false}
+      >
+         {#snippet trigger()}
+            <SearchIcon aria-label='search' />
+         {/snippet}
+         {#snippet content()}   
+            <button onclick={()=>searchDrawerOpen=false} class='btn preset-filled-primary-50-950 rounded-lg m-1 absolute top-0 right-0'><PanelTopClose aria-label='Close'/></button>
+            <div class="mx-2 mt-11">
+               <Combobox
+                  data={comboboxData}
+                  label='Select Size'
+                  value={selectedSize}
+                  onValueChange={(event) =>{
+                     if(event.value[0] === 'all'){
+                        if(browser){
+                           goto('/units')
+                        }
+                     }
+                     if(browser){
+                        goto(`/units/size/${event.value[0]}`)
+                     }
+                  }}
+                  positionerBase=''
+                  positionerClasses='overflow-auto h-24 small:h-44 tall:h-96 grande:h-128 venti:h-auto'
+                  openOnClick={true}
+               />
+               <button class="btn preset-filled-primary-50-950 rounded-lg mt-5" onclick={()=>openModal(units[0].advertisedPrice)}>Change All {data.size.replace(/^0+/gm, '').replace(/x0/gm,'x')} prices</button>
+            </div>
+         {/snippet}
+      </Modal>
       {#if units.length > 0 }
-         <div class="flex fixed top-9 bg-tertiary-50-950 rounded-b-lg w-screen">
+         <div class="flex fixed top-12 sm:top-9 bg-tertiary-50-950 rounded-b-lg w-screen">
             <Revenue amount={currentRevenue(units)} label='Current revenue from {data.size.replace(/^0+/gm, '').replace(/x0/gm,'x')} units' />
                <span class="mx-1 sm:mx-2 w-1/3">Available: {availableUnits(units, leases).length} of {units.length} ({Math.round((availableUnits(units, leases).length*100)/units.length)}%)</span>
                <span class="mx-1 sm:mx-2 w-1/3">Open revenue: {currencyFormatter.format(lostRevenue(availableUnits(units, leases)))}</span>
