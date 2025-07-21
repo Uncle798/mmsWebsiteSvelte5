@@ -14,7 +14,7 @@
 	import { fade } from 'svelte/transition';
 	import { Combobox, Modal } from '@skeletonlabs/skeleton-svelte';
 	import EmailCustomer from '$lib/emailCustomer.svelte';
-	import { SearchIcon } from 'lucide-svelte';
+	import { SearchIcon, PanelTopClose } from 'lucide-svelte';
 	import { goto } from '$app/navigation';
 	let { data }: { data: PageData } = $props();
 	let size = $state(25);
@@ -122,23 +122,10 @@
 			</div>
 			<Placeholder numCols={2} numRows={size} heightClass='h-44'/>
 		{:then addresses}
-		<div class=" bg-tertiary-50-950 w-full rounded-b-lg fixed top-9 left-0 flex flex-col sm:flex-row z-50">
-			<Revenue 
-				label="Total refunds" 
-				amount={totalRevenue(searchRefunds(dateSearchRefunds(refunds)))}
-				classes=''	
-			/>
-			<Revenue 
-				label="Refunds not deposits" 
-				amount={refundsNotDeposits(searchRefunds(dateSearchRefunds(refunds)))}
-				classes=''	
-			/>
-
-		</div>
-		<Modal
+				<Modal
 			open={searchDrawerOpen}
 			onOpenChange={(event)=>(searchDrawerOpen = event.open)}
-			triggerBase='btn preset-filled-primary-50-950 rounded-lg fixed top-0 right-3 z-50'
+			triggerBase='btn preset-filled-primary-50-950 rounded-lg fixed top-0 right-0 z-50 h-12 sm:h-auto'
 			contentBase='bg-surface-100-900 h-[400px] w-screen rounded-lg'
 			positionerJustify=''
 			positionerAlign=''
@@ -151,28 +138,41 @@
 				<SearchIcon aria-label='Search' />
 			{/snippet}
 			{#snippet content()}
-					<Search
+				<button onclick={()=>searchDrawerOpen=false} class='btn preset-filled-primary-50-950 rounded-lg m-1 absolute top-0 right-0'><PanelTopClose aria-label='Close'/></button>
+				<Search
 					bind:search={search}
 					searchType="refund records" 
 					data={data.searchForm} 
 					classes='p-2 '	
-					/>
-					<Search
+				/>
+				<Search
 					bind:search={nameSearch} 
 					searchType="user name" 
 					data={data.searchForm} 
 					classes='p-2 '	
-					/>
-					<DateSearch 
+				/>
+				<DateSearch 
 					bind:endDate 
 					bind:startDate 
 					data={data.dateSearchForm} 
 					{minDate} 
 					{maxDate} 
 					classes='p-2'	
-					/>
+				/>
 			{/snippet}
 		</Modal>
+		<div class=" bg-tertiary-50-950 w-full rounded-b-lg fixed top-12 sm:top-9 left-0 flex flex-col sm:flex-row z-50">
+			<Revenue 
+				label="Total refunds" 
+				amount={totalRevenue(searchRefunds(dateSearchRefunds(refunds)))}
+				classes=''	
+			/>
+			<Revenue 
+				label="Refunds not deposits" 
+				amount={refundsNotDeposits(searchRefunds(dateSearchRefunds(refunds)))}
+				classes=''	
+			/>
+		</div>
 			<div class="grid grid-cols-1 mx-2 mt-24 sm:mt-18 gap-3 shadow-lg" in:fade={{duration:600}}>
 				{#each slicedRefunds(searchRefunds(dateSearchRefunds(searchByUser(refunds, currentUsers(customers))))) as refund (refund.refundNumber)}
 				{@const customer = customers.find((customer) => customer.id === refund.customerId)}
