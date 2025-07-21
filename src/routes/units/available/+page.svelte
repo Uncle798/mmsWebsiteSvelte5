@@ -60,9 +60,7 @@
          return units;
       } else if(selectedSize[0] !== ''){
          return units.filter((unit) => {
-            console.log('unit.size', unit.size);
-            console.log('selectedSize[0]', selectedSize[0])
-            unit.size === selectedSize[0]
+            return unit.size === selectedSize[0]
          });
       } else {
          return units;
