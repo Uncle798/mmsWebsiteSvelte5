@@ -12,8 +12,10 @@
 	import Placeholder from '$lib/displayComponents/Placeholder.svelte';
 	import Address from '$lib/displayComponents/AddressEmployee.svelte';
 	import { fade } from 'svelte/transition';
-	import { Modal } from '@skeletonlabs/skeleton-svelte';
+	import { Combobox, Modal } from '@skeletonlabs/skeleton-svelte';
 	import EmailCustomer from '$lib/emailCustomer.svelte';
+	import { SearchIcon } from 'lucide-svelte';
+	import { goto } from '$app/navigation';
 	let { data }: { data: PageData } = $props();
 	let size = $state(25);
 	let pageNum = $state(1);
@@ -79,6 +81,14 @@
 		return returnedRefunds;
 	})
 	let searchDrawerOpen = $state(false);
+	interface ComboboxData {
+      label: string;
+      value: string;
+   }
+   let yearComboboxData:ComboboxData[] = []
+   for(const year of data.years){
+      yearComboboxData.push({label:year.toString(), value:year.toString()})
+   }
 </script>
 
 <Header title="All Refunds" />
@@ -86,10 +96,16 @@
 	<div class="mt-14 sm:mt-10">
 		Loading {numberFormatter.format(data.refundCount)} refunds...
 		{#if data.years}
-			or select year:
-			{#each data.years as year}
-				<a href="/refundRecords/year/{year}" class="btn">{year.toString()},</a>
-			{/each}
+			<Combobox
+				data={yearComboboxData}
+				label='Select year'
+				placeholder='Select year...'
+				openOnClick={true}
+				onValueChange={(details) => {
+					goto(`/refundRecords/year/${details.value[0]}`)
+				}}
+				zIndex='50'
+			/>
 		{/if}
 	</div>
 		<Placeholder numCols={2} numRows={size} heightClass='h-44'/>
@@ -106,7 +122,7 @@
 			</div>
 			<Placeholder numCols={2} numRows={size} heightClass='h-44'/>
 		{:then addresses}
-		<div class=" bg-tertiary-50-950 w-full rounded-b-lg fixed top-11 left-0 flex flex-col sm:flex-row z-50">
+		<div class=" bg-tertiary-50-950 w-full rounded-b-lg fixed top-9 left-0 flex flex-col sm:flex-row z-50">
 			<Revenue 
 				label="Total refunds" 
 				amount={totalRevenue(searchRefunds(dateSearchRefunds(refunds)))}
@@ -131,8 +147,10 @@
 			transitionsPositionerOut={{y:-400, duration: 600}}
 			modal={false}
 		>
+			{#snippet trigger()}
+				<SearchIcon aria-label='Search' />
+			{/snippet}
 			{#snippet content()}
-				<div class="flex" >
 					<Search
 					bind:search={search}
 					searchType="refund records" 
@@ -153,8 +171,6 @@
 					{maxDate} 
 					classes='p-2'	
 					/>
-				</div>
-				
 			{/snippet}
 		</Modal>
 			<div class="grid grid-cols-1 mx-2 mt-24 sm:mt-18 gap-3 shadow-lg" in:fade={{duration:600}}>
@@ -169,16 +185,16 @@
 								{#if address}
 									<Address {address} classes='mx-2'/>
 								{/if}
+								{#if customer.email && customer.emailVerified}
+									<EmailCustomer
+										emailAddress={customer.email}
+										recordNum={refund.refundNumber}
+										apiEndPoint='/api/sendRefund'
+										buttonText='Send Refund email'
+										classes='mx-2'
+									/>
+								{/if}
 							</div>
-							{#if customer.email && customer.emailVerified}
-								<EmailCustomer
-									emailAddress={customer.email}
-									recordNum={refund.refundNumber}
-									apiEndPoint='/api/sendRefund'
-									buttonText='Send Refund email'
-									classes='mx-2'
-								/>
-							{/if}
 						{/if}
 					</div>
 				{/each}
