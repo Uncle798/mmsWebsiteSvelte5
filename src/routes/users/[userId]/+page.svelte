@@ -71,12 +71,14 @@
             data={data.emailChangeForm}
             bind:emailModalOpen={emailChangeModalOpen}
          />
+         <button class="btn preset-filled-primary-50-950" onclick={()=>emailChangeModalOpen=false}>Close</button>
+         <button class="btn preset-filled-primary-50-950" onclick={()=>emailChangeModalOpen=false}>Close</button>
       {/snippet}
    </Modal>
    {#if !data.dbUser.emailVerified}      
       <Modal
          open={emailVerificationModalOpen}
-         onOpenChange={(e) => emailChangeModalOpen = e.open}
+         onOpenChange={(e) => emailVerificationModalOpen = e.open}
          triggerBase="btn preset-filled-primary-50-950 rounded-lg m-2"
          contentBase="card bg-surface-400-600 p-4 space-y-4 shadow-xl max-w-(--breakpoint-sm)"
          backdropClasses="backdrop-blur-xs"
@@ -92,6 +94,7 @@
                bind:emailVerificationModalOpen={emailVerificationModalOpen}
                redirect='false'
             />
+         <button class="btn preset-filled-primary-50-950" onclick={()=>emailVerificationModalOpen=false}>Close</button>
          {/snippet}
       </Modal> 
    {/if}
