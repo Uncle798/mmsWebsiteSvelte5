@@ -55,6 +55,7 @@
                      apiEndPoint='/api/sendInvoice'
                      emailAddress={data.customer.email}
                      buttonText='Send invoice'
+                     classes='m-1 sm:m-2'
                   />
                {/if}
          </div>
