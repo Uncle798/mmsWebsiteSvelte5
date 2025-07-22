@@ -12,16 +12,17 @@
    import type { Invoice, PaymentRecord } from '@prisma/client';
 	import RefundRecordDisplay from '$lib/displayComponents/RefundRecordEmployee.svelte';
 	import Pagination from '$lib/displayComponents/Pagination.svelte';
+	import EmailChangeForm from '$lib/forms/EmailChangeForm.svelte';
+	import EmailVerificationForm from '$lib/forms/EmailVerificationForm.svelte';
    let { data }: { data: PageData } = $props();
    let addressModalOpen = $state(false);
    let leaseEndModalOpen = $state(false);
-   let search = $state('')
+   let emailChangeModalOpen = $state(false);
+   let emailVerificationModalOpen = $state(false);
    let pageNum = $state(1);
    let size = $state(5);
    const currencyFormatter = new Intl.NumberFormat('en-US', {style:'currency', currency:'USD'});
-   let slicedPayments = $derived((paymentRecords:PaymentRecord[]) => paymentRecords.slice((pageNum -1) * size, pageNum*size));
    const slicedInvoices = $derived((invoices:Invoice[]) => invoices.slice((pageNum - 1) * size, pageNum * size));
-   let searchedPayments = $derived((paymentRecords:PaymentRecord[]) => paymentRecords.filter((paymentRecord) => paymentRecord.paymentNumber.toString().includes(search) ))
    const derivedTotalInvoiced = $derived((invoices:Invoice[]) => {
       let total = 0;
       for(const invoice of invoices){
@@ -54,6 +55,48 @@
 {#if data.dbUser}
    <Header title='{data.dbUser.givenName} {data.dbUser.familyName}' />
    <UserEmployee user={data.dbUser} classes='mx-2 mt-14 sm:mt-10' />
+   {#if data.dbUser.emailVerified}      
+      <Modal
+         open={emailChangeModalOpen}
+         onOpenChange={(e)=> emailChangeModalOpen = e.open}
+         triggerBase="btn preset-filled-primary-50-950 rounded-lg m-2"
+         contentBase="card bg-surface-400-600 p-4 space-y-4 shadow-xl max-w-(--breakpoint-sm)"
+         backdropClasses="backdrop-blur-xs"
+         modal={true}
+      >
+         {#snippet trigger()}
+            Change Email Address
+         {/snippet}
+         {#snippet content()}
+            <EmailChangeForm
+               data={data.emailChangeForm}
+               bind:emailModalOpen={emailChangeModalOpen}
+            />
+         {/snippet}
+      </Modal>
+   {:else}
+      <Modal
+         open={emailVerificationModalOpen}
+         onOpenChange={(e)=> emailChangeModalOpen = e.open}
+         triggerBase="btn preset-filled-primary-50-950 rounded-lg m-2"
+         contentBase="card bg-surface-400-600 p-4 space-y-4 shadow-xl max-w-(--breakpoint-sm)"
+         backdropClasses="backdrop-blur-xs"
+         modal={true}
+      >
+         {#snippet trigger()}
+            Verify Email Address
+         {/snippet}
+         {#snippet content()}
+            <EmailVerificationForm
+               data={data.emailVerificationForm}
+               userId={data.dbUser.id}
+               bind:emailVerificationModalOpen={emailVerificationModalOpen}
+               redirect='false'
+            />
+         {/snippet}
+      </Modal>
+
+   {/if}
 {:else}
 ...loading user
 {/if}
