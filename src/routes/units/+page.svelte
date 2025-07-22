@@ -160,9 +160,9 @@
 									<div class="flex flex-col">
 										{#if customer}
 										{@const address = addresses.find((address) => address.userId === customer.id)}
-											<UserEmployee user={customer} classes='truncate'/>
+											<UserEmployee user={customer} classes='truncate mx-1 sm:mx-2'/>
 											{#if address}
-												<Address {address} classes='truncate' />
+												<Address {address} classes='truncate mx-1 sm:mx-2' />
 											{/if}
 										{/if}
 									</div>
@@ -173,7 +173,7 @@
 							</div>
 						{/each}
 					</div>
-            	<Pagination pageNum={pageNum} size={size} array={filteredUnits(units)} label='units'/>
+            	<Pagination pageNum={pageNum} size={size} array={filteredUnits(searchedUnits(units))} label='units'/>
 					<Modal
 						open={modalOpen}
 						onOpenChange={(e) => modalOpen = e.open}

@@ -20,13 +20,9 @@
 
    let { form, message, errors, constraints, enhance, delayed, timeout} = superForm(data, {
       id:unit.num.toString(),
-      multipleSubmits: 'allow',
       onUpdated(){
          unitNotesFormModalOpen=false;
       },
-      warnings: {
-         duplicateId: false
-      } 
    })
    onMount(()=>{
       $form.notes = unit.notes
