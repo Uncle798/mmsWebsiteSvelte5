@@ -45,7 +45,7 @@
       if(paymentRecords.length > 0){
          startDate = dayjs.utc(paymentRecords[0].paymentCreated).startOf('year').toDate();
          minDate = startDate;
-         endDate = dayjs.utc(paymentRecords[paymentRecords.length-1].paymentCreated).endOf('year').toDate();
+         endDate = new Date();
          maxDate = endDate;
       }
       res(paymentRecords);
