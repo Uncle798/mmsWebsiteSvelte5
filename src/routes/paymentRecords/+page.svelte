@@ -18,6 +18,7 @@
    import { goto } from '$app/navigation';
 	import { SearchIcon, PanelTopCloseIcon } from 'lucide-svelte';
 	import EmailCustomer from '$lib/emailCustomer.svelte';
+	import { returns } from 'valibot';
    dayjs.extend(utc)
    let { data }: { data: PageData } = $props();
    let pageNum = $state(1);
@@ -53,7 +54,6 @@
    let slicedSource = $derived((paymentRecords:PaymentRecord[]) => paymentRecords.slice((pageNum -1) * size, pageNum*size));
    let searchedPayments = $derived((paymentRecords:PaymentRecord[]) => {
       const returnedPayments = paymentRecords.filter((paymentRecord) => paymentRecord.paymentNumber.toString().includes(search))
-      console.log('returnedPayments', returnedPayments);
       return returnedPayments;
    })
    let sortedByDate = $derived((paymentRecords:PaymentRecord[]) => paymentRecords.sort((a,b) => {
@@ -71,12 +71,16 @@
       }
       return 0
    }))
-   let dateSearchPayments = $derived((paymentRecords:PaymentRecord[]) => paymentRecords.filter((paymentRecord) => {
-      if(!startDate || !endDate){
-         return paymentRecord
-      }
-      return paymentRecord.paymentCreated >= startDate && paymentRecord.paymentCreated <= endDate;
-   }))
+   let dateSearchPayments = $derived((paymentRecords:PaymentRecord[]) => {
+      const returnedPayments = paymentRecords.filter((paymentRecord) => {
+         if(!startDate || !endDate){
+            return paymentRecord
+         }
+         return paymentRecord.paymentCreated >= startDate && paymentRecord.paymentCreated <= endDate;
+      })
+      console.log('dateSearchedPayments', returnedPayments);
+      return returnedPayments;
+   })
    let nameSearch = $state('');
    let currentUsers = $derived((users:User[]) => users.filter((user) => {
       return user.givenName?.toLowerCase().includes(nameSearch.toLowerCase()) 
@@ -163,7 +167,7 @@
          </div>
       {:then addresses}         
          {#if paymentRecords.length >0}
-            <div class="bg-tertiary-50-950 w-screen rounded-b-lg fixed top-12 sm:top-9 flex">
+            <div class="bg-tertiary-50-950 w-screen rounded-b-lg fixed top-11 sm:top-9 p-2 flex">
                <Revenue 
                   label="Total revenue" 
                   amount={totalRevenue(searchedPayments(searchByUser(paymentRecords, currentUsers(customers))))} 
