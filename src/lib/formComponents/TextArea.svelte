@@ -31,9 +31,7 @@
          {...constraints}
          {...others}
          
-      >
-         {value}
-      </textarea>
+      >{value}</textarea>
    </label>
    {#if errors}<span class="invalid">{errors}</span>{/if}
 </div>
