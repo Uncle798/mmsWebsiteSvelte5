@@ -79,7 +79,7 @@
       })
    }
    let leaseSelected = $state(false);
-   let invoiceNotesTooltipOpen = $state(false);
+   let invoiceNotesTooltipOpen = $state(true);
    let registerFormModalOpen = $state(false);
 </script>
 <Modal
@@ -175,25 +175,26 @@
                <UserEmployee user={customer} classes='m-2' />
             {/if}
          </div>
-         <Tooltip
-            open={invoiceNotesTooltipOpen}
-            onOpenChange={(e) => invoiceNotesTooltipOpen = e.open}
-            positioning={{placement: 'top-end'}}
-            contentBase="card preset-filled p-2"
-            openDelay={200}
-            closeDelay={2000}
-            zIndex='30'
-         >
-            {#snippet trigger()}
-               <Info aria-label='Invoice Notes tooltip' size={15} />
-            {/snippet}
-            {#snippet content()}
-               Invoice notes are the place to store information for you and your customer. MMS has defaults but those can be edited, and we can change the defaults.
-            {/snippet}
-         </Tooltip>
          <div class="">
             <label class="label ">
-                  <span class="label-text">Invoice notes</span>
+               <span class="label-text">Invoice notes</span>
+               <Tooltip
+                  open={invoiceNotesTooltipOpen}
+                  onOpenChange={(e) => invoiceNotesTooltipOpen = e.open}
+                  positioning={{placement: 'top-end'}}
+                  contentBase="card preset-filled p-2"
+                  openDelay={200}
+                  closeDelay={2000}
+                  zIndex='30'
+                  arrow={true}
+               >
+                  {#snippet trigger()}
+                     <Info aria-label='Invoice Notes tooltip' size={15} />
+                  {/snippet}
+                  {#snippet content()}
+                     Invoice notes are the place to store information for you and your customer. MMS has defaults but those can be edited, and we can change the defaults.
+                  {/snippet}
+               </Tooltip>
                <textarea
                   class="input rounded-none h-auto"
                   rows=3
