@@ -173,7 +173,7 @@
 							</div>
 						{/each}
 					</div>
-            	<Pagination pageNum={pageNum} size={size} array={filteredUnits(searchedUnits(units))} label='units'/>
+            	<Pagination bind:pageNum={pageNum} bind:size={size} array={filteredUnits(searchedUnits(units))} label='units'/>
 					<Modal
 						open={modalOpen}
 						onOpenChange={(e) => modalOpen = e.open}
