@@ -163,7 +163,7 @@
                         <Search data={data.searchForm} bind:search={nameSearch} searchType='Customer' classes='m-1 sm:m-2 '/>
                         <DateSearch data={data.dateSearchForm} bind:startDate={startDate} bind:endDate={endDate} {minDate} {maxDate} classes='w-1/2 mb-1 sm:mb-2 mx-1 sm:mx-2'/>
                   </div>
-                  <button class="btn preset-filled-primary-50-950" onclick={()=> {
+                  <button class="btn preset-filled-primary-50-950 m-1 sm:m-2" onclick={()=> {
                      sortBy = !sortBy;
                      searchDrawerOpen = false;
                   }}>
@@ -172,7 +172,7 @@
                {/snippet}
             </Modal>
             <div class="grid grid-cols-1 sm:m-2 m-1 gap-2 mt-28 sm:mt-20" in:fade={{duration:600}} out:fade={{duration:0}}>
-               {#each slicedInvoices(dateSearchedInvoices(searchedInvoices(searchByUser(invoices, currentUsers(customers))))) as invoice}  
+               {#each slicedInvoices(sortedByDate(dateSearchedInvoices(searchedInvoices(searchByUser(invoices, currentUsers(customers)))))) as invoice}  
                {@const customer = customers.find((customer) => customer.id === invoice.customerId)}
                   <div class="sm:grid sm:grid-cols-2 border-2 border-primary-50-950 rounded-lg ">
                         <InvoiceEmployee {invoice} classes=' px-2' />
