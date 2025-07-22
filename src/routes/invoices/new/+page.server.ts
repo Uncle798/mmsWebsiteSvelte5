@@ -14,7 +14,7 @@ export const load = (async (event) => {
    const emailVerificationForm = await superValidate(valibot(emailVerificationFormSchema));
    const userId = event.url.searchParams.get('userId');
    if(userId){
-      const customer = await prisma.user.findMany({
+      const customer = await prisma.user.findUnique({
          where: {
             id: userId
          }

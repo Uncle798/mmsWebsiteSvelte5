@@ -2,38 +2,45 @@
    import FormMessage from "$lib/formComponents/FormMessage.svelte";
 	import FormSubmitWithProgress from "$lib/formComponents/FormSubmitWithProgress.svelte";
 	import NumberInput from "$lib/formComponents/NumberInput.svelte";
-   import type { NewInvoiceFormSchema, } from "$lib/formSchemas/schemas";
+   import type { EmailVerificationFormSchema, NewInvoiceFormSchema, RegisterFormSchema, } from "$lib/formSchemas/schemas";
 	import type { Lease, User } from "@prisma/client";
 	import type { SuperValidated, Infer } from "sveltekit-superforms";
    import { superForm } from "sveltekit-superforms";
-   import { Combobox, Switch, } from "@skeletonlabs/skeleton-svelte";
+   import { Combobox, Modal, Switch, Tooltip, } from "@skeletonlabs/skeleton-svelte";
 	import dayjs from "dayjs";
 	import DateInput from "$lib/formComponents/DateInput.svelte";
 	import { onMount } from "svelte";
 	import Header from "$lib/Header.svelte";
 	import UserEmployee from "$lib/displayComponents/UserEmployee.svelte";
 	import LeaseEmployee from "$lib/displayComponents/LeaseEmployee.svelte";
-	import ExplainerModal from "$lib/demo/ExplainerModal.svelte";
+   import RegisterForm from "./RegisterForm.svelte";
+   import EmailVerificationForm from "./EmailVerificationForm.svelte";
+	import { Info } from "lucide-svelte";
 
    interface Props {
       data: SuperValidated<Infer<NewInvoiceFormSchema>>;
+      registerFormData: SuperValidated<Infer<RegisterFormSchema>>;
+      emailVerificationFormData: SuperValidated<Infer<EmailVerificationFormSchema>>;
       employeeId: string | undefined;
-      customers: User[];
+      customers?: User[];
       leases: Lease[];
-      defaultCustomer?: string;
+      defaultCustomer?: User;
       classes?: string;
    }
-   let { data, employeeId, customers, leases, defaultCustomer='', classes }:Props = $props();
+   let { data, registerFormData, emailVerificationFormData, employeeId, customers, leases, defaultCustomer, classes }:Props = $props();
    let { form, errors, message, constraints, enhance, delayed, timeout} = superForm(data, {
       onSubmit({formData}) {
          formData.set('customerId', selectedCustomer[0])
          formData.set('leaseId', selectedLease[0])
       },
    });
+   let selectedCustomer = $state([''])
    onMount(()=> {
       $form.invoiceDue = new Date()
+      if(defaultCustomer){
+         selectedCustomer[0] = defaultCustomer.id
+      }
    })
-   let selectedCustomer = $state([defaultCustomer]);
    let selectedLease = $state(['']);
    interface ComboBoxData {
       label: string;
@@ -42,7 +49,6 @@
    const customerComboBoxData:ComboBoxData[] = [];
    const customerLeaseComboBoxData:ComboBoxData[] = $derived.by(() => {
       const customerLeases = leases.filter((lease) => lease.customerId === selectedCustomer[0]);
-      $inspect(customerLeases)
       const data:ComboBoxData[]=[];
       customerLeases.forEach((lease) =>{
          const label = lease.unitNum.replace(/^0+/gm,'');
@@ -52,15 +58,17 @@
       return data
    })
    let selectedCustomerLease = $state(['']);
-   customers.forEach((customer)=>{
-      const label = `${customer.givenName} ${customer.familyName}`;
-      const value = customer.id;
-      const datum = {
-         label,
-         value
-      }
-      customerComboBoxData.push(datum);
-   });
+   if(customers){
+      customers.forEach((customer)=>{
+         const label = `${customer.givenName} ${customer.familyName}`;
+         const value = customer.id;
+         const datum = {
+            label,
+            value
+         }
+         customerComboBoxData.push(datum);
+      });
+   }
    const leaseComboBoxData:ComboBoxData[] = [];
    for(const lease of leases){
       const label = lease.unitNum.replace(/^0+/gm, '');
@@ -71,12 +79,31 @@
       })
    }
    let leaseSelected = $state(false);
-   let explainerModalOpen = $state(false);
-   let explainerFirstTime = $state(true);
+   let invoiceNotesTooltipOpen = $state(false);
+   let registerFormModalOpen = $state(false);
 </script>
+<Modal
+   open={registerFormModalOpen}
+   onOpenChange={(e)=>registerFormModalOpen=e.open}
+   contentBase="card bg-surface-400-600 p-4 space-y-4 shadow-xl max-w-(--breakpoint-sm)"
+   backdropClasses="backdrop-blur-xs"
+>
+   {#snippet content()}
+      {#if defaultCustomer}     
+         <EmailVerificationForm data={emailVerificationFormData} userId={selectedCustomer[0]} redirect='false' bind:emailVerificationModalOpen={registerFormModalOpen}/>
+      {:else}
+         <RegisterForm data={registerFormData} registerFormModalOpen={registerFormModalOpen} formType='employee' redirectTo='invoices/new' />
+         <button class="btn preset-filled-primary-50-950 rounded-lg h-fit" onclick={()=>registerFormModalOpen=false}>Cancel</button>
+      {/if}
+   {/snippet}
+</Modal>
 
 <Header title='New Invoice' />
 <div class={classes}>
+   {#if selectedCustomer[0] === ''}
+      <button class="btn preset-filled-primary-50-950 m-1 sm:m-2" onclick={() => registerFormModalOpen = true}>Create new customer</button>
+      or, 
+   {/if}
    <FormMessage message={$message} />
    <form action="/forms/newInvoiceForm" method="POST" use:enhance>
       {#if !leaseSelected}         
@@ -136,7 +163,7 @@
          {/if}
       {/if}
       {#if leaseSelected}
-      {@const customer = customers.find((customer) => {
+      {@const customer = customers?.find((customer) => {
          return customer.id === selectedCustomer[0]
          })}
       {@const lease = leases.find((lease) => lease.leaseId === selectedLease[0])}
@@ -148,13 +175,22 @@
                <UserEmployee user={customer} classes='m-2' />
             {/if}
          </div>
-         <ExplainerModal
-            modalOpen={explainerModalOpen}
+         <Tooltip
+            open={invoiceNotesTooltipOpen}
+            onOpenChange={(e) => invoiceNotesTooltipOpen = e.open}
+            positioning={{placement: 'top-end'}}
+            contentBase="card preset-filled p-2"
+            openDelay={200}
+            closeDelay={2000}
+            zIndex='30'
          >
-            {#snippet copy()}
-               Invoice notes are your place to keep information. MMS auto generates some but they can be changed, and we can change the defaults
+            {#snippet trigger()}
+               <Info aria-label='Invoice Notes tooltip' size={15} />
             {/snippet}
-         </ExplainerModal>
+            {#snippet content()}
+               Invoice notes are the place to store information for you and your customer. MMS has defaults but those can be edited, and we can change the defaults.
+            {/snippet}
+         </Tooltip>
          <div class="">
             <label class="label ">
                   <span class="label-text">Invoice notes</span>
@@ -162,12 +198,6 @@
                   class="input rounded-none h-auto"
                   rows=3
                   name="invoiceNotes"
-                  onmouseover={()=>{
-                     if(explainerFirstTime){
-                        explainerModalOpen=true
-                        explainerFirstTime=false
-                     }
-                  }}
                   {...$constraints.invoiceNotes}
                >{$form.invoiceNotes}</textarea>
             </label>
