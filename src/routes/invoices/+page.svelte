@@ -145,12 +145,12 @@
                open={searchDrawerOpen}
                onOpenChange={(event)=>(searchDrawerOpen = event.open)}
                triggerBase='btn preset-filled-primary-50-950 rounded-lg fixed top-0 right-0 z-50 h-12 sm:h-8'
-               contentBase='bg-surface-100-900 h-[380px] w-screen rounded-lg'
+               contentBase='bg-surface-100-900 h-[390px] w-screen rounded-lg'
                positionerJustify=''
                positionerAlign=''
                positionerPadding=''
-               transitionsPositionerIn={{y:-380, duration: 600}}
-               transitionsPositionerOut={{y:-380, duration: 600}}
+               transitionsPositionerIn={{y:-390, duration: 600}}
+               transitionsPositionerOut={{y:-390, duration: 600}}
                modal={false}
             >
                {#snippet trigger()}
