@@ -72,9 +72,7 @@
       return 0
    }))
    let dateSearchPayments = $derived((paymentRecords:PaymentRecord[]) => {
-      $inspect(startDate)
-      $inspect(endDate)
-
+      console.log('startDate', startDate)
       const returnedPayments = paymentRecords.filter((paymentRecord) => {
          if(!startDate || !endDate){
             return paymentRecord
