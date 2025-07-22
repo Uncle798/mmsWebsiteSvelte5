@@ -69,6 +69,22 @@
       })
       return totalRevenue
    })
+   let sortBy = $state(false)
+   let sortedByDate = $derived((invoices:Invoice[]) => invoices.sort((a,b) => {
+      if(a.invoiceCreated > b.invoiceCreated){
+         if(sortBy){
+            return -1
+         }
+         return 1
+      }
+      if(a.invoiceCreated < b.invoiceCreated){
+         if(sortBy){
+            return 1
+         }
+         return -1
+      }
+      return 0
+   }))
    let yearSelect = $state(['']);
    interface ComboboxData {
       label: string;
@@ -129,12 +145,12 @@
                open={searchDrawerOpen}
                onOpenChange={(event)=>(searchDrawerOpen = event.open)}
                triggerBase='btn preset-filled-primary-50-950 rounded-lg fixed top-0 right-0 z-50 h-12 sm:h-8'
-               contentBase='bg-surface-100-900 h-[360px] w-screen rounded-lg'
+               contentBase='bg-surface-100-900 h-[380px] w-screen rounded-lg'
                positionerJustify=''
                positionerAlign=''
                positionerPadding=''
-               transitionsPositionerIn={{y:-360, duration: 600}}
-               transitionsPositionerOut={{y:-360, duration: 600}}
+               transitionsPositionerIn={{y:-380, duration: 600}}
+               transitionsPositionerOut={{y:-380, duration: 600}}
                modal={false}
             >
                {#snippet trigger()}
@@ -147,6 +163,12 @@
                         <Search data={data.searchForm} bind:search={nameSearch} searchType='Customer' classes='m-1 sm:m-2 '/>
                         <DateSearch data={data.dateSearchForm} bind:startDate={startDate} bind:endDate={endDate} {minDate} {maxDate} classes='w-1/2 mb-1 sm:mb-2 mx-1 sm:mx-2'/>
                   </div>
+                  <button class="btn preset-filled-primary-50-950" onclick={()=> {
+                     sortBy = !sortBy;
+                     searchDrawerOpen = false;
+                  }}>
+                     Sort by date {sortBy? 'starting earliest' : 'starting latest'}
+                  </button>
                {/snippet}
             </Modal>
             <div class="grid grid-cols-1 sm:m-2 m-1 gap-2 mt-28 sm:mt-20" in:fade={{duration:600}} out:fade={{duration:0}}>
