@@ -72,6 +72,9 @@
       return 0
    }))
    let dateSearchPayments = $derived((paymentRecords:PaymentRecord[]) => {
+      $inspect(startDate)
+      $inspect(endDate)
+
       const returnedPayments = paymentRecords.filter((paymentRecord) => {
          if(!startDate || !endDate){
             return paymentRecord
@@ -167,7 +170,7 @@
          </div>
       {:then addresses}         
          {#if paymentRecords.length >0}
-            <div class="bg-tertiary-50-950 w-screen rounded-b-lg fixed top-11 sm:top-9 p-2 flex">
+            <div class="bg-tertiary-50-950 w-screen rounded-b-lg fixed top-11 sm:top-9 p-1 flex">
                <Revenue 
                   label="Total revenue" 
                   amount={totalRevenue(searchedPayments(searchByUser(paymentRecords, currentUsers(customers))))} 
