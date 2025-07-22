@@ -72,7 +72,6 @@
             bind:emailModalOpen={emailChangeModalOpen}
          />
          <button class="btn preset-filled-primary-50-950" onclick={()=>emailChangeModalOpen=false}>Close</button>
-         <button class="btn preset-filled-primary-50-950" onclick={()=>emailChangeModalOpen=false}>Close</button>
       {/snippet}
    </Modal>
    {#if !data.dbUser.emailVerified}      
@@ -94,7 +93,6 @@
                bind:emailVerificationModalOpen={emailVerificationModalOpen}
                redirect='false'
             />
-         <button class="btn preset-filled-primary-50-950" onclick={()=>emailVerificationModalOpen=false}>Close</button>
          {/snippet}
       </Modal> 
    {/if}
