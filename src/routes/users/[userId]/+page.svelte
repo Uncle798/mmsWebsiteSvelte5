@@ -55,29 +55,28 @@
 {#if data.dbUser}
    <Header title='{data.dbUser.givenName} {data.dbUser.familyName}' />
    <UserEmployee user={data.dbUser} classes='mx-2 mt-14 sm:mt-10' />
-   {#if data.dbUser.emailVerified}      
-      <Modal
-         open={emailChangeModalOpen}
-         onOpenChange={(e)=> emailChangeModalOpen = e.open}
-         triggerBase="btn preset-filled-primary-50-950 rounded-lg m-2"
-         contentBase="card bg-surface-400-600 p-4 space-y-4 shadow-xl max-w-(--breakpoint-sm)"
-         backdropClasses="backdrop-blur-xs"
-         modal={true}
-      >
-         {#snippet trigger()}
-            Change Email Address
-         {/snippet}
-         {#snippet content()}
-            <EmailChangeForm
-               data={data.emailChangeForm}
-               bind:emailModalOpen={emailChangeModalOpen}
-            />
-         {/snippet}
-      </Modal>
-   {:else}
+   <Modal
+      open={emailChangeModalOpen}
+      onOpenChange={(e) => emailChangeModalOpen = e.open}
+      triggerBase="btn preset-filled-primary-50-950 rounded-lg m-2"
+      contentBase="card bg-surface-400-600 p-4 space-y-4 shadow-xl max-w-(--breakpoint-sm)"
+      backdropClasses="backdrop-blur-xs"
+      modal={true}
+   >
+      {#snippet trigger()}
+         Change Email Address
+      {/snippet}
+      {#snippet content()}
+         <EmailChangeForm
+            data={data.emailChangeForm}
+            bind:emailModalOpen={emailChangeModalOpen}
+         />
+      {/snippet}
+   </Modal>
+   {#if !data.dbUser.emailVerified}      
       <Modal
          open={emailVerificationModalOpen}
-         onOpenChange={(e)=> emailChangeModalOpen = e.open}
+         onOpenChange={(e) => emailChangeModalOpen = e.open}
          triggerBase="btn preset-filled-primary-50-950 rounded-lg m-2"
          contentBase="card bg-surface-400-600 p-4 space-y-4 shadow-xl max-w-(--breakpoint-sm)"
          backdropClasses="backdrop-blur-xs"
@@ -94,8 +93,7 @@
                redirect='false'
             />
          {/snippet}
-      </Modal>
-
+      </Modal> 
    {/if}
 {:else}
 ...loading user
