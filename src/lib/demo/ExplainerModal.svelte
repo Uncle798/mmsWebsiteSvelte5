@@ -15,7 +15,11 @@
    backdropClasses='backdrop-blur-lg'
 >
    {#snippet content()}
-      {@render copy()}
-      <button class="btn preset-tonal" onclick={()=>(modalOpen=false)}>Close</button>
+      <div>
+         {@render copy()}
+      </div>
+      <div>
+         <button class="btn preset-tonal" onclick={()=>(modalOpen=false)}>Close</button>
+      </div>
    {/snippet}
 </Modal>
