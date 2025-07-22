@@ -236,7 +236,7 @@
                         {#if customer}
                         {@const address = addresses.find((address)=> address.userId === customer.id)}
                            <div class="flex flex-col mx-2 mb-2">
-                              <UserEmployee user={customer} classes=''/>
+                              <UserEmployee user={customer} classes='truncate'/>
                               {#if address}
                                  <Address {address} classes=''/>
                               {/if}
