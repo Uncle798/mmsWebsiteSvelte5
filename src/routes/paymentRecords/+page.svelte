@@ -218,7 +218,7 @@
                   }} class="anchor col-span-full mx-2">Sort by date {sortBy ? 'starting earliest' : 'starting latest'}</button>
             {/snippet}
             </Modal>
-               <div class="mt-26 sm:mt-20" in:fade={{duration:600}} out:fade={{duration:0}}>
+               <div class="mt-32 sm:mt-20" in:fade={{duration:600}} out:fade={{duration:0}}>
                   {#each slicedSource(sortedByDate(searchedPayments(searchByUser(paymentRecords, currentUsers(customers))))) as paymentRecord}
                   {@const customer = customers.find((customer) => customer.id === paymentRecord.customerId) }
                      <div class="rounded-lg border border-primary-50-950 grid sm:grid-cols-2 m-2">
