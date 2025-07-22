@@ -17,9 +17,9 @@
    let slicedLeases = $derived((leases:Lease[]) => leases.slice((pageNum-1)*size, pageNum*size));
    const currentCustomers = $derived((users:User[]) => {
       const returnedUsers = users.filter((user) => {
-         return user.familyName?.includes(search) 
-         || user.givenName?.includes(search)
-         || user.organizationName?.includes(search)
+         return user.familyName?.includes(customerSearch) 
+         || user.givenName?.includes(customerSearch)
+         || user.organizationName?.includes(customerSearch)
       })
       return returnedUsers;
    })
@@ -89,13 +89,13 @@
             {/snippet}
             {#snippet content()}
                <button onclick={()=>searchDrawerOpen=false} class='btn preset-filled-primary-50-950 rounded-lg m-1 absolute top-0 right-0'><PanelTopClose aria-label='Close'/></button>
-               <Search search={search} searchType='lease id' data={data.searchForm} classes='mt-10 mx-1'/>
-               <Search search={customerSearch} searchType='customer name' data={data.searchForm} classes='mx-1' />
+               <Search bind:search={search} searchType='lease id' data={data.searchForm} classes='mt-10 mx-1'/>
+               <Search bind:search={customerSearch} searchType='customer name' data={data.searchForm} classes='mx-1' />
                <button class="btn preset-filled-primary-50-950 " onclick={() => sortBy = !sortBy}>Sort by unit number {sortBy ? 'ascending' : 'descending'}</button>
             {/snippet}
          </Modal>
          <div class="rounded-lg mt-14 sm:mt-10">
-            {#each slicedLeases(sortedByUnitNum(searchByCustomer(searchedLeases(leases), currentCustomers(customers)))) as lease}
+            {#each slicedLeases(sortedByUnitNum(searchedLeases(searchByCustomer(leases, currentCustomers(customers))))) as lease}
             {@const customer = customers.find((customer) => customer.id === lease.customerId)}
             {@const leaseAddress = addresses.find((address) => address.addressId === lease.addressId)}
                <div class="grid sm:grid-cols-2 border border-primary-50-950 m-2 rounded-lg">
