@@ -149,7 +149,7 @@
 									<button class="btn preset-filled-primary-50-950 rounded-lg mx-2 mb-2" onclick={()=> openModal('unitPricing', unit.advertisedPrice, '', unit.size)}>Change all {unit.size.replace(/^0+/gm,'').replace(/x0/gm,'x')} pricing</button>
 								</div>
 								{#if data.unitNotesForm}
-									<UnitNotesForm data={data.unitNotesForm} {unit} classes=''/>
+									<UnitNotesForm data={data.unitNotesForm} {unit} classes='mx-1 sm:mx-2'/>
 								{/if}
 								{#if lease}
 								{@const customer = customers?.find((customer) => customer.id === lease.customerId)}

@@ -4,9 +4,7 @@
 	import type { Infer, SuperValidated } from "sveltekit-superforms";
 	import FormMessage from "$lib/formComponents/FormMessage.svelte";
 	import FormSubmitWithProgress from "$lib/formComponents/FormSubmitWithProgress.svelte";
-	import TextInput from "$lib/formComponents/TextInput.svelte";
 	import { Switch } from "@skeletonlabs/skeleton-svelte";
-	import { invalidateAll } from "$app/navigation";
 	import { onMount } from "svelte";
 	import type { Unit } from "@prisma/client";
 	import TextArea from "$lib/formComponents/TextArea.svelte";
@@ -21,9 +19,7 @@
    let { data, unitNotesFormModalOpen, unit, classes }:Props = $props();
 
    let { form, message, errors, constraints, enhance, delayed, timeout} = superForm(data, {
-      onChange(event) {
-      
-      },
+      id:unit.num.toString(),
       multipleSubmits: 'allow',
       onUpdated(){
          unitNotesFormModalOpen=false;
