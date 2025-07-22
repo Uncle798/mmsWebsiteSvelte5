@@ -10,18 +10,22 @@
 	import { Modal } from '@skeletonlabs/skeleton-svelte';
 	import { SearchIcon, PanelTopClose } from 'lucide-svelte';
    let { data }: { data: PageData } = $props();
-   let search = $state('')
+   let search = $state('');
    let pageNum = $state(1);
    let size = $state(25);
    let searchedLeases = $derived((leases:Lease[]) => leases.filter((lease) => lease.leaseId.includes(search)))
    let slicedLeases = $derived((leases:Lease[]) => leases.slice((pageNum-1)*size, pageNum*size));
-   let customers = $state<User[]>();
-   const searchByCustomer = $derived((leases:Lease[]) => {
-      const filteredCustomers = customers!.filter((customer) => {
-         return customer.familyName?.includes(search) || customer.givenName?.includes(search)
+   const currentCustomers = $derived((users:User[]) => {
+      const returnedUsers = users.filter((user) => {
+         return user.familyName?.includes(search) 
+         || user.givenName?.includes(search)
+         || user.organizationName?.includes(search)
       })
+      return returnedUsers;
+   })
+   const searchByCustomer = $derived((leases:Lease[], customers:User[]) => {
       const returnedLeases:Lease[] =[];
-      for(const customer of filteredCustomers){
+      for(const customer of customers){
          const customerLeases = leases.filter((lease) => lease.customerId === customer.id)
          for(const cL of customerLeases){
             returnedLeases.push(cL)
@@ -38,6 +42,9 @@
             return -1
          }
          return 1
+      }
+      if(a.unitNum === b.unitNum){
+         return 0
       }
       if(a.unitNum < b.unitNum){
          if(sortBy){
@@ -88,7 +95,7 @@
             {/snippet}
          </Modal>
          <div class="rounded-lg mt-14 sm:mt-10">
-            {#each slicedLeases(sortedByUnitNum(searchByCustomer(searchedLeases(leases)))) as lease}
+            {#each slicedLeases(sortedByUnitNum(searchByCustomer(searchedLeases(leases), currentCustomers(customers)))) as lease}
             {@const customer = customers.find((customer) => customer.id === lease.customerId)}
             {@const leaseAddress = addresses.find((address) => address.addressId === lease.addressId)}
                <div class="grid sm:grid-cols-2 border border-primary-50-950 m-2 rounded-lg">
