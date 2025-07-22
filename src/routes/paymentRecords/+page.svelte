@@ -73,7 +73,7 @@
    }))
    let dateSearchPayments = $derived((paymentRecords:PaymentRecord[]) => paymentRecords.filter((paymentRecord) => {
       if(!startDate || !endDate){
-         return
+         return paymentRecord
       }
       return paymentRecord.paymentCreated >= startDate && paymentRecord.paymentCreated <= endDate;
    }))
@@ -219,7 +219,7 @@
             {/snippet}
             </Modal>
                <div class="mt-32 sm:mt-20" in:fade={{duration:600}} out:fade={{duration:0}}>
-                  {#each slicedSource(sortedByDate(searchedPayments(searchByUser(paymentRecords, currentUsers(customers))))) as paymentRecord}
+                  {#each slicedSource(sortedByDate(dateSearchPayments(searchedPayments(searchByUser(paymentRecords, currentUsers(customers)))))) as paymentRecord}
                   {@const customer = customers.find((customer) => customer.id === paymentRecord.customerId) }
                      <div class="rounded-lg border border-primary-50-950 grid sm:grid-cols-2 m-2">
                         <div>
