@@ -25,7 +25,6 @@
          class="input rounded-none h-auto"
          rows={rows}
          name={name}
-         bind:value={value}
          aria-invalid={errors ? 'true' : undefined}
          placeholder={placeholder}
          autocomplete={autocomplete}
