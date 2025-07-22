@@ -25,6 +25,7 @@
       },
    })
    onMount(()=>{
+      $form.unavailable = unit.unavailable;
       $form.notes = unit.notes
    })
 </script>
@@ -39,7 +40,7 @@
          name='notes'
       />
       <Switch 
-         checked={unit.unavailable}
+         checked={$form.unavailable}
          onCheckedChange={(e)=> $form.unavailable = e.checked}
          name='unavailable'  
          classes='p-4'
