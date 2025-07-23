@@ -27,11 +27,11 @@
       customers?: User[];
       invoices: Invoice[];
       leases: Lease[];
-      defaultCustomer?: User;
-      defaultInvoice?: string | null;
+      customer?: User;
+      invoiceNum?: string | null;
       classes?: string;
    }
-   let { data, employeeId, customers, invoices,  invoiceForm, registerForm, emailVerificationFormData, leases, defaultCustomer, defaultInvoice, classes, }:Props = $props();
+   let { data, employeeId, customers, invoices,  invoiceForm, registerForm, emailVerificationFormData, leases, customer, invoiceNum, classes, }:Props = $props();
    let { form, errors, message, constraints, enhance, delayed, timeout} = superForm(data, {
       onSubmit({formData}) {
          formData.set('customerId', selectedCustomer[0]);
@@ -40,7 +40,7 @@
       },
    });
    let selectedCustomer = $state<string[]>(['']);
-   let selectedInvoice = $state<string[]>([defaultInvoice ? defaultInvoice : ''])
+   let selectedInvoice = $state<string[]>([invoiceNum ? invoiceNum : ''])
    interface ComboBoxData {
       label: string;
       value: string;
@@ -60,16 +60,17 @@
    let invoiceFormOpen=$state(false);
    let invoiceSelected=$state(false);
    onMount(()=>{
-      if(defaultInvoice){
-         const invoice = invoices.find((invoice) => invoice.invoiceNum.toString() === defaultInvoice)
+      if(invoiceNum){
+         const invoice = invoices.find((invoice) => invoice.invoiceNum.toString() === invoiceNum)
          if(invoice){
-            invoiceSelected = true
+            selectedInvoice[0] = invoice.invoiceNum.toString()
             $form.paymentAmount=invoice.invoiceAmount;
             $form.paymentNotes=`Payment for invoice number: ${invoice.invoiceNum}, ${invoice.invoiceNotes}`
             $form.deposit=invoice.deposit;
+
          }
-         if(defaultCustomer){
-            selectedCustomer[0] = defaultCustomer.id
+         if(customer){
+            selectedCustomer[0] = customer.id
          }
       }
       if(customers){
@@ -102,7 +103,7 @@
          customers={customers} 
          employeeId={employeeId} 
          leases={leases}
-         defaultCustomer={defaultCustomer}
+         customer={customer}
          registerFormData={registerForm}
          emailVerificationFormData={emailVerificationFormData}
       />
@@ -130,7 +131,7 @@
 <div class={classes}>
    <FormMessage message={$message} />
    <form action="/forms/newPaymentRecordForm" method="POST" use:enhance>
-      {#if !defaultCustomer}
+      {#if !customer}
          <button class="btn preset-filled-primary-50-950 rounded-lg" type="button" onclick={()=>registerFormModalOpen = true}>Create New Customer</button>
          <span class="label-text">or,</span> 
          <Combobox

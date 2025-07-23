@@ -24,10 +24,10 @@
       employeeId: string | undefined;
       customers?: User[];
       leases: Lease[];
-      defaultCustomer?: User;
+      customer?: User;
       classes?: string;
    }
-   let { data, registerFormData, emailVerificationFormData, employeeId, customers, leases, defaultCustomer, classes }:Props = $props();
+   let { data, registerFormData, emailVerificationFormData, employeeId, customers, leases, customer, classes }:Props = $props();
    let { form, errors, message, constraints, enhance, delayed, timeout} = superForm(data, {
       onSubmit({formData}) {
          formData.set('customerId', selectedCustomer[0])
@@ -37,8 +37,8 @@
    let selectedCustomer = $state([''])
    onMount(()=> {
       $form.invoiceDue = new Date()
-      if(defaultCustomer){
-         selectedCustomer[0] = defaultCustomer.id
+      if(customer){
+         selectedCustomer[0] = customer.id
       }
    })
    let selectedLease = $state(['']);
@@ -89,7 +89,7 @@
    backdropClasses="backdrop-blur-xs"
 >
    {#snippet content()}
-      {#if defaultCustomer}     
+      {#if customer}     
          <EmailVerificationForm data={emailVerificationFormData} userId={selectedCustomer[0]} redirect='false' bind:emailVerificationModalOpen={registerFormModalOpen}/>
       {:else}
          <RegisterForm data={registerFormData} registerFormModalOpen={registerFormModalOpen} formType='employee' redirectTo='invoices/new' />

@@ -17,8 +17,8 @@
          leases={data.leases}
          invoiceForm={data.invoiceForm}
          registerForm={data.registerForm}
-         defaultCustomer={data.customer}
-         defaultInvoice={data.defaultInvoice}
+         customer={data.customer}
+         invoiceNum={data.invoiceNum}
          emailVerificationFormData={data.emailVerificationForm}
       />
    {/if}

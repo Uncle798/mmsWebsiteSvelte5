@@ -193,7 +193,7 @@
                               {/if}
                            </div>
                            {#if !invoice.paymentRecordNum}
-                              <a href="/paymentRecords/new?defaultCustomer={customer?.id}&defaultInvoice={invoice.invoiceNum}" class="btn preset-filled-primary-50-950 m-1 justify-between">Make Payment Record For this invoice</a>
+                              <a href="/paymentRecords/new?userId={customer?.id}&invoiceNum={invoice.invoiceNum}" class="btn preset-filled-primary-50-950 m-1 justify-between">Make Payment Record For this invoice</a>
                            {/if}
                         {/if}
                   </div>

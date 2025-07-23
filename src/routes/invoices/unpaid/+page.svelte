@@ -135,7 +135,7 @@
                                     {#if address}
                                         <Address {address} />
                                     {/if}
-                                    <a href="/paymentRecords/new?defaultCustomer={customer?.id}&defaultInvoice={invoice.invoiceNum}" class="btn preset-filled-primary-50-950 m-1">Make Payment Record For this invoice</a>
+                                    <a href="/paymentRecords/new?userId={customer?.id}&invoiceNum={invoice.invoiceNum}" class="btn preset-filled-primary-50-950 m-1">Make Payment Record For this invoice</a>
                                 </div>
                             {/if}
                         </div>

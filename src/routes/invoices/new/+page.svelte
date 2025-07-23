@@ -32,7 +32,7 @@
          emailVerificationFormData={data.emailVerificationForm}
          employeeId={data.user?.id}
          leases={data.leases} 
-         defaultCustomer={data.customer} 
+         customer={data.customer} 
          classes='mt-14 sm:mt-10 m-1 sm:m-2'
       />
    </div>

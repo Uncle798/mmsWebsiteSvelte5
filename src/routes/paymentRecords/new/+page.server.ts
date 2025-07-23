@@ -13,30 +13,26 @@ export const load = (async (event) => {
    const registerForm = await superValidate(valibot(registerFormSchema));
    const invoiceForm = await superValidate(valibot(newInvoiceFormSchema));
    const emailVerificationForm = await superValidate(valibot(emailVerificationFormSchema));
-   let defaultCustomerId = event.url.searchParams.get('defaultCustomer');
-   let defaultInvoice = event.url.searchParams.get('defaultInvoice');
+   const invoiceNum = event.url.searchParams.get('invoiceNum')
    const userId = event.url.searchParams.get('userId');
-   if(userId){
-      defaultCustomerId = userId
 
-   }
-   if(defaultCustomerId){
+   if(userId){
       const customer = await prisma.user.findUnique({
          where: {
-            id:defaultCustomerId
+            id:userId
          }
       })
       const invoices = await prisma.invoice.findMany({
          where: {
             AND: [
                { paymentRecordNum: null },
-               { customerId: defaultCustomerId }
+               { customerId: userId }
             ]
          }
       });
       const leases = await prisma.lease.findMany({
          where: {
-            customerId: defaultCustomerId
+            customerId: userId
          }
       })
       return {newPaymentRecordForm, registerForm, invoiceForm, emailVerificationForm, customer, invoices, leases,}
@@ -87,7 +83,7 @@ export const load = (async (event) => {
       registerForm, 
       leases, 
       invoiceForm, 
-      defaultInvoice, 
+      invoiceNum, 
       emailVerificationForm 
    };
 }) satisfies PageServerLoad;
