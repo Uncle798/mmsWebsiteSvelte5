@@ -58,7 +58,6 @@
    })
 
    let invoiceFormOpen=$state(false);
-   let invoiceSelected=$state(false);
    onMount(()=>{
       if(invoiceNum){
          const invoice = invoices.find((invoice) => invoice.invoiceNum.toString() === invoiceNum)
@@ -145,45 +144,31 @@
                selectedInvoice[0]=invoiceComboBoxData[0].value;
             }}
          />
+      {:else}
+         <UserEmployee user={customer} />
       {/if}
       {#if selectedCustomer[0] !== ''}
-      {#if customers}         
-      {@const user = customers.find((customer)=> customer.id === selectedCustomer[0])}
-         {#if user}
-            <UserEmployee {user} />
-         {/if}
-      {/if}
-      {/if}
-      <div class="">
-         {@debug selectedInvoice}
-         {#if selectedInvoice[0] === ''}
-            <button class="btn preset-filled-primary-50-950 rounded-lg my-2" onclick={()=>invoiceFormOpen=true} type='button'>Create New Invoice</button>
-         {/if}
-         {#if invoiceComboBoxData.length > 1 }
-            <Combobox
-               data={invoiceComboBoxData.sort()}
-               value={selectedInvoice}
-               label="Select an invoice"
-               placeholder="Select..."
-               openOnClick={true}
-               onValueChange={(details)=>{
-                  const invoice = invoices.find((invoice) => invoice.invoiceNum.toString() === details.value[0])
-                  if(invoice){
-                     selectedInvoice[0]=invoice.invoiceNum.toString();
-                     $form.paymentAmount=invoice.invoiceAmount;
-                     $form.paymentNotes=`Payment for invoice number: ${invoice.invoiceNum}, ${invoice.invoiceNotes}`
-                     $form.invoiceNum =invoice.invoiceNum;
-                  }
-                  invoiceSelected = true
-               }}
-            />
-         {:else}
-         {@const invoice = invoices.find((invoice) => invoice.invoiceNum === parseInt(selectedInvoice[0], 10))}
-            {#if invoice}
-               <InvoiceEmployee {invoice} />
+         {#if customers}         
+         {@const user = customers.find((customer)=> customer.id === selectedCustomer[0])}
+            {#if user}
+               <UserEmployee {user} />
             {/if}
          {/if}
-      </div>
+      {/if}
+      {#if invoiceNum}
+      {@const invoice = invoices.find((invoice) => invoice.invoiceNum === parseInt(invoiceNum, 10))}
+         {#if invoice}
+            <InvoiceEmployee {invoice} />
+         {/if}
+      {:else}
+         <Combobox
+            data={invoiceComboBoxData}
+            openOnClick={true}
+            label='Select Invoice'
+            placeholder='Select...'
+            onValueChange={(details) => selectedInvoice = details.value}
+         />
+      {/if}
       {#if selectedInvoice[0] !== ''}
          <NumberInput
             bind:value={$form.paymentAmount}
