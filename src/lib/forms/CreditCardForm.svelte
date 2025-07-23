@@ -142,7 +142,9 @@
                zIndex='30'
             >
                {#snippet trigger()}
-                  <Info aria-label='Given name number tool tip' size={15} />
+                  <button onclick={()=>givenNameTooltipOpen = true} class='btn'>
+                     <Info aria-label='Given name number tool tip' size={15} />
+                  </button>
                {/snippet}
                {#snippet content()}
                   Please use any name
@@ -175,7 +177,9 @@
                zIndex='30'
             >
                {#snippet trigger()}
-                  <Info aria-label='Family name number tool tip' size={15} />
+                  <button onclick={()=>familyNameToolTipOpen=true} class='btn`'>
+                     <Info aria-label='Family name number tool tip' size={15} />
+                  </button>
                {/snippet}
                {#snippet content()}
                   Please use any name
@@ -208,7 +212,9 @@
                zIndex='30'
             >
                {#snippet trigger()}
-                  <Info aria-label='Credit card number tool tip' size={15} />
+                  <button onclick={()=> ccToolTipOpen = true} class='btn'>
+                     <Info aria-label='Credit card number tool tip' size={15} />
+                  </button>
                {/snippet}
                {#snippet content()}
                   Please use 4000000000000002 or any of the card numbers from <a href="https://developer.elavon.com/products/xml-api/v1/test-cards" class="anchor">https://developer.elavon.com/products/xml-api/v1/test-cards</a>
@@ -242,7 +248,9 @@
                   zIndex='30'
                >
                   {#snippet trigger()}
-                     <Info aria-label='Credit card expiration tool tip' size={15}/>
+                     <button onclick={()=>expToolTipOpen=true} class="btn">
+                        <Info aria-label='Credit card expiration tool tip' size={15}/>
+                     </button>
                   {/snippet}
                   {#snippet content()}
                      Please use a future date, from <a href="https://developer.elavon.com/products/xml-api/v1/test-cards" class="anchor">https://developer.elavon.com/products/xml-api/v1/test-cards</a>
@@ -275,7 +283,9 @@
                   zIndex='30'
                >
                   {#snippet trigger()}
-                     <Info aria-label='CVV code tool tip' size={15}/>
+                     <button onclick={()=> cvvToolTipOpen = true} class='btn'>
+                        <Info aria-label='CVV code tool tip' size={15}/>
+                     </button>
                   {/snippet}
                   {#snippet content()}
                      Please use any valid cvv code, from <a href="https://developer.elavon.com/products/xml-api/v1/test-cards" class="anchor">https://developer.elavon.com/products/xml-api/v1/test-cards</a>
@@ -308,7 +318,9 @@
                   zIndex='30'
                >
                   {#snippet trigger()}
-                     <Info aria-label='Postal code tool tip' size={15}/>
+                     <button onclick={()=>zipcodeToolTipOpen=true} class="btn">
+                        <Info aria-label='Postal code tool tip' size={15}/>
+                     </button>
                   {/snippet}
                   {#snippet content()}
                      Please use any valid postal code.
