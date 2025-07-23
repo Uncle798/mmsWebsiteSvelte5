@@ -35,7 +35,7 @@ export const load = (async (event) => {
             customerId: userId
          }
       })
-      return {newPaymentRecordForm, registerForm, invoiceForm, emailVerificationForm, customer, invoices, leases,}
+      return {newPaymentRecordForm, registerForm, invoiceForm, emailVerificationForm, customer, invoices, leases, invoiceNum}
    }
    const invoices = await prisma.invoice.findMany({
       where: {
