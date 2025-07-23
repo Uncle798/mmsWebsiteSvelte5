@@ -1,7 +1,7 @@
 <script lang="ts">
    import type { SuperValidated, Infer } from "sveltekit-superforms";
    import type { Lease, User, } from "@prisma/client";
-   import type { NewInvoiceFormSchema, NewPaymentRecordFormSchema, RegisterFormSchema} from "$lib/formSchemas/schemas";
+   import type { EmailVerificationFormSchema, NewInvoiceFormSchema, NewPaymentRecordFormSchema, RegisterFormSchema} from "$lib/formSchemas/schemas";
    import { superForm } from "sveltekit-superforms";
    import { Combobox, Modal, Switch } from "@skeletonlabs/skeleton-svelte";
    import FormMessage from "$lib/formComponents/FormMessage.svelte";
@@ -22,15 +22,16 @@
       data: SuperValidated<Infer<NewPaymentRecordFormSchema>>;
       invoiceForm: SuperValidated<Infer<NewInvoiceFormSchema>>;
       registerForm: SuperValidated<Infer<RegisterFormSchema>>;
+      emailVerificationFormData: SuperValidated<Infer<EmailVerificationFormSchema>>;
       employeeId: string | undefined;
-      customers: User[];
+      customers?: User[];
       invoices: Invoice[];
       leases: Lease[];
-      defaultCustomer?: string | null;
+      defaultCustomer?: User;
       defaultInvoice?: string | null;
       classes?: string;
    }
-   let { data, employeeId, customers, invoices,  invoiceForm, registerForm, leases, defaultCustomer, defaultInvoice, classes, }:Props = $props();
+   let { data, employeeId, customers, invoices,  invoiceForm, registerForm, emailVerificationFormData, leases, defaultCustomer, defaultInvoice, classes, }:Props = $props();
    let { form, errors, message, constraints, enhance, delayed, timeout} = superForm(data, {
       onSubmit({formData}) {
          formData.set('customerId', selectedCustomer[0]);
@@ -38,7 +39,7 @@
 
       },
    });
-   let selectedCustomer = $state<string[]>([defaultCustomer ? defaultCustomer : '']);
+   let selectedCustomer = $state<string[]>(['']);
    let selectedInvoice = $state<string[]>([defaultInvoice ? defaultInvoice : ''])
    interface ComboBoxData {
       label: string;
@@ -55,33 +56,38 @@
       })
       return data;
    })
-   for(const customer of customers){
-      const label = `${customer.givenName} ${customer.familyName}`;
-      const value = customer.id;
-      const datum = {
-         label,
-         value
-      }
-      customerComboBoxData.push(datum);
-   };
+
    let invoiceFormOpen=$state(false);
    let invoiceSelected=$state(false);
    onMount(()=>{
       if(defaultInvoice){
          const invoice = invoices.find((invoice) => invoice.invoiceNum.toString() === defaultInvoice)
-
          if(invoice){
             invoiceSelected = true
             $form.paymentAmount=invoice.invoiceAmount;
             $form.paymentNotes=`Payment for invoice number: ${invoice.invoiceNum}, ${invoice.invoiceNotes}`
             $form.deposit=invoice.deposit;
          }
+         if(defaultCustomer){
+            selectedCustomer[0] = defaultCustomer.id
+         }
+      }
+      if(customers){
+         for(const customer of customers){
+            const label = `${customer.givenName} ${customer.familyName}`;
+            const value = customer.id;
+            const datum = {
+               label,
+               value
+            }
+            customerComboBoxData.push(datum);
+         };
       }
       setTimeout(()=>{explainerModalOpen = false}, 4000)
    })
    let explainerModalOpen = $state(true);
    const paymentTypes = [ 'CASH', 'CHECK', 'CREDIT'];
-   let registerFormModalOpen = $state(false)
+   let registerFormModalOpen = $state(false);
 </script>
 
 <Modal
@@ -96,7 +102,9 @@
          customers={customers} 
          employeeId={employeeId} 
          leases={leases}
-         defaultCustomer={selectedCustomer[0]}
+         defaultCustomer={defaultCustomer}
+         registerFormData={registerForm}
+         emailVerificationFormData={emailVerificationFormData}
       />
       <button class="btn" onclick={()=>invoiceFormOpen=false}>Cancel</button>
    {/snippet}
@@ -138,10 +146,12 @@
          />
       {/if}
       {#if selectedCustomer[0] !== ''}
+      {#if customers}         
       {@const user = customers.find((customer)=> customer.id === selectedCustomer[0])}
          {#if user}
             <UserEmployee {user} />
          {/if}
+      {/if}
       {/if}
       <div class="">
          {@debug selectedInvoice}
