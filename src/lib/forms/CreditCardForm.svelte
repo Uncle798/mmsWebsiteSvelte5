@@ -136,7 +136,7 @@
                open={givenNameTooltipOpen}
                onOpenChange={(e) => givenNameTooltipOpen = e.open}
                positioning={{placement: 'top-end'}}
-               contentBase="card preset-filled p-2"
+               contentBase="card preset-filled p-2 max-w-screen text-wrap"
                openDelay={200}
                closeDelay={2000}
                zIndex='30'
@@ -171,7 +171,7 @@
                open={familyNameToolTipOpen}
                onOpenChange={(e) => familyNameToolTipOpen = e.open}
                positioning={{placement: 'top-end'}}
-               contentBase="card preset-filled p-2"
+               contentBase="card preset-filled p-2 max-w-screen text-wrap"
                openDelay={200}
                closeDelay={2000}
                zIndex='30'
@@ -206,7 +206,7 @@
                open={ccToolTipOpen}
                onOpenChange={(e) => ccToolTipOpen = e.open}
                positioning={{placement: 'top-end'}}
-               contentBase="card preset-filled p-2"
+               contentBase="card preset-filled p-2 max-w-screen text-wrap"
                openDelay={200}
                closeDelay={2000}
                zIndex='30'
@@ -242,7 +242,7 @@
                   open={expToolTipOpen}
                   onOpenChange={(e) => expToolTipOpen = e.open}
                   positioning={{placement: 'top-end'}}
-                  contentBase="card preset-filled p-2"
+                  contentBase="card preset-filled p-2 max-w-screen text-wrap"
                   openDelay={200}
                   closeDelay={2000}
                   zIndex='30'
@@ -277,7 +277,7 @@
                   open={cvvToolTipOpen}
                   onOpenChange={(e) => cvvToolTipOpen = e.open}
                   positioning={{placement: 'top-end'}}
-                  contentBase="card preset-filled p-2"
+                  contentBase="card preset-filled p-2 max-w-screen text-wrap"
                   openDelay={200}
                   closeDelay={2000}
                   zIndex='30'
@@ -312,7 +312,6 @@
                   open={zipcodeToolTipOpen}
                   onOpenChange={(e) => zipcodeToolTipOpen = e.open}
                   positioning={{placement: 'top-end'}}
-                  contentBase="card preset-filled p-2"
                   openDelay={200}
                   closeDelay={2000}
                   zIndex='30'
