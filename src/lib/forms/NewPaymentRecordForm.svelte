@@ -157,6 +157,7 @@
       {/if}
       {#if invoiceNum}
       {@const invoice = invoices.find((invoice) => invoice.invoiceNum === parseInt(invoiceNum, 10))}
+      {@debug invoices}
          {#if invoice}
             <InvoiceEmployee {invoice} />
          {/if}
