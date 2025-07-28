@@ -130,23 +130,6 @@
 <div class={classes}>
    <FormMessage message={$message} />
    <form action="/forms/newPaymentRecordForm" method="POST" use:enhance>
-      {#if !customer}
-         <button class="btn preset-filled-primary-50-950 rounded-lg" type="button" onclick={()=>registerFormModalOpen = true}>Create New Customer</button>
-         <span class="label-text">or,</span> 
-         <Combobox
-            data={customerComboBoxData}
-            value={selectedCustomer}
-            label='Select Customer'
-            placeholder='Select customer...'
-            openOnClick={true}
-            onValueChange={(details)=>{
-               selectedCustomer[0]=details.value[0];
-               selectedInvoice[0]=invoiceComboBoxData[0].value;
-            }}
-         />
-      {:else}
-         <UserEmployee user={customer} />
-      {/if}
       {#if selectedCustomer[0] !== ''}
          {#if customers}         
          {@const user = customers.find((customer)=> customer.id === selectedCustomer[0])}
@@ -169,6 +152,24 @@
             onValueChange={(details) => selectedInvoice = details.value}
          />
       {/if}
+      {#if !customer}
+         <button class="btn preset-filled-primary-50-950 rounded-lg" type="button" onclick={()=>registerFormModalOpen = true}>Create New Customer</button>
+         <span class="label-text">or,</span> 
+         <Combobox
+            data={customerComboBoxData}
+            value={selectedCustomer}
+            label='Select Customer'
+            placeholder='Select customer...'
+            openOnClick={true}
+            onValueChange={(details)=>{
+               selectedCustomer[0]=details.value[0];
+               selectedInvoice[0]=invoiceComboBoxData[0].value;
+            }}
+         />
+      {:else}
+         <UserEmployee user={customer} />
+      {/if}
+
       {#if selectedInvoice[0] !== ''}
          <NumberInput
             bind:value={$form.paymentAmount}
