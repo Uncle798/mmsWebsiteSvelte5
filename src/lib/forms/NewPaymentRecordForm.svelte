@@ -121,7 +121,7 @@
    onOpenChange={(e) => registerFormModalOpen = e.open}
    contentBase="card bg-surface-400-600 p-4 space-y-4 shadow-xl max-w-(--breakpoint-sm)"
    backdropClasses="backdrop-blur-xs"
->
+> 
     {#snippet content()}
         <RegisterForm data={registerForm} registerFormModalOpen={registerFormModalOpen} formType='employee'/>
         <button class="btn" onclick={()=>registerFormModalOpen=false}>Cancel</button>
@@ -157,7 +157,6 @@
       {/if}
       {#if invoiceNum}
       {@const invoice = invoices.find((invoice) => invoice.invoiceNum === parseInt(invoiceNum, 10))}
-      {@debug invoices}
          {#if invoice}
             <InvoiceEmployee {invoice} />
          {/if}
