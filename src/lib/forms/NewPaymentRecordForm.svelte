@@ -130,6 +130,7 @@
 <div class={classes}>
    <FormMessage message={$message} />
    <form action="/forms/newPaymentRecordForm" method="POST" use:enhance>
+      {@debug selectedCustomer}
       {#if selectedCustomer[0] !== ''}
          {#if customers}         
          {@const user = customers.find((customer)=> customer.id === selectedCustomer[0])}
