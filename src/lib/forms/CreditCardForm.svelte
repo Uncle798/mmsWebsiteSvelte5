@@ -225,7 +225,7 @@
             id="ccNum" 
             bind:this={ccNumElement} 
             class="input" 
-            placeholder="4000000000000002"
+            placeholder="4000 0000 0000 0002"
             bind:value={$form.ccNum} 
             autocomplete="cc-number"
             {...$constraints.ccNum}
@@ -264,7 +264,7 @@
                   autocomplete="cc-exp"
                   bind:value={$form.exp}
                   {...$constraints.exp}
-                  placeholder="1229"
+                  placeholder="12/29"
                />
             </label>
             {#if $errors.exp}

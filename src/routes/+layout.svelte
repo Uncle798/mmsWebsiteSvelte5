@@ -100,7 +100,7 @@
 											{employeeLink.toolTip}
 										{/snippet}
 										{#snippet trigger()}
-											<a class="anchor" href={employeeLink.link}>{employeeLink.label}</a>
+											<a class="anchor mx-1" href={employeeLink.link}>{employeeLink.label}</a>
 										{/snippet}
 									</Tooltip>
 								</li>
@@ -153,14 +153,14 @@
 									Change your name or address here. View all invoices, payment receipts, and refund records. Best of all, sign up for Auto-pay here.
 								{/snippet}
 								{#snippet trigger()}
-									<li><a href="/accountSettings" class="anchor">Settings</a></li>
+									<li><a href="/accountSettings" class="anchor mx-1">Settings</a></li>
 								{/snippet}
 							</Tooltip>
 								<form action="/logout" method="post" use:enhance>
-									<li><button class="anchor" type="submit">Logout</button></li>
+									<li><button class="anchor mx-1" type="submit">Logout</button></li>
 								</form>
 							{:else}
-								<li><a class="anchor" href="/login">Login</a></li>
+								<li><a class="anchor mx-1" href="/login">Login</a></li>
 							{/if}
 						</ul>
 					</div>
@@ -195,20 +195,19 @@
 				<button class="absolute top-1 left-[90px] btn-icon" onclick={()=>{menuOpen=false}}><XCircleIcon aria-label='close' class='h-12 sm:h-9'/></button>
 				<ul>
 					{#each customerLinks as link}
-						<a href={link.link} class="anchor">{link.label}</a>
+						<a href={link.link} class="anchor mx-1">{link.label}</a>
 					{/each}
 					<div class="absolute bottom-0 m-1 sm:m-2 mb-2  bg-surface-100-900">
 						{#if data.user}
 						<li><a href="/accountSettings" class="anchor">Settings</a></li>
 							<form action="/logout" method="post" use:enhance>
-								<li><button class="anchor" type="submit">Logout</button></li>
+								<li><button class="anchor mx-1" type="submit">Logout</button></li>
 							</form>
 						{:else}
-							<li><a class="anchor" href="/login">Login</a></li>
+							<li><a class="anchor mx-1" href="/login">Login</a></li>
 						{/if}
 					</div>
-				</ul>
-				
+				</ul>				
 			</article>
 		{/snippet}
 		</Modal>
