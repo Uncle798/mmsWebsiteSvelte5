@@ -41,6 +41,7 @@
          label='New price $'
          name='price'
          classes='w-32'
+         placeholder={oldPrice.toString()}
       />
       <Switch
          checked={$form.changeDeposit}
