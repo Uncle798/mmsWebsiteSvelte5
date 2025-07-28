@@ -77,72 +77,74 @@
     let searchDrawerOpen=$state(false)
 </script>
 {#await wrapper}
-    <Header title='Loading invoices' />
-    <div class="mt-14 sm:mt-10">
-        Loading {numberFormatter.format(data.invoiceCount)} invoices, 
-        <Placeholder numCols={1} numRows={size} heightClass='h-40'/>
-    </div>
-    {:then invoices}
-        {#await data.customers}
-            <Header title='Loading customers' />
-            <div class="mt-14 sm:mt-10">
-                Loading customers...
-                <Placeholder numCols={1} numRows={size} heightClass='h-40'/>
-            </div>
-        {:then customers}
-        {#await data.addresses}
-            <div class="mt-14 sm:mt-10">
-                Loading addresses...
-                <Placeholder numCols={1} numRows={size} heightClass='h-40'/>
-            </div>
-        {:then addresses}
-            {#if invoices.length >0}       
-                <Header title='Unpaid invoices' />
-                <Revenue label="Current Unpaid Invoice total" amount={totalRevenue(searchedInvoices(dateSearchedInvoices(invoices)))} classes="bg-tertiary-50-950 w-screen rounded-b-lg fixed top-10 sm:top-9 p-2 left-0 z-40"/>
-                <Modal
-                    open={searchDrawerOpen}
-                    onOpenChange={(event)=>(searchDrawerOpen = event.open)}
-                    triggerBase='btn preset-filled-primary-50-950 rounded-lg fixed top-0 right-0 z-50 h-12 sm:h-8'
-                    contentBase='bg-surface-100-900 h-[360px] w-screen rounded-lg'
-                    positionerJustify=''
-                    positionerAlign=''
-                    positionerPadding=''
-                    transitionsPositionerIn={{y:-360, duration: 600}}
-                    transitionsPositionerOut={{y:-360, duration: 600}}
-                    modal={false}
-                >
-                    {#snippet trigger()}
-                        <SearchIcon aria-label='Search' />
-                    {/snippet}
-                    {#snippet content()}  
-                            <button onclick={()=>searchDrawerOpen=false} class='btn preset-filled-primary-50-950 rounded-lg m-1 absolute top-0 sm:right-0 right-0'><PanelTopClose aria-label='Close'/></button>
-                            <div class="mt-8">
-                                <Search data={data.searchForm} bind:search={search} searchType='invoice number' classes='m-1 sm:m-2 '/>
-                                <Search data={data.searchForm} bind:search={nameSearch} searchType='Customer' classes='m-1 sm:m-2 '/>
-                                <DateSearch data={data.dateSearchForm} bind:startDate={startDate} bind:endDate={endDate} {minDate} {maxDate} classes='w-1/2 mb-1 sm:mb-2 mx-1 sm:mx-2'/>
-                            </div>
-                    {/snippet}
-                </Modal>
-                <div class="grid grid-cols-1 gap-y-3 gap-x-1 m-1 sm:m-2 sm:mt-20 mt-22 z-30" in:fade={{duration:600}} out:fade={{duration:0}}>
-                    {#each  slicedInvoices(searchedInvoices(searchByUser(invoices))) as invoice}  
-                    {@const customer = customers.find((customer) => customer.id === invoice.customerId)}  
-                        <div class="rounded-lg border border-primary-50-950 grid sm:grid-cols-2">                            
-                            <InvoiceEmployee {invoice} classes='px-2' />
-                            {#if customer}
-                            {@const address = addresses.find((address) => address.userId === customer.id)}
-                                <div class="flex flex-col  px-2 pt-2">
-                                    <UserEmployee user={customer} classes=''/>
-                                    {#if address}
-                                        <Address {address} />
-                                    {/if}
-                                    <a href="/paymentRecords/new?userId={customer?.id}&invoiceNum={invoice.invoiceNum}" class="btn preset-filled-primary-50-950 m-1">Make Payment Record For this invoice</a>
-                                </div>
-                            {/if}
+   <Header title='Loading invoices' />
+   <div class="mt-14 sm:mt-10">
+      Loading {numberFormatter.format(data.invoiceCount)} invoices, 
+      <Placeholder numCols={1} numRows={size} heightClass='h-40'/>
+   </div>
+   {:then invoices}
+      {#await data.customers}
+         <Header title='Loading customers' />
+         <div class="mt-14 sm:mt-10">
+            Loading customers...
+            <Placeholder numCols={1} numRows={size} heightClass='h-40'/>
+         </div>
+      {:then customers}
+      {#await data.addresses}
+         <div class="mt-14 sm:mt-10">
+            Loading addresses...
+            <Placeholder numCols={1} numRows={size} heightClass='h-40'/>
+         </div>
+      {:then addresses}
+         {#if invoices.length >0}       
+            <Header title='Unpaid invoices' />
+            <Revenue label="Current Unpaid Invoice total" amount={totalRevenue(searchedInvoices(dateSearchedInvoices(invoices)))} classes="bg-tertiary-50-950 w-screen rounded-b-lg fixed top-10 sm:top-9 p-2 left-0 z-40"/>
+            <Modal
+               open={searchDrawerOpen}
+               onOpenChange={(event)=>(searchDrawerOpen = event.open)}
+               triggerBase='btn preset-filled-primary-50-950 rounded-lg fixed top-0 right-0 z-50 h-12 sm:h-8'
+               contentBase='bg-surface-100-900 h-[360px] w-screen rounded-lg'
+               positionerJustify=''
+               positionerAlign=''
+               positionerPadding=''
+               transitionsPositionerIn={{y:-360, duration: 600}}
+               transitionsPositionerOut={{y:-360, duration: 600}}
+               modal={false}
+            >
+               {#snippet trigger()}
+                  <SearchIcon aria-label='Search' />
+               {/snippet}
+               {#snippet content()}  
+                  <button onclick={()=>searchDrawerOpen=false} class='btn preset-filled-primary-50-950 rounded-lg m-1 absolute top-0 sm:right-0 right-0'><PanelTopClose aria-label='Close'/></button>
+                  <div class="mt-8">
+                     <Search data={data.searchForm} bind:search={search} searchType='invoice number' classes='m-1 sm:m-2 '/>
+                     <Search data={data.searchForm} bind:search={nameSearch} searchType='Customer' classes='m-1 sm:m-2 '/>
+                     <DateSearch data={data.dateSearchForm} bind:startDate={startDate} bind:endDate={endDate} {minDate} {maxDate} classes='w-1/2 mb-1 sm:mb-2 mx-1 sm:mx-2'/>
+                  </div>
+               {/snippet}
+            </Modal>
+            <div class="grid grid-cols-1 gap-y-3 gap-x-1 m-1 sm:m-2 sm:mt-20 mt-22 z-30" in:fade={{duration:600}} out:fade={{duration:0}}>
+               {#each  slicedInvoices(searchedInvoices(searchByUser(invoices))) as invoice}  
+               {@const customer = customers.find((customer) => customer.id === invoice.customerId)}  
+                  <div class="rounded-lg border border-primary-50-950 grid sm:grid-cols-2">                            
+                     <InvoiceEmployee {invoice} classes='px-2' />
+                     {#if !invoice.paymentRecordNum}
+                        <a href="/paymentRecords/new?userId={customer?.id}&invoiceNum={invoice.invoiceNum}" class="btn preset-filled-primary-50-950 m-1">Make Payment Record For this invoice</a>
+                     {/if}
+                     {#if customer}
+                     {@const address = addresses.find((address) => address.userId === customer.id)}
+                        <div class="flex flex-col px-2 pt-2">
+                           <UserEmployee user={customer} classes=''/>
+                           {#if address}
+                              <Address {address} />
+                           {/if}
                         </div>
-                    {/each}
-                </div>
-                <Pagination bind:pageNum={pageNum} bind:size={size} array={searchedInvoices(invoices)} label='invoices' />
-            {/if}
-        {/await}
-    {/await}
+                     {/if}
+                  </div>
+               {/each}
+            </div>
+            <Pagination bind:pageNum={pageNum} bind:size={size} array={searchedInvoices(invoices)} label='invoices' />
+         {/if}
+      {/await}
+   {/await}
 {/await}
