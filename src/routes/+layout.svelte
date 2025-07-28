@@ -226,7 +226,7 @@
 		Open 7 days a week from 8:00 am to 8:00 pm we're located at {PUBLIC_ADDRESS1} Moscow ID 83843. Call us at <a href="tel:+{PUBLIC_PHONE}" class="anchor">{formattedPhone}</a>
 	</footer>
 {:else}
-	<footer class="bg-tertiary-50-950 fixed bottom-0 right-0 w-screen px-2 h-20 sm:h-12 lg:h-7">
-		Powered by <a href="https://www.ministoragemanagementsoftware" class="anchor">Ministorage Management Software</a>
+	<footer class="bg-tertiary-50-950 fixed bottom-0 right-0 w-screen mx-2 h-20 sm:h-12 lg:h-7">
+		Powered by <a href="https://www.ministoragemanagementsoftware.com" class="anchor">Ministorage Management Software</a>
 	</footer>
 {/if}

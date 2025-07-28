@@ -125,14 +125,16 @@
                   </div>
                {/snippet}
             </Modal>
-            <div class="grid grid-cols-1 gap-y-3 gap-x-1 m-1 sm:m-2 sm:mt-20 mt-22 z-30" in:fade={{duration:600}} out:fade={{duration:0}}>
+            <div class="grid grid-cols-1 gap-y-3 gap-x-1 m-1 sm:m-2 sm:mt-20 mt-22 mb-9 z-30" in:fade={{duration:600}} out:fade={{duration:0}}>
                {#each  slicedInvoices(searchedInvoices(searchByUser(invoices, customers))) as invoice}  
                {@const customer = customers.find((customer) => customer.id === invoice.customerId)}  
                   <div class="rounded-lg border border-primary-50-950 grid sm:grid-cols-2">                            
-                     <InvoiceEmployee {invoice} classes='px-2' />
-                     {#if !invoice.paymentRecordNum}
-                        <a href="/paymentRecords/new?userId={customer?.id}&invoiceNum={invoice.invoiceNum}" class="btn preset-filled-primary-50-950 m-1 sm:m-2">Make Payment Record For this invoice</a>
-                     {/if}
+                     <div>
+                        <InvoiceEmployee {invoice} classes='px-2' />
+                        {#if !invoice.paymentRecordNum}
+                           <a href="/paymentRecords/new?userId={customer?.id}&invoiceNum={invoice.invoiceNum}" class="btn preset-filled-primary-50-950 m-1 sm:m-2">Make Payment Record For this invoice</a>
+                        {/if}
+                     </div>
                      {#if customer}
                      {@const address = addresses.find((address) => address.userId === customer.id)}
                         <div class="flex flex-col px-2 pt-2">
