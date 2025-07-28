@@ -130,6 +130,9 @@
                   {@const customer = customers.find((customer) => customer.id === invoice.customerId)}  
                      <div class="rounded-lg border border-primary-50-950 grid sm:grid-cols-2">                            
                         <InvoiceEmployee {invoice} classes='px-2' />
+                        {#if !invoice.paymentRecordNum}
+                           <a href="/paymentRecords/new?userId={customer?.id}&invoiceNum={invoice.invoiceNum}" class="btn preset-filled-primary-50-950 m-1 sm:m-2">Make Payment Record For this invoice</a>
+                        {/if}
                         {#if customer}
                         {@const address = addresses.find((address) => address.userId === customer.id)}
                            <div class="flex flex-col  px-2 pt-2">
@@ -138,9 +141,6 @@
                                     <Address {address} />
                               {/if}
                            </div>
-                           {#if !invoice.paymentRecordNum}
-                              <a href="/paymentRecords/new?userId={customer?.id}&invoiceNum={invoice.invoiceNum}" class="btn preset-filled-primary-50-950 m-1 sm:m-2">Make Payment Record For this invoice</a>
-                           {/if}
                         {/if}
                      </div>
                   {/each}

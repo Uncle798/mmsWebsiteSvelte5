@@ -51,7 +51,6 @@
       >
          Change the deposit as well
       </Switch>
-
       <Switch
          checked={$form.lowerPrice}
          onCheckedChange={(e)=> $form.lowerPrice = e.checked}
