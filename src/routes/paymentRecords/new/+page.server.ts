@@ -1,5 +1,5 @@
 import { prisma } from '$lib/server/prisma';
-import {redirect } from '@sveltejs/kit';
+import {error, redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
@@ -15,14 +15,29 @@ export const load = (async (event) => {
    const emailVerificationForm = await superValidate(valibot(emailVerificationFormSchema));
    const invoiceNum = event.url.searchParams.get('invoiceNum')
    const userId = event.url.searchParams.get('userId');
-
+   if(invoiceNum){
+      const invoice = await prisma.invoice.findUnique({
+         where: {
+            invoiceNum: parseInt(invoiceNum, 10)
+         }
+      })
+      if(!invoice){
+         error(404, 'Invoice not found');
+      }
+      const customer = await prisma.user.findUnique({
+         where: {
+            id: invoice.customerId
+         }
+      })
+      return { invoice, customer, newPaymentRecordForm, registerForm, invoiceForm, emailVerificationForm }
+   }
    if(userId){
       const customer = await prisma.user.findUnique({
          where: {
             id:userId
          }
       })
-      const invoices = await prisma.invoice.findMany({
+      const customerInvoices = await prisma.invoice.findMany({
          where: {
             AND: [
                { paymentRecordNum: null },
@@ -35,7 +50,7 @@ export const load = (async (event) => {
             customerId: userId
          }
       })
-      return {newPaymentRecordForm, registerForm, invoiceForm, emailVerificationForm, customer, invoices, leases, invoiceNum}
+      return {newPaymentRecordForm, registerForm, invoiceForm, emailVerificationForm, customer, customerInvoices, leases, invoiceNum}
    }
    const invoices = await prisma.invoice.findMany({
       where: {

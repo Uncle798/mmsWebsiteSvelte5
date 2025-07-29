@@ -25,13 +25,14 @@
       emailVerificationFormData: SuperValidated<Infer<EmailVerificationFormSchema>>;
       employeeId: string | undefined;
       customers?: User[];
-      invoices: Invoice[];
-      leases: Lease[];
       customer?: User;
-      invoiceNum?: string | null;
+      invoices?: Invoice[];
+      customerInvoices?: Invoice[];
+      invoice?: Invoice;
+      leases?: Lease[];
       classes?: string;
    }
-   let { data, employeeId, customers, invoices,  invoiceForm, registerForm, emailVerificationFormData, leases, customer, invoiceNum, classes, }:Props = $props();
+   let { data, employeeId, customers, invoices,  invoiceForm, registerForm, emailVerificationFormData, leases, customer, customerInvoices, invoice, classes, }:Props = $props();
    let { form, errors, message, constraints, enhance, delayed, timeout} = superForm(data, {
       onSubmit({formData}) {
          formData.set('customerId', selectedCustomer[0]);
@@ -40,36 +41,27 @@
       },
    });
    let selectedCustomer = $state<string[]>(['']);
-   let selectedInvoice = $state<string[]>([invoiceNum ? invoiceNum : ''])
+   let selectedInvoice = $state<string[]>([''])
    interface ComboBoxData {
       label: string;
       value: string;
    } 
-   const customerComboBoxData:ComboBoxData[] = [];
-   const invoiceComboBoxData:ComboBoxData[] = $derived.by(() =>{
-      const customerInvoices = invoices.filter((invoice)=> invoice.customerId === selectedCustomer[0]);
-      const data:ComboBoxData[]=[]
-      customerInvoices.forEach((invoice) =>{
-         const label = invoice.invoiceNotes ? `Invoice ${invoice.invoiceNum} `+invoice.invoiceNotes : `Invoice ${invoice.invoiceNum} `;
-         const value = invoice.invoiceNum.toString(10);
-         data.push({label, value})
-      })
-      return data;
-   })
-
+   const customersComboBoxData:ComboBoxData[] = [];
+   const invoicesComboboxData:ComboBoxData[] = [];
+   const customerInvoicesData:ComboBoxData[] =[];
    let invoiceFormOpen=$state(false);
    onMount(()=>{
-      if(invoiceNum){
-         const invoice = invoices.find((invoice) => invoice.invoiceNum.toString() === invoiceNum)
-         if(invoice){
-            selectedInvoice[0] = invoice.invoiceNum.toString()
-            $form.paymentAmount=invoice.invoiceAmount;
-            $form.paymentNotes=`Payment for invoice number: ${invoice.invoiceNum}, ${invoice.invoiceNotes}`
-            $form.deposit=invoice.deposit;
-
-         }
-         if(customer){
-            selectedCustomer[0] = customer.id
+      if(invoice){
+         selectedInvoice[0] = invoice.invoiceNum.toString()
+      }
+      if(customer){
+         selectedCustomer[0] = customer.id
+      }
+      if(invoices){
+         for(const invoice of invoices){
+            const label = `Number ${invoice.invoiceNum} ${invoice.invoiceNotes}`
+            const value = invoice.invoiceNum.toString()
+            invoicesComboboxData.push({label, value})
          }
       }
       if(customers){
@@ -80,9 +72,16 @@
                label,
                value
             }
-            customerComboBoxData.push(datum);
-            $inspect(customerComboBoxData)
+            customersComboBoxData.push(datum);
+            $inspect(customersComboBoxData)
          };
+      }
+      if(customerInvoices){
+         for(const invoice of customerInvoices){
+            const label = `Num ${invoice.invoiceNum} ${invoice.invoiceNotes}`
+            const value = invoice.invoiceNum.toString();
+            customerInvoicesData.push({label, value});
+         }
       }
       setTimeout(()=>{explainerModalOpen = false}, 4000)
    })
@@ -91,6 +90,7 @@
    let registerFormModalOpen = $state(false);
 </script>
 
+{#if leases}
 <Modal
    open={invoiceFormOpen}
    onOpenChange={(e) => invoiceFormOpen = e.open}
@@ -110,6 +110,7 @@
       <button class="btn" onclick={()=>invoiceFormOpen=false}>Cancel</button>
    {/snippet}
 </Modal>
+{/if}
 <ExplainerModal
    bind:modalOpen={explainerModalOpen}
 >
@@ -131,46 +132,46 @@
 <div class={classes}>
    <FormMessage message={$message} />
    <form action="/forms/newPaymentRecordForm" method="POST" use:enhance>
-      {#if selectedCustomer[0] !== ''}
-         {#if customers}         
-         {@const user = customers.find((customer)=> customer.id === selectedCustomer[0])}
-            {#if user}
-               <UserEmployee {user} />
-            {/if}
-         {/if}
-      {/if}
-      {#if invoiceNum}
-      {@const invoice = invoices.find((invoice) => invoice.invoiceNum === parseInt(invoiceNum, 10))}
-         {#if invoice}
-            <InvoiceEmployee {invoice} />
-         {/if}
+      {#if invoice}
+         <InvoiceEmployee {invoice} />
       {:else}
          <Combobox
-            data={invoiceComboBoxData}
+            data={invoicesComboboxData}
             openOnClick={true}
-            label='Select Invoice'
+            name='invoicesSelect'
+            label='Select invoice'
             placeholder='Select...'
-            onValueChange={(details) => selectedInvoice = details.value}
-         />
-      {/if}
-      {#if !customer}
-         <button class="btn preset-filled-primary-50-950 rounded-lg" type="button" onclick={()=>registerFormModalOpen = true}>Create New Customer</button>
-         <span class="label-text">or,</span> 
-         <Combobox
-            data={customerComboBoxData}
-            value={selectedCustomer}
-            label='Select Customer'
-            placeholder='Select customer...'
-            openOnClick={true}
-            onValueChange={(details)=>{
-               selectedCustomer[0]=details.value[0];
-               selectedInvoice[0]=invoiceComboBoxData[0].value;
+            onValueChange={(details) => {
+               selectedInvoice = details.value
             }}
          />
-      {:else}
-         <UserEmployee user={customer} />
       {/if}
-
+      {#if customer}
+         <UserEmployee user={customer} />
+       {:else if customers}
+         <Combobox
+            data={customersComboBoxData}
+            openOnClick={true}
+            name='customerSelect'
+            label='Select customer'
+            placeholder='Select...'
+            onValueChange={(details) => {
+               selectedCustomer = details.value
+            }}
+         />
+      {/if}
+      {#if selectedCustomer[0] !== '' && customerInvoices}
+         <Combobox
+            data={customerInvoicesData}
+            openOnClick={true}
+            name='customerInvoiceSelect'
+            label='Select Invoice'
+            placeholder='Select...'
+            onValueChange={(details) => {
+               selectedInvoice = details.value
+            }}
+         />
+      {/if}
       {#if selectedInvoice[0] !== ''}
          <NumberInput
             bind:value={$form.paymentAmount}
