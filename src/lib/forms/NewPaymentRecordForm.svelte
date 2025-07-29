@@ -89,7 +89,13 @@
    const paymentTypes = [ 'CASH', 'CHECK', 'CREDIT'];
    let registerFormModalOpen = $state(false);
 </script>
-
+<ExplainerModal
+   bind:modalOpen={explainerModalOpen}
+>
+   {#snippet copy()}
+      Please choose Cash or Check for the demo. Credit card just means you have to enter a bunch of numbers.
+   {/snippet}
+</ExplainerModal>
 {#if leases}
 <Modal
    open={invoiceFormOpen}
@@ -111,24 +117,7 @@
    {/snippet}
 </Modal>
 {/if}
-<ExplainerModal
-   bind:modalOpen={explainerModalOpen}
->
-   {#snippet copy()}
-      Please choose Cash or Check for the demo. Credit card just means you have to enter a bunch of numbers.
-   {/snippet}
-</ExplainerModal>
-<Modal
-   open={registerFormModalOpen}
-   onOpenChange={(e) => registerFormModalOpen = e.open}
-   contentBase="card bg-surface-400-600 p-4 space-y-4 shadow-xl max-w-(--breakpoint-sm)"
-   backdropClasses="backdrop-blur-xs"
-> 
-    {#snippet content()}
-        <RegisterForm data={registerForm} registerFormModalOpen={registerFormModalOpen} formType='employee'/>
-        <button class="btn" onclick={()=>registerFormModalOpen=false}>Cancel</button>
-    {/snippet}
-</Modal>
+Hello
 <div class={classes}>
    <FormMessage message={$message} />
    <form action="/forms/newPaymentRecordForm" method="POST" use:enhance>
