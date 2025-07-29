@@ -18,7 +18,7 @@
          invoiceForm={data.invoiceForm}
          registerForm={data.registerForm}
          customer={data.customer}
-         invoiceNum={data.invoiceNum}
+         invoice={data.invoice}
          emailVerificationFormData={data.emailVerificationForm}
       />
    {/if}
