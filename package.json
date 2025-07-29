@@ -18,7 +18,7 @@
 		"price": "tsx stripe/prices.ts"
 	},
 	"prisma": {
-		"seed": "tsx prisma/demoSeed.ts",
+		"seed": "tsx prisma/seed.ts",
 		"demoSeed": "tsx prisma/demoSeed.ts"
 	},
 	"pnpm": {
