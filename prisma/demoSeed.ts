@@ -28,13 +28,13 @@ async function main() {
       })
       if(!session){
          if(process.env.DEMO_SESSION_TOKEN){
-            const session = createSession(process.env.DEMO_SESSION_TOKEN!, user.id)
+            session = await createSession(process.env.DEMO_SESSION_TOKEN!, user.id)
          }
       }
       console.log('session', session);
       const ipAddress = await fetch('https://www.convergepay.com/hosted-payments/myip');
       const body = await ipAddress.text();
-      console.log(body, ipAddress)
+      console.log(body)
    }
 }
 
