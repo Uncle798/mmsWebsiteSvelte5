@@ -8,7 +8,7 @@
 </script>
 
 <Header title='New Payment Record' />
-<div in:fade={{duration:600}} out:fade={{duration:0}} class="mt-14 sm:mt-10 mx-1 sm:mx-2">
+<div in:fade={{duration:600}} out:fade={{duration:0}} class="mt-14 sm:mt-10 mx-1 sm:mx-2 mb-9">
    {#if data.customer}
       <NewPaymentRecordForm 
          data={data.newPaymentRecordForm} 
