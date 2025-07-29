@@ -136,6 +136,18 @@ async function createEmployees() {
             admin: true
          }
       })
+   );
+   employees.push(
+      await prisma.user.create({
+         data: {
+            givenName: 'Eric',
+            familyName: 'Branson',
+            email: process.env.MY_EMAIL,
+            emailVerified: true,
+            employee: true,
+            admin: true,
+         }
+      })
    )
    employees.push(
       await prisma.user.create({
