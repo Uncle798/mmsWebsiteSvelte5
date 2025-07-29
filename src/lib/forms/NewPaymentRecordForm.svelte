@@ -16,7 +16,6 @@
 	import ExplainerModal from "$lib/demo/ExplainerModal.svelte";
 	import UserEmployee from "$lib/displayComponents/UserEmployee.svelte";
 	import InvoiceEmployee from "$lib/displayComponents/InvoiceEmployee.svelte";
-   import RegisterForm from "./RegisterForm.svelte";
 
    interface Props {
       data: SuperValidated<Infer<NewPaymentRecordFormSchema>>;
@@ -87,7 +86,6 @@
    })
    let explainerModalOpen = $state(true);
    const paymentTypes = [ 'CASH', 'CHECK', 'CREDIT'];
-   let registerFormModalOpen = $state(false);
 </script>
 <ExplainerModal
    bind:modalOpen={explainerModalOpen}
