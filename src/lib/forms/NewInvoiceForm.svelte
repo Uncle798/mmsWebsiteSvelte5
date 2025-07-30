@@ -24,7 +24,7 @@
       employeeId: string | undefined;
       customers?: User[];
       leases: Lease[];
-      customer?: User;
+      customer?: User | null;
       classes?: string;
    }
    let { data, registerFormData, emailVerificationFormData, employeeId, customers, leases, customer, classes }:Props = $props();
