@@ -1,4 +1,4 @@
-import { PUBLIC_COMPANY_EMAIL, PUBLIC_COMPANY_NAME, PUBLIC_URL } from "$env/static/public";
+import {  PUBLIC_COMPANY_NAME, PUBLIC_URL } from "$env/static/public";
 import type { Address, Invoice, PaymentRecord, RefundRecord, User } from "@prisma/client";
 import { MailtrapClient } from "mailtrap";
 import dayjs from "dayjs";
@@ -10,8 +10,8 @@ const currencyFormatter = new Intl.NumberFormat('en-us', {style: 'currency', cur
 export const mailtrap = new MailtrapClient({token})
 
 const sender = {
-   name: 'computer@ministoragemanagmentsoftware.com',
-   email: 'computer@ministoragemanagmentsoftware.com',
+   name: 'computer@ministoragemanagementsoftware.com',
+   email: 'computer@ministoragemanagementsoftware.com',
 }
 export async function sendVerificationEmail(verificationCode:string, email:string) {
    try {
@@ -32,7 +32,6 @@ export async function sendVerificationEmail(verificationCode:string, email:strin
 
 export async function sendMagicLinkEmail(magicLink:string, email:string) {
    try {
-      
       const response = await mailtrap.send({
          from:sender,
          to: [{email}],
