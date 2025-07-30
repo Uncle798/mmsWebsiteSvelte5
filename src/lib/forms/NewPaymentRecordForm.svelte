@@ -173,7 +173,13 @@
       {#if selectedInvoice[0] !== ''}
       {@const invoice = invoices?.find((invoice) => invoice.invoiceNum === parseInt(selectedInvoice[0], 10))}
       {@const customer = customers?.find((customer) => customer.id === invoice?.customerId)}
-         <div class="border border-primary-contrast-50-950 rounded-lg flex">
+         <div class="border border-primary-contrast-50-950 rounded-lg flex" {@attach ()=>{
+            if(invoice){
+               $form.paymentAmount = invoice.invoiceAmount
+               $form.paymentNotes = `Payment for invoice ${invoice.invoiceNum}, ${invoice.invoiceNotes}`
+               $form.deposit = invoice.deposit
+            }
+         }}>
             {#if invoice}            
                <InvoiceEmployee
                   {invoice}
