@@ -9,18 +9,17 @@
 
 <Header title='New Payment Record' />
 <div in:fade={{duration:600}} out:fade={{duration:0}} class="mt-14 sm:mt-10 mx-1 sm:mx-2 mb-9">
-   {#if data.customer}
-      <NewPaymentRecordForm 
-         data={data.newPaymentRecordForm} 
-         invoices={data.invoices} 
-         employeeId={data.user?.id}
-         leases={data.leases}
-         invoiceForm={data.invoiceForm}
-         registerForm={data.registerForm}
-         customer={data.customer}
-         invoice={data.invoice}
-         emailVerificationFormData={data.emailVerificationForm}
-      />
-   {/if}
+   <NewPaymentRecordForm 
+      data={data.newPaymentRecordForm} 
+      invoices={data.invoices} 
+      employeeId={data.user?.id}
+      leases={data.leases}
+      invoiceForm={data.invoiceForm}
+      registerForm={data.registerForm}
+      customer={data.customer}
+      invoice={data.invoice}
+      emailVerificationFormData={data.emailVerificationForm}
+      customers={data.customers}
+      customerInvoices={data.customerInvoices}
+   />
 </div>
-Hello

@@ -24,7 +24,7 @@
       emailVerificationFormData: SuperValidated<Infer<EmailVerificationFormSchema>>;
       employeeId: string | undefined;
       customers?: User[];
-      customer?: User;
+      customer?: User | null;
       invoices?: Invoice[];
       customerInvoices?: Invoice[];
       invoice?: Invoice;
@@ -72,7 +72,6 @@
                value
             }
             customersComboBoxData.push(datum);
-            $inspect(customersComboBoxData)
          };
       }
       if(customerInvoices){
@@ -115,13 +114,12 @@
    {/snippet}
 </Modal>
 {/if}
-Hello
 <div class={classes}>
    <FormMessage message={$message} />
    <form action="/forms/newPaymentRecordForm" method="POST" use:enhance>
       {#if invoice}
          <InvoiceEmployee {invoice} />
-      {:else}
+      {:else if selectedInvoice[0] === ''}
          <Combobox
             data={invoicesComboboxData}
             openOnClick={true}
@@ -135,7 +133,8 @@ Hello
       {/if}
       {#if customer}
          <UserEmployee user={customer} />
-       {:else if customers}
+       {:else if selectedCustomer[0] === '' && selectedInvoice[0] === ''}
+         or,
          <Combobox
             data={customersComboBoxData}
             openOnClick={true}
@@ -144,6 +143,18 @@ Hello
             placeholder='Select...'
             onValueChange={(details) => {
                selectedCustomer = details.value
+               const custInvoices = invoices?.filter((invoice) => invoice.customerId === details.value[0])
+               console.log(custInvoices)
+               if(custInvoices){
+                  if(custInvoices.length === 1){
+                     selectedInvoice[0] = custInvoices[0].invoiceNum.toString()
+                     console.log(selectedInvoice[0])
+                  } else {
+                     for(let i=0; i<custInvoices.length; i++){
+                        selectedInvoice[i] = custInvoices[i].invoiceNum.toString()
+                     }
+                  }
+               }
             }}
          />
       {/if}
@@ -160,6 +171,22 @@ Hello
          />
       {/if}
       {#if selectedInvoice[0] !== ''}
+      {@const invoice = invoices?.find((invoice) => invoice.invoiceNum === parseInt(selectedInvoice[0], 10))}
+      {@const customer = customers?.find((customer) => customer.id === invoice?.customerId)}
+         <div class="border border-primary-contrast-50-950 rounded-lg flex">
+            {#if invoice}            
+               <InvoiceEmployee
+                  {invoice}
+                  classes='w-1/2'
+               />
+            {/if}
+            {#if customer}
+               <UserEmployee
+                  user={customer}
+                  classes='m-2'
+               />
+            {/if}
+         </div>
          <NumberInput
             bind:value={$form.paymentAmount}
             errors={$errors.paymentAmount}
