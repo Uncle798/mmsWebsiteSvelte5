@@ -110,14 +110,15 @@ export function deleteSessionTokenCookie(event: RequestEvent):void {
          sameSite: 'lax',
          maxAge: 0
       })
+   } else {
+      event.cookies.set('demoSession', '', {
+         httpOnly: true,
+         path: '/',
+         secure: true,
+         sameSite: 'lax',
+         maxAge: 0
+      })
    }
-   event.cookies.set('demoSession', '', {
-      httpOnly: true,
-      path: '/',
-      secure: true,
-      sameSite: 'lax',
-      maxAge: 0
-   })
 }
 
 export function generateRandomOTP():string {
