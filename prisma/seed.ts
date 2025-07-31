@@ -112,31 +112,30 @@ async function deleteAll() {
 }
 
 async function createEmployees() {
-   const employees: User[] = [];
-   
-   employees.push(
-      await prisma.user.create({
-         data:{
-            email: String(process.env.GEORGE_EMAIL),
-            emailVerified: true,
-            givenName: 'George',
-            familyName: 'Branson',
-            address:{
-               create:{
-                  address1: faker.location.streetAddress(), 
-                  city: faker.location.city(),
-                  state: faker.location.state({abbreviated: true}),
-                  postalCode: faker.location.zipCode(),
-                  country: 'US',
-                  phoneNum1: faker.helpers.fromRegExp('[0-9]{10}'),
-                  phoneNum1Country: '1',
-               }
-            },
-            employee: true,
-            admin: true
-         }
-      })
-   );
+   const employees: User[] = [];   
+   // employees.push(
+   //    await prisma.user.create({
+   //       data:{
+   //          email: String(process.env.GEORGE_EMAIL),
+   //          emailVerified: true,
+   //          givenName: 'George',
+   //          familyName: 'Branson',
+   //          address:{
+   //             create:{
+   //                address1: faker.location.streetAddress(), 
+   //                city: faker.location.city(),
+   //                state: faker.location.state({abbreviated: true}),
+   //                postalCode: faker.location.zipCode(),
+   //                country: 'US',
+   //                phoneNum1: faker.helpers.fromRegExp('[0-9]{10}'),
+   //                phoneNum1Country: '1',
+   //             }
+   //          },
+   //          employee: true,
+   //          admin: true
+   //       }
+   //    })
+   // );
    employees.push(
       await prisma.user.create({
          data: {
@@ -149,29 +148,29 @@ async function createEmployees() {
          }
       })
    )
-   employees.push(
-      await prisma.user.create({
-         data:{
-            email: String(process.env.EMPLOYEE_EMAIL),
-            emailVerified: true,
-            givenName: 'Walter',
-            familyName: 'Branson',
-            address:{
-               create:{
-                  address1: faker.location.streetAddress(), 
-                  city: faker.location.city(),
-                  state: faker.location.state({abbreviated: true}),
-                  postalCode: faker.location.zipCode(),
-                  country: 'US',
-                  phoneNum1: faker.helpers.fromRegExp('[0-9]{10}'),
-                  phoneNum1Country: '1',
-               }
-            },
-            employee: true,
-            admin: false
-         }
-      })
-   )
+   // employees.push(
+   //    await prisma.user.create({
+   //       data:{
+   //          email: String(process.env.EMPLOYEE_EMAIL),
+   //          emailVerified: true,
+   //          givenName: 'Walter',
+   //          familyName: 'Branson',
+   //          address:{
+   //             create:{
+   //                address1: faker.location.streetAddress(), 
+   //                city: faker.location.city(),
+   //                state: faker.location.state({abbreviated: true}),
+   //                postalCode: faker.location.zipCode(),
+   //                country: 'US',
+   //                phoneNum1: faker.helpers.fromRegExp('[0-9]{10}'),
+   //                phoneNum1Country: '1',
+   //             }
+   //          },
+   //          employee: true,
+   //          admin: false
+   //       }
+   //    })
+   // )
    return employees
 }
 
