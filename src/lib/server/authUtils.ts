@@ -38,7 +38,7 @@ export async function validateSessionToken(token:string):Promise<SessionValidati
          id: sessionId,
       },
    });
-   console.log(session)
+   console.log('session', session)
    const user = await prisma.user.findFirst({
       where: {
          id: session?.userId

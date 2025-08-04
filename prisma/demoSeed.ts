@@ -34,7 +34,7 @@ async function main() {
       console.log('session', session);
       const ipAddress = await fetch('https://www.convergepay.com/hosted-payments/myip');
       const body = await ipAddress.text();
-      console.log(body)
+      console.log('IP address', body)
    }
 }
 
