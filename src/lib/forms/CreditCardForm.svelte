@@ -6,7 +6,6 @@
 	import { superForm, type Infer, type SuperValidated } from "sveltekit-superforms";
    import { creditCardFormSchema, type CreditCardFormSchema } from "$lib/formSchemas/schemas";
 	import FormMessage from "$lib/formComponents/FormMessage.svelte";
-	import TextInput from "$lib/formComponents/TextInput.svelte";
 	import { browser } from '$app/environment';;
 	import { goto } from '$app/navigation';
    import { fade } from "svelte/transition";
@@ -111,7 +110,7 @@
    onMount(()=>{
       setTimeout(()=>{
          explainerModalOpen=false
-      }, 5000)
+      }, 4000)
    })
 </script>
 <FormMessage message={$message} />
@@ -142,7 +141,7 @@
                zIndex='30'
             >
                {#snippet trigger()}
-                  <button onclick={()=>givenNameTooltipOpen = true} class='btn'>
+                  <button onclick={()=>givenNameTooltipOpen = true} class=''>
                      <Info aria-label='Given name number tool tip' size={15} />
                   </button>
                {/snippet}
@@ -177,7 +176,7 @@
                zIndex='30'
             >
                {#snippet trigger()}
-                  <button onclick={()=>familyNameToolTipOpen=true} class='btn`'>
+                  <button onclick={()=>familyNameToolTipOpen=true} class=''>
                      <Info aria-label='Family name number tool tip' size={15} />
                   </button>
                {/snippet}
@@ -212,7 +211,7 @@
                zIndex='30'
             >
                {#snippet trigger()}
-                  <button onclick={()=> ccToolTipOpen = true} class='btn'>
+                  <button onclick={()=> ccToolTipOpen = true} class=''>
                      <Info aria-label='Credit card number tool tip' size={15} />
                   </button>
                {/snippet}
@@ -248,7 +247,7 @@
                   zIndex='30'
                >
                   {#snippet trigger()}
-                     <button onclick={()=>expToolTipOpen=true} class="btn">
+                     <button onclick={()=>expToolTipOpen=true} class="">
                         <Info aria-label='Credit card expiration tool tip' size={15}/>
                      </button>
                   {/snippet}
@@ -283,7 +282,7 @@
                   zIndex='30'
                >
                   {#snippet trigger()}
-                     <button onclick={()=> cvvToolTipOpen = true} class='btn'>
+                     <button onclick={()=> cvvToolTipOpen = true} class=''>
                         <Info aria-label='CVV code tool tip' size={15}/>
                      </button>
                   {/snippet}
@@ -317,7 +316,7 @@
                   zIndex='30'
                >
                   {#snippet trigger()}
-                     <button onclick={()=>zipcodeToolTipOpen=true} class="btn">
+                     <button onclick={()=>zipcodeToolTipOpen=true} class="">
                         <Info aria-label='Postal code tool tip' size={15}/>
                      </button>
                   {/snippet}

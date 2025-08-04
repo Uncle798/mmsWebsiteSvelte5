@@ -1,4 +1,5 @@
-import {  PrismaClient, User, PaymentType, Unit, Address, Lease, PaymentRecord, RefundRecord, DiscountCode, } from '@prisma/client';
+import {  PrismaClient, PaymentType } from '@prisma/client';
+import type { User,  Unit, Address, Lease, PaymentRecord, RefundRecord, DiscountCode,} from '@prisma/client'
 import { faker } from '@faker-js/faker';
 import dayjs  from 'dayjs';
 import  unitData from './unitData'
