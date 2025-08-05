@@ -26,7 +26,7 @@ async function main() {
             userId: user.id
          }
       })
-      if(!session){
+      if(!session || session.id !== process.env.DEMO_SESSION_TOKEN){
          if(process.env.DEMO_SESSION_TOKEN){
             session = await createSession(process.env.DEMO_SESSION_TOKEN!, user.id)
          }
