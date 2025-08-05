@@ -19,20 +19,22 @@ export function generateSessionToken():string {
 
 export async function createSession(token: string, userId:string):Promise<Session> {
    const sessionId = encodeHexLowerCase(sha256(new TextEncoder().encode(token)))
+   console.log('createSession sessionId', sessionId)
    const session: Session = {
       id: sessionId,
       userId, 
       expiresAt: dayjs(Date.now()).add(30, 'days').toDate(),
    }
-   await prisma.session.create({
+   const dbSession = await prisma.session.create({
       data:session
    })
-   return  session 
+   console.log('dbSession', dbSession)
+   return dbSession 
 }
 
 export async function validateSessionToken(token:string):Promise<SessionValidationResult> {
    const sessionId = encodeHexLowerCase(sha256(new TextEncoder().encode(token)));
-   console.log('sessionId', sessionId);
+   console.log('validateSessionToken sessionId', sessionId);
    const session = await prisma.session.findFirst({
       where: {
          id: sessionId,
