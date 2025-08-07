@@ -9,22 +9,23 @@ import type { Address, DiscountCode, User } from '@prisma/client';
 import { ratelimit } from '$lib/server/rateLimit';
 import { qStash } from '$lib/server/qStash';
 import { PUBLIC_URL } from '$env/static/public';
+import { sendPaymentReceipt } from '$lib/server/mailtrap';
 
 export const load = (async (event) => {
-   const unitNum = event.url.searchParams.get('unitNum');
-   if(!unitNum){
-      redirect(302, '/units/available');
-   }
    if(!event.locals.user?.employee){
       redirect(302, '/login?toast=employee')
    } 
+   const unitNum = event.url.searchParams.get('unitNum');
+   const userId = event.url.searchParams.get('userId');
+   if(!unitNum){
+      redirect(302, `/units/available?userId=${userId}`);
+   }
    const leaseForm = await superValidate(valibot(newLeaseSchema));
    const registerForm = await superValidate(valibot(registerFormSchema));
    const addressForm = await superValidate(valibot(addressFormSchema));
    const leaseDiscountForm = await superValidate(valibot(leaseDiscountFormSchema));
    const discountId = event.url.searchParams.get('discountId');
    const redirectTo = event.url.searchParams.get('redirectTo');
-   const userId = event.url.searchParams.get('userId');
    const unit = await prisma.unit.findUnique({
       where: {
          num: unitNum
@@ -213,6 +214,7 @@ export const actions: Actions = {
                paymentRecordNum: paymentRecord.paymentNumber
             }
          })
+         await sendPaymentReceipt(customer, paymentRecord, address);
          redirect(302, `/employeeNewLease/leaseSent?leaseId=${lease.leaseId}`);
       }
       let name:string = `${customer!.givenName} ${customer!.familyName}`

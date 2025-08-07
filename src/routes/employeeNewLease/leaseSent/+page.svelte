@@ -13,9 +13,9 @@
 </div>
 {#if data.paymentRecord}
 <div class="flex flex-col sm:flex-row rounded-lg border-2 border-primary-50-950 m-1 sm:m-2">
-   <PaymentRecordEmployee paymentRecord={data.paymentRecord} classes='m-2'/>
+   <PaymentRecordEmployee paymentRecord={data.paymentRecord} classes='m-1 sm:m-2 sm:w-1/2'/>
    {#if data.customer}
-         <div class="">
+         <div class="m-1 sm:m-2">
             <UserEmployee user={data.customer} />
             {#if data.address}
                <AddressEmployee address={data.address} />
