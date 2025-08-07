@@ -14,10 +14,7 @@ export const handle: Handle = async ({ event, resolve }) => {
          }
       });
    }
-   console.log(token);
    const { session, user } = await validateSessionToken(token);
-   console.log('session', session);
-   console.log('user', user);
    if(session){
       event.cookies.set('demoSession', token, {
          httpOnly: true,
