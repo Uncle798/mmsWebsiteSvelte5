@@ -32,51 +32,56 @@ export const actions: Actions = {
       if( !event.locals.user.employee && userId !== event.locals.user.id){
          error(403, {message: 'Not your address to change'});
       }
-      let oldAddress = await prisma.address.findFirst({
-         where: {
-            AND: [
-               {userId: userId},
-               {softDelete: false},
-            ]
-         }
-      });
-      if(oldAddress){
-         oldAddress = await prisma.address.update({
-            where:{
-               addressId: oldAddress.addressId
-            },
-            data: {
-               softDelete: true,
+      console.log(addressForm)
+      if(addressForm.valid){
+
+         let oldAddress = await prisma.address.findFirst({
+            where: {
+               AND: [
+                  {userId: userId},
+                  {softDelete: false},
+               ]
             }
-         })
-      }
-      const phoneValidResponse = await fetch(`https://api.dev.me/v1-get-phone-details?phone=${addressForm.data.phoneNum1Country}${addressForm.data.phoneNum1}`,
-         {
-            headers: {
-               'Accept': 'application/json',
-               'x-api-key': DEV_ME_KEY
+         });
+         if(oldAddress){
+            oldAddress = await prisma.address.update({
+               where:{
+                  addressId: oldAddress.addressId
+               },
+               data: {
+                  softDelete: true,
+               }
+            })
+         }
+         const phoneValidResponse = await fetch(`https://api.dev.me/v1-get-phone-details?phone=${addressForm.data.phoneNum1Country}${addressForm.data.phoneNum1}`,
+            {
+               headers: {
+                  'Accept': 'application/json',
+                  'x-api-key': DEV_ME_KEY
+               }
             }
+         )
+         const phoneValid = await phoneValidResponse.json()
+         console.log(phoneValid)
+         if(!phoneValid.valid){
+            return message(addressForm, 'Phone number not valid')
          }
-      )
-      const phoneValid = await phoneValidResponse.json()
-      if(!phoneValid.valid){
-         message(addressForm, 'Phone number not valid')
+         // eslint-disable-next-line @typescript-eslint/no-unused-vars
+         const {phoneNum1, phoneNum1Country, ...rest} = addressForm.data
+            const newAddress = {
+               userId,
+               phoneNum1:phoneValid.nationalNumber,
+               phoneNum1Country: phoneValid.callingCode,
+               ...rest
+            }
+            await prisma.address.create({
+               data: newAddress
+            })
+         // }
+         // if(data.result.verificationStatus === 'unverified'){
+         //    return message(addressForm, 'Unable to verify address, please contact the office');
+         // }
       }
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const {phoneNum1, phoneNum1Country, ...rest} = addressForm.data
-         const newAddress = {
-            userId,
-            phoneNum1:phoneValid.nationalNumber,
-            phoneNum1Country: phoneValid.callingCode,
-            ...rest
-         }
-         await prisma.address.create({
-            data: newAddress
-         })
-      // }
-      // if(data.result.verificationStatus === 'unverified'){
-      //    return message(addressForm, 'Unable to verify address, please contact the office');
-      // }
       return {addressForm}
    }
 };

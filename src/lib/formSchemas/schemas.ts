@@ -87,7 +87,7 @@ export const addressFormSchema = v.object({
    state: v.pipe(v.string(), v.minLength(2), v.maxLength(255)),
    postalCode: v.pipe(v.string(), v.minLength(5), v.maxLength(9)),
    country: v.pipe(v.string(), v.minLength(2), v.maxLength(2)),
-   phoneNum1: v.pipe(v.string(), v.minLength(10), v.maxLength(12), v.digits()),
+   phoneNum1: v.pipe(v.string(), v.minLength(10), v.maxLength(14)),
    phoneNum1Country: v.pipe(v.string(), v.minLength(2), v.maxLength(2)),
 });
 export type AddressFormSchema = typeof addressFormSchema;
