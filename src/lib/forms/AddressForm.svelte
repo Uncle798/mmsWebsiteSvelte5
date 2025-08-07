@@ -7,6 +7,7 @@
 	import { invalidateAll } from '$app/navigation';
 	import FormProgress from '$lib/formComponents/FormSubmitWithProgress.svelte';
 	import FormMessage from '$lib/formComponents/FormMessage.svelte';
+	import PhoneInput from '$lib/formComponents/PhoneInput.svelte';
 
    interface Props {
       data:SuperValidated<Infer<AddressFormSchema>>, 
@@ -17,11 +18,17 @@
 
    let {data, addressModalOpen=$bindable(false), userId, classes }:Props = $props();
    let { form, message, errors, constraints, enhance, delayed, timeout} = superForm(data, {
-      onUpdate() {
-         if(!$message){
+      onSubmit() {
+         console.log('form.phoneNum1', $form.phoneNum1);
+         $form.phoneNum1 = $form.phoneNum1.replace(/\D/g, '');
+         console.log('form.phoneNum1', $form.phoneNum1);
+      },
+      onUpdated() {
+         console.log($message, $errors)
+         if(!$message || !$errors){
             addressModalOpen=false;
+            invalidateAll();
          }
-         invalidateAll();
       },
       delayMs: 500,
       timeoutMs: 8000,
@@ -89,10 +96,10 @@
          </select>
       </label>
       <div class="input-group divide-surface-200-800 grid-cols-[auto_1fr_auto] divide-x mt-2">
-         <div class="ig-cell preset-tonal w-28 sm:w-48">
+         <div class="ig-cell w-32 sm:w-48">
             <label for="phoneNum1Country" class="label-text">
-               Country Code:
-               <select class="ig-select truncate w-24 sm:w-44" name="phoneNum1Country" id="phoneNum1Country" autocomplete="tel-country-code">
+               Country Code
+               <select class="ig-select select " name="phoneNum1Country" id="phoneNum1Country" autocomplete="tel-country-code">
                   {#each dialCodes as dialCode}
                      {#if dialCode.code === "US"}
                         <option value={dialCode.dial_code} selected>{dialCode.dial_code} ({dialCode.name})</option>
@@ -103,19 +110,14 @@
                </select>
             </label>
          </div>
-         <div class="ig-cell w-48 sm:w-auto">
-            <label for="phoneNum1" class="label-text">
-               Phone number:
-               <input 
-                  type="text" 
-                  name="phoneNum1" 
-                  id="phoneNum1"
-                  class="ig-input"
-                  bind:value={$form.phoneNum1}
-                  placeholder="2088826564"
-                  autocomplete="tel"
-               />
-            </label>
+         <div class="ig-cell">
+            <PhoneInput
+               bind:value={$form.phoneNum1}
+               errors={$errors.phoneNum1}
+               constraints={$constraints.phoneNum1}
+               label='Phone'
+               name='phoneNum1'
+            />
          </div>
       </div>
       <FormProgress delayed={$delayed} timeout={$timeout}/>
