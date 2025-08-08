@@ -25,7 +25,6 @@ export const load = (async (event) => {
    }
    const token =  generateSessionToken();
    const session = await createSession(token, user.id!);
-   console.log('session', session)
    setSessionTokenCookie(event, token, session.expiresAt);
    const redirectTo = event.url.searchParams.get('redirectTo');
    const unitNum = event.url.searchParams.get('unitNum');
