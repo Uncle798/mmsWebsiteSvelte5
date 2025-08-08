@@ -11,6 +11,7 @@
 	import { SearchIcon, PanelTopClose, Users } from 'lucide-svelte';
 	import { onMount } from 'svelte';
 	import ExplainerModal from '$lib/demo/ExplainerModal.svelte';
+	import { invalidateAll } from '$app/navigation';
 
    let { data }: { data: PageData } = $props();
    let search = $state('')
@@ -50,7 +51,14 @@
       ), 5000)
    })
    let adminFilter = $state(false);
-   let employeeFilter = $state(false)
+   let employeeFilter = $state(false);
+   async function deleteUser(userId:string) {
+      await fetch('/api/users', {
+         method: 'DELETE',
+         body: JSON.stringify({userId})
+      })
+      invalidateAll();
+   }
 </script>
 <Header title='All users' />
 {#await data.users}
@@ -118,6 +126,7 @@
                   userId={user.id}
                   classes=" p-2 flex flex-col sm:flex-row"
                />
+               <button class="btn preset-filled-primary-50-950" onclick={()=> deleteUser(user.id)}>Delete User</button>
             </div>
          {/each}
       </div>

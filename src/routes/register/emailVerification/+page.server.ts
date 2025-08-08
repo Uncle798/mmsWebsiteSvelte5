@@ -35,9 +35,7 @@ export const actions: Actions ={
         if(!event.locals.user){
             redirect(302, '/login')
         }
-        if(event.locals.user.emailVerified){
-            redirect(302, '/');
-        }
+        const userId = event.url.searchParams.get('userId');
         const formData = await event.request.formData();
         const emailVerificationForm = await superValidate(formData, valibot(emailVerificationFormSchema));
         if(!emailVerificationForm.valid){
@@ -48,9 +46,12 @@ export const actions: Actions ={
             const timeRemaining = Math.floor((reset - Date.now()) / 1000);
             return message(emailVerificationForm, `Please wait ${timeRemaining} seconds before trying again`);
         }
+        if(!userId){
+            return message(emailVerificationForm, 'userId not provided')
+        }
         const verification = await prisma.verification.findFirst({
             where: {
-                userId: event.locals.user.id
+                userId: userId
             }
         })
         if(!verification){
@@ -71,7 +72,7 @@ export const actions: Actions ={
         })
         await prisma.user.update({
             where: {
-                id: event.locals.user.id
+                id: userId
             },
             data: {
                 emailVerified: true
@@ -83,7 +84,7 @@ export const actions: Actions ={
             redirect(302, '/')
         }
         if(redirectTo){
-            redirect(302, `/${redirectTo}?unitNum=${unitNum}`)
+            redirect(302, `/${redirectTo}?unitNum=${unitNum}&userId=${userId}`)
         }
         return message(emailVerificationForm, 'Email verified');
     },

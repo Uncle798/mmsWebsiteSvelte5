@@ -12,11 +12,13 @@
       formType: 'customer' | 'employee'
       redirectTo?:string;
       classes?: string;
+      emailVerificationModalOpen?: boolean
    }
-   let { data, registerFormModalOpen = $bindable(), formType, redirectTo, classes }:Props = $props();
+   let { data, registerFormModalOpen = $bindable(false), emailVerificationModalOpen= $bindable(false), formType, redirectTo, classes }:Props = $props();
    let { form, errors, constraints, message, enhance, delayed, timeout} = superForm(data, {
       onUpdated(){
          registerFormModalOpen=false;
+         emailVerificationModalOpen=true;
       }
    })
 </script>

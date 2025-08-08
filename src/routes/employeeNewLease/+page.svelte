@@ -15,9 +15,13 @@
    import RadioButton from '$lib/formComponents/RadioButton.svelte';
 	import { PaymentType } from '@prisma/client';
 	import { onMount } from 'svelte';
+	import RegisterForm from '$lib/forms/RegisterForm.svelte';
+	import EmailVerificationForm from '$lib/forms/EmailVerificationForm.svelte';
 
    let { data }: { data: PageData } = $props();
-   let addressModalOpen = $state(false)
+   let addressModalOpen = $state(false);
+   let registerModalOpen = $state(false);
+   let emailVerificationModalOpen = $state(false);
    let { form, errors, message, constraints, enhance, delayed, timeout} = superForm(data.leaseForm, {
 
    });
@@ -28,6 +32,7 @@
    }
    const customerComboBoxData:ComboBoxData[]=[];
    onMount(() => {
+      console.log(data.customers)
       data.customers.forEach((customer) =>{
          const label = `${customer.givenName} ${customer.familyName} (${customer.email})`;
          const value = customer.id;
@@ -37,16 +42,53 @@
          }
          customerComboBoxData.push(datum);
       });
+      if(data.customer){
+         if(!data.customer.emailVerified){
+            emailVerificationModalOpen=true
+         }
+      }
    })
    const currencyFormatter = new Intl.NumberFormat('en-US', {style: 'currency', currency: 'USD'})
 </script>
 
 
 <Header title="Employee New Lease" />
+
+<Modal
+   open={registerModalOpen}
+   onOpenChange={(e)=> registerModalOpen = e.open}
+   triggerBase="btn preset-filled-primary-50-950"
+   contentBase="card bg-surface-400-600 p-4 space-y-4 shadow-xl max-w-(--breakpoint-sm)"
+   backdropClasses="backdrop-blur-xs"
+>
+   {#snippet content()}
+      <RegisterForm data={data.registerForm} formType='employee' bind:registerFormModalOpen={registerModalOpen} redirectTo='false' />
+      <button class="btn preset-filled-primary-50-950" onclick={()=>registerModalOpen=false}>Cancel</button>
+   {/snippet}
+</Modal>
+{#if data.customer && !data.customer.emailVerified}
+   <Modal
+      open={emailVerificationModalOpen}
+      onOpenChange={(e)=> emailVerificationModalOpen = e.open}
+      triggerBase="btn preset-filled-primary-50-950"
+      contentBase="card bg-surface-400-600 p-4 space-y-4 shadow-xl max-w-(--breakpoint-sm)"
+      backdropClasses="backdrop-blur-xs"
+   >
+      {#snippet content()}
+         <EmailVerificationForm 
+            data={data.emailVerificationForm} 
+            bind:emailVerificationModalOpen={emailVerificationModalOpen} 
+            userId={data.customer!.id}
+            redirect='' 
+         />
+         <button class="btn preset-filled-primary-50-950" onclick={()=>registerModalOpen=false}>Cancel</button>
+      {/snippet}
+   </Modal>
+{/if}
 <div in:fade={{duration:600}} out:fade={{duration:0}} class="mx-2 mt-14 sm:mt-12">
    {#if !data.customer}
       <div class="m-2">
-         <a href="/employeeNewCustomer" class="btn rounded-lg preset-filled-primary-50-950">Create new customer</a>
+         <button class="btn rounded-lg preset-filled-primary-50-950" onclick={()=>registerModalOpen=true}>Create new customer</button>
          <h1 class="m-1 h4">
             Renting unit {data.unitNum.replace(/^0+/gm,'').replace(/x0/gm, 'x')}
          </h1>

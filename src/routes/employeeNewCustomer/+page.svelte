@@ -15,5 +15,5 @@
    <RegisterForm data={data.registerForm} formType='employee' redirectTo='employeeNewCustomer' classes='mt-14 sm:mt-10 m-1 sm:m-2' />
 {/if}
 {#if data.customer?.emailVerified}
-   <a href="/employeeNewLease?userId={data.customer.id}" class="anchor mx-2">Make a new lease for this customer</a>
+   <a href="/employeeNewLease?userId={data.customer.id}?unitNum={data.unitNum}" class="anchor mx-2">Make a new lease for this customer</a>
 {/if}

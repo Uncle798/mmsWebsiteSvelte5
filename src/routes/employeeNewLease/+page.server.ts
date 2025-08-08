@@ -2,7 +2,7 @@
 import { error, redirect } from '@sveltejs/kit';
 import { message, superValidate} from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
-import { newLeaseSchema, registerFormSchema, addressFormSchema, leaseDiscountFormSchema  } from '$lib/formSchemas/schemas'
+import { newLeaseSchema, registerFormSchema, addressFormSchema, leaseDiscountFormSchema, emailVerificationFormSchema  } from '$lib/formSchemas/schemas'
 import type { PageServerLoad, Actions } from './$types';
 import { prisma } from '$lib/server/prisma'; 
 import type { Address, DiscountCode, User } from '@prisma/client';
@@ -22,6 +22,7 @@ export const load = (async (event) => {
    }
    const leaseForm = await superValidate(valibot(newLeaseSchema));
    const registerForm = await superValidate(valibot(registerFormSchema));
+   const emailVerificationForm = await superValidate(valibot(emailVerificationFormSchema))
    const addressForm = await superValidate(valibot(addressFormSchema));
    const leaseDiscountForm = await superValidate(valibot(leaseDiscountFormSchema));
    const discountId = event.url.searchParams.get('discountId');
@@ -71,6 +72,7 @@ export const load = (async (event) => {
       leaseDiscountForm,
       leaseForm,
       registerForm, 
+      emailVerificationForm,
       addressForm, 
       discountId,
       redirectTo,

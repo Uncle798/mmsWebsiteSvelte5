@@ -10,6 +10,7 @@ export const load = (async (event) => {
    const registerForm = await superValidate(valibot(registerFormSchema));
    const emailVerificationForm = await superValidate(valibot(emailVerificationFormSchema));
    const userId = event.url.searchParams.get('userId');
+   const unitNum = event.url.searchParams.get('unitNum');
    let customer:User | null = null;
    if(userId){
       customer = await prisma.user.findUnique({
@@ -18,5 +19,5 @@ export const load = (async (event) => {
          }
       })
    }
-   return { registerForm, customer, emailVerificationForm};
+   return { registerForm, customer, emailVerificationForm, unitNum, };
 }) satisfies PageServerLoad;

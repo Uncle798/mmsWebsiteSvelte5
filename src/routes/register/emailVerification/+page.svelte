@@ -10,13 +10,15 @@
     }
 </script>
 
-    <Header title='Email Verification' />
-    {#if data.emailVerificationForm}
-        <EmailVerificationForm 
-            data={data.emailVerificationForm} 
-            emailVerificationModalOpen={emailVerificationOpen} 
-            redirect={redirectTo}
-            emailVerification={false}
-            classes='m-2 mt-14 sm:mt-10'
-        />
-    {/if}
+<Header title='Email Verification' />
+{#if data.emailVerificationForm}
+   {#if data.user}
+      <EmailVerificationForm 
+         data={data.emailVerificationForm} 
+         emailVerificationModalOpen={emailVerificationOpen} 
+         redirect={redirectTo}
+         classes='m-2 mt-14 sm:mt-10'
+         userId={data.user.id}
+      />
+   {/if}
+{/if}
