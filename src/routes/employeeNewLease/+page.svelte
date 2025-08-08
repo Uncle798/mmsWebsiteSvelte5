@@ -62,7 +62,7 @@
    backdropClasses="backdrop-blur-xs"
 >
    {#snippet content()}
-      <RegisterForm data={data.registerForm} formType='employee' bind:registerFormModalOpen={registerModalOpen} redirectTo='employeeNewLease' />
+      <RegisterForm data={data.registerForm} formType='employee' bind:registerFormModalOpen={registerModalOpen} redirectTo='employeeNewLease' unitNum={data.unitNum} />
       <button class="btn preset-filled-primary-50-950" onclick={()=>registerModalOpen=false}>Cancel</button>
    {/snippet}
 </Modal>
