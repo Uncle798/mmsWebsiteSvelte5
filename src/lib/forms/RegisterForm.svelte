@@ -13,8 +13,9 @@
       redirectTo?:string;
       classes?: string;
       emailVerificationModalOpen?: boolean
+      unitNum?: string;
    }
-   let { data, registerFormModalOpen = $bindable(false), emailVerificationModalOpen= $bindable(false), formType, redirectTo, classes }:Props = $props();
+   let { data, registerFormModalOpen = $bindable(false), emailVerificationModalOpen= $bindable(false), formType, redirectTo, classes, unitNum }:Props = $props();
    let { form, errors, constraints, message, enhance, delayed, timeout} = superForm(data, {
       onUpdated(){
          registerFormModalOpen=false;
@@ -24,7 +25,7 @@
 </script>
 <div class={classes}>
    <FormMessage message={$message} />
-   <form method="POST" action="/forms/registerForm?/{formType}&redirectTo={redirectTo}" use:enhance>
+   <form method="POST" action="/forms/registerForm?/{formType}&redirectTo={redirectTo}&unitNum={unitNum}" use:enhance>
       <TextInput
          label='Given name'
          name='givenName'
