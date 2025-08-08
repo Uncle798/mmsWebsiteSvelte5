@@ -18,8 +18,9 @@
    import { goto } from '$app/navigation';
 	import { SearchIcon, PanelTopCloseIcon } from 'lucide-svelte';
 	import EmailCustomer from '$lib/emailCustomer.svelte';
-	import { returns } from 'valibot';
-   dayjs.extend(utc)
+
+   dayjs.extend(utc);
+   
    let { data }: { data: PageData } = $props();
    let pageNum = $state(1);
    let size = $state(25);
