@@ -36,7 +36,7 @@ export const load = (async (event) => {
    let customers:User[] = [];
    let address:Address | null = null;
    let discount:DiscountCode | null = null;
-   if(userId !== 'null' && userId){
+   if(userId && userId !== 'null'){
       customer = await prisma.user.findUnique({
          where: {
             id: userId
@@ -58,7 +58,7 @@ export const load = (async (event) => {
          }
       })
    }
-   if(!userId){
+   if(!customer){
       customers = await prisma.user.findMany({
          where: {
             employee: false
