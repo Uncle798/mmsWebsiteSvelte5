@@ -20,10 +20,10 @@
       redirect=$bindable(''),
       classes,
    }:Props = $props();
-   let { form, errors, constraints, message, enhance, submitting, delayed, timeout } = superForm(data, {
+   let { form, errors, constraints, message, enhance,  delayed, timeout } = superForm(data, {
       onSubmit(){
       }, 
-      onUpdated(event) {
+      onUpdated() {
          emailVerificationModalOpen = false;
        },
    });
