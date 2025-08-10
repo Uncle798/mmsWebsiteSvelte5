@@ -44,8 +44,8 @@
          customerComboBoxData.push(datum);
       });
       if(data.customer){
-         if(!data.customer.emailVerified){
-            emailVerificationModalOpen=true
+         if(data.customer.emailVerified){
+            registerModalOpen=false
          }
       }
    })
@@ -63,37 +63,26 @@
    backdropClasses="backdrop-blur-xs"
 >
    {#snippet content()}
+   {#if !data.customer}
       <RegisterForm 
          data={data.registerForm} 
          formType='employee' 
-         bind:registerFormModalOpen={registerModalOpen} 
-         bind:emailVerificationModalOpen={emailVerificationModalOpen} 
-         redirectTo='false' 
+         bind:registerFormModalOpen={registerModalOpen}
+         redirectTo='employeeNewLease' 
          unitNum={data.unitNum}
-         bind:userId={userId}
       />
       <button class="btn preset-filled-primary-50-950" onclick={()=>registerModalOpen=false}>Close</button>
-   {/snippet}
-</Modal>
-{#if (data.customer && !data.customer.emailVerified) || userId !=='' }
-   <Modal
-      open={emailVerificationModalOpen}
-      onOpenChange={(e)=> emailVerificationModalOpen = e.open}
-      triggerBase="btn preset-filled-primary-50-950"
-      contentBase="card bg-surface-400-600 p-4 space-y-4 shadow-xl max-w-(--breakpoint-sm)"
-      backdropClasses="backdrop-blur-xs"
-   >
-      {#snippet content()}
+      {:else if !data.customer.emailVerified && data.customer} 
          <EmailVerificationForm 
             data={data.emailVerificationForm} 
-            bind:emailVerificationModalOpen={emailVerificationModalOpen} 
+            bind:emailVerificationModalOpen={registerModalOpen} 
             userId={userId ? userId : data.customer!.id}
             redirect='' 
          />
-         <button class="btn preset-filled-primary-50-950" onclick={()=>emailVerificationModalOpen=false}>Close</button>
-      {/snippet}
-   </Modal>
-{/if}
+         <button class="btn preset-filled-primary-50-950" onclick={()=>registerModalOpen=false}>Close</button>
+      {/if}
+   {/snippet}
+</Modal>
 <div in:fade={{duration:600}} out:fade={{duration:0}} class="mx-2 mt-14 sm:mt-12">
    {#if !data.customer}
       <div class="m-2">
