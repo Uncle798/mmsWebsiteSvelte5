@@ -14,10 +14,18 @@
       classes?: string;
       emailVerificationModalOpen?: boolean
       unitNum?: string;
+      userId?: string;
    }
-   let { data, registerFormModalOpen = $bindable(false), emailVerificationModalOpen= $bindable(false), formType, redirectTo, classes, unitNum }:Props = $props();
+   let { data, registerFormModalOpen=$bindable(false), emailVerificationModalOpen=$bindable(false), formType, redirectTo, classes, unitNum, userId=$bindable('') }:Props = $props();
    let { form, errors, constraints, message, enhance, delayed, timeout} = superForm(data, {
+      onUpdate({form, result}){
+         const data = result.data;
+         if(form.valid && data.userId){
+            userId = data.userId;
+         }
+      }, 
       onUpdated(){
+
          registerFormModalOpen=false;
          emailVerificationModalOpen=true;
       }

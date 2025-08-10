@@ -86,9 +86,10 @@ export const actions: Actions = {
 				organizationName: registerForm.data.organizationName,
 			}
 		});
-		if(redirectTo){
-			redirect(303, `/${redirectTo}?userId=${user.id}`)
+		const unitNum = event.url.searchParams.get('unitNum');
+		if(redirectTo !== 'false'){
+			redirect(303, `/${redirectTo}?userId=${user.id}&unitNum=${unitNum}`)
 		}
-      return { registerForm }
+      return { registerForm, unitNum }
    }
 };

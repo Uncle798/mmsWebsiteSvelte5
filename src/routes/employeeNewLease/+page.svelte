@@ -22,6 +22,7 @@
    let addressModalOpen = $state(false);
    let registerModalOpen = $state(false);
    let emailVerificationModalOpen = $state(false);
+   let userId = $state('')
    let { form, errors, message, constraints, enhance, delayed, timeout} = superForm(data.leaseForm, {
 
    });
@@ -62,11 +63,19 @@
    backdropClasses="backdrop-blur-xs"
 >
    {#snippet content()}
-      <RegisterForm data={data.registerForm} formType='employee' bind:registerFormModalOpen={registerModalOpen} redirectTo='employeeNewLease' unitNum={data.unitNum} />
-      <button class="btn preset-filled-primary-50-950" onclick={()=>registerModalOpen=false}>Cancel</button>
+      <RegisterForm 
+         data={data.registerForm} 
+         formType='employee' 
+         bind:registerFormModalOpen={registerModalOpen} 
+         bind:emailVerificationModalOpen={emailVerificationModalOpen} 
+         redirectTo='false' 
+         unitNum={data.unitNum}
+         bind:userId={userId}
+      />
+      <button class="btn preset-filled-primary-50-950" onclick={()=>registerModalOpen=false}>Close</button>
    {/snippet}
 </Modal>
-{#if data.customer && !data.customer.emailVerified}
+{#if (data.customer && !data.customer.emailVerified) || userId !=='' }
    <Modal
       open={emailVerificationModalOpen}
       onOpenChange={(e)=> emailVerificationModalOpen = e.open}
@@ -78,10 +87,10 @@
          <EmailVerificationForm 
             data={data.emailVerificationForm} 
             bind:emailVerificationModalOpen={emailVerificationModalOpen} 
-            userId={data.customer!.id}
+            userId={userId ? userId : data.customer!.id}
             redirect='' 
          />
-         <button class="btn preset-filled-primary-50-950" onclick={()=>registerModalOpen=false}>Cancel</button>
+         <button class="btn preset-filled-primary-50-950" onclick={()=>emailVerificationModalOpen=false}>Close</button>
       {/snippet}
    </Modal>
 {/if}
