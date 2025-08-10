@@ -18,42 +18,42 @@ export const DELETE: RequestHandler = async (event) => {
    if(user){
       await prisma.verification.deleteMany({
          where: {
-            userId: user?.id
+            userId: user.id
          }
       })
       await prisma.session.deleteMany({
          where: {
-            userId: user?.id
+            userId: user.id
          }
       });
       await prisma.refundRecord.deleteMany({
          where: {
-            customerId: user?.id
+            customerId: user.id
          }
       })
       await prisma.paymentRecord.deleteMany({
          where: {
-            customerId: user?.id
+            customerId: user.id
          }
       })
       await prisma.invoice.deleteMany({
          where: {
-            customerId: user?.id
+            customerId: user.id
          }
       })
       await prisma.lease.deleteMany({
          where: {
-            customerId: user?.id
+            customerId: user.id
          }
       })
       await prisma.address.deleteMany({
          where: {
-            userId: user?.id
+            userId: user.id
          }
       })
       await prisma.user.deleteMany({
          where: {
-            id: user?.id
+            id: user.id
          }
       })
    }
