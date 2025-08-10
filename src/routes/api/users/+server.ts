@@ -16,6 +16,10 @@ export const DELETE: RequestHandler = async (event) => {
       }
    })
    if(user){
+      if(user.id === event.locals.user.id){
+         return new Response(JSON.stringify('Can\'t delete self'), { status:401 })
+      }
+
       await prisma.verification.deleteMany({
          where: {
             userId: user.id
