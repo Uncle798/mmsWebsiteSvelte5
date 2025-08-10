@@ -8,7 +8,7 @@
 	import UserAdmin from '$lib/displayComponents/UserAdmin.svelte';
 	import Search from '$lib/forms/Search.svelte';
 	import { Modal, Switch } from '@skeletonlabs/skeleton-svelte';
-	import { SearchIcon, PanelTopClose, Users } from 'lucide-svelte';
+	import { SearchIcon, PanelTopClose, } from 'lucide-svelte';
 	import { onMount } from 'svelte';
 	import ExplainerModal from '$lib/demo/ExplainerModal.svelte';
 	import { invalidateAll } from '$app/navigation';
@@ -62,7 +62,7 @@
 </script>
 <Header title='All users' />
 {#await data.users}
-   <div class="mt-14 sm:mt-10">
+   <div class="mt-14 sm:mt-10 mx-1 sm:mx-2">
       Loading {data.userCount} users...
    </div>
 {:then users }
