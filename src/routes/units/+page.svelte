@@ -136,11 +136,11 @@
 										searchDrawerOpen=false;
 										selectedSize=details.value
 									}}
-								/>
+								/> 
 								</div>
 						{/snippet}
 					</Modal>
-            	<div class="sm:m-2 m-1 sm:mt-18 mt-20" in:fade={{duration:1600}} out:fade={{duration:0}}>
+            	<div class="sm:m-2 m-1 sm:mt-20 mt-22" in:fade={{duration:1600}} out:fade={{duration:0}}>
                	{#each slicedUnits(filteredUnits(searchedUnits(units))) as unit}
                	{@const lease = leases?.find((lease) => lease.unitNum === unit.num)}
 							<div class="border-2 border-primary-50-950 rounded-lg grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 my-2 gap-2">
