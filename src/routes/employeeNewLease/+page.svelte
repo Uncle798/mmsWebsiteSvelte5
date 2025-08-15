@@ -54,7 +54,7 @@
    })
    const currencyFormatter = new Intl.NumberFormat('en-US', {style: 'currency', currency: 'USD'})
    const paymentTypes = [ 'CASH', 'CHECK', 'CREDIT'];
-   let explainerModalOpen = $state(false)
+   let explainerModalOpen = $state(true)
 </script>
 
 
@@ -90,7 +90,6 @@
 </Modal>
 <ExplainerModal
    modalOpen={explainerModalOpen}
-
 >
    {#snippet copy()}
       Please select cash or check to complete the project as there is currently no way to demo a credit payment.
