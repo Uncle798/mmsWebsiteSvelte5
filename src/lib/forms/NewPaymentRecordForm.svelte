@@ -118,7 +118,14 @@
    <FormMessage message={$message} />
    <form action="/forms/newPaymentRecordForm" method="POST" use:enhance>
       {#if invoice}
-         <InvoiceEmployee {invoice} />
+         <div {@attach ()=>{
+            $form.paymentAmount = invoice.invoiceAmount
+               $form.paymentNotes = `Payment for invoice ${invoice.invoiceNum}, ${invoice.invoiceNotes}`
+               $form.deposit = invoice.deposit
+         }}>
+            <InvoiceEmployee {invoice} />
+         </div>
+
       {:else if selectedInvoice[0] === ''}
          <Combobox
             data={invoicesComboboxData}
@@ -175,6 +182,7 @@
       {@const customer = customers?.find((customer) => customer.id === invoice?.customerId)}
          <div class="border border-primary-contrast-50-950 rounded-lg flex" {@attach ()=>{
             if(invoice){
+               console.log(invoice?.invoiceAmount)
                $form.paymentAmount = invoice.invoiceAmount
                $form.paymentNotes = `Payment for invoice ${invoice.invoiceNum}, ${invoice.invoiceNotes}`
                $form.deposit = invoice.deposit
