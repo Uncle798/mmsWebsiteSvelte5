@@ -29,7 +29,7 @@ export const POST: RequestHandler = async (event) => {
          ssl_txn_id: payment.transactionId
       }
       const xml = 'xmldata=\n' +'<txn>\n'+ xmlJs.js2xml(details, {compact: true, ignoreComment: true, spaces: 4, ignoreDoctype: false}) + '\n</txn>';
-      const response = await fetch('https://api.demo.convergepay.com/VirtualMerchantDemo/processxml.do', {
+      const response = await event.fetch('https://api.demo.convergepay.com/VirtualMerchantDemo/processxml.do', {
          method: 'POST',
          headers: {
             'Content-Type': 'application/x-www-form-urlencoded'
