@@ -122,7 +122,7 @@
 >
    {#snippet content()}
       <p>
-         Please visit <a href="https://developer.elavon.com/products/xml-api/v1/test-cards" class="anchor" target="_blank">https://developer.elavon.com/products/xml-api/v1/test-cards</a> to view acceptable test cards
+         Unfortunately there is no way to demo taking a credit payment right now. Please select cash or check to see a payment receipt.
       </p>
       <button class="btn preset-tonal" onclick={()=>(explainerModalOpen=false)}>Close</button>
    {/snippet}
@@ -216,7 +216,7 @@
                   </button>
                {/snippet}
                {#snippet content()}
-                  Please use 4000000000000002 or any of the card numbers from <a href="https://developer.elavon.com/products/xml-api/v1/test-cards" class="anchor">https://developer.elavon.com/products/xml-api/v1/test-cards</a>
+                  Please use 4000000000000002 or any of the card numbers from <a href="https://developer.elavon.com/test-cards" class="anchor">https://developer.elavon.com/test-cards</a>
                {/snippet}
             </Tooltip>
             <input 
@@ -252,7 +252,7 @@
                      </button>
                   {/snippet}
                   {#snippet content()}
-                     Please use a future date, from <a href="https://developer.elavon.com/products/xml-api/v1/test-cards" class="anchor">https://developer.elavon.com/products/xml-api/v1/test-cards</a>
+                     Please use a future date, from <a href="https://developer.elavon.com/test-cards" class="anchor">https://developer.elavon.com/test-cards</a>
                   {/snippet}
                </Tooltip>
                <input
@@ -287,7 +287,7 @@
                      </button>
                   {/snippet}
                   {#snippet content()}
-                     Please use any valid cvv code, from <a href="https://developer.elavon.com/products/xml-api/v1/test-cards" class="anchor">https://developer.elavon.com/products/xml-api/v1/test-cards</a>
+                     Please use any valid cvv code, from <a href="https://developer.elavon.com/test-cards" class="anchor">https://developer.elavon.com/test-cards</a>
                   {/snippet}
                </Tooltip>
                <input
