@@ -24,7 +24,6 @@
          console.log('form.phoneNum1', $form.phoneNum1);
       },
       onUpdated() {
-         console.log($message, $errors)
          if(!$message || !$errors){
             addressModalOpen=false;
             invalidateAll();
