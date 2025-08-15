@@ -16,6 +16,7 @@
 	import { onMount } from 'svelte';
 	import RegisterForm from '$lib/forms/RegisterForm.svelte';
 	import EmailVerificationForm from '$lib/forms/EmailVerificationForm.svelte';
+   import ExplainerModal from '$lib/demo/ExplainerModal.svelte';
 
    let { data }: { data: PageData } = $props();
    let addressModalOpen = $state(false);
@@ -47,9 +48,13 @@
             registerModalOpen=false
          }
       }
+      setTimeout(()=>{
+         explainerModalOpen = false
+      }, 4000)
    })
    const currencyFormatter = new Intl.NumberFormat('en-US', {style: 'currency', currency: 'USD'})
    const paymentTypes = [ 'CASH', 'CHECK', 'CREDIT'];
+   let explainerModalOpen = $state(false)
 </script>
 
 
@@ -83,6 +88,14 @@
       {/if}
    {/snippet}
 </Modal>
+<ExplainerModal
+   modalOpen={explainerModalOpen}
+
+>
+   {#snippet copy()}
+      Please select cash or check to complete the project as there is currently no way to demo a credit payment.
+   {/snippet}
+</ExplainerModal>
 <div in:fade={{duration:600}} out:fade={{duration:0}} class="mx-2 mt-14 sm:mt-12">
    {#if !data.customer}
       <div class="m-2">
