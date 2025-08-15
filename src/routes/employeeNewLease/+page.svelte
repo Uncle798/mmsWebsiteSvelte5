@@ -13,7 +13,6 @@
    import Checkbox from '$lib/formComponents/Checkbox.svelte';
    import LeaseDiscountForm from '$lib/forms/LeaseDiscountForm.svelte';
    import RadioButton from '$lib/formComponents/RadioButton.svelte';
-	import { PaymentType } from '@prisma/client';
 	import { onMount } from 'svelte';
 	import RegisterForm from '$lib/forms/RegisterForm.svelte';
 	import EmailVerificationForm from '$lib/forms/EmailVerificationForm.svelte';
@@ -50,6 +49,7 @@
       }
    })
    const currencyFormatter = new Intl.NumberFormat('en-US', {style: 'currency', currency: 'USD'})
+   const paymentTypes = [ 'CASH', 'CHECK', 'CREDIT'];
 </script>
 
 
@@ -161,7 +161,7 @@
          <div class="flex flex-col w-80">
             {#if data.unit && data.address}
                <div class="flex bg-primary-50-950 mt-2 rounded-lg justify-between">
-                  {#each Object.values(PaymentType) as paymentType}
+                  {#each paymentTypes as paymentType}
                      <RadioButton
                         value={paymentType}
                         errors={$errors.paymentType}
@@ -179,7 +179,7 @@
                   classes=''  
                />
             {:else if data.unit}
-               Please add address.
+               <div class="font-bold">Please add address.</div>
             {:else}
                Please select unit.
             {/if}
