@@ -24,7 +24,7 @@
    })
    let explainerModalOpen = $state(true);
    onMount(()=>{
-      setTimeout(()=>(explainerModalOpen = false), 5000)
+      setTimeout(()=>(explainerModalOpen = false), 4000)
    })
 </script>
 <Header title="Discounts" />
