@@ -89,7 +89,7 @@
    {/snippet}
 </Modal>
 <ExplainerModal
-   modalOpen={explainerModalOpen}
+   bind:modalOpen={explainerModalOpen}
 >
    {#snippet copy()}
       Please select cash or check to complete the project as there is currently no way to demo a credit payment.
