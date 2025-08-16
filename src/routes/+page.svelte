@@ -1,14 +1,13 @@
 
 <script lang="ts">
 	import { PUBLIC_COMPANY_EMAIL, PUBLIC_COMPANY_NAME, PUBLIC_PHONE } from "$env/static/public";
-   import PalouseHills from '$lib/Photos/Palouse_hills_northeast_of_Walla_Walla.jpg'
    import Header from "$lib/Header.svelte";
    import type { PageData } from "./$types";
    import type { Unit } from '@prisma/client'
 	import UnitCustomer from "$lib/displayComponents/customerViews/UnitCustomer.svelte";
 	import { fade } from "svelte/transition";
 	import Placeholder from "$lib/displayComponents/Placeholder.svelte";
-	import { Tooltip } from "@skeletonlabs/skeleton-svelte";
+	import { Tooltip, Combobox } from "@skeletonlabs/skeleton-svelte";
    interface Props {
       data: PageData;
    }
@@ -24,7 +23,6 @@
    const formattedPhone = PUBLIC_PHONE.substring(0,1) +'-'+ PUBLIC_PHONE.substring(1,4)+'-'+PUBLIC_PHONE.substring(4,7)+'-'+PUBLIC_PHONE.substring(7)
    let copyTooltipOpen = $state(false);
 </script>
-
 <Header title='Home' />
 {#await data.availableUnits}
    <article class="m-2 mt-14 sm:mt-10">
