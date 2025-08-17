@@ -81,33 +81,19 @@ async function deleteAll() {
 
  function userMakeEmail() {
    for(let i = 0; i < userData.length; i++){
-      const randString: string = String(Math.floor(Math.random() * 101));
+      const randString: string = String(Math.floor(Math.random() * 1001));
       const emailFront = userData[i].givenName + '.' + userData[i].familyName + randString;
-      if (i % 7 === 0) {
-         userData[i].email = emailFront.toLowerCase() + '@veryFakeEmail.com'.toLowerCase();
+      userData[i].email = emailFront.toLowerCase() + '@veryFakeEmail.com'.toLowerCase();
+      if(i % 7 === 0){
          userData[i].organizationName = faker.company.name();
-      } else if (i % 7 === 1) {
-         userData[i].email = emailFront.toLowerCase() + '@sillyNotRealEmail.com'.toLowerCase();
-      } else if (i % 7 === 2) {
-         // cSpell:disable 
-         userData[i].email = emailFront.toLowerCase() + '@blahblahblahEmail.com'.toLowerCase();
-      } else if (i % 7 === 3) {
-         userData[i].email = emailFront.toLowerCase() + '@horribleEmailAddress.com'.toLowerCase();
-      } else if (i % 7 === 4) {
-         userData[i].email = emailFront.toLowerCase() + '@emailemailemail.com';
-      } else if (i % 7 === 5) {
-         userData[i].email = emailFront.toLowerCase() + '@dumbfancyemail.com';
-      } else if (i % 7 === 6) {
-         userData[i].email = emailFront.toLowerCase() + '@sweetsweetemail.com';
       }
    }
    for(const user of userData){
       const sameEmail = userData.filter((u) => u.email === user.email);
       if(sameEmail.length > 1){
-         const randString:string=String(Math.floor(Math.random()*101));
+         const randString:string=String(Math.floor(Math.random()*1001));
          const emailFront = user.givenName + '.' + user.familyName + randString;
-         user.email = emailFront.toLowerCase() + 'yetanotherfakeemail.com';
-         //cSpell:enable
+         user.email = emailFront.toLowerCase() + 'yetAnotherFakeEmail.com'.toLowerCase();
       }
    }
 }
