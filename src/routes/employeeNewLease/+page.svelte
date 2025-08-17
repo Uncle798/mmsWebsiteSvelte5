@@ -23,7 +23,7 @@
    let registerModalOpen = $state(false);
    let emailVerificationModalOpen = $state(false);
    let userId = $state('')
-   let { form, errors, message, constraints, enhance, delayed, timeout} = superForm(data.leaseForm, {
+   let { form, errors, message, constraints, enhance, delayed, timeout, submit} = superForm(data.leaseForm, {
 
    });
    let selectedCustomer = $state([''])
@@ -44,8 +44,9 @@
          customerComboBoxData.push(datum);
       });
       if(data.customer){
-         if(data.customer.emailVerified){
-            registerModalOpen=false
+         if(!data.customer.emailVerified){
+            explainerModalOpen=false
+            registerModalOpen=true
          }
       }
       setTimeout(()=>{
@@ -54,7 +55,7 @@
    })
    const currencyFormatter = new Intl.NumberFormat('en-US', {style: 'currency', currency: 'USD'})
    const paymentTypes = [ 'CASH', 'CHECK', 'CREDIT'];
-   let explainerModalOpen = $state(true)
+   let explainerModalOpen = $state(!data.customer)
 </script>
 
 
@@ -102,13 +103,12 @@
          <h1 class="m-1 h4">
             Renting unit {data.unitNum.replace(/^0+/gm,'').replace(/x0/gm, 'x')}
          </h1>
-         <form action="/employeeNewLease?/selectCustomer&unitNum={data.unitNum}" method="POST" >
+         <form action="/employeeNewLease?/selectCustomer&unitNum={data.unitNum}" method="POST" use:enhance>
             <Combobox
                data={customerComboBoxData}
                value={selectedCustomer}
                label='Select a customer'
-               placeholder='Select...'
-               openOnClick={true}
+               placeholder='Type or select...'
                onValueChange={(details) => {
                   selectedCustomer = details.value
                }}
