@@ -23,7 +23,7 @@
    let registerModalOpen = $state(false);
    let emailVerificationModalOpen = $state(false);
    let userId = $state('')
-   let { form, errors, message, constraints, enhance, delayed, timeout, submit} = superForm(data.leaseForm, {
+   let { form, errors, message, constraints, enhance, delayed, timeout, } = superForm(data.leaseForm, {
 
    });
    let selectedCustomer = $state([''])
@@ -33,7 +33,6 @@
    }
    const customerComboBoxData:ComboBoxData[]=[];
    onMount(() => {
-      console.log(data.customers)
       data.customers.forEach((customer) =>{
          const label = `${customer.givenName} ${customer.familyName} (${customer.email})`;
          const value = customer.id;
@@ -49,13 +48,10 @@
             registerModalOpen=true
          }
       }
-      setTimeout(()=>{
-         explainerModalOpen = false
-      }, 4000)
    })
    const currencyFormatter = new Intl.NumberFormat('en-US', {style: 'currency', currency: 'USD'})
    const paymentTypes = [ 'CASH', 'CHECK', 'CREDIT'];
-   let explainerModalOpen = $state(!data.customer)
+   let explainerModalOpen = $state(false)
 </script>
 
 
@@ -172,7 +168,12 @@
       {/if}
          <div class="flex flex-col w-80">
             {#if data.unit && data.address}
-               <div class="flex bg-primary-50-950 mt-2 rounded-lg justify-between">
+               <div class="flex bg-primary-50-950 mt-2 rounded-lg justify-between" {@attach ()=>{
+                  explainerModalOpen=true;
+                  setTimeout(()=>{
+                     explainerModalOpen = false
+                  }, 4000);
+               }}>
                   {#each paymentTypes as paymentType}
                      <RadioButton
                         value={paymentType}
