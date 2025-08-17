@@ -91,6 +91,7 @@ export const actions: Actions = {
          redirect(302, '/login?toast=employee')
       }
       const leaseForm = await superValidate(event.request, valibot(newLeaseSchema));
+      console.log(leaseForm)
       if(!leaseForm.valid){
          message(leaseForm, 'Not valid');
       }
@@ -105,15 +106,17 @@ export const actions: Actions = {
          }
       })
       if(!customer){
-         error(404);
+         message(leaseForm, 'Customer not found');
+         return {}
       }
       const unit = await prisma.unit.findUnique({
          where: {
             num: leaseForm.data.unitNum
          }
-      })
+      });
       if(!unit){
-         error(404)
+         message(leaseForm, 'unit not found');
+         return {}
       }
       const currentLease = await prisma.lease.findFirst({
          where:{
@@ -136,7 +139,8 @@ export const actions: Actions = {
          }
       })
       if(!address){
-         error(400, {message: 'unable to find address'})
+         message(leaseForm, 'Unable to find address');
+         return {}
       }
       const employee = await prisma.user.findUnique({
          where:{
@@ -172,7 +176,8 @@ export const actions: Actions = {
             discountId: discount ? discount.discountId : undefined,
             discountedAmount: discount ? discountAmount : undefined
          }
-      })
+      });
+      console.log(lease);
       await prisma.unit.update({
          where: {
             num: lease.unitNum
@@ -216,7 +221,8 @@ export const actions: Actions = {
                paymentRecordNum: paymentRecord.paymentNumber
             }
          })
-         await sendPaymentReceipt(customer, paymentRecord, address);
+         const emailResponse = await sendPaymentReceipt(customer, paymentRecord, address);
+         console.log(emailResponse);   
          redirect(302, `/employeeNewLease/leaseSent?leaseId=${lease.leaseId}`);
       }
       let name:string = `${customer!.givenName} ${customer!.familyName}`
