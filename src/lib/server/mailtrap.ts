@@ -14,6 +14,9 @@ const sender = {
    email: 'computer@ministoragemanagementsoftware.com',
 }
 export async function sendVerificationEmail(verificationCode:string, email:string) {
+   if(email.includes('veryFakeEmail.com'.toLowerCase()) || email.includes('yetAnotherFakeEmail.com'.toLowerCase())){
+      return null;
+   }
    try {
       const response = await mailtrap.send({
          from:sender,
@@ -31,6 +34,9 @@ export async function sendVerificationEmail(verificationCode:string, email:strin
 }
 
 export async function sendMagicLinkEmail(magicLink:string, email:string) {
+   if(email.includes('veryFakeEmail.com'.toLowerCase()) || email.includes('yetAnotherFakeEmail.com'.toLowerCase())){
+      return null;
+   }
    try {
       const response = await mailtrap.send({
          from:sender,
@@ -49,8 +55,11 @@ export async function sendMagicLinkEmail(magicLink:string, email:string) {
 }
 
 export async function sendPaymentReceipt(customer:User, paymentRecord:PaymentRecord, address:Address){
+   if(customer.email?.includes('veryFakeEmail.com'.toLowerCase()) || customer.email?.includes('yetAnotherFakeEmail.com'.toLowerCase())){
+      return null;
+   }
    const pdf = await makeReceiptPdf(paymentRecord, customer, address);
-   const buf = await buffer(pdf)
+   const buf = await buffer(pdf);
    try {      
       const response = await mailtrap.send({
          from: sender,
@@ -73,6 +82,9 @@ export async function sendPaymentReceipt(customer:User, paymentRecord:PaymentRec
 }
 
 export async function sendInvoice(invoice:Invoice, customer:User, address:Address) {
+   if(customer.email?.includes('veryFakeEmail.com'.toLowerCase()) || customer.email?.includes('yetAnotherFakeEmail.com'.toLowerCase())){
+      return null;
+   }
    const pdf = await makeInvoicePdf(invoice, customer, address);
    const buf = await buffer(pdf);
    try {
@@ -98,22 +110,30 @@ export async function sendInvoice(invoice:Invoice, customer:User, address:Addres
 }
 
 export async function sendStatusEmail(admin:User, invoiceCount:number, totalInvoice:number, emptyUnits:number) {
-   try {
-      const response = await mailtrap.send({
-         from: sender,
-         to: [{email: admin.email!}],
-         subject: `${PUBLIC_COMPANY_NAME} Daily email`,
-         html: `Hello ${admin.givenName}<br/> ${invoiceCount} invoices were created this morning totaling ${currencyFormatter.format(totalInvoice)}.\
-         There are ${emptyUnits} empty units as of this morning. <br/>`
-      })
-      return response 
-   } catch (error) {
-      console.error(error)
-      return error
+   if(admin.email?.includes('veryFakeEmail.com'.toLowerCase()) || admin.email?.includes('yetAnotherFakeEmail.com'.toLowerCase())){
+      return null;
+   }
+   if(admin.admin){
+      try {
+         const response = await mailtrap.send({
+            from: sender,
+            to: [{email: admin.email!}],
+            subject: `${PUBLIC_COMPANY_NAME} Daily email`,
+            html: `Hello ${admin.givenName}<br/> ${invoiceCount} invoices were created this morning totaling ${currencyFormatter.format(totalInvoice)}.\
+            There are ${emptyUnits} empty units as of this morning. <br/>`
+         })
+         return response 
+      } catch (error) {
+         console.error(error)
+         return error
+      }
    }
 }
 
 export async function sendRefundEmail(refund:RefundRecord, customer:User, address:Address) {
+   if(customer.email?.includes('veryFakeEmail.com'.toLowerCase()) || customer.email?.includes('yetAnotherFakeEmail.com'.toLowerCase())){
+      return null;
+   }
    const pdf = await makeRefundPdf(refund, customer, address);
    const buf = await buffer(pdf);
    try {
