@@ -93,7 +93,7 @@ export const actions: Actions = {
       const leaseForm = await superValidate(event.request, valibot(newLeaseSchema));
       console.log(leaseForm)
       if(!leaseForm.valid){
-         message(leaseForm, 'Not valid');
+         return message(leaseForm, 'Not valid');
       }
       const { success, reset } = await ratelimit.employeeForm.limit(event.locals.user.id);
 		if(!success) {
@@ -106,8 +106,7 @@ export const actions: Actions = {
          }
       })
       if(!customer){
-         message(leaseForm, 'Customer not found');
-         return {}
+         return message(leaseForm, 'Customer not found');
       }
       const unit = await prisma.unit.findUnique({
          where: {
@@ -115,8 +114,7 @@ export const actions: Actions = {
          }
       });
       if(!unit){
-         message(leaseForm, 'unit not found');
-         return {}
+         return message(leaseForm, 'unit not found');
       }
       const currentLease = await prisma.lease.findFirst({
          where:{
@@ -129,8 +127,7 @@ export const actions: Actions = {
          console.error(err);
       })
       if(currentLease){
-         message(leaseForm, 'That unit is already leased');
-         return{}
+         return message(leaseForm, 'That unit is already leased');
       }
       const address = await prisma.address.findFirst({
          where: {
@@ -139,8 +136,7 @@ export const actions: Actions = {
          }
       })
       if(!address){
-         message(leaseForm, 'Unable to find address');
-         return {}
+         return message(leaseForm, 'Unable to find address'); 
       }
       const employee = await prisma.user.findUnique({
          where:{
@@ -201,6 +197,7 @@ export const actions: Actions = {
             invoiceDue: new Date(),
          }
       })
+
       if(leaseForm.data.paymentType === 'CASH' || leaseForm.data.paymentType === 'CHECK') {
          const paymentRecord = await prisma.paymentRecord.create({
             data: {
@@ -213,7 +210,8 @@ export const actions: Actions = {
                paymentCompleted: new Date()
             }
          })
-         await prisma.invoice.update({
+         console.log(paymentRecord);
+         const dbInvoice = await prisma.invoice.update({
             where: {
                invoiceNum: invoice.invoiceNum
             },
@@ -221,19 +219,16 @@ export const actions: Actions = {
                paymentRecordNum: paymentRecord.paymentNumber
             }
          })
+         console.log(dbInvoice)
          const emailResponse = await sendPaymentReceipt(customer, paymentRecord, address);
-         console.log(emailResponse);   
+         console.log('emailResponse', emailResponse);   
          redirect(302, `/employeeNewLease/leaseSent?leaseId=${lease.leaseId}`);
       }
-      let name:string = `${customer!.givenName} ${customer!.familyName}`
-      if(customer!.organizationName){
-         name=customer!.organizationName;
-      }
-      redirect(303, `/makePayment?invoiceNum=${invoice.invoiceNum}&newLease=true`)
+      redirect(303, `/makePayment?invoiceNum=${invoice.invoiceNum}&newLease=true`);
    },
    selectCustomer: async (event ) => {
       if(!event.locals.user?.employee){
-         redirect(302, '/login?toast=employee')
+         redirect(302, '/login?toast=employee');
       }
       const formData = await event.request.formData();
       const unitNum = event.url.searchParams.get('unitNum')
