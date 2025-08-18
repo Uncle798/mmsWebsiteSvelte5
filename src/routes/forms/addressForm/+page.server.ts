@@ -32,7 +32,6 @@ export const actions: Actions = {
       if( !event.locals.user.employee && userId !== event.locals.user.id){
          error(403, {message: 'Not your address to change'});
       }
-      console.log(addressForm)
       if(addressForm.valid){
 
          let oldAddress = await prisma.address.findFirst({
@@ -61,8 +60,7 @@ export const actions: Actions = {
                }
             }
          )
-         const phoneValid = await phoneValidResponse.json()
-         console.log(phoneValid)
+         const phoneValid = await phoneValidResponse.json();
          if(!phoneValid.valid){
             return message(addressForm, 'Phone number not valid')
          }

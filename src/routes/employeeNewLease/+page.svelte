@@ -21,7 +21,6 @@
    let { data }: { data: PageData } = $props();
    let addressModalOpen = $state(false);
    let registerModalOpen = $state(false);
-   let emailVerificationModalOpen = $state(false);
    let userId = $state('')
    let { form, errors, message, constraints, enhance, delayed, timeout, } = superForm(data.leaseForm, {
 
@@ -61,7 +60,7 @@
    open={registerModalOpen}
    onOpenChange={(e)=> registerModalOpen = e.open}
    triggerBase="btn preset-filled-primary-50-950"
-   contentBase="card bg-surface-400-600 p-4 space-y-4 shadow-xl max-w-(--breakpoint-sm)"
+   contentBase="card bg-surface-400-600 p-4 space-y-4 shadow-xl max-w-(--breakpoint-sm) sm:min-w-lg"
    backdropClasses="backdrop-blur-xs"
 >
    {#snippet content()}
@@ -82,6 +81,8 @@
             redirect='' 
          />
          <button class="btn preset-filled-primary-50-950" onclick={()=>registerModalOpen=false}>Close</button>
+      {:else}
+         <div {@attach ()=> {registerModalOpen=false}}></div>
       {/if}
    {/snippet}
 </Modal>
