@@ -54,12 +54,15 @@ export async function sendMagicLinkEmail(magicLink:string, email:string) {
    }
 }
 
-export async function sendPaymentReceipt(customer:User, paymentRecord:PaymentRecord, address:Address){
+export async function  sendPaymentReceipt(customer:User, paymentRecord:PaymentRecord, address:Address){
    if(customer.email?.includes('veryFakeEmail.com'.toLowerCase()) || customer.email?.includes('yetAnotherFakeEmail.com'.toLowerCase())){
       return null;
    }
+   console.log(sender);
    const pdf = await makeReceiptPdf(paymentRecord, customer, address);
+   console.log('pdf made');
    const buf = await buffer(pdf);
+   console.log('buf made')
    try {      
       const response = await mailtrap.send({
          from: sender,
