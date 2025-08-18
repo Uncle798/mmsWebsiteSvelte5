@@ -18,10 +18,8 @@
 
    let {data, addressModalOpen=$bindable(false), userId, classes }:Props = $props();
    let { form, message, errors, constraints, enhance, delayed, timeout} = superForm(data, {
-      onSubmit() {
-         console.log('form.phoneNum1', $form.phoneNum1);
-         $form.phoneNum1 = $form.phoneNum1.replace(/\D/g, '');
-         console.log('form.phoneNum1', $form.phoneNum1);
+      onSubmit({formData}) {
+         formData.set('phoneNum1', $form.phoneNum1.replace(/\D/g, ''));
       },
       onUpdated() {
          if(!$message || !$errors){
