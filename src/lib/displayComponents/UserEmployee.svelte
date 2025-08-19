@@ -16,7 +16,7 @@
 	{#if user.organizationName}
 		<span>{user.organizationName}</span>
 	{/if}
-	<span class=""><a href="mailto:{user.email}" class="anchor">{user.email}</a>
+	<span class="flex"><a href="mailto:{user.email}" class="anchor">{user.email}</a>
 	{#if user.emailVerified}
 		<Check aria-label='Email verified' color='green' />
 	{/if}
