@@ -159,7 +159,7 @@ export const actions:Actions = {
          }
       })
        await qStash.trigger({
-         url: `${PUBLIC_URL}/api/upstash/workflow`,
+         url: `https://${PUBLIC_URL}/api/upstash/workflow`,
          body:  { leaseId:lease.leaseId },
          workflowRunId: lease.leaseId
       })
