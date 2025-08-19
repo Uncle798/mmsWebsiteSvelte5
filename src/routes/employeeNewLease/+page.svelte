@@ -43,14 +43,14 @@
       });
       if(data.customer){
          if(!data.customer.emailVerified){
-            explainerModalOpen=false
             registerModalOpen=true
          }
       }
    })
    const currencyFormatter = new Intl.NumberFormat('en-US', {style: 'currency', currency: 'USD'})
    const paymentTypes = [ 'CASH', 'CHECK', 'CREDIT'];
-   let explainerModalOpen = $state(false)
+   let paymentExplainerModalOpen = $state(false);
+   let newCustomerExplainerModalOpen = $state(false);
 </script>
 
 
@@ -87,16 +87,31 @@
    {/snippet}
 </Modal>
 <ExplainerModal
-   bind:modalOpen={explainerModalOpen}
+   bind:modalOpen={paymentExplainerModalOpen}
 >
    {#snippet copy()}
       Please select cash or check to complete the project as there is currently no way to demo a credit payment.
    {/snippet}
 </ExplainerModal>
+<ExplainerModal
+   bind:modalOpen={newCustomerExplainerModalOpen}
+>
+   {#snippet copy()}
+      To create a new customer you'll need an email address that isn't the one you registered for the demo with. If you use gmail you can add a period (.) in the name and it will work as a new email address. 
+      i.e. firstNameLastName@gmail.com and firstName.LastName@gmail.com will both be received in the same inbox but do work as separate email addresses in the database.
+   {/snippet}
+</ExplainerModal>
+
+
 <div in:fade={{duration:600}} out:fade={{duration:0}} class="mx-2 mt-14 sm:mt-12">
    {#if !data.customer}
       <div class="m-2">
-         <button class="btn rounded-lg preset-filled-primary-50-950" onclick={()=>registerModalOpen=true}>Create new customer</button>
+         <button class="btn rounded-lg preset-filled-primary-50-950" onclick={()=>registerModalOpen=true} {@attach ()=>{ 
+            newCustomerExplainerModalOpen = true;
+            setTimeout(()=>{
+               newCustomerExplainerModalOpen = false;
+            }, 10000)
+         }}>Create new customer</button>
          <h1 class="m-1 h4">
             Renting unit {data.unitNum.replace(/^0+/gm,'').replace(/x0/gm, 'x')}
          </h1>
@@ -169,10 +184,10 @@
       {/if}
          <div class="flex flex-col w-80">
             {#if data.unit && data.address}
-               <div class="flex bg-primary-50-950 mt-2 rounded-lg justify-between" {@attach ()=>{
-                  explainerModalOpen=true;
+               <div class="flex bg-primary-50-950 mt-2 p-2 rounded-lg justify-between" {@attach ()=>{
+                  paymentExplainerModalOpen=true;
                   setTimeout(()=>{
-                     explainerModalOpen = false
+                     paymentExplainerModalOpen = false
                   }, 4000);
                }}>
                   {#each paymentTypes as paymentType}
