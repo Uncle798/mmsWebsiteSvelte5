@@ -174,6 +174,7 @@ export async function makeReceiptPdf(paymentRecord:PaymentRecord, customer:User,
       styles: styles,
    }
    const pdf = printer.createPdfKitDocument(receiptDocDef, {});
+   pdf.end()
    return pdf
 }
 
@@ -214,6 +215,6 @@ export async function makeRefundPdf(refund:RefundRecord, customer:User, address:
       }
    }
    const pdf = printer.createPdfKitDocument(refundDocDef);
-   pdf.end()
+   pdf.end();
    return pdf
 }
