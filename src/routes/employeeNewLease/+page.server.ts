@@ -91,11 +91,9 @@ export const actions: Actions = {
          redirect(302, '/login?toast=employee')
       }
       const leaseForm = await superValidate(event.request, valibot(newLeaseSchema));
-      console.log(leaseForm)
       if(!leaseForm.valid){
          return message(leaseForm, 'Not valid');
       }
-      console.log(ratelimit.createLease);
       const { success, reset } = await ratelimit.employeeForm.limit(event.locals.user.id);
 		if(!success) {
 			const timeRemaining = Math.floor((reset - Date.now()) /1000);
@@ -174,7 +172,6 @@ export const actions: Actions = {
             discountedAmount: discount ? discountAmount : undefined
          }
       });
-      console.log(lease);
       await prisma.unit.update({
          where: {
             num: lease.unitNum
@@ -184,7 +181,7 @@ export const actions: Actions = {
          }
       })
       await qStash.trigger({
-         url: `${PUBLIC_URL}/api/upstash/workflow`,
+         url: `https://${PUBLIC_URL}/api/upstash/workflow`,
          body:  {leaseId:lease.leaseId},
          workflowRunId: lease.leaseId
       })
