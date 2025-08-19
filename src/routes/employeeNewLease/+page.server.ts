@@ -95,10 +95,11 @@ export const actions: Actions = {
       if(!leaseForm.valid){
          return message(leaseForm, 'Not valid');
       }
+      console.log(ratelimit.createLease);
       const { success, reset } = await ratelimit.employeeForm.limit(event.locals.user.id);
 		if(!success) {
 			const timeRemaining = Math.floor((reset - Date.now()) /1000);
-			return message(leaseForm, `Please wait ${timeRemaining}s before trying again.`)
+			return message(leaseForm, `Please wait ${timeRemaining}s before trying again.`);
 		}
       const customer = await prisma.user.findUnique({
          where: {
