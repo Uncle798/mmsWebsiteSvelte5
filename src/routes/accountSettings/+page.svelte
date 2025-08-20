@@ -75,7 +75,7 @@
    {/snippet}
 </Modal>
 
-<div in:fade={{duration:600}} class="mx-2 mb-24 sm:mb-14 lg:mb-9 sm:mt-14">
+<div in:fade={{duration:600}} class="mx-2 mb-24 sm:mb-14 lg:mb-9 mt-14 sm:mt-10">
    <div class="flex flex-col sm:flex-row gap-2">
       <div>
          {#if data.user}
@@ -119,7 +119,7 @@
       {#if address}
          <AddressCustomer {address} classes=''/>
       {/if}
-         <button class="btn preset-filled-primary-50-950 m-1 sm:m-2" onclick={()=> {
+         <button class="btn preset-filled-primary-50-950 m-1 sm:m-2 rounded-lg" onclick={()=> {
             modalSelector = 'address'
             globalModalOpen = true;
          }}>

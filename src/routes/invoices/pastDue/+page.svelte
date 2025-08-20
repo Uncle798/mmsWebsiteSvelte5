@@ -75,21 +75,21 @@
 </script>
 {#await wrapper}
    <Header title='Loading invoices' />
-   <div class="mt-14 sm:mt-10 mx-1">
+   <div class="mt-14 sm:mt-10 mx-1 sm:mx-2">
       Loading {numberFormatter.format(data.invoiceCount)} invoices, 
       <Placeholder numCols={1} numRows={size} heightClass='h-40'/>
    </div>
    {:then invoices}
       {#await data.customers}
          <Header title='Loading customers' />
-         <div class="mt-14 sm:mt-10 mx-1">
+         <div class="mt-14 sm:mt-10 mx-1 sm:mx-2">
             Loading customers...
             <Placeholder numCols={1} numRows={size} heightClass='h-40'/>
          </div>
       {:then customers}
          {#await data.addresses}
             <Header title='Loading addresses' />
-            <div class="mt-14 sm:mt-10 mx-1">
+            <div class="mt-14 sm:mt-10 mx-1 sm:mx-2">
                Loading addresses...
                <Placeholder numCols={1} numRows={size} heightClass='h-40'/>
             </div>
@@ -97,14 +97,14 @@
          {#if invoices.length >0}       
             <Header title='Unpaid invoices' />
             <Revenue 
-               label="Total over due (not including deposits)" 
+               label="Total past due (not including deposits)" 
                amount={totalRevenue(searchedInvoices(dateSearchedInvoices(invoices)))} 
-               classes='bg-tertiary-50-950 w-full rounded-b-lg fixed top-8 p-2 z-40'
+               classes='bg-tertiary-50-950 w-full rounded-b-lg fixed top-10 sm:top-8 p-2 z-40'
             />
             <Modal
                open={searchDrawerOpen}
                onOpenChange={(event)=>(searchDrawerOpen = event.open)}
-               triggerBase='btn preset-filled-primary-50-950 rounded-lg fixed top-0 right-12 sm:right-0 z-50'
+               triggerBase='btn preset-filled-primary-50-950 rounded-lg fixed top-0 right-0 z-50 h-12 sm:h-9'
                contentBase='bg-surface-100-900 h-[360px] w-screen rounded-lg'
                positionerJustify=''
                positionerAlign=''
@@ -125,7 +125,7 @@
                   </div>
                {/snippet}
             </Modal>
-            <div class="grid grid-cols-1 gap-y-3 gap-x-1 m-1 sm:m-2 sm:mt-20 mt-22 mb-9 z-30" in:fade={{duration:600}} out:fade={{duration:0}}>
+            <div class="grid grid-cols-1 gap-y-3 gap-x-1 m-1 sm:m-2 sm:mt-20 mt-28 mb-9 z-30" in:fade={{duration:600}} out:fade={{duration:0}}>
                {#each  slicedInvoices(searchedInvoices(searchByUser(invoices, customers))) as invoice}  
                {@const customer = customers.find((customer) => customer.id === invoice.customerId)}  
                   <div class="rounded-lg border border-primary-50-950 grid sm:grid-cols-2">                            

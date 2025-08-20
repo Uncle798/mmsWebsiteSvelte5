@@ -84,20 +84,20 @@
     </div>
 {:then deposits} 
    {#await data.customers}
-      <div class="mt-14 sm:mt-10">
+      <div class="mt-14 sm:mt-10 m-1 sm:m-2">
          Loading customers...
       </div>
    {:then customers} 
       {#await data.addresses}
-         <div class="mt-14 sm:mt-10">
+         <div class="mt-14 sm:mt-10 m-1 sm:m-2">
                Loading addresses...
          </div>
       {:then addresses} 
-         <Revenue amount={totalRevenue(searchedPaymentRecords(deposits))} label='Amount of deposits' classes='bg-tertiary-50-950 w-screen rounded-b-lg fixed top-11 sm:top-9 p-2' />
+         <Revenue amount={totalRevenue(searchedPaymentRecords(deposits))} label='Amount of deposits' classes='bg-tertiary-50-950 w-screen rounded-b-lg fixed top-10 sm:top-8 p-2 z-0' />
          <Modal
             open={searchDrawerOpen}
             onOpenChange={(event)=>(searchDrawerOpen = event.open)}
-            triggerBase='btn preset-filled-primary-50-950 rounded-lg fixed top-0 right-0 z-50 h-12 sm:h-auto'
+            triggerBase='btn preset-filled-primary-50-950 rounded-lg fixed top-0 right-0 z-50 h-12 sm:h-9'
             contentBase='bg-surface-100-900 h-[340px] w-screen rounded-lg'
             positionerJustify=''
             positionerAlign=''
