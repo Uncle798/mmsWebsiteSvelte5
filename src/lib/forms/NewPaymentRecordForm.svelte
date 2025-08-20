@@ -90,7 +90,7 @@
    bind:modalOpen={explainerModalOpen}
 >
    {#snippet copy()}
-      Please choose Cash or Check for the demo. Credit card just means you have to enter a bunch of numbers.
+      Please choose Cash or Check for the demo. There is currently no way to demo credit card payments.
    {/snippet}
 </ExplainerModal>
 {#if leases}
