@@ -17,7 +17,7 @@
       userId?: string;
    }
    let { data, registerFormModalOpen=$bindable(false), emailVerificationModalOpen=$bindable(false), formType, redirectTo, classes, unitNum, userId=$bindable('') }:Props = $props();
-   let { form, errors, constraints, message, enhance, delayed, timeout} = superForm(data, {
+   let { form, errors, constraints, message, enhance, delayed, timeout, capture, restore, } = superForm(data, {
       onUpdate({form, result}){
          const data = result.data;
          if(form.valid && data.userId){
@@ -29,7 +29,11 @@
          registerFormModalOpen=false;
          emailVerificationModalOpen=true;
       }
-   })
+   });
+   export const snapshot = {
+      capture, 
+      restore, 
+   }
 </script>
 <div class={classes}>
    <FormMessage message={$message} />
