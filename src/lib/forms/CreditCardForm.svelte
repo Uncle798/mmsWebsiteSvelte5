@@ -27,7 +27,7 @@
    let { data, sessionToken, invoice, subscription, buttonText='Pay Bill',classes, }:Props = $props();
    let processing = $state(false);
    let errorDisplay = $state<HTMLElement>();
-   let { form, message, errors, constraints, enhance, delayed, timeout} = superForm(data, {
+   let { form, message, errors, constraints, enhance, delayed, timeout, } = superForm(data, {
       SPA: true,
       validators: valibot(creditCardFormSchema),
       onUpdate({form}){
