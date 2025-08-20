@@ -8,6 +8,8 @@
 	import FormProgress from '$lib/formComponents/FormSubmitWithProgress.svelte';
 	import FormMessage from '$lib/formComponents/FormMessage.svelte';
 	import PhoneInput from '$lib/formComponents/PhoneInput.svelte';
+	import { onMount } from 'svelte';
+	import { keyof } from 'valibot';
 
    interface Props {
       data:SuperValidated<Infer<AddressFormSchema>>, 
@@ -17,7 +19,16 @@
    }
 
    let {data, addressModalOpen=$bindable(false), userId, classes }:Props = $props();
-   let { form, message, errors, constraints, enhance, delayed, timeout} = superForm(data, {
+   let { form, message, errors, constraints, enhance, delayed, timeout, capture, restore, } = superForm(data, {
+      onChange(event) {
+         if(event.target){
+            console.log(event.formElement.getAttribute('action'))
+            const value = event.get(event.path);
+            if(value){
+               sessionStorage.setItem(event.path, value)
+            }
+         }
+      },
       onSubmit({formData}) {
          formData.set('phoneNum1', $form.phoneNum1.replace(/\D/g, ''));
       },
@@ -30,6 +41,18 @@
       delayMs: 500,
       timeoutMs: 8000,
    });
+   export const snapshot = {
+      capture,
+      restore,
+   }
+   onMount(() =>{
+      for(const formField of Object.keys($form)){
+         const storedValue = sessionStorage.getItem(formField)
+         if(storedValue){
+            $form[formField as keyof typeof $form] = storedValue;
+         }
+      }
+   })
 </script>
 <div class={classes}>
    <FormMessage message={$message} />
