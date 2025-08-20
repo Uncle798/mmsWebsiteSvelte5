@@ -158,7 +158,6 @@ export const actions:Actions = {
             invoiceDue: new Date()
          }
       });
-      console.log(PUBLIC_URL)
       await qStash.trigger({
          url: `https://${PUBLIC_URL}/api/upstash/workflow`,
          body:  { leaseId:lease.leaseId },

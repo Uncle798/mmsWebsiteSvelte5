@@ -208,7 +208,6 @@ export const actions: Actions = {
                paymentCompleted: new Date()
             }
          })
-         console.log(paymentRecord);
          const dbInvoice = await prisma.invoice.update({
             where: {
                invoiceNum: invoice.invoiceNum
@@ -216,10 +215,8 @@ export const actions: Actions = {
             data: {
                paymentRecordNum: paymentRecord.paymentNumber
             }
-         })
-         console.log(dbInvoice)
-         const emailResponse = await sendPaymentReceipt(customer, paymentRecord, address);
-         console.log('emailResponse', emailResponse);   
+         });
+         const emailResponse = await sendPaymentReceipt(customer, paymentRecord, address);  
          redirect(302, `/employeeNewLease/leaseSent?leaseId=${lease.leaseId}`);
       }
       redirect(303, `/makePayment?invoiceNum=${invoice.invoiceNum}&newLease=true`);

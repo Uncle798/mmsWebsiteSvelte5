@@ -131,7 +131,6 @@
                onValueChange={(detail) => {
                   selectedLease = detail.value
                   const lease = leases.find((lease) => lease.leaseId === detail.value[0]);
-                  console.log(lease)
                   if(lease){
                      selectedCustomer[0] = lease.customerId;
                      $form.invoiceAmount=lease.price

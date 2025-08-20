@@ -35,7 +35,6 @@
          if(form.valid){
             const {data} = form;
             let date:string = data.exp.substring(0, data.exp.indexOf(' ')) + data.exp.substring(data.exp.lastIndexOf(' ')+1);
-            console.log(date)
             const paymentData = {
                ssl_txn_auth_token: sessionToken, 
                ssl_card_number: data.ccNum,

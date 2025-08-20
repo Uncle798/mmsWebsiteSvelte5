@@ -61,7 +61,6 @@ export const actions: Actions = {
             }
          )
          const phoneValid = await phoneValidResponse.json();
-         console.log(phoneValid);
          if(!phoneValid.valid){
             return message(addressForm, 'Phone number not valid')
          }

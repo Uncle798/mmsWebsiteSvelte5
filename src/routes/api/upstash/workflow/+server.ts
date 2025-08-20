@@ -24,8 +24,7 @@ export const { POST } = serve<InitialPayload>(
                data: {
                   unavailable: true
                }
-            })
-            console.log('upstash 1st step')
+            });
          })
          await context.waitForEvent('wait for lease sent or 15 min', leaseId, {
             timeout: '15m'
@@ -53,7 +52,6 @@ export const { POST } = serve<InitialPayload>(
                   }
                })
                if(paymentRecords){
-                  console.log('upstash found a payment record and stopped');
                   return;
                } else {
                   await prisma.lease.delete({
@@ -61,7 +59,6 @@ export const { POST } = serve<InitialPayload>(
                         leaseId: lease?.leaseId
                      }
                   })
-                  console.log('upstash 2nd step')
                }
             }
          });

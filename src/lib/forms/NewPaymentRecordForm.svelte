@@ -150,12 +150,10 @@
             placeholder='Select...'
             onValueChange={(details) => {
                selectedCustomer = details.value
-               const custInvoices = invoices?.filter((invoice) => invoice.customerId === details.value[0])
-               console.log(custInvoices)
+               const custInvoices = invoices?.filter((invoice) => invoice.customerId === details.value[0]);
                if(custInvoices){
                   if(custInvoices.length === 1){
-                     selectedInvoice[0] = custInvoices[0].invoiceNum.toString()
-                     console.log(selectedInvoice[0])
+                     selectedInvoice[0] = custInvoices[0].invoiceNum.toString();
                   } else {
                      for(let i=0; i<custInvoices.length; i++){
                         selectedInvoice[i] = custInvoices[i].invoiceNum.toString()
@@ -182,7 +180,6 @@
       {@const customer = customers?.find((customer) => customer.id === invoice?.customerId)}
          <div class="border border-primary-contrast-50-950 rounded-lg flex" {@attach ()=>{
             if(invoice){
-               console.log(invoice?.invoiceAmount)
                $form.paymentAmount = invoice.invoiceAmount
                $form.paymentNotes = `Payment for invoice ${invoice.invoiceNum}, ${invoice.invoiceNotes}`
                $form.deposit = invoice.deposit

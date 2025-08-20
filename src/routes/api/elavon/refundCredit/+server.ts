@@ -38,9 +38,7 @@ export const POST: RequestHandler = async (event) => {
       })
       const responseBody = await response.text();
       const responseJson = xmlJs.xml2js(responseBody,{compact: true, ignoreDeclaration: true});
-      console.log(responseJson);
       if(responseJson.elements.ssl_result === 0){
-         console.log(responseJson.elements.ssl_txn_id)
          const refund = await prisma.refundRecord.create({
             data: {
                paymentRecordNum: payment.paymentNumber,

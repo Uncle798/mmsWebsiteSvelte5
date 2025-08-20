@@ -59,7 +59,6 @@ export const actions: Actions = {
    autoPaySignUp: async (event) => {
       const formData = await event.request.formData();
       const form = await superValidate(formData, valibot(cuidIdFormSchema));
-      console.log(formData)
       if(!form.valid){
          return {form}
       }
