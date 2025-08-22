@@ -7,14 +7,42 @@
 	import NumberInput from "$lib/formComponents/NumberInput.svelte";
    import FormSubmitWithProgress from "$lib/formComponents/FormSubmitWithProgress.svelte";
 	import { Switch } from "@skeletonlabs/skeleton-svelte";
+	import { onMount } from "svelte";
    interface Props {
       data: SuperValidated<Infer<NewDiscountFormSchema>>;
       classes?: string;
    }
    let { data, classes }:Props = $props();
    let { form, errors, message, constraints, enhance, delayed, timeout} = superForm(data, {
-
+      onChange(event) {
+         if(event.target){
+            const formName = 'newDiscountForm'
+            const value = event.get(event.path);
+            if(value){
+               sessionStorage.setItem(`${formName}:${event.path}`, value.toString());
+            }
+         }
+      },
    });
+   onMount(() => {
+      for(const key in $form){
+         const fullKey = `newDiscountForm:${key}`;
+         const storedValue = sessionStorage.getItem(fullKey);
+         if(storedValue){
+            if(isNaN(parseInt(storedValue, 10))){
+               if(storedValue === 'true'){
+                  $form[key as keyof typeof $form] = true as never;
+               } else if(storedValue === 'false'){
+                  $form[key as keyof typeof $form] = false as never;
+               } else {
+                  $form[key as keyof typeof $form] = storedValue as never;
+               }
+            } else {
+               $form[key as keyof typeof $form] = parseInt(storedValue, 10) as never;
+            }
+         }
+      }
+   })
 </script>
 <div class={classes}>
    <FormMessage message={$message} />

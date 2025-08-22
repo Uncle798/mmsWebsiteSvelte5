@@ -14,6 +14,7 @@
    }
    let { data,  employeeChecked=$bindable(false), adminChecked=$bindable(false), userId, classes }:Props = $props();
    let { form, message, errors, constraints, enhance, delayed, timeout, } = superForm(data, {
+
       warnings:{
          duplicateId: false
       }

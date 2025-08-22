@@ -32,13 +32,26 @@
       classes?: string;
    }
    let { data, employeeId, customers, invoices,  invoiceForm, registerForm, emailVerificationFormData, leases, customer, customerInvoices, invoice, classes, }:Props = $props();
-   let { form, errors, message, constraints, enhance, delayed, timeout} = superForm(data, {
+   let { form, errors, message, constraints, enhance, delayed, timeout, capture, restore} = superForm(data, {
+      onChange(event) {
+         if(event.target){
+            const formName = 'newPaymentRecordForm'
+            const value = event.get(event.path);
+            if(value){
+               sessionStorage.setItem(`${formName}:${event.path}`, value.toString());
+            }
+         }
+      },
       onSubmit({formData}) {
          formData.set('customerId', selectedCustomer[0]);
          formData.set('invoiceNum', selectedInvoice[0]);
 
       },
    });
+   export const snapshot = {
+      capture, 
+      restore
+   }
    let selectedCustomer = $state<string[]>(['']);
    let selectedInvoice = $state<string[]>([''])
    interface ComboBoxData {
@@ -81,7 +94,24 @@
             customerInvoicesData.push({label, value});
          }
       }
-      setTimeout(()=>{explainerModalOpen = false}, 4000)
+      setTimeout(()=>{explainerModalOpen = false}, 4000);
+      for(const key in $form){
+         const fullKey = `newPaymentRecordForm:${key}`;
+         const storedValue = sessionStorage.getItem(fullKey);
+         if(storedValue){
+            if(isNaN(parseInt(storedValue, 10))){
+               if(storedValue === 'true'){
+                  $form[key as keyof typeof $form] = true as never;
+               } else if(storedValue === 'false'){
+                  $form[key as keyof typeof $form] = false as never;
+               } else {
+                  $form[key as keyof typeof $form] = storedValue as never;
+               }
+            } else {
+               $form[key as keyof typeof $form] = parseInt(storedValue, 10) as never;
+            }
+         }
+      }
    })
    let explainerModalOpen = $state(true);
    const paymentTypes = [ 'CASH', 'CHECK', 'CREDIT'];

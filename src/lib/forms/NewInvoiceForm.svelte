@@ -29,6 +29,15 @@
    }
    let { data, registerFormData, emailVerificationFormData, employeeId, customers, leases, customer, classes }:Props = $props();
    let { form, errors, message, constraints, enhance, delayed, timeout} = superForm(data, {
+      onChange(event) {
+         if(event.target){
+            const formName = 'newInvoiceForm'
+            const value = event.get(event.path);
+            if(value){
+               sessionStorage.setItem(`${formName}:${event.path}`, value.toString());
+            }
+         }
+      },
       onSubmit({formData}) {
          formData.set('customerId', selectedCustomer[0])
          formData.set('leaseId', selectedLease[0])
@@ -39,6 +48,23 @@
       $form.invoiceDue = new Date()
       if(customer){
          selectedCustomer[0] = customer.id
+      }
+      for(const key in $form){
+         const fullKey = `newInvoiceForm:${key}`;
+         const storedValue = sessionStorage.getItem(fullKey);
+         if(storedValue){
+            if(isNaN(parseInt(storedValue, 10))){
+               if(storedValue === 'true'){
+                  $form[key as keyof typeof $form] = true as never;
+               } else if(storedValue === 'false'){
+                  $form[key as keyof typeof $form] = false as never;
+               } else {
+                  $form[key as keyof typeof $form] = storedValue as never;
+               }
+            } else {
+               $form[key as keyof typeof $form] = parseInt(storedValue, 10) as never;
+            }
+         }
       }
    })
    let selectedLease = $state(['']);

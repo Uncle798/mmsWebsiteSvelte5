@@ -8,6 +8,7 @@
 	import { Switch } from "@skeletonlabs/skeleton-svelte";
 	import FormSubmitWithProgress from "$lib/formComponents/FormSubmitWithProgress.svelte";
 	import { onMount } from "svelte";
+	import { browser } from "$app/environment";
 
    interface Props {
       data: SuperValidated<Infer<UnitPricingFormSchema>>;
@@ -18,6 +19,15 @@
    }
    let { data, unitPricingFormModalOpen=$bindable(false), size, oldPrice, classes}:Props = $props();
    let { form, message, errors, constraints, enhance, delayed, timeout} = superForm(data, {
+      onChange(event) {
+         if(event.target){
+            const formName = 'unitPricingForm'
+            const value = event.get(event.path);
+            if(value){
+               sessionStorage.setItem(`${formName}:${event.path}`, value.toString());
+            }
+         }
+      },
       onUpdated(){
          unitPricingFormModalOpen=false;
          invalidateAll();
@@ -27,7 +37,24 @@
       }
    })
    onMount(()=>{
-      $form.price = oldPrice
+      $form.price = oldPrice;
+      for(const key in $form){
+         let fullKey = `unitPricingForm:${key}`;
+         const storedValue = sessionStorage.getItem(fullKey)
+         if(storedValue){
+            if(isNaN(parseInt(storedValue, 10))){
+               if(storedValue === 'true'){
+                  $form[key as keyof typeof $form] = true as never;
+               } else if(storedValue === 'false'){
+                  $form[key as keyof typeof $form] = false as never;
+               } else {
+                  $form[key as keyof typeof $form] = storedValue as never;
+               }
+            } else {
+               $form[key as keyof typeof $form] = parseInt(storedValue, 10) as never;
+            }
+         }
+      }
    })
 </script>
 <div class={classes}>

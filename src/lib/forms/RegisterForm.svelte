@@ -5,6 +5,7 @@
    import FormSubmitWithProgress from "$lib/formComponents/FormSubmitWithProgress.svelte";
    import { superForm, type Infer, type SuperValidated } from "sveltekit-superforms";
 	import type { RegisterFormSchema } from "$lib/formSchemas/schemas";
+	import { onMount } from "svelte";
    
    interface Props {
       data: SuperValidated<Infer<RegisterFormSchema>>
@@ -18,6 +19,15 @@
    }
    let { data, registerFormModalOpen=$bindable(false), emailVerificationModalOpen=$bindable(false), formType, redirectTo, classes, unitNum, userId=$bindable('') }:Props = $props();
    let { form, errors, constraints, message, enhance, delayed, timeout, capture, restore, } = superForm(data, {
+      onChange(event) {
+         if(event.target){
+            const formName = 'registerForm'
+            const value = event.get(event.path);
+            if(value){
+               sessionStorage.setItem(`${formName}:${event.path}`, value);
+            }
+         }
+      },
       onUpdate({form, result}){
          const data = result.data;
          if(form.valid && data.userId){
@@ -34,6 +44,15 @@
       capture, 
       restore, 
    }
+   onMount(() =>{
+      for(const key in $form){
+         let fullKey = `registerForm:${key}`;
+         const storedValue = sessionStorage.getItem(fullKey)
+         if(storedValue){
+            $form[key as keyof typeof $form] = storedValue;
+         }
+      }
+   })
 </script>
 <div class={classes}>
    <FormMessage message={$message} />

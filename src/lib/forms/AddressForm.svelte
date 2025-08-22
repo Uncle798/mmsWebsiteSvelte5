@@ -22,10 +22,10 @@
    let { form, message, errors, constraints, enhance, delayed, timeout, capture, restore, } = superForm(data, {
       onChange(event) {
          if(event.target){
-            console.log(event.formElement.getAttribute('action'))
+            const formName = 'addressForm'
             const value = event.get(event.path);
             if(value){
-               sessionStorage.setItem(event.path, value)
+               sessionStorage.setItem(`${formName}:${event.path}`, value);
             }
          }
       },
@@ -46,10 +46,11 @@
       restore,
    }
    onMount(() =>{
-      for(const formField of Object.keys($form)){
-         const storedValue = sessionStorage.getItem(formField)
+      for(const key in $form){
+         let fullKey = `addressForm:${key}`;
+         const storedValue = sessionStorage.getItem(fullKey)
          if(storedValue){
-            $form[formField as keyof typeof $form] = storedValue;
+            $form[key as keyof typeof $form] = storedValue;
          }
       }
    })

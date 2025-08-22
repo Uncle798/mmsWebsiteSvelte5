@@ -3,6 +3,7 @@
 	import FormSubmitWithProgress from "$lib/formComponents/FormSubmitWithProgress.svelte";
 	import TextInput from "$lib/formComponents/TextInput.svelte";
    import type { LeaseDiscountFormSchema } from "$lib/formSchemas/schemas";
+	import { onMount } from "svelte";
 	import type { Infer, SuperValidated } from "sveltekit-superforms";
    import { superForm } from "sveltekit-superforms";
 
@@ -14,9 +15,38 @@
    }
    let { data, unitNum, customerId, classes }:Props = $props();
    let { form, errors, message, constraints, enhance, delayed, timeout} = superForm(data, {
+      onChange(event) {
+         if(event.target){
+            const formName = 'leaseDiscountForm'
+            const value = event.get(event.path);
+            if(value){
+               sessionStorage.setItem(`${formName}:${event.path}`, value);
+            }
+         }
+      },
       onUpdate(){
       }
    });
+   onMount(() => {
+      for(const key in $form){
+         const fullKey = `leaseDiscountForm:${key}`;
+         const storedValue = sessionStorage.getItem(fullKey);
+         if(storedValue){
+            console.log(parseInt(storedValue, 10), Number.NaN)
+            if(isNaN(parseInt(storedValue, 10))){
+               if(storedValue === 'true'){
+                  $form[key as keyof typeof $form] = true as never;
+               } else if(storedValue === 'false'){
+                  $form[key as keyof typeof $form] = false as never;
+               } else {
+                  $form[key as keyof typeof $form] = storedValue as never;
+               }
+            } else {
+               $form[key as keyof typeof $form] = parseInt(storedValue, 10) as never;
+            }
+         }
+      }
+   })
 </script>
 
 <div class={classes}>

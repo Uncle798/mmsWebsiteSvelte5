@@ -19,6 +19,15 @@
    let { data, unitNotesFormModalOpen, unit, classes }:Props = $props();
 
    let { form, message, errors, constraints, enhance, delayed, timeout} = superForm(data, {
+      onChange(event) {
+         if(event.target){
+            const formName = 'unitNotesForm'
+            const value = event.get(event.path);
+            if(value){
+               sessionStorage.setItem(`${formName}:${event.path}`, value.toString());
+            }
+         }
+      },
       id:unit.num.toString(),
       onUpdated(){
          unitNotesFormModalOpen=false;
@@ -26,7 +35,24 @@
    })
    onMount(()=>{
       $form.unavailable = unit.unavailable;
-      $form.notes = unit.notes
+      $form.notes = unit.notes;
+      for(const key in $form){
+         let fullKey = `unitNotesForm:${key}`;
+         const storedValue = sessionStorage.getItem(fullKey)
+         if(storedValue){
+            if(isNaN(parseInt(storedValue, 10))){
+               if(storedValue === 'true'){
+                  $form[key as keyof typeof $form] = true as never;
+               } else if(storedValue === 'false'){
+                  $form[key as keyof typeof $form] = false as never;
+               } else {
+                  $form[key as keyof typeof $form] = storedValue as never;
+               }
+            } else {
+               $form[key as keyof typeof $form] = parseInt(storedValue, 10) as never;
+            }
+         }
+      }
    })
 </script>
 <div class="{classes} flex flex-col">

@@ -23,9 +23,17 @@
       classes
    }:Props = $props();
    let { form, errors, message, constraints, enhance, delayed, timeout} = superForm(data, {
-      onSubmit(input) {
+      onChange(event) {
+         if(event.target){
+            const formName = 'newRefundForm';
+            const value = event.get(event.path);
+            if(value){
+               sessionStorage.setItem(`${formName}:${event.path}`, value.toString());
+            }
+         }
       },
-      
+      onSubmit(input) {
+      }, 
       onUpdate(){
          refundFormModalOpen = false;
       }
@@ -33,7 +41,23 @@
    onMount(()=>{
       $form.amount = paymentRecord.paymentAmount;
       $form.notes = `Refund of payment record number: ${paymentRecord.paymentNumber}, ${paymentRecord.paymentNotes}`
-
+      for(const key in $form){
+         let fullKey = `addressForm:${key}`;
+         const storedValue = sessionStorage.getItem(fullKey)
+         if(storedValue){
+            if(isNaN(parseInt(storedValue, 10))){
+               if(storedValue === 'true'){
+                  $form[key as keyof typeof $form] = true as never;
+               } else if(storedValue === 'false'){
+                  $form[key as keyof typeof $form] = false as never;
+               } else {
+                  $form[key as keyof typeof $form] = storedValue as never;
+               }
+            } else {
+               $form[key as keyof typeof $form] = parseInt(storedValue, 10) as never;
+            }
+         }
+      }
    })
    const paymentTypes = [ 'CASH', 'CHECK', 'CREDIT'];
 </script>

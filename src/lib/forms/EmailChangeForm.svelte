@@ -4,6 +4,7 @@
 	import type { EmailFormSchema } from '$lib/formSchemas/schemas';
 	import FormProgress from '$lib/formComponents/FormSubmitWithProgress.svelte';
 	import FormMessage from '$lib/formComponents/FormMessage.svelte';
+   import { onMount } from 'svelte';
    interface Props {
       data: SuperValidated<Infer<EmailFormSchema>>;
       emailModalOpen: boolean;
@@ -12,10 +13,32 @@
 
     let { data, emailModalOpen=$bindable(false), classes }:Props = $props();
 
-   let { form, message, errors, constraints, enhance, delayed, timeout} = superForm(data, {
+   let { form, message, errors, constraints, enhance, delayed, timeout, capture, restore} = superForm(data, {
       onUpdated(){
          emailModalOpen=false;
-      },   
+      }, 
+      onChange(event) {
+         if(event.target){
+            const formName = 'emailChangeForm'
+            const value = event.get(event.path);
+            if(value){
+               sessionStorage.setItem(`${formName}:${event.path}`, value);
+            }
+         }
+      },  
+   })
+   export const snapshot = {
+      capture,
+      restore,
+   }
+   onMount(() =>{
+      for(const key in $form){
+         let fullKey = `emailChangeForm:${key}`;
+         const storedValue = sessionStorage.getItem(fullKey)
+         if(storedValue){
+            $form[key as keyof typeof $form] = storedValue;
+         }
+      }
    })
 </script>
 <div class={classes}>
