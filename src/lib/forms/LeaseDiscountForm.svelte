@@ -32,7 +32,6 @@
          const fullKey = `leaseDiscountForm:${key}`;
          const storedValue = sessionStorage.getItem(fullKey);
          if(storedValue){
-            console.log(parseInt(storedValue, 10), Number.NaN)
             if(isNaN(parseInt(storedValue, 10))){
                if(storedValue === 'true'){
                   $form[key as keyof typeof $form] = true as never;
