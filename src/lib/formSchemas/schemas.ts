@@ -137,7 +137,7 @@ export const searchFormSchema = v.object({
 export type SearchFormSchema = typeof searchFormSchema;
 
 export const leaseDiscountFormSchema = v.object({
-   code: v.nullable(v.pipe(v.string(), v.minLength(8), v.maxLength(255))),
+   code: v.pipe(v.string(), v.minLength(8), v.maxLength(255)),
    unitNum: v.pipe(v.string(), v.minLength(3), v.maxLength(8)),
 });
 export type LeaseDiscountFormSchema = typeof leaseDiscountFormSchema;
