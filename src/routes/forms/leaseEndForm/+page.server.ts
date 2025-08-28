@@ -25,7 +25,7 @@ export const actions: Actions = {
       if(!leaseEndForm.valid){
          return message(leaseEndForm, 'not valid');
       }
-      const lease = await prisma.lease.findUnique({
+      let lease = await prisma.lease.findUnique({
          where: {
             leaseId: leaseEndForm.data.leaseId
          }
@@ -52,7 +52,7 @@ export const actions: Actions = {
             })
          }
       }
-      await prisma.lease.update({
+      lease = await prisma.lease.update({
          where: {
             leaseId:leaseEndForm.data.leaseId
          },
@@ -74,6 +74,7 @@ export const actions: Actions = {
             leasedPrice: null
          }
       })
+      console.log(lease)
       return { leaseEndForm }
    }
 };
