@@ -51,8 +51,10 @@
    const paymentTypes = [ 'CASH', 'CHECK', 'CREDIT'];
    let paymentExplainerModalOpen = $state(false);
    let newCustomerExplainerModalOpen = $state(false);
+   let customerSelectForm:HTMLFormElement | undefined = $state();
+   let customerSelectSubmit:HTMLButtonElement | undefined = $state();
+   let customerCuidId:HTMLInputElement | undefined = $state();
 </script>
-
 
 <Header title="Employee New Lease" />
 
@@ -110,24 +112,32 @@
             newCustomerExplainerModalOpen = true;
             setTimeout(()=>{
                newCustomerExplainerModalOpen = false;
-            }, 10000)
+            }, 15000);
          }}>Create new customer</button>
-         <h1 class="m-1 h4">
-            Renting unit {data.unitNum.replace(/^0+/gm,'').replace(/x0/gm, 'x')}
-         </h1>
-         <form action="/employeeNewLease?/selectCustomer&unitNum={data.unitNum}" method="POST" use:enhance>
+         {#if data.unit}
+            <UnitEmployee unit={data.unit} />
+         {/if}
+         <form action="/employeeNewLease?/selectCustomer&unitNum={data.unitNum}" method="POST" use:enhance bind:this={customerSelectForm} >
             <Combobox
                data={customerComboBoxData}
                value={selectedCustomer}
                label='Select a customer'
                placeholder='Type or select...'
                onValueChange={(details) => {
-                  selectedCustomer = details.value
+                  selectedCustomer = details.value;
+                  console.log()
+                  if(customerCuidId){
+                     customerCuidId.value=details.value[0].toString()
+                  }
+                  if(customerSelectForm){
+                     customerSelectForm.requestSubmit(customerSelectSubmit)
+                  }
                }}
                optionClasses='truncate'
+               openOnClick={true}
             />
-            <input type="hidden" name="customerId" value={selectedCustomer}>
-            <button class="btn preset-filled-primary-50-950 rounded-lg mt-2">Choose Customer</button>    
+            <input type="hidden" name="cuidId" value={selectedCustomer[0]} bind:this={customerCuidId}>
+            <button class="btn preset-filled-primary-50-950 rounded-lg mt-2" bind:this={customerSelectSubmit}>Choose Customer</button>    
          </form>
       </div>
    {:else}
