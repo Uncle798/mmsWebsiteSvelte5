@@ -1,5 +1,6 @@
 import { CONVERGE_ACCOUNT_ID, CONVERGE_SSL_PIN, CONVERGE_USER_ID } from '$env/static/private';
 import { prisma } from '$lib/server/prisma';
+import { parseString } from 'xml2js';
 import * as xmlJs from 'xml-js'
 import type { RequestHandler } from './$types';
 
@@ -37,27 +38,35 @@ export const POST: RequestHandler = async (event) => {
          body:xml
       })
       const responseBody = await response.text();
-      const responseJson = xmlJs.xml2js(responseBody,{compact: true, ignoreDeclaration: true});
-      if(responseJson.elements.ssl_result === 0){
-         const refund = await prisma.refundRecord.create({
-            data: {
-               paymentRecordNum: payment.paymentNumber,
-               refundAmount: payment.paymentAmount,
-               refundType: 'CREDIT',
-               customerId: payment.customerId,
-               refundCompleted: new Date(),
-               refundNotes: `Refund of payment ${payment.paymentNumber}, ${payment.paymentNotes}`
+      try { 
+         parseString(responseBody,async (err, result) => {
+            console.log(result.txn)
+            if(result.txn.ssl_issuer_result[0] === '00'){
+               const refund = await prisma.refundRecord.create({
+                  data: {
+                     paymentRecordNum: payment.paymentNumber,
+                     refundAmount: payment.paymentAmount,
+                     refundType: 'CREDIT',
+                     customerId: payment.customerId,
+                     refundCompleted: new Date(),
+                     refundNotes: `Refund of payment ${payment.paymentNumber}, ${payment.paymentNotes}`
+                  }
+               })
+               await prisma.paymentRecord.update({
+                  where: {
+                     paymentNumber: payment.paymentNumber
+                  },
+                  data: {
+                     refundNumber: refund.refundNumber
+                  }
+               })
+               return new Response(JSON.stringify({refundNumber: refund.refundNumber}), {status: 200})
+            } else {
+               return new Response(JSON.stringify(err));
             }
-         })
-         await prisma.paymentRecord.update({
-            where: {
-               paymentNumber: payment.paymentNumber
-            },
-            data: {
-               refundNumber: refund.refundNumber
-            }
-         })
-         return new Response(JSON.stringify({refundNumber: refund.refundNumber}), {status: 200})
+         });
+      } catch (error) {
+         console.error(error)
       }
    }
    return new Response(JSON.stringify('Payment num not provided'), {status:400})
