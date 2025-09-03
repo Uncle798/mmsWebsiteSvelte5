@@ -2,7 +2,7 @@
 import { error, redirect } from '@sveltejs/kit';
 import { message, superValidate} from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
-import { newLeaseSchema, registerFormSchema, addressFormSchema, leaseDiscountFormSchema, emailVerificationFormSchema  } from '$lib/formSchemas/schemas'
+import { newLeaseSchema, registerFormSchema, addressFormSchema, leaseDiscountFormSchema, emailVerificationFormSchema, cuidIdFormSchema  } from '$lib/formSchemas/schemas'
 import type { PageServerLoad, Actions } from './$types';
 import { prisma } from '$lib/server/prisma'; 
 import type { Address, DiscountCode, User } from '@prisma/client';
@@ -25,6 +25,7 @@ export const load = (async (event) => {
    const emailVerificationForm = await superValidate(valibot(emailVerificationFormSchema))
    const addressForm = await superValidate(valibot(addressFormSchema));
    const leaseDiscountForm = await superValidate(valibot(leaseDiscountFormSchema));
+   const customerSelectForm = await superValidate(valibot(cuidIdFormSchema));
    const discountId = event.url.searchParams.get('discountId');
    const redirectTo = event.url.searchParams.get('redirectTo');
    const unit = await prisma.unit.findUnique({
@@ -70,6 +71,7 @@ export const load = (async (event) => {
    }
    return {
       leaseDiscountForm,
+      customerSelectForm, 
       leaseForm,
       registerForm, 
       emailVerificationForm,
@@ -179,7 +181,7 @@ export const actions: Actions = {
          data: {
             leasedPrice: lease.price
          }
-      })
+      });
       await qStash.trigger({
          url: `https://${PUBLIC_URL}/api/upstash/workflow`,
          body:  {leaseId:lease.leaseId},
@@ -227,6 +229,6 @@ export const actions: Actions = {
       }
       const formData = await event.request.formData();
       const unitNum = event.url.searchParams.get('unitNum')
-      redirect(303, `/employeeNewLease?userId=${formData.get('customerId')}&unitNum=${unitNum}`)
+      redirect(303, `/employeeNewLease?userId=${formData.get('cuidId')}&unitNum=${unitNum}`)
    }
 };
