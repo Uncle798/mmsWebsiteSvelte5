@@ -15,10 +15,10 @@
 	import EmailChangeForm from '$lib/forms/EmailChangeForm.svelte';
 	import EmailVerificationForm from '$lib/forms/EmailVerificationForm.svelte';
    let { data }: { data: PageData } = $props();
-   let addressModalOpen = $state(false);
-   let leaseEndModalOpen = $state(false);
-   let emailChangeModalOpen = $state(false);
-   let emailVerificationModalOpen = $state(false);
+
+   let globalModalOpen = $state(false);
+   let modalReason = $state('');
+   let currentLeaseId = $state('');
    let pageNum = $state(1);
    let size = $state(5);
    const currencyFormatter = new Intl.NumberFormat('en-US', {style:'currency', currency:'USD'});
@@ -50,103 +50,107 @@
       }
       return returnedInvoices;
    })
+   function leaseModal(leaseId:string) {
+      currentLeaseId = leaseId;
+      modalReason = 'leaseEnd';
+      globalModalOpen = true;
+   }
 </script>
+<Modal
+   open={globalModalOpen}
+   onOpenChange={(e) => globalModalOpen = e.open}
+   triggerBase="btn preset-filled-primary-50-950 rounded-lg m-2"
+   contentBase="card bg-surface-400-600 p-4 space-y-4 shadow-xl max-w-(--breakpoint-sm)"
+   backdropClasses="backdrop-blur-xl"
+   modal={true}
+>
+   {#snippet content()}
+      {#if modalReason === 'emailChange'}
+         <EmailChangeForm data={data.emailChangeForm} bind:emailModalOpen={globalModalOpen} />
+      {:else if modalReason === 'emailVerification'}
+         <EmailVerificationForm 
+            data={data.emailVerificationForm}
+            userId={data.dbUser.id}
+            bind:emailVerificationModalOpen={globalModalOpen}
+            redirect='false'
+         />
+      {:else if modalReason === 'addressChange'}
+         <AddressForm
+            data={data.addressForm}
+            userId={data.dbUser.id}
+            bind:addressModalOpen={globalModalOpen}
+         />
+      {:else if modalReason === 'leaseEnd'}
+         <LeaseEndForm
+            data={data.leaseEndForm}
+            bind:leaseEndModalOpen={globalModalOpen}
+            leaseId={currentLeaseId}
+         />
+      {/if}
+      <button class="btn preset-filled-primary-50-950" onclick={()=>globalModalOpen=false}>Close</button>
+   {/snippet}
+</Modal>
 
 {#if data.dbUser}
    <Header title='{data.dbUser.givenName} {data.dbUser.familyName}' />
    <UserEmployee user={data.dbUser} classes='mx-2 mt-14 sm:mt-10' />
-   <Modal
-      open={emailChangeModalOpen}
-      onOpenChange={(e) => emailChangeModalOpen = e.open}
-      triggerBase="btn preset-filled-primary-50-950 rounded-lg m-2"
-      contentBase="card bg-surface-400-600 p-4 space-y-4 shadow-xl max-w-(--breakpoint-sm)"
-      backdropClasses="backdrop-blur-xs"
-      modal={true}
-   >
-      {#snippet trigger()}
-         Change Email Address
-      {/snippet}
-      {#snippet content()}
-         <EmailChangeForm
-            data={data.emailChangeForm}
-            bind:emailModalOpen={emailChangeModalOpen}
-         />
-         <button class="btn preset-filled-primary-50-950" onclick={()=>emailChangeModalOpen=false}>Close</button>
-      {/snippet}
-   </Modal>
-   {#if !data.dbUser.emailVerified}      
-      <Modal
-         open={emailVerificationModalOpen}
-         onOpenChange={(e) => emailVerificationModalOpen = e.open}
-         triggerBase="btn preset-filled-primary-50-950 rounded-lg m-2"
-         contentBase="card bg-surface-400-600 p-4 space-y-4 shadow-xl max-w-(--breakpoint-sm)"
-         backdropClasses="backdrop-blur-xs"
-         modal={true}
+   <button class="btn preset-filled-primary-50-950 mx-2" 
+      onclick={()=>{
+         modalReason='emailChange' 
+         globalModalOpen=true
+      }} 
+      type='button'
       >
-         {#snippet trigger()}
-            Verify Email Address
-         {/snippet}
-         {#snippet content()}
-            <EmailVerificationForm
-               data={data.emailVerificationForm}
-               userId={data.dbUser.id}
-               bind:emailVerificationModalOpen={emailVerificationModalOpen}
-               redirect='false'
-            />
-         {/snippet}
-      </Modal> 
+         Change email address
+      </button>
+   {#if !data.dbUser.emailVerified}      
+      <button class="btn preset-filled-primary-50-950 mx-2" 
+         onclick={()=>{
+            modalReason='emailVerify' 
+            globalModalOpen=true
+         }} 
+         type='button'
+         >
+            Verify email address
+         </button>
    {/if}
 {:else}
 ...loading user
 {/if}
 {#if data.address}
-   <Address bind:address={data.address} classes='px-2'/>
-   <Modal
-      open={addressModalOpen}
-      onOpenChange={(e) => addressModalOpen = e.open}
-      triggerBase="btn preset-filled-primary-50-950 rounded-lg mx-2 "
-      contentBase="card bg-surface-400-600 p-4 space-y-4 shadow-xl max-w-(--breakpoint-sm)"
-      backdropClasses="backdrop-blur-xs"
-   >
-   {#snippet trigger()}
-      Change Address
-   {/snippet}
-   {#snippet content()}
-      <AddressForm data={data.addressForm} bind:addressModalOpen={addressModalOpen} userId={data.dbUser?.id!}/>
-      <button class="btn preset-filled-primary-50-950 rounded-lg" onclick={()=>addressModalOpen=false}>Close</button>
-   {/snippet}
-   </Modal>
+   <Address address={data.address} classes='px-2'/>
+   <button class="btn preset-filled-primary-50-950 mx-2"
+      onclick={()=>{
+         modalReason='addressChange' 
+         globalModalOpen=true
+      }} 
+      type='button'
+      >
+         Change address
+      </button>
 {:else}
    ...loading address
 {/if}
 {#await data.leases}
 ...loading leases
 {:then leases}
-   {#each leases as lease}
-      <div class="rounded-lg border-2 border-primary-50 dark:border-primary-950 flex flex-col m-2">
-         <LeaseEmployee lease={lease} classes='m-2'/>
-         {#if !lease?.leaseEnded}
-            <Modal
-               open={leaseEndModalOpen}
-               onOpenChange={(e) => leaseEndModalOpen = e.open}
-               triggerBase="btn preset-filled-primary-50-950 rounded-lg m-2"
-               contentBase="card bg-surface-400-600 p-4 space-y-4 shadow-xl max-w-(--breakpoint-sm)"
-               backdropClasses="backdrop-blur-xs"
-               modal={true}
-            >  
-            {#snippet trigger()}
-               End Lease
-            {/snippet}
-            {#snippet content()}
-               <LeaseEndForm data={data.leaseEndForm} leaseId={lease.leaseId} leaseEndModalOpen={leaseEndModalOpen}/>
-               <button class="btn preset-filled-primary-50-950 rounded-lg m-2" onclick={()=>leaseEndModalOpen=false}>Cancel</button>
-            {/snippet}   
-            </Modal>
-         {/if}
-      </div>
-   {/each}
+   <div class="grid grid-cols-1 sm:grid-cols-2">
+      {#each leases as lease}
+         <div class="rounded-lg border-2 border-primary-50 dark:border-primary-950 flex flex-col m-2">
+            <LeaseEmployee lease={lease} classes='m-2'/>
+            {#if !lease?.leaseEnded}
+               <button class="btn preset-filled-primary-50-950 m-2"  
+                  onclick={()=>leaseModal(lease.leaseId)} 
+                  type='button'
+               >
+                  End lease
+               </button>
+            {/if}
+         </div>
+      {/each}
+   </div>
 {/await}
-<div>
+<div class="mb-9">
 {#await data.invoices}
     <div class='col-span-1'>
         ...loading invoices
