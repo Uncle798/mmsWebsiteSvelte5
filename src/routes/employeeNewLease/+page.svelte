@@ -137,7 +137,7 @@
                openOnClick={true}
             />
             <input type="hidden" name="cuidId" value={selectedCustomer[0]} bind:this={customerCuidId}>
-            <button class="btn preset-filled-primary-50-950 rounded-lg mt-2" bind:this={customerSelectSubmit}>Choose Customer</button>    
+            <button class="hidden" bind:this={customerSelectSubmit}>Choose Customer</button>    
          </form>
       </div>
    {:else}
