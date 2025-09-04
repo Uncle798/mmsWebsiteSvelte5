@@ -27,7 +27,9 @@
       label='Select Size'
       value={selectedSize}
       onValueChange={(event) =>{
-         if(browser){
+         if(browser && event.value[0] === 'all'){
+            goto('/units')
+         } else if(browser){
             goto(`/units/size/${event.value[0]}`)
          }
       }}
