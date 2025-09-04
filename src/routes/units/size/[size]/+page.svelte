@@ -51,7 +51,7 @@
       label: string;
       value: string;
    }
-   const comboboxData:ComboboxData[] = [{label:'All', value:'all'}];
+   const comboboxData:ComboboxData[] = [];
    for(const size of data.sizes){
       comboboxData.push({
          label: size.replace(/^0+/gm, '').replace(/x0/gm, 'x'),
