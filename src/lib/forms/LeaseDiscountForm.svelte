@@ -55,7 +55,7 @@
          bind:value={$form.code}
          errors={$errors.code}
          constraints={$constraints.code}
-         label="Discount Code:"
+         label="Discount Code: (Case Sensitive)"
          name='code'
          placeholder='optional'
          />
