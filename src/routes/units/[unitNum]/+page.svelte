@@ -36,11 +36,12 @@
    {#if unit}
       <Header title='Unit number: {unit.num}' />
       <Revenue label='Total revenue from this unit' amount={data.totalRevenue} classes="flex sticky top-9 bg-tertiary-50-950 rounded-b-lg w-full p-2"/>
-      <div transition:fade={{duration:600}} class="m-1 sm:m-2 pt-8">
+      <div transition:fade={{duration:600}} class="m-1 sm:m-2 pt-8 mb-20 sm:mb-12 lg:mb-8">
          <UnitEmployee {unit} classes=''/>
+         <a href="/employeeNewLease?unitNum={unit.num}" class="btn preset-filled-primary-50-950 m-2 rounded-lg">Rent Unit {unit.num.replace(/^0+/gm, '')}</a>
          <UnitNotesForm data={data.unitNotesForm} {unit} classes=''/>
          <UnitPricingForm data={data.unitPricingForm} size={unit.size} oldPrice={unit.advertisedPrice} unitPricingFormModalOpen={modalOpen} />
-         <div class="grid grid-cols-1 gap-y-3 gap-x-1">
+         <div class="grid grid-cols-1 gap-y-2 gap-x-1">
             {#each data.leases as lease}
             {@const customer = data.customers.find((customer) => customer.id === lease.customerId)}
                {#if !lease.leaseEnded}
