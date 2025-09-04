@@ -9,6 +9,7 @@
    import type { PageData } from './$types';
 	import { Modal } from '@skeletonlabs/skeleton-svelte';
    import LeaseEndForm from '$lib/forms/LeaseEndForm.svelte';
+	import InvoiceEmployee from '$lib/displayComponents/InvoiceEmployee.svelte';
 
    let { data }: { data: PageData } = $props();
    let modalOpen = $state(false);
@@ -62,6 +63,9 @@
             
          {/if}
       </div>
+      {#each data.invoices as invoice}
+            <InvoiceEmployee invoice={invoice} />
+      {/each}
    </div>
 {:else}
    <div class="flex flex-col sm:flex-row mt-14 mx-1 sm:mx-2" in:fade={{duration:600}} out:fade={{duration:0}}>

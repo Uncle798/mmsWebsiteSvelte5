@@ -38,5 +38,10 @@ export const load = (async (event) => {
          }
       })
    }
-   return { lease, customer, address, currentAddress, leaseEndForm };
+   const invoices = await prisma.invoice.findMany({
+      where: {
+         leaseId: lease?.leaseId
+      }
+   })
+   return { lease, customer, address, currentAddress, leaseEndForm, invoices };
 }) satisfies PageServerLoad;
