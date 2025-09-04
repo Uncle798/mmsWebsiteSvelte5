@@ -73,7 +73,7 @@ export const load = (async (event) => {
          }
          const paymentRecord = await prisma.paymentRecord.findFirst({
             where: {
-               invoiceNum: invoice.paymentRecordNum 
+               invoiceNum: invoice.invoiceNum
             }
          })
          return { packetDetails, customer, paymentRecord, address };
