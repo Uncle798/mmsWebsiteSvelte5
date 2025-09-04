@@ -126,7 +126,7 @@
 									{adminLink.toolTip}
 								{/snippet}
 								{#snippet trigger()}
-									<li><a class="anchor" href={adminLink.link}>{adminLink.label}</a></li>
+									<li><a class="anchor mx-1" href={adminLink.link}>{adminLink.label}</a></li>
 								{/snippet}
 								</Tooltip>
 							{/each}
