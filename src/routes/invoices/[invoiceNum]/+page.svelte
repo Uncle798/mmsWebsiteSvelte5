@@ -42,7 +42,7 @@
    {#if data.invoice}
       {#if data.user?.id === data.customer?.id}         
          <Header title="Invoice number {data.invoice.invoiceNum}" />
-         <div class="flex flex-col sm:flex-row gap-x-1 mx-1 sm:mx-2 mt-14 sm:mt-10 mb-20 sm:mb-12 lg:mb-7 border-2 border-primary-50-950 rounded-lg w-fit">
+         <div class="flex flex-col sm:flex-row gap-x-1 mx-1 sm:mx-2 mt-14 sm:mt-10 mb-20 sm:mb-12 lg:mb-8 border-2 border-primary-50-950 rounded-lg w-fit">
             <InvoiceCustomer invoice={data.invoice} classes="min-w-64" />
             <div class="flex flex-col min-w-64"> 
                {#if data.customer}

@@ -17,7 +17,7 @@
       {#if data.customer}
          {#if data.address}         
             <Header title='Payment Record Num: {data.paymentRecord}' />
-            <div class="m-1 sm:m-2 mt-14 sm:mt-10 mb-22 sm:mb-12 lg:mb-7 border-2 border-primary-50-950 rounded-lg">
+            <div class="m-1 sm:m-2 mt-14 sm:mt-10 mb-22 sm:mb-12 lg:mb-8 border-2 border-primary-50-950 rounded-lg">
                {#if data.user?.employee}
                   <div class="flex flex-col sm:flex-row">
                      <div class="sm:w-1/2">

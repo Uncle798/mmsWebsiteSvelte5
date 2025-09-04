@@ -94,7 +94,7 @@
                <button class="btn preset-filled-primary-50-950 " onclick={() => sortBy = !sortBy}>Sort by unit number {sortBy ? 'ascending' : 'descending'}</button>
             {/snippet}
          </Modal>
-         <div class="rounded-lg mt-14 sm:mt-10">
+         <div class="rounded-lg mt-14 sm:mt-10 mb-20 sm:mb-12 lg:mb-8">
             {#each slicedLeases(sortedByUnitNum(searchedLeases(searchByCustomer(leases, currentCustomers(customers))))) as lease}
             {@const customer = customers.find((customer) => customer.id === lease.customerId)}
             {@const leaseAddress = addresses.find((address) => address.addressId === lease.addressId)}
