@@ -128,8 +128,16 @@
       >
          Change address
       </button>
-{:else}
-   ...loading address
+   {:else}
+      <button class="btn preset-filled-primary-50-950 mx-2"
+         onclick={()=>{
+            modalReason='addressChange' 
+            globalModalOpen=true
+         }} 
+         type='button'
+         >
+            Add address
+         </button>
 {/if}
 {#await data.leases}
 ...loading leases
