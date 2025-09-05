@@ -162,9 +162,9 @@
          </div>
       {:then addresses}         
          {#if paymentRecords.length >0}
-            <div class="bg-tertiary-50-950 w-screen rounded-b-lg fixed sm:top-12 top-9 flex">
+            <div class="bg-tertiary-50-950 w-screen rounded-b-lg fixed sm:top-8 top-10 p-0.5 flex">
                <Revenue 
-                  label="Total revenue" 
+                  label="Total revenue in {data.year}" 
                   amount={totalRevenue(searchedPayments(dateSearchPayments(paymentRecords)))} 
                   classes='m-1 sm:m-2'    
                />
@@ -217,12 +217,12 @@
                   }} class="anchor col-span-full mx-2">Sort by date {sortBy ? 'starting earliest' : 'starting latest'}</button>
             {/snippet}
             </Modal>
-               <div class="mt-24 sm:mt-20" in:fade={{duration:600}} out:fade={{duration:0}}>
+               <div class="mt-32 sm:mt-20 mb-8" in:fade={{duration:600}} out:fade={{duration:0}}>
                   {#each slicedSource(dateSearchPayments(searchedPayments(sortedByDate(searchByUser(paymentRecords, currentUsers(customers)))))) as paymentRecord}
                   {@const customer = customers.find((customer) => customer.id === paymentRecord.customerId) }
                      <div class="rounded-lg border border-primary-50-950 grid sm:grid-cols-2 m-2">
                         <div>
-                           <PaymentRecordEmployee paymentRecord={paymentRecord} classes="p-2" />
+                           <PaymentRecordEmployee paymentRecord={paymentRecord} classes="px-2" />
                            {#if !paymentRecord.refunded}
                                  <button type="button" class="btn rounded-lg preset-filled-primary-50-950 m-2" onclick={() => refundModal(paymentRecord)}>Refund this payment</button>
                            {/if}
@@ -246,8 +246,8 @@
                         {/if}
                      </div>
                   {/each}
+                  <Pagination bind:size={size} bind:pageNum={pageNum} array={dateSearchPayments(searchedPayments(searchByUser(paymentRecords, currentUsers(customers))))} label='payment records'/>
                </div>
-               <Pagination bind:size={size} bind:pageNum={pageNum} array={dateSearchPayments(searchedPayments(searchByUser(paymentRecords, currentUsers(customers))))} label='payment records'/>
          {:else}
             No payment records from that year
          {/if}

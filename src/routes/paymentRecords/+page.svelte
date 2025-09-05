@@ -138,8 +138,8 @@
 </Modal>
 <Header title='Payment Records' />
 {#await wrapper}
-   <div class="mx-1 sm:mx-2 mt-14 sm:mt-14">
-      loading {numberFormatter.format(data.paymentRecordCount)} payment records
+   <div class="mx-1 sm:mx-2 mt-14 sm:mt-14 mb-20 sm:mb-12 lg:mb-8">
+      Loading {numberFormatter.format(data.paymentRecordCount)} payment records
       {#if data.years}
          <Combobox
             data={yearComboboxData}
@@ -153,7 +153,7 @@
             zIndex='50'
          />
       {/if}
-      <Placeholder numCols={1} numRows={size} heightClass='h-32' classes='z-0'/>
+      <Placeholder numCols={1} numRows={size} heightClass='h-64' classes='z-0'/>
    </div>
 {:then paymentRecords} 
    {#await data.customers}
@@ -167,7 +167,7 @@
          </div>
       {:then addresses}         
          {#if paymentRecords.length >0}
-            <div class="bg-tertiary-50-950 w-screen rounded-b-lg fixed top-11 sm:top-9 p-1 flex">
+            <div class="bg-tertiary-50-950 w-screen rounded-b-lg fixed top-10 sm:top-7 p-0.5 flex">
                <Revenue 
                   label="Total revenue" 
                   amount={totalRevenue(searchedPayments(searchByUser(paymentRecords, currentUsers(customers))))} 
@@ -222,7 +222,7 @@
                   }} class="anchor col-span-full mx-2">Sort by date {sortBy ? 'starting earliest' : 'starting latest'}</button>
             {/snippet}
             </Modal>
-               <div class="mt-32 sm:mt-20 mb-9" in:fade={{duration:600}} out:fade={{duration:0}}>
+               <div class="mt-32 sm:mt-20 mb-20 sm:mb-12 lg:mb-8" in:fade={{duration:600}} out:fade={{duration:0}}>
                   {#each slicedSource(sortedByDate(dateSearchPayments(searchedPayments(searchByUser(paymentRecords, currentUsers(customers)))))) as paymentRecord}
                   {@const customer = customers.find((customer) => customer.id === paymentRecord.customerId) }
                      <div class="rounded-lg border border-primary-50-950 grid sm:grid-cols-2 m-2">
@@ -251,8 +251,8 @@
                         {/if}
                      </div>
                   {/each}
+                  <Pagination bind:size={size} bind:pageNum={pageNum} array={dateSearchPayments(searchedPayments(searchByUser(paymentRecords, currentUsers(customers))))} label='payment records'/>
                </div>
-               <Pagination bind:size={size} bind:pageNum={pageNum} array={dateSearchPayments(searchedPayments(searchByUser(paymentRecords, currentUsers(customers))))} label='payment records'/>
          {:else}
             No payment records from that year
          {/if}

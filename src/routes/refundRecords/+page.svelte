@@ -173,7 +173,7 @@
 				classes=''	
 			/>
 		</div>
-			<div class="grid grid-cols-1 mx-2 mt-26 sm:mt-18 gap-3 shadow-lg" in:fade={{duration:600}}>
+			<div class="grid grid-cols-1 mx-2 mt-26 sm:mt-18 gap-3 mb-20 sm:mb-12 lg:mb-8" in:fade={{duration:600}}>
 				{#each slicedRefunds(searchRefunds(dateSearchRefunds(searchByUser(refunds, currentUsers(customers))))) as refund (refund.refundNumber)}
 				{@const customer = customers.find((customer) => customer.id === refund.customerId)}
 					<div class="border rounded-lg border-primary-50-950 sm:grid sm:grid-cols-2">
@@ -198,8 +198,8 @@
 						{/if}
 					</div>
 				{/each}
+				<Pagination bind:size bind:pageNum label="refund records" array={searchRefunds(dateSearchRefunds(searchByUser(refunds, currentUsers(customers))))} />
 			</div>
-			<Pagination bind:size bind:pageNum label="refund records" array={searchRefunds(dateSearchRefunds(searchByUser(refunds, currentUsers(customers))))} />
 		{/await}
 	{/await}
 {/await}
