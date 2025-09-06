@@ -86,7 +86,7 @@
    let selectedCustomerLease = $state(['']);
    if(customers){
       customers.forEach((customer)=>{
-         const label = `${customer.givenName} ${customer.familyName}`;
+         const label = `${customer.givenName} ${customer.familyName} (${customer.email})`;
          const value = customer.id;
          const datum = {
             label,
@@ -145,6 +145,7 @@
                   leaseSelected=true
                }
             }}
+            optionClasses='truncate'
          />
          {#if customerLeaseComboBoxData.length === 0}
             or,
@@ -208,9 +209,9 @@
                      open={invoiceNotesTooltipOpen}
                      onOpenChange={(e) => invoiceNotesTooltipOpen = e.open}
                      positioning={{placement: 'top-end'}}
-                     contentBase="card preset-filled p-2"
+                     contentBase="card preset-filled p-2 wrap-word max-w-4xl"
                      openDelay={200}
-                     closeDelay={2000}
+                     closeDelay={200}
                      zIndex='30'
                      arrow={true}
                      closeOnScroll={true}
