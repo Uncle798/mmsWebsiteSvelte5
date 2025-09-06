@@ -16,7 +16,26 @@
    <Header title='Refund Record number: {data.refundRecord.refundNumber}' />
    <div class="m-2 mt-14 sm:mt-10 border border-primary-50-950 rounded-lg flex flex-col sm:flex-row mb-22 sm:mb-14 lg:mb-9">
       {#if data.user?.employee}
+      <div class="w-1/2">
          <RefundRecordEmployee refundRecord={data.refundRecord} classes=''/>
+         <div class="flex my-2">
+            {#if customer.email && customer.emailVerified}
+               <EmailCustomer
+                  emailAddress={customer.email}
+                  recordNum={data.refundRecord.refundNumber}
+                  apiEndPoint='/api/sendRefund'
+                  buttonText='Send Refund email'
+                  classes='mx-2'
+               />
+            {/if}
+            <a href="/api/downloadPDF?refundNum={data.refundRecord.refundNumber}" 
+               class="btn preset-filled-primary-50-950 h-8" 
+               target="_blank"
+            >
+               Download PDF
+            </a>
+         </div>
+      </div>
       {:else}
          <RefundRecordCustomer refundRecord={data.refundRecord} />
       {/if}
@@ -35,15 +54,6 @@
                {/if}
             {/if}
          </div>
-      {/if}
-      {#if customer.email && customer.emailVerified}
-         <EmailCustomer
-            emailAddress={customer.email}
-            recordNum={data.refundRecord.refundNumber}
-            apiEndPoint='/api/sendRefund'
-            buttonText='Send Refund email'
-            classes='mx-2'
-         />
       {/if}
    </div>
 {/if}
