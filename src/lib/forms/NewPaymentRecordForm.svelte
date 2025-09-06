@@ -44,8 +44,7 @@
       },
       onSubmit({formData}) {
          formData.set('customerId', selectedCustomer[0]);
-         formData.set('invoiceNum', selectedInvoice[0]);
-
+         formData.set('invoiceNum', selectedInvoice[0])
       },
    });
    export const snapshot = {
@@ -166,6 +165,7 @@
             onValueChange={(details) => {
                selectedInvoice = details.value
             }}
+            optionClasses='truncate'
          />
       {/if}
       {#if customer}
@@ -208,17 +208,20 @@
       {#if selectedInvoice[0] !== ''}
       {@const invoice = invoices?.find((invoice) => invoice.invoiceNum === parseInt(selectedInvoice[0], 10))}
       {@const customer = customers?.find((customer) => customer.id === invoice?.customerId)}
-         <div class="border border-primary-contrast-50-950 rounded-lg flex" {@attach ()=>{
+         <div class="border border-primary-contrast-50-950 rounded-lg flex flex-col sm:flex-row" {@attach ()=>{
             if(invoice){
-               $form.paymentAmount = invoice.invoiceAmount
-               $form.paymentNotes = `Payment for invoice ${invoice.invoiceNum}, ${invoice.invoiceNotes}`
-               $form.deposit = invoice.deposit
+               $form.paymentAmount = invoice.invoiceAmount;
+               $form.paymentNotes = `Payment for invoice ${invoice.invoiceNum}, ${invoice.invoiceNotes}`;
+               $form.deposit = invoice.deposit;
+               selectedInvoice[0] = invoice.invoiceNum.toString();
+               selectedCustomer[0] = invoice.customerId;
+               $inspect(selectedCustomer)
             }
          }}>
             {#if invoice}            
                <InvoiceEmployee
                   {invoice}
-                  classes='w-1/2'
+                  classes=''
                />
             {/if}
             {#if customer}
