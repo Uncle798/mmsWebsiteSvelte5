@@ -31,6 +31,6 @@
    {:else if emailing}
       <div class="m-2">Sending email...</div>
    {:else if !emailing}
-      <button class="btn rounded-lg preset-filled-primary-50-950 m-2" onclick={()=>sendEmail(recordNum)}>{buttonText}</button>
+      <button class="btn rounded-lg preset-filled-primary-50-950 h-8" onclick={()=>sendEmail(recordNum)}>{buttonText}</button>
    {/if}
 </div>
