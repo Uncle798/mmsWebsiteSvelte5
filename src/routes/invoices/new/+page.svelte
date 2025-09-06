@@ -13,7 +13,7 @@
 
 <Header title="New Invoice" />
 {#if data.customers}   
-   <div in:fade={{duration:600}} out:fade={{duration:0}} class="mt-14 sm:mt-10">
+   <div in:fade={{duration:600}} out:fade={{duration:0}} class="mt-14 sm:mt-10 mb-8">
       <NewInvoiceForm 
          data={data.newInvoiceForm} 
          employeeId={data.user?.id} 
