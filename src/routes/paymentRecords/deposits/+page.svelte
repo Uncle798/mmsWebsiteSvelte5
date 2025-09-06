@@ -118,7 +118,7 @@
                </div>
             {/snippet}
          </Modal>
-         <div class="grid grid-cols-1 sm:grid-cols-2 gap-1 mt-22" in:fade={{duration:600}} out:fade={{duration:0}}>
+         <div class="grid grid-cols-1 sm:grid-cols-2 gap-1 mt-20 mb-8" in:fade={{duration:600}} out:fade={{duration:0}}>
             {#each slicedSource(searchedPaymentRecords(searchByNotes(searchByUser(deposits, customers)))) as deposit}
             {@const user = customers.find((customer) => customer.id === deposit.customerId)}
                <div class="flex flex-col border-2 border-primary-50-950 rounded-lg mx-1 sm:mx-2">
