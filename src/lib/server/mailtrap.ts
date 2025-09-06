@@ -58,7 +58,7 @@ export async function  sendPaymentReceipt(customer:User, paymentRecord:PaymentRe
    if(customer.email?.includes('veryFakeEmail.com'.toLowerCase()) || customer.email?.includes('yetAnotherFakeEmail.com'.toLowerCase())){
       return null;
    }
-   const pdf = await makeReceiptPdf(paymentRecord, customer, address);
+   const pdf = await makeReceiptPdf(paymentRecord, customer, address) as PDFKit.PDFDocument;
    const buf = await buffer(pdf);
    try {      
       const response = await mailtrap.send({
@@ -85,7 +85,7 @@ export async function sendInvoice(invoice:Invoice, customer:User, address:Addres
    if(customer.email?.includes('veryFakeEmail.com'.toLowerCase()) || customer.email?.includes('yetAnotherFakeEmail.com'.toLowerCase())){
       return null;
    }
-   const pdf = await makeInvoicePdf(invoice, customer, address);
+   const pdf = await makeInvoicePdf(invoice, customer, address) as PDFKit.PDFDocument;
    const buf = await buffer(pdf);
    try {
       const response = await mailtrap.send({
@@ -134,7 +134,7 @@ export async function sendRefundEmail(refund:RefundRecord, customer:User, addres
    if(customer.email?.includes('veryFakeEmail.com'.toLowerCase()) || customer.email?.includes('yetAnotherFakeEmail.com'.toLowerCase())){
       return null;
    }
-   const pdf = await makeRefundPdf(refund, customer, address);
+   const pdf = await makeRefundPdf(refund, customer, address) as PDFKit.PDFDocument;
    const buf = await buffer(pdf);
    try {
       const response = await mailtrap.send({
