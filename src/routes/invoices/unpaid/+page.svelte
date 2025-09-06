@@ -1,20 +1,21 @@
 <script lang="ts">
 	import { fade } from 'svelte/transition';
-    import type { PageData } from './$types';
+   import type { PageData } from './$types';
 	import UserEmployee from '$lib/displayComponents/UserEmployee.svelte';
 	import type { Invoice, User } from '@prisma/client';
-    import InvoiceEmployee from '$lib/displayComponents/InvoiceEmployee.svelte';
+   import InvoiceEmployee from '$lib/displayComponents/InvoiceEmployee.svelte';
 	import Header from '$lib/Header.svelte';
-    import Pagination from '$lib/displayComponents/Pagination.svelte';
+   import Pagination from '$lib/displayComponents/Pagination.svelte';
 	import Placeholder from '$lib/displayComponents/Placeholder.svelte';
 	import Search from '$lib/forms/Search.svelte';
 	import DateSearch from '$lib/forms/DateSearch.svelte';
 	import dayjs from 'dayjs';
-    import utc from 'dayjs/plugin/utc'
+   import utc from 'dayjs/plugin/utc'
 	import Revenue from '$lib/displayComponents/Revenue.svelte';
 	import Address from '$lib/displayComponents/AddressEmployee.svelte';
 	import { Modal } from '@skeletonlabs/skeleton-svelte';
-    import { PanelTopClose, SearchIcon } from 'lucide-svelte';
+   import { PanelTopClose, SearchIcon } from 'lucide-svelte';
+	import EmailCustomer from '$lib/emailCustomer.svelte';
 
     dayjs.extend(utc)
 
@@ -78,20 +79,20 @@
 </script>
 {#await wrapper}
    <Header title='Loading invoices' />
-   <div class="mt-14 sm:mt-10">
+   <div class="mt-14 sm:mt-10 ml-2">
       Loading {numberFormatter.format(data.invoiceCount)} invoices, 
       <Placeholder numCols={1} numRows={size} heightClass='h-40'/>
    </div>
    {:then invoices}
       {#await data.customers}
          <Header title='Loading customers' />
-         <div class="mt-14 sm:mt-10">
+         <div class="mt-14 sm:mt-10 ml-2">
             Loading customers...
             <Placeholder numCols={1} numRows={size} heightClass='h-40'/>
          </div>
       {:then customers}
       {#await data.addresses}
-         <div class="mt-14 sm:mt-10">
+         <div class="mt-14 sm:mt-10 ml-2">
             Loading addresses...
             <Placeholder numCols={1} numRows={size} heightClass='h-40'/>
          </div>
@@ -130,10 +131,26 @@
                      <div class="rounded-lg border border-primary-50-950 grid sm:grid-cols-2">
                         <div>
                            <InvoiceEmployee {invoice} classes='px-2' />
-                           {#if !invoice.paymentRecordNum}
-                              <a href="/paymentRecords/new?userId={customer?.id}&invoiceNum={invoice.invoiceNum}" class="btn preset-filled-primary-50-950 m-1">Make payment record for this invoice</a>
-                           {/if}
-                        </div>                       
+                           <div class="flex gap-2 m-2">
+                              {#if !invoice.paymentRecordNum}
+                                 <a href="/paymentRecords/new?userId={customer?.id}&invoiceNum={invoice.invoiceNum}" class="btn preset-filled-primary-50-950 h-8">Make payment record for this invoice</a>
+                              {/if}
+                              <a href="/api/downloadPDF?invoiceNum={invoice.invoiceNum}" 
+                                 class="btn preset-filled-primary-50-950 h-8" 
+                                 target="_blank"
+                              >
+                                 Download PDF
+                              </a>
+                              {#if customer?.emailVerified && customer.email}
+                                 <EmailCustomer
+                                    apiEndPoint='/api/sendInvoice'
+                                    recordNum={invoice.invoiceNum}
+                                    emailAddress={customer.email}
+                                    buttonText='Email Invoice to customer'
+                                 />
+                              {/if}
+                           </div>                       
+                        </div>
                         {#if customer}
                         {@const address = addresses.find((address) => address.userId === customer.id)}
                            <div class="flex flex-col px-2 pt-2">
