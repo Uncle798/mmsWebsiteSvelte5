@@ -9,6 +9,7 @@
 	import Header from '$lib/Header.svelte';
 	import { PanelTopClose, SearchIcon } from 'lucide-svelte';
 	import UserEmployee from '$lib/displayComponents/UserEmployee.svelte';
+	import AddressEmployee from '$lib/displayComponents/AddressEmployee.svelte';
    let { data }: { data: PageData } = $props();
    let size = $state(25);
    let pageNum = $state(1);
@@ -40,10 +41,17 @@
 <Header title='New Refund' />
 {#if data.paymentRecord}
    <div class="mt-14 sm:mt-10 mx-1 sm:mx-2">
-      {#if data.customer}
-         <UserEmployee user={data.customer} />
-      {/if}
-      <PaymentRecordEmployee paymentRecord={data.paymentRecord} />
+      <div class="border-2 border-primary-50-950 rounded-lg grid sm:grid-cols-2 gap-2">
+         <PaymentRecordEmployee paymentRecord={data.paymentRecord} classes='px-2' />
+         <div>
+            {#if data.customer}
+               <UserEmployee user={data.customer} />
+            {/if}
+            {#if data.address}
+               <AddressEmployee address={data.address} />
+            {/if}
+         </div>
+      </div>
       <NewRefundForm data={data.refundForm} paymentRecord={data.paymentRecord} classes='p-2'/>
    </div>
 {:else}

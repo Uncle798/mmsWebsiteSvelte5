@@ -26,9 +26,17 @@ export const load = (async (event) => {
          }
       })
       if(!paymentRecord){
-         error(404);
+         throw error(404);
       }
-      return { paymentRecord, customer, refundForm, searchForm }
+      const address = await prisma.address.findFirst({
+         where: {
+            AND: [
+               {userId: customer?.id},
+               {softDelete: false}
+            ]
+         }
+      })
+      return { paymentRecord, customer, address, refundForm, searchForm }
    }
    const paymentRecords = prisma.paymentRecord.findMany({
       where: {
