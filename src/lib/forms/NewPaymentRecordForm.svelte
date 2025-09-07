@@ -77,7 +77,7 @@
       }
       if(customers){
          for(const customer of customers){
-            const label = `${customer.givenName} ${customer.familyName}`;
+            const label = `${customer.givenName} ${customer.familyName} (${customer.email})`;
             const value = customer.id;
             const datum = {
                label,
@@ -191,6 +191,7 @@
                   }
                }
             }}
+            optionClasses='truncate'
          />
       {/if}
       {#if selectedCustomer[0] !== '' && customerInvoices}
@@ -208,7 +209,7 @@
       {#if selectedInvoice[0] !== ''}
       {@const invoice = invoices?.find((invoice) => invoice.invoiceNum === parseInt(selectedInvoice[0], 10))}
       {@const customer = customers?.find((customer) => customer.id === invoice?.customerId)}
-         <div class="border border-primary-contrast-50-950 rounded-lg flex flex-col sm:flex-row" {@attach ()=>{
+         <div class="border border-primary-50-950 rounded-lg flex flex-col sm:flex-row" {@attach ()=>{
             if(invoice){
                $form.paymentAmount = invoice.invoiceAmount;
                $form.paymentNotes = `Payment for invoice ${invoice.invoiceNum}, ${invoice.invoiceNotes}`;
@@ -221,7 +222,7 @@
             {#if invoice}            
                <InvoiceEmployee
                   {invoice}
-                  classes=''
+                  classes='px-2'
                />
             {/if}
             {#if customer}
@@ -230,7 +231,7 @@
                   classes='m-2'
                />
             {/if}
-         </div>
+      </div>
          <NumberInput
             bind:value={$form.paymentAmount}
             errors={$errors.paymentAmount}
