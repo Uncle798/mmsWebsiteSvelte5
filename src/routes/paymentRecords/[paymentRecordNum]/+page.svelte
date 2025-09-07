@@ -28,12 +28,12 @@
                               emailAddress={data.customer.email} 
                               apiEndPoint='/api/sendReceipt'
                               buttonText='Email Receipt'
-                              classes=''
+                              classes='h-8'
                            />
                         {/if}
                         {#if !data.paymentRecord.refunded}
                            <a href='/refundRecords/new?paymentNum={data.paymentRecord.paymentNumber}' 
-                              class="btn rounded-lg preset-filled-primary-50-950 m-2"
+                              class="btn rounded-lg preset-filled-primary-50-950 h-8" 
                            >
                               Refund this payment
                            </a>
