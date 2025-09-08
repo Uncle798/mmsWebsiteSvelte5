@@ -1,34 +1,43 @@
-<script lang='ts'>
-   import FormMessage from "$lib/formComponents/FormMessage.svelte";
-	import FormSubmitWithProgress from "$lib/formComponents/FormSubmitWithProgress.svelte";
-	import NumberInput from "$lib/formComponents/NumberInput.svelte";
-   import type { EmailVerificationFormSchema, NewInvoiceFormSchema, RegisterFormSchema, } from "$lib/formSchemas/schemas";
+<script lang="ts">
+	import type { EmailVerificationFormSchema, NewInvoiceFormSchema, RegisterFormSchema } from "$lib/formSchemas/schemas";
 	import type { Lease, User } from "@prisma/client";
-	import type { SuperValidated, Infer } from "sveltekit-superforms";
-   import { superForm } from "sveltekit-superforms";
-   import { Combobox, Modal, Switch, Tooltip, } from "@skeletonlabs/skeleton-svelte";
-	import dayjs from "dayjs";
-	import DateInput from "$lib/formComponents/DateInput.svelte";
+	import { Combobox, Modal, Tooltip, Switch } from "@skeletonlabs/skeleton-svelte";
 	import { onMount } from "svelte";
+	import { superForm, type Infer, type SuperValidated } from "sveltekit-superforms";
+	import EmailVerificationForm from "./EmailVerificationForm.svelte";
+	import RegisterForm from "./RegisterForm.svelte";
 	import Header from "$lib/Header.svelte";
-	import UserEmployee from "$lib/displayComponents/UserEmployee.svelte";
-	import LeaseEmployee from "$lib/displayComponents/LeaseEmployee.svelte";
-   import RegisterForm from "./RegisterForm.svelte";
-   import EmailVerificationForm from "./EmailVerificationForm.svelte";
+	import FormMessage from "$lib/formComponents/FormMessage.svelte";
+   import NumberInput from "$lib/formComponents/NumberInput.svelte";
+   import DateInput from "$lib/formComponents/DateInput.svelte";
+   import FormSubmitWithProgress from "$lib/formComponents/FormSubmitWithProgress.svelte";
+	import { goto } from "$app/navigation";
 	import { Info } from "lucide-svelte";
-
+	import dayjs from "dayjs";
+   
    interface Props {
       data: SuperValidated<Infer<NewInvoiceFormSchema>>;
       registerFormData: SuperValidated<Infer<RegisterFormSchema>>;
       emailVerificationFormData: SuperValidated<Infer<EmailVerificationFormSchema>>;
-      employeeId: string | undefined;
+      employeeId: string;
       customers?: User[];
-      leases: Lease[];
-      customer?: User | null;
+      customer?: User;
+      leases?: Lease[];
+      lease?: Lease;
       classes?: string;
    }
-   let { data, registerFormData, emailVerificationFormData, employeeId, customers, leases, customer, classes }:Props = $props();
-   let { form, errors, message, constraints, enhance, delayed, timeout} = superForm(data, {
+   let {
+      data,
+      registerFormData,
+      emailVerificationFormData,
+      employeeId,
+      customers,
+      customer,
+      leases, 
+      lease, 
+      classes,
+   }:Props = $props();
+   let { form, errors, message, constraints, enhance, delayed, timeout, } = superForm(data, {
       onChange(event) {
          if(event.target){
             const formName = 'newInvoiceForm'
@@ -38,16 +47,36 @@
             }
          }
       },
-      onSubmit({formData}) {
-         formData.set('customerId', selectedCustomer[0])
-         formData.set('leaseId', selectedLease[0])
-      },
    });
-   let selectedCustomer = $state([''])
-   onMount(()=> {
-      $form.invoiceDue = new Date()
-      if(customer){
-         selectedCustomer[0] = customer.id
+   interface ComboboxData {
+      label: string;
+      value: string;
+   }
+   const customersComboboxData:ComboboxData[] = [];
+   const leasesComboboxData:ComboboxData[] = [];
+   let invoiceNotesTooltipOpen = $state(false);
+   let registerFormModalOpen = $state(false);
+   onMount(()=>{
+      if(customers){
+         customers.forEach((customer) => {
+            const label = `${customer.givenName} ${customer.familyName} (${customer.email})`;
+            const value = customer.id;
+            const datum = {
+               label,
+               value
+            }
+            customersComboboxData.push(datum);
+         })
+      }
+      if(leases){
+         leases.forEach((lease) => {
+            const label = lease.unitNum.replace(/^0+/gm, '');
+            const value = lease.leaseId;
+            leasesComboboxData.push({
+               label,
+               value,
+            })
+         })
       }
       for(const key in $form){
          const fullKey = `newInvoiceForm:${key}`;
@@ -66,47 +95,15 @@
             }
          }
       }
+      if(lease){
+         $form.invoiceNotes=`Rent for unit ${lease.unitNum.replace(/^0+/gm, '')} for ${dayjs().format('MMMM YYYY')}`;
+         $form.invoiceAmount=lease.price;
+         $form.invoiceDue=new Date()
+      }
+      if(customer){
+         $form.customerId=customer.id
+      }
    })
-   let selectedLease = $state(['']);
-   interface ComboBoxData {
-      label: string;
-      value: string;
-   }
-   const customerComboBoxData:ComboBoxData[] = [];
-   const customerLeaseComboBoxData:ComboBoxData[] = $derived.by(() => {
-      const customerLeases = leases.filter((lease) => lease.customerId === selectedCustomer[0]);
-      const data:ComboBoxData[]=[];
-      customerLeases.forEach((lease) =>{
-         const label = lease.unitNum.replace(/^0+/gm,'');
-         const value = lease.leaseId;
-         data.push({label, value})
-      })
-      return data
-   })
-   let selectedCustomerLease = $state(['']);
-   if(customers){
-      customers.forEach((customer)=>{
-         const label = `${customer.givenName} ${customer.familyName} (${customer.email})`;
-         const value = customer.id;
-         const datum = {
-            label,
-            value
-         }
-         customerComboBoxData.push(datum);
-      });
-   }
-   const leaseComboBoxData:ComboBoxData[] = [];
-   for(const lease of leases){
-      const label = lease.unitNum.replace(/^0+/gm, '');
-      const value = lease.leaseId;
-      leaseComboBoxData.push({
-         label,
-         value,
-      })
-   }
-   let leaseSelected = $state(false);
-   let invoiceNotesTooltipOpen = $state(true);
-   let registerFormModalOpen = $state(false);
 </script>
 <Modal
    open={registerFormModalOpen}
@@ -115,96 +112,60 @@
    backdropClasses="backdrop-blur-xs"
 >
    {#snippet content()}
-      {#if customer}     
-         <EmailVerificationForm data={emailVerificationFormData} userId={selectedCustomer[0]} redirect='false' bind:emailVerificationModalOpen={registerFormModalOpen}/>
+      {#if customer}
+         <EmailVerificationForm data={emailVerificationFormData} userId={customer.id} redirect='false' bind:emailVerificationModalOpen={registerFormModalOpen} />
       {:else}
-         <RegisterForm data={registerFormData} registerFormModalOpen={registerFormModalOpen} formType='employee' redirectTo='invoices/new' />
-         <button class="btn preset-filled-primary-50-950 rounded-lg h-fit" onclick={()=>registerFormModalOpen=false}>Cancel</button>
+         <RegisterForm data={registerFormData} bind:registerFormModalOpen={registerFormModalOpen} formType='employee' redirectTo='invoices/new' />
       {/if}
+         <button class="btn preset-filled-primary-50-950 rounded-lg h-fit" onclick={()=>registerFormModalOpen=false}>Cancel</button>
    {/snippet}
 </Modal>
-
 <Header title='New Invoice' />
+<FormMessage message={$message} />
 <div class={classes}>
-   {#if selectedCustomer[0] === ''}
-      <button class="btn preset-filled-primary-50-950 m-1 sm:m-2" onclick={() => registerFormModalOpen = true}>Create new customer</button>
+   {#if !customer}
+      <button class="btn preset-filled-primary-50-950 my-2" onclick={() => registerFormModalOpen = true}>Create new customer</button>
       or, 
+      <Combobox
+         data={customersComboboxData}
+         label='Select Customer'
+         placeholder='Type or select...'
+         openOnClick={true}
+         optionClasses='truncate'
+         onValueChange={(details) => {
+            goto(`/invoices/new?userId=${details.value}`);
+         }}
+      />
    {/if}
-   <FormMessage message={$message} />
-   <form action="/forms/newInvoiceForm" method="POST" use:enhance>
-      {#if !leaseSelected}         
+   {#if leases}
+      {#if customer}         
          <Combobox
-            data={customerComboBoxData}
-            value={selectedCustomer}
-            label='Select Customer'
-            placeholder='Select...'
+            data={leasesComboboxData}
+            label='Select unit'
+            placeholder='Type or select'
             openOnClick={true}
-            onValueChange={(detail) => {
-               selectedCustomer=detail.value
-               if(customerLeaseComboBoxData.length === 0){
-                  leaseSelected=true
-               }
+            onValueChange={(details) => {
+               goto(`/invoices/new?leaseId=${details.value}&userId=${customer.id}`)
             }}
-            optionClasses='truncate'
          />
-         {#if customerLeaseComboBoxData.length === 0}
-            or,
-            <Combobox
-               data={leaseComboBoxData}
-               value={selectedLease}
-               label='Select Unit'
-               placeholder='Select...'
-               openOnClick={true}
-               onValueChange={(detail) => {
-                  selectedLease = detail.value
-                  const lease = leases.find((lease) => lease.leaseId === detail.value[0]);
-                  if(lease){
-                     selectedCustomer[0] = lease.customerId;
-                     $form.invoiceAmount=lease.price
-                     const date = dayjs(new Date()).format('MMMM YYYY')
-                     $form.invoiceNotes=`Rent for Unit Number ${lease.unitNum.replace(/^0+/gm,'')} for ${date}`
-                     leaseSelected = true
-                  }
-               }}
-            />
-         {/if}
-         {#if customerLeaseComboBoxData.length > 0}
-            <Combobox
-               data={customerLeaseComboBoxData}
-               value={selectedCustomerLease}
-               label="Select a unit"
-               placeholder="Select..."
-               openOnClick={true}
-               onValueChange={(details) =>{
-                  selectedLease=details.value
-                  const lease = leases.find((lease) => lease.leaseId === details.value[0]);
-                  if(lease){
-                     $form.invoiceAmount=lease.price
-                     const date = dayjs(new Date()).format('MMMM YYYY')
-                     $form.invoiceNotes=`Rent for Unit Number ${lease.unitNum.replace(/^0+/gm,'')} for ${date}`
-                     leaseSelected = true
-                  }
-               }}
-            />
-         {/if}
+      {:else}
+         <Combobox
+            data={leasesComboboxData}
+            label='Select unit'
+            placeholder='Type or select'
+            openOnClick={true}
+            onValueChange={(details) => {
+               goto(`/invoices/new?leaseId=${details.value}`)
+            }}
+         />
       {/if}
-      {#if leaseSelected}
-      {@const customer = customers?.find((customer) => {
-         return customer.id === selectedCustomer[0]
-         })}
-      {@const lease = leases.find((lease) => lease.leaseId === selectedLease[0])}
-         <div class="border border-primary-50-950 rounded-lg ">
-            {#if lease}
-               <LeaseEmployee {lease} classes='m-2'/>
-            {/if}
-            {#if customer}
-               <UserEmployee user={customer} classes='m-2' />
-            {/if}
-         </div>
+   {/if}
+   {#if customer || lease}
+      
+      <form action="/forms/newInvoiceForm" class='mx-2' method="POST" use:enhance>
          <div class="">
             <label class="label ">
-               <span class="label-text">Invoice notes</span>
-               {#if $form.invoiceNotes}
+               <span class="label-text">Invoice notes
                   <Tooltip
                      open={invoiceNotesTooltipOpen}
                      onOpenChange={(e) => invoiceNotesTooltipOpen = e.open}
@@ -223,13 +184,14 @@
                         Invoice notes are the place to store information for you and your customer. MMS has defaults but those can be edited, and we can change the defaults.
                      {/snippet}
                   </Tooltip>
-               {/if}
+                  </span>
                <textarea
                   class="input rounded-none h-auto"
                   rows=3
                   name="invoiceNotes"
                   {...$constraints.invoiceNotes}
                >{$form.invoiceNotes}</textarea>
+               <!-- Above formatting required for proper display of notes in text area -->
             </label>
             {#if $errors.invoiceNotes}<span class="invalid">{$errors.invoiceNotes}</span>{/if}
          </div>
@@ -255,7 +217,8 @@
             placeholder={dayjs().format('YYYY/MM/DD')}
          />
          <input type="hidden" name='employeeId' value={employeeId}/>
+         <input type="hidden" name="customerId" value={customer?.id} />
          <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} buttonText='Create Invoice'/>
-      {/if}
-   </form>
+      </form>
+   {/if}
 </div>
