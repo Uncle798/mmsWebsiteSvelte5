@@ -1,4 +1,7 @@
 <script lang="ts">
+	import AddressEmployee from '$lib/displayComponents/AddressEmployee.svelte';
+	import LeaseEmployee from '$lib/displayComponents/LeaseEmployee.svelte';
+	import UserEmployee from '$lib/displayComponents/UserEmployee.svelte';
    import NewInvoiceForm from '$lib/forms/NewInvoiceForm.svelte';
 	import Header from '$lib/Header.svelte';
    import type { PageData } from './$types';
@@ -12,28 +15,41 @@
 </script>
 
 <Header title="New Invoice" />
-{#if data.customers}   
-   <div in:fade={{duration:600}} out:fade={{duration:0}} class="mt-14 sm:mt-10 mb-8">
-      <NewInvoiceForm 
-         data={data.newInvoiceForm} 
-         employeeId={data.user?.id} 
-         customers={data.customers} 
-         leases={data.leases}
-         registerFormData={data.registerForm}
-         emailVerificationFormData={data.emailVerificationForm}
-         classes='px-2'
-      />
-   </div>
-{:else if data.customer}
-   <div class="mt-14 sm:mt-10" in:fade={{duration:600}} out:fade={{duration:0}}>
+
+<div class="mt-14 sm:mt-10 mb-8" in:fade={{duration:600}} out:fade={{duration:0}}>
+   {#if data.customer}
+      <div class="m-2 rounded-lg border border-primary-50-950 grid sm:grid-cols-2">
+         {#if data.lease}
+            <LeaseEmployee lease={data.lease} classes='p-2'/>
+         {/if}
+         <div class="p-2">
+            <UserEmployee user={data.customer} />
+            {#if data.address}
+               <AddressEmployee address={data.address} />
+            {/if}
+         </div>
+      </div>
       <NewInvoiceForm 
          data={data.newInvoiceForm}
          registerFormData={data.registerForm}
          emailVerificationFormData={data.emailVerificationForm}
-         employeeId={data.user?.id}
+         employeeId={data.user!.id}
          leases={data.leases} 
          customer={data.customer} 
-         classes='mt-14 sm:mt-10 m-1 sm:m-2'
+         classes=''
+         lease={data.lease}
       />
-   </div>
-{/if}
+   {:else}
+      <NewInvoiceForm 
+         data={data.newInvoiceForm}
+         registerFormData={data.registerForm}
+         emailVerificationFormData={data.emailVerificationForm}
+         employeeId={data.user!.id}
+         leases={data.leases}
+         lease={data.lease}
+         customers={data.customers}
+         classes='m-2'
+      />
+      
+   {/if}
+</div>
