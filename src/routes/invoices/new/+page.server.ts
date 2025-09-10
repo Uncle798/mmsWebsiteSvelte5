@@ -1,7 +1,7 @@
 import { superValidate } from 'sveltekit-superforms';
 import type { PageServerLoad } from './$types';
 import { valibot } from 'sveltekit-superforms/adapters';
-import { emailVerificationFormSchema, newInvoiceFormSchema, registerFormSchema } from '$lib/formSchemas/schemas';
+import { addressFormSchema, emailVerificationFormSchema, newInvoiceFormSchema, registerFormSchema } from '$lib/formSchemas/schemas';
 import { redirect } from '@sveltejs/kit';
 import { prisma } from '$lib/server/prisma';
 import type { Address } from '@prisma/client';
@@ -13,6 +13,7 @@ export const load = (async (event) => {
    const newInvoiceForm = await superValidate(valibot(newInvoiceFormSchema));
    const registerForm = await superValidate(valibot(registerFormSchema));
    const emailVerificationForm = await superValidate(valibot(emailVerificationFormSchema));
+   const addressForm = await superValidate(valibot(addressFormSchema));
    const userId = event.url.searchParams.get('userId');
    const leaseId = event.url.searchParams.get('leaseId');
    if(userId && leaseId){
@@ -36,11 +37,11 @@ export const load = (async (event) => {
                   ]
                }
             })
-            return { newInvoiceForm, registerForm, emailVerificationForm, customer, lease, address}
+            return { newInvoiceForm, registerForm, emailVerificationForm, addressForm, customer, lease, address}
          }
       } catch (error) {
          console.error(error)
-         return { newInvoiceForm, registerForm, emailVerificationForm, customer}
+         return { newInvoiceForm, registerForm, emailVerificationForm, addressForm, customer}
 
       }
    }
@@ -65,11 +66,11 @@ export const load = (async (event) => {
                   ]
                }
             })
-            return { lease, customer, address, newInvoiceForm, registerForm, emailVerificationForm}
+            return { lease, customer, address, newInvoiceForm, registerForm, emailVerificationForm, addressForm, }
          }
       } catch (error){
          console.error(error);
-         return { newInvoiceForm, registerForm, emailVerificationForm}
+         return { newInvoiceForm, registerForm, emailVerificationForm, addressForm, }
       }
    }
    if(userId){
@@ -98,11 +99,11 @@ export const load = (async (event) => {
          }
       });
       if(leases.length > 1){
-         return { customer, leases, address, newInvoiceForm, registerForm, emailVerificationForm }
+         return { customer, leases, address, newInvoiceForm, registerForm, addressForm, emailVerificationForm }
       }
       const lease = leases[0];
 
-      return { customer, lease, address, newInvoiceForm, registerForm, emailVerificationForm }
+      return { customer, lease, address, newInvoiceForm, registerForm, addressForm, emailVerificationForm }
    }
    const customers = await prisma.user.findMany({
       orderBy: {
@@ -120,5 +121,5 @@ export const load = (async (event) => {
          unitNum: 'asc'
       }
    })
-   return { newInvoiceForm, customers, leases, registerForm, emailVerificationForm };
+   return { newInvoiceForm, customers, leases, registerForm, addressForm, emailVerificationForm };
 }) satisfies PageServerLoad;
