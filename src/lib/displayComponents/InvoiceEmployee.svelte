@@ -29,8 +29,8 @@
    <HorizontalDivider classes='col-span-2' />
    <div class="text-right">Notes</div> 
    <div class="font-medium">{invoice.invoiceNotes}</div>
-   <HorizontalDivider classes='col-span-2' />
    {#if invoice.paymentRecordNum}
+      <HorizontalDivider classes='col-span-2' />
       <div class='text-right'>Payment number</div> 
       <div class="font-medium"><a href="/paymentRecords/{invoice.paymentRecordNum}" class="anchor">{invoice.paymentRecordNum}</a></div>
    {/if}
