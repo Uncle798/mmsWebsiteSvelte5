@@ -24,15 +24,28 @@ export const load = (async (event) => {
       if(!invoice){
          error(404, 'Invoice not found');
       }
-      const customer = await prisma.user.findUnique({
-         where: {
-            id: invoice.customerId
-         }
-      })
-      return { invoice, customer, newPaymentRecordForm, registerForm, invoiceForm, emailVerificationForm }
+      try {
+         const customer = await prisma.user.findUniqueOrThrow({
+            where: {
+               id: invoice.customerId
+            }
+         })
+         const address = await prisma.address.findFirst({
+            where: {
+               AND: [
+                  {userId: customer?.id},
+                  {softDelete: false}
+               ]
+            }
+         })
+         return { invoice, customer, address, newPaymentRecordForm, registerForm, invoiceForm, emailVerificationForm }
+      } catch (error) {
+         console.error(error);
+         return {newPaymentRecordForm, registerForm, invoiceForm, emailVerificationForm}
+      }
    }
    if(userId){
-      const customer = await prisma.user.findUnique({
+      const customer = await prisma.user.findUniqueOrThrow({
          where: {
             id:userId
          }
