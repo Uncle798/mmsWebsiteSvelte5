@@ -147,7 +147,11 @@
    {/if}
    {#if customer || lease}
       
-      <form action="/forms/newInvoiceForm" class='mx-2' method="POST" use:enhance>
+      <form action="/forms/newInvoiceForm" class='mx-2' method="POST" use:enhance {@attach () => {
+         if(!customer?.emailVerified){
+            registerFormModalOpen = true;
+         }
+      }}>
          <div class="">
             <label class="label ">
                <span class="label-text">Invoice notes
