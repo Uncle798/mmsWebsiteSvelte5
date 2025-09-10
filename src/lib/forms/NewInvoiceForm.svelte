@@ -52,32 +52,17 @@
       label: string;
       value: string;
    }
-   const customersComboboxData:ComboboxData[] = [];
-   const leasesComboboxData:ComboboxData[] = [];
+   const customersComboboxData:ComboboxData[] | undefined= $derived(customers?.map(customer => ({
+      label: `${customer.givenName} ${customer.familyName} (${customer.email})`,
+      value: customer.id
+   })));
+   const leasesComboboxData:ComboboxData[] | undefined = $derived(leases?.map(lease => ({
+      label: lease.unitNum.replace(/^0+/gm, ''),
+      value: lease.leaseId
+   })));
    let invoiceNotesTooltipOpen = $state(false);
    let registerFormModalOpen = $state(false);
    onMount(()=>{
-      if(customers){
-         customers.forEach((customer) => {
-            const label = `${customer.givenName} ${customer.familyName} (${customer.email})`;
-            const value = customer.id;
-            const datum = {
-               label,
-               value
-            }
-            customersComboboxData.push(datum);
-         })
-      }
-      if(leases){
-         leases.forEach((lease) => {
-            const label = lease.unitNum.replace(/^0+/gm, '');
-            const value = lease.leaseId;
-            leasesComboboxData.push({
-               label,
-               value,
-            })
-         })
-      }
       for(const key in $form){
          const fullKey = `newInvoiceForm:${key}`;
          const storedValue = sessionStorage.getItem(fullKey);
