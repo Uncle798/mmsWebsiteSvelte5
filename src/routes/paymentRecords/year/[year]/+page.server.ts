@@ -30,7 +30,7 @@ export const load = (async (event) => {
     });
     const paymentRecords = prisma.paymentRecord.findMany({
          orderBy: {
-               paymentCreated: 'asc'
+               paymentCreated: 'desc'
          },
          where: {
              AND:[
