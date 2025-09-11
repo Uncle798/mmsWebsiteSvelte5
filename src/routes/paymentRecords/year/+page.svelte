@@ -8,25 +8,23 @@
       label: string;
       value: string;
    }
-   let yearComboboxData:ComboboxData[] = [
-      {label:'Unpaid Invoices', value: 'unpaid'},
-   ]
-   data.years.forEach((year) => {
-      yearComboboxData.push({label:year.toString(), value: year.toString()})
-   })
+   let yearComboboxData:ComboboxData[] = $derived(data.years.map(year => ({
+      label: year.toString(),
+      value: year.toString()
+   }))) 
 </script>
 <div class="mx-1 sm:mx-2 mt-14 sm:mt-10 ">
    {#if data.years}
       <Combobox
-      data={yearComboboxData}
-      value={yearSelect}
-      label='Select year'
-      placeholder='Select year...'
-      openOnChange={true}
-      onValueChange={(details) => {
-         goto(`/paymentRecords/year/${details.value[0]}`)
-      }}
-      zIndex='50'
+         data={yearComboboxData}
+         value={yearSelect}
+         label='Select year'
+         placeholder='Select year...'
+         openOnChange={true}
+         onValueChange={(details) => {
+            goto(`/paymentRecords/year/${details.value[0]}`)
+         }}
+         zIndex='50'
       />
    {/if}
 </div>
