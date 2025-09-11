@@ -12,6 +12,7 @@
 	import AddressEmployee from '$lib/displayComponents/AddressEmployee.svelte';
    import { PanelTopClose, SearchIcon } from 'lucide-svelte';
 	import { fade } from 'svelte/transition';
+	import DownloadPdfButton from '$lib/DownloadPDFButton.svelte';
     interface Props {
         data: PageData;
     }
@@ -124,6 +125,10 @@
                <div class="flex flex-col border-2 border-primary-50-950 rounded-lg mx-1 sm:mx-2">
                   <PaymentRecordEmployee paymentRecord={deposit} classes='px-2'/>
                   <button type="button" class="btn rounded-lg preset-filled-primary-50-950 m-2" onclick={() => refundModal(deposit)}>Refund this deposit</button>
+                  <DownloadPdfButton
+                     recordType='paymentNum'
+                     num={deposit.paymentNumber}
+                  />
                   <div class="m-2">
                         {#if user}
                         {@const address = addresses.find((address) => address.userId === user.id)}

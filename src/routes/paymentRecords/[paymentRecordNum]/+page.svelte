@@ -5,6 +5,7 @@
 	import UserCustomer from '$lib/displayComponents/customerViews/UserCustomer.svelte';
    import PaymentRecordEmployee from '$lib/displayComponents/PaymentRecordEmployee.svelte';
 	import UserEmployee from '$lib/displayComponents/UserEmployee.svelte';
+	import DownloadPdfButton from '$lib/DownloadPDFButton.svelte';
 	import EmailCustomer from '$lib/emailCustomer.svelte';
 	import Header from '$lib/Header.svelte';
    import type { PageData } from './$types';
@@ -20,8 +21,15 @@
             {#if data.user?.employee}
                <div class="flex flex-col sm:flex-row">
                   <div class="sm:w-1/2">
-                     <PaymentRecordEmployee paymentRecord={data.paymentRecord} classes=''/>
-                     <div class="flex m-2 gap-2">
+                     <PaymentRecordEmployee paymentRecord={data.paymentRecord} classes='px-2'/>
+                     <div class="flex m-2 gap-2 flex-col sm:flex-row">
+                        {#if !data.paymentRecord.refunded}
+                           <a href='/refundRecords/new?paymentNum={data.paymentRecord.paymentNumber}' 
+                              class="btn rounded-lg preset-filled-primary-50-950 h-8" 
+                           >
+                              Refund this payment
+                           </a>
+                        {/if}
                         {#if data.customer.email && data.customer.emailVerified}
                            <EmailCustomer 
                               recordNum={data.paymentRecord.paymentNumber} 
@@ -31,19 +39,10 @@
                               classes='h-8'
                            />
                         {/if}
-                        {#if !data.paymentRecord.refunded}
-                           <a href='/refundRecords/new?paymentNum={data.paymentRecord.paymentNumber}' 
-                              class="btn rounded-lg preset-filled-primary-50-950 h-8" 
-                           >
-                              Refund this payment
-                           </a>
-                        {/if}
-                        <a href="/api/downloadPDF?paymentNum={data.paymentRecord.paymentNumber}" 
-                           class="btn preset-filled-primary-50-950 h-8" 
-                           target="_blank"
-                        >
-                           Download PDF
-                        </a>
+                        <DownloadPdfButton
+                           recordType='paymentNum'
+                           num={data.paymentRecord.paymentNumber}
+                        />
                      </div>
                   </div>
                   <div class="m-2">

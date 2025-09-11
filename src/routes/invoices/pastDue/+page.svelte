@@ -17,6 +17,7 @@
    import { onNavigate } from '$app/navigation';
    import { Modal } from '@skeletonlabs/skeleton-svelte';
 	import EmailCustomer from '$lib/emailCustomer.svelte';
+   import DownloadPdfButton from '$lib/DownloadPDFButton.svelte';
    dayjs.extend(utc)
    let { data }: { data: PageData } = $props();
    let pageNum = $state(1);
@@ -147,6 +148,10 @@
                                     buttonText='Email Invoice to customer'
                                  />
                               {/if}
+                              <DownloadPdfButton
+                                 recordType='invoiceNum'
+                                 num={invoice.invoiceNum}
+                              />
                         </div>
                         </div>                       
                         {#if customer}

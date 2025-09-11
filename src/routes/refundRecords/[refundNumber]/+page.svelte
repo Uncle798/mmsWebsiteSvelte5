@@ -8,6 +8,7 @@
 	import Header from '$lib/Header.svelte';
    import EmailCustomer from '$lib/emailCustomer.svelte';
    import type { PageData } from './$types';
+	import DownloadPdfButton from '$lib/DownloadPDFButton.svelte';
 
     let { data }: { data: PageData } = $props();
 </script>
@@ -28,12 +29,10 @@
                   classes='mx-2'
                />
             {/if}
-            <a href="/api/downloadPDF?refundNum={data.refundRecord.refundNumber}" 
-               class="btn preset-filled-primary-50-950 h-8" 
-               target="_blank"
-            >
-               Download PDF
-            </a>
+            <DownloadPdfButton
+               recordType='refundNum'
+               num={data.refundRecord.refundNumber}
+            />
          </div>
       </div>
       {:else}

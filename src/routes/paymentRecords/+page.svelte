@@ -18,6 +18,7 @@
    import { goto } from '$app/navigation';
 	import { SearchIcon, PanelTopCloseIcon } from 'lucide-svelte';
 	import EmailCustomer from '$lib/emailCustomer.svelte';
+	import DownloadPdfButton from '$lib/DownloadPDFButton.svelte';
 
    dayjs.extend(utc);
    
@@ -226,11 +227,27 @@
                   {#each slicedSource(sortedByDate(dateSearchPayments(searchedPayments(searchByUser(paymentRecords, currentUsers(customers)))))) as paymentRecord}
                   {@const customer = customers.find((customer) => customer.id === paymentRecord.customerId) }
                      <div class="rounded-lg border border-primary-50-950 grid sm:grid-cols-2 m-2">
-                        <div>
+                        <div class="flex flex-col">
                            <PaymentRecordEmployee paymentRecord={paymentRecord} classes="p-2" />
-                           {#if !paymentRecord.refunded}
-                                 <button type="button" class="btn rounded-lg preset-filled-primary-50-950 m-2" onclick={() => refundModal(paymentRecord)}>Refund this payment</button>
-                           {/if}
+                           <div class="flex flex-col sm:flex-row">
+                              {#if !paymentRecord.refunded}
+                                    <button type="button" class="btn rounded-lg preset-filled-primary-50-950 h-8 w-50 m-2 sm:mx-2" onclick={() => refundModal(paymentRecord)}>Refund this payment</button>
+                              {/if}
+                              {#if customer?.email && customer.emailVerified}
+                                 <EmailCustomer
+                                    emailAddress={customer.email}
+                                    recordNum={paymentRecord.paymentNumber}
+                                    apiEndPoint='/api/sendReceipt'
+                                    buttonText='Email receipt'
+                                    classes='mx-2 sm:m-auto h-8'
+                                 />
+                              {/if}
+                              <DownloadPdfButton
+                                 recordType='paymentNum'
+                                 num={paymentRecord.paymentNumber}
+                                 classes='m-2 sm:mb-2 sm:mx-2'
+                              />
+                           </div>
                         </div>
                         {#if customer}
                         {@const address = addresses.find((address)=> address.userId === customer.id)}
@@ -239,14 +256,7 @@
                               {#if address}
                                  <Address {address} classes=''/>
                               {/if}
-                              {#if customer.email && customer.emailVerified}
-                                 <EmailCustomer
-                                    emailAddress={customer.email}
-                                    recordNum={paymentRecord.paymentNumber}
-                                    apiEndPoint='/api/sendReceipt'
-                                    buttonText='Email receipt'
-                                 />
-                              {/if}
+
                            </div>
                         {/if}
                      </div>

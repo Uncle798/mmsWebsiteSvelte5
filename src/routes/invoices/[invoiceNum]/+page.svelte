@@ -5,6 +5,7 @@
    import InvoiceEmployee from '$lib/displayComponents/InvoiceEmployee.svelte';
    import UserEmployee from '$lib/displayComponents/UserEmployee.svelte';
 	import EmailCustomer from '$lib/emailCustomer.svelte';
+   import DownloadPdfButton from '$lib/DownloadPDFButton.svelte';
 	import Header from '$lib/Header.svelte';
    import type { PageData } from './$types';
 
@@ -17,6 +18,13 @@
          <div class="flex flex-col">
          <InvoiceEmployee invoice={data.invoice} classes="min-w-64 mx-2 " />
             <div class="flex gap-2 m-2">
+               {#if !data.invoice.paymentRecordNum}
+                  <a href="/paymentRecords/new?invoiceNum={data.invoice.invoiceNum}" 
+                     class="btn rounded-lg preset-filled-primary-50-950 mx-2 mb-2 w-84 h-8"
+                  >
+                     Make a payment record for this invoice
+                  </a>
+               {/if}
                {#if data.customer?.email && data.customer?.emailVerified}         
                   <EmailCustomer
                      recordNum={data.invoice.invoiceNum}
@@ -25,19 +33,10 @@
                      buttonText='Send invoice'
                   />
                {/if}
-               {#if !data.invoice.paymentRecordNum}
-                  <a href="/paymentRecords/new?invoiceNum={data.invoice.invoiceNum}" 
-                     class="btn rounded-lg preset-filled-primary-50-950 mx-2 mb-2 w-84 h-8"
-                  >
-                     Make a payment record for this invoice
-                  </a>
-               {/if}
-               <a href="/api/downloadPDF?invoiceNum={data.invoice.invoiceNum}" 
-                  class="btn preset-filled-primary-50-950 h-8" 
-                  target="_blank"
-               >
-                  Download PDF
-               </a>
+               <DownloadPdfButton
+                  recordType='invoiceNum'
+                  num={data.invoice.invoiceNum}
+               />
             </div>
          </div>
          <div class="flex flex-col min-w-64"> 

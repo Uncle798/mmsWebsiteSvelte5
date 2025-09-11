@@ -16,66 +16,67 @@
 	import { Modal } from '@skeletonlabs/skeleton-svelte';
    import { PanelTopClose, SearchIcon } from 'lucide-svelte';
 	import EmailCustomer from '$lib/emailCustomer.svelte';
+   import DownloadPdfButton from '$lib/DownloadPDFButton.svelte';
 
-    dayjs.extend(utc)
+   dayjs.extend(utc)
 
-    let { data }: { data: PageData } = $props();
-    let pageNum = $state(1);
-    let size = $state(25);
-    let search = $state('');
-    let startDate = $state<Date>(new Date());
-    let endDate = $state<Date>(new Date());
-    let maxDate = $state<Date>();
-    let minDate = $state<Date>();
-    const numberFormatter = new Intl.NumberFormat('en-US');
-    const wrapper = new Promise<Invoice[]>(async res => {
-        const invoices = await data.invoices
-        startDate = dayjs.utc(invoices[0].invoiceCreated).startOf('year').toDate();
-        minDate = startDate;
-        endDate = new Date();
-        maxDate = endDate;
-        res(invoices)
-    })
-    let customers:User[] = [];
-    const userWrapper = new Promise<User[]>(async res => {
-        customers = await data.customers
-        res(customers)
-    })
-    let nameSearch = $state('');
-    let currentUsers = $derived((users:User[]) => users.filter((user) => {
-        return user.givenName?.toLowerCase().includes(nameSearch.toLowerCase()) || user.familyName?.toLowerCase().includes(nameSearch.toLowerCase())
-    }))
-    const searchByUser = $derived((invoices:Invoice[]) => {
-        const users = currentUsers(customers);
-        const customerInvoices:Invoice[] = [];
-        users.forEach((user)=>{
-            const userInvoices = invoices.filter((invoice) => {
-                return invoice.customerId === user.id
-            })
-            userInvoices.forEach((invoice) => {
-                customerInvoices.push(invoice)
-            })
-        })
-        return customerInvoices
-    })
-    let slicedInvoices = $derived((invoices:Invoice[]) => invoices.slice((pageNum-1)*size, pageNum*size));
-    let searchedInvoices = $derived((invoices:Invoice[]) => invoices.filter((invoice) => invoice.invoiceNum.toString().includes(search)));
-    let dateSearchedInvoices = $derived((invoices:Invoice[]) => invoices.filter((invoice) => {
-        if(!startDate || !endDate){
-            return
-        }
-        return invoice.invoiceCreated >= startDate && invoice.invoiceCreated <= endDate
-    }))
-    let totalRevenue = $derived((invoices:Invoice[]) => {
-        let totalRevenue = 0;
-        invoices.forEach((invoice) => {
-            if(!invoice.deposit){
-                totalRevenue += invoice.invoiceAmount
-            }
-        })
-        return totalRevenue
-    })
-    let searchDrawerOpen=$state(false)
+   let { data }: { data: PageData } = $props();
+   let pageNum = $state(1);
+   let size = $state(25);
+   let search = $state('');
+   let startDate = $state<Date>(new Date());
+   let endDate = $state<Date>(new Date());
+   let maxDate = $state<Date>();
+   let minDate = $state<Date>();
+   const numberFormatter = new Intl.NumberFormat('en-US');
+   const wrapper = new Promise<Invoice[]>(async res => {
+      const invoices = await data.invoices
+      startDate = dayjs.utc(invoices[0].invoiceCreated).startOf('year').toDate();
+      minDate = startDate;
+      endDate = new Date();
+      maxDate = endDate;
+      res(invoices)
+   })
+   let customers:User[] = [];
+   const userWrapper = new Promise<User[]>(async res => {
+      customers = await data.customers
+      res(customers)
+   })
+   let nameSearch = $state('');
+   let currentUsers = $derived((users:User[]) => users.filter((user) => {
+      return user.givenName?.toLowerCase().includes(nameSearch.toLowerCase()) || user.familyName?.toLowerCase().includes(nameSearch.toLowerCase())
+   }))
+   const searchByUser = $derived((invoices:Invoice[]) => {
+      const users = currentUsers(customers);
+      const customerInvoices:Invoice[] = [];
+      users.forEach((user)=>{
+         const userInvoices = invoices.filter((invoice) => {
+               return invoice.customerId === user.id
+         })
+         userInvoices.forEach((invoice) => {
+               customerInvoices.push(invoice)
+         })
+      })
+      return customerInvoices
+   })
+   let slicedInvoices = $derived((invoices:Invoice[]) => invoices.slice((pageNum-1)*size, pageNum*size));
+   let searchedInvoices = $derived((invoices:Invoice[]) => invoices.filter((invoice) => invoice.invoiceNum.toString().includes(search)));
+   let dateSearchedInvoices = $derived((invoices:Invoice[]) => invoices.filter((invoice) => {
+      if(!startDate || !endDate){
+         return
+      }
+      return invoice.invoiceCreated >= startDate && invoice.invoiceCreated <= endDate
+   }))
+   let totalRevenue = $derived((invoices:Invoice[]) => {
+      let totalRevenue = 0;
+      invoices.forEach((invoice) => {
+         if(!invoice.deposit){
+               totalRevenue += invoice.invoiceAmount
+         }
+      })
+      return totalRevenue
+   })
+   let searchDrawerOpen=$state(false)
 </script>
 {#await wrapper}
    <Header title='Loading invoices' />
@@ -149,6 +150,10 @@
                                     buttonText='Email Invoice to customer'
                                  />
                               {/if}
+                              <DownloadPdfButton
+                                 recordType='invoiceNum'
+                                 num={invoice.invoiceNum}
+                              />
                            </div>                       
                         </div>
                         {#if customer}

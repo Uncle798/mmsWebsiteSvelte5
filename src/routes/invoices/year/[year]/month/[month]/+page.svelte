@@ -17,6 +17,7 @@
    import { goto, onNavigate } from '$app/navigation';
    import { PanelTopClose, SearchIcon } from 'lucide-svelte';
 	import EmailCustomer from '$lib/emailCustomer.svelte';
+	import DownloadPdfButton from '$lib/DownloadPDFButton.svelte';
    dayjs.extend(utc)
    let { data }: { data: PageData } = $props();
    let pageNum = $state(1);
@@ -148,6 +149,10 @@
                                     apiEndPoint='/api/sendInvoice'
                                  />
                               {/if}
+                              <DownloadPdfButton
+                                 recordType='invoiceNum'
+                                 num={invoice.invoiceNum}
+                              />
                            </div>
                         {/if}
                   </div>

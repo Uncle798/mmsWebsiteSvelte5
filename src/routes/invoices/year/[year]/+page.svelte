@@ -17,6 +17,7 @@
    import { goto, onNavigate } from '$app/navigation';
    import { PanelTopClose, SearchIcon } from 'lucide-svelte';
 	import EmailCustomer from '$lib/emailCustomer.svelte';
+	import DownloadPdfButton from '$lib/DownloadPDFButton.svelte';
    dayjs.extend(utc)
    let { data }: { data: PageData } = $props();
    let pageNum = $state(1);
@@ -128,7 +129,7 @@
             <Revenue 
                label="Total invoiced (not including deposits)" 
                amount={totalRevenue(searchedInvoices(dateSearchedInvoices(invoices)))} 
-               classes='bg-tertiary-50-950 w-full rounded-b-lg fixed top-8 p-2 z-40'
+               classes='bg-tertiary-50-950 w-full rounded-b-lg fixed top-9 p-2 z-40'
             />
             <Modal
                open={searchDrawerOpen}
@@ -154,17 +155,21 @@
                   </div>
                {/snippet}
             </Modal>
-            <div class="grid grid-cols-1 sm:m-2 m-1 gap-2 mt-24 sm:mt-20" in:fade={{duration:600}} out:fade={{duration:0}}>
+            <div class="grid grid-cols-1 sm:m-2 m-1 gap-2 mt-26 sm:mt-20" in:fade={{duration:600}} out:fade={{duration:0}}>
                {#each slicedInvoices(searchedInvoices(searchByUser(invoices, currentUsers(customers)))) as invoice}  
                {@const customer = customers.find((customer) => customer.id === invoice.customerId)}
-                  <div class="sm:grid sm:grid-cols-2 border-2 border-primary-50-950 rounded-lg">
+                  {#if customer}
+                  {@const address = addresses.find((address) => address.userId === customer.id)}
+                     <div class="sm:grid sm:grid-cols-2 border-2 border-primary-50-950 rounded-lg">
+                        <div class="flex flex-col"> 
                         <InvoiceEmployee {invoice} classes=' px-2' />
-                        {#if customer}
-                        {@const address = addresses.find((address) => address.userId === customer.id)}
-                           <div class="flex flex-col px-2 pt-2">
-                              <UserEmployee user={customer} classes=''/>
-                              {#if address}
-                                    <Address {address} />
+                           <div class="m-2 flex flex-col sm:flex-row gap-2">
+                              {#if !invoice.paymentRecordNum}
+                                 <a href='/paymentRecords/new?invoiceNum={invoice.invoiceNum}'
+                                    class="btn preset-filled-primary-50-950 h-8"
+                                 >
+                                    Make payment record for this invoice
+                                 </a>
                               {/if}
                               {#if customer.email && customer.emailVerified}
                                  <EmailCustomer
@@ -172,14 +177,26 @@
                                     recordNum={invoice.invoiceNum}
                                     buttonText='Email invoice'
                                     apiEndPoint='/api/sendInvoice'
+                                    classes='h-8'
                                  />
                               {/if}
+                              <DownloadPdfButton
+                                 recordType='invoiceNum'
+                                 num={invoice.invoiceNum}
+                              />
                            </div>
-                        {/if}
-                  </div>
+                        </div>
+                           <div class="flex flex-col px-2 pt-2">
+                              <UserEmployee user={customer} classes=''/>
+                              {#if address}
+                                    <Address {address} />
+                              {/if}
+                           </div>
+                     </div>
+                  {/if}
                {/each}
+                  <Pagination bind:pageNum={pageNum} bind:size={size} array={searchedInvoices(searchByUser(invoices, currentUsers(customers)))} label='invoices' />
             </div>
-            <Pagination bind:pageNum={pageNum} bind:size={size} array={searchedInvoices(searchByUser(invoices, currentUsers(customers)))} label='invoices' />
          {/if}
       {/await}
    {/await}
