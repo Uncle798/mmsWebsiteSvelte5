@@ -136,12 +136,6 @@
                               {#if !invoice.paymentRecordNum}
                                  <a href="/paymentRecords/new?userId={customer?.id}&invoiceNum={invoice.invoiceNum}" class="btn preset-filled-primary-50-950 h-8">Make payment record for this invoice</a>
                               {/if}
-                              <a href="/api/downloadPDF?invoiceNum={invoice.invoiceNum}" 
-                                 class="btn preset-filled-primary-50-950 h-8" 
-                                 target="_blank"
-                              >
-                                 Download PDF
-                              </a>
                               {#if customer?.emailVerified && customer.email}
                                  <EmailCustomer
                                     apiEndPoint='/api/sendInvoice'
