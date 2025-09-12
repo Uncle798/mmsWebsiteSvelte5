@@ -70,23 +70,26 @@
          classes='w-32'
          placeholder={oldPrice.toString()}
       />
-      <Switch
-         checked={$form.changeDeposit}
-         onCheckedChange={(e)=> $form.changeDeposit = e.checked}
-         name='changeDeposit'
-         classes='my-2'
-      >
-         Change the deposit as well
-      </Switch>
-      <Switch
-         checked={$form.lowerPrice}
-         onCheckedChange={(e)=> $form.lowerPrice = e.checked}
-         name="lowerPrice"
-         label='Lower Price'
-      >
-         Lower the price.
-      </Switch>
+      <div class="flex flex-col sm:flex-row">
+         <Switch
+            checked={$form.changeDeposit}
+            onCheckedChange={(e)=> $form.changeDeposit = e.checked}
+            name='changeDeposit'
+            classes='my-2 sm:my-auto'
+         >
+            Change the deposit as well
+         </Switch>
+         <Switch
+            checked={$form.lowerPrice}
+            onCheckedChange={(e)=> $form.lowerPrice = e.checked}
+            name="lowerPrice"
+            label='Lower Price'
+            classes='sm:mx-2'
+         >
+            Lower the price.
+         </Switch>
+         <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} buttonText='Submit new price'/>
+      </div>
       <input type="hidden" name="size" id="size" value={size}>
-      <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} buttonText='Submit new price'/>
    </form>
 </div>
