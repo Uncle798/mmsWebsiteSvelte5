@@ -51,14 +51,10 @@
       label: string;
       value: string;
    }
-   const comboboxData:ComboboxData[] = [];
-   for(const size of data.sizes){
-      comboboxData.push({
-         label: size.replace(/^0+/gm, '').replace(/x0/gm, 'x'),
-         value: size
-      })
-   }
-   let selectedSize = $state(['']);
+   const comboboxData:ComboboxData[] = $derived(data.sizes.map(size => ({
+      label: size.replace(/^0+/gm, '').replace(/x0/gm, 'x'),
+      value: size
+   })))
    let searchDrawerOpen = $state(false);
 </script>
 <Header title='All {data.size.replace(/^0+/gm,'').replace(/0x/gm,'x')} units' />
@@ -107,14 +103,12 @@
                <Combobox
                   data={comboboxData}
                   label='Select Size'
-                  value={selectedSize}
                   onValueChange={(event) =>{
-                     if(event.value[0] === 'all'){
+                     if(browser && event.value[0] === 'all'){
                         if(browser){
                            goto('/units')
                         }
-                     }
-                     if(browser){
+                     } else if(browser){
                         goto(`/units/size/${event.value[0]}`)
                      }
                   }}
@@ -147,7 +141,7 @@
                Loading addresses
             </div>
          {:then addresses}
-            <div class="grid grid-cols-1 gap-3 m-1 sm:m-2 mt-32 sm:mt-22">
+            <div class="grid grid-cols-1 gap-3 m-1 sm:m-2 mt-32 sm:mt-22 mb-8">
                {#each units as unit}
                {@const lease = leases.find((lease) => lease.unitNum === unit.num)}
                {@const customer = customers.find((customer)=> customer.id === lease?.customerId)}

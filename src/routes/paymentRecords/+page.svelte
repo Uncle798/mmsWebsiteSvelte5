@@ -111,17 +111,14 @@
       currentPaymentRecord = paymentRecord;
       modalOpen = true
    }
-   let yearSelect = $state(['']);
    interface ComboboxData {
       label: string;
       value: string;
    }
-   let yearComboboxData:ComboboxData[] = [
-      {label:'Unpaid Invoices', value: 'unpaid'},
-   ]
-   data.years.forEach((year) => {
-      yearComboboxData.push({label:year.toString(), value: year.toString()})
-   })
+   let yearComboboxData:ComboboxData[] = $derived(data.years.map(year => ({
+      label: year.toString(),
+      value: year.toString()
+   })))
    let searchDrawerOpen = $state(false);
 </script>
 <Modal
@@ -144,7 +141,6 @@
       {#if data.years}
          <Combobox
             data={yearComboboxData}
-            value={yearSelect}
             label='or select year'
             placeholder='Select year ...'
             openOnChange={true}

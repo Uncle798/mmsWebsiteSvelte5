@@ -85,10 +85,10 @@
       label: string;
       value: string;
    }
-   let yearComboboxData:ComboboxData[] = []
-   for(const year of data.years){
-      yearComboboxData.push({label:year.toString(), value:year.toString()})
-   }
+   let yearComboboxData:ComboboxData[] = $derived(data.years.map(year => ({
+		label: year.toString(),
+		value: year.toString()
+	})))
 </script>
 
 <Header title="All Refunds" />

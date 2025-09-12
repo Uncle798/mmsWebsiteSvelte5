@@ -16,6 +16,7 @@
 	import Address from '$lib/displayComponents/AddressEmployee.svelte';
 	import Revenue from '$lib/displayComponents/Revenue.svelte'
 	import { SearchIcon, PanelTopClose } from 'lucide-svelte';
+	import { onMount } from 'svelte';
 	let { data }: { data: PageData } = $props();
 	let modalOpen = $state(false);
 	let currentLeaseId = $state('');
@@ -65,16 +66,13 @@
       label: string;
       value: string;
    }
-   const comboboxData:ComboboxData[] = [{
-      label: 'All',
-      value: 'All'
-   }];
-   for(const size of data.sizes){
-      comboboxData.push({
-         label: size.replace(/^0+/gm, '').replace(/x0/gm, 'x'),
-         value: size
-      })
-   }
+   const comboboxData:ComboboxData[] = $derived(data.sizes.map(size => ({
+		label: size.replace(/^0+/gm, '').replace(/x0/gm, 'x'),
+		value: size
+	})))
+	onMount(() => {
+		comboboxData.unshift({label: 'All', value: 'all'})
+	})
 	let searchDrawerOpen = $state(false)
 </script>
 

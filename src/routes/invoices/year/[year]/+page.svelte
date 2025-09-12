@@ -18,6 +18,7 @@
    import { PanelTopClose, SearchIcon } from 'lucide-svelte';
 	import EmailCustomer from '$lib/emailCustomer.svelte';
 	import DownloadPdfButton from '$lib/DownloadPDFButton.svelte';
+	import { onMount } from 'svelte';
    dayjs.extend(utc)
    let { data }: { data: PageData } = $props();
    let pageNum = $state(1);
@@ -72,23 +73,20 @@
       })
       return totalRevenue
    })
-   let monthSelect = $state(['']);
    interface ComboboxData {
       label: string;
       value: string;
    }
-   let monthComboboxData:ComboboxData[] = [
-      {label:'Unpaid Invoices', value: 'unpaid'},
-   ]
-   for(const [index, month] of data.months.entries()){
-      monthComboboxData.push({
-         label: dayjs(month).add(1, 'month').format('MMMM'),
-         value: (index+1).toString(),
-      })
-   }
+   let monthComboboxData:ComboboxData[] = $derived(data.months.map(month => ({
+      label: dayjs(month).add(1, 'month').format('MMMM'),
+      value: (month.getMonth() + 1).toString()
+   })))
    let searchDrawerOpen = $state(false);
    onNavigate(()=>{
       searchDrawerOpen = false
+   })
+   onMount(() => {
+      monthComboboxData.unshift({label:'Unpaid Invoices', value: 'unpaid'})
    })
 </script>
 {#await wrapper}
@@ -97,7 +95,6 @@
       Loading {numberFormatter.format(data.invoiceCount)} invoices, 
       <Combobox
          data={monthComboboxData}
-         value={monthSelect}
          label='or select year'
          placeholder='Select year...'
          openOnClick={true}

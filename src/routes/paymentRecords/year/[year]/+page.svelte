@@ -103,20 +103,14 @@
       currentPaymentRecord = paymentRecord;
       modalOpen = true
    }
-   let monthSelect = $state(['']);
    interface ComboboxData {
       label: string;
       value: string;
    }
-   let monthComboboxData:ComboboxData[] = [
-      {label:'Unpaid Invoices', value: 'unpaid', },
-   ]
-   for(const [i, month] of data.months.entries()){
-      monthComboboxData.push({
-         label: dayjs(month).add(1, 'month').format('MMMM'),
-         value: (i+1).toString(),
-      })
-   }
+   let monthComboboxData:ComboboxData[] = $derived(data.months.map(month => ({
+      label: dayjs(month).add(1, 'month').format('MMMM'),
+      value: (month.getMonth() + 1).toString(),
+   })))
    let searchDrawerOpen = $state(false);
 </script>
 <Modal
@@ -139,7 +133,6 @@
       {#if data.months}
          <Combobox
             data={monthComboboxData}
-            value={monthSelect}
             label='or select month'
             placeholder='Select month...'
             openOnChange={true}
