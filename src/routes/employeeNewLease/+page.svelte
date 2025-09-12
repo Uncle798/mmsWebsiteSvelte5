@@ -30,17 +30,11 @@
       label: string;
       value: string;
    }
-   const customerComboBoxData:ComboBoxData[]=[];
+   const customerComboBoxData:ComboBoxData[] = $derived(data.customers.map(customer => ({
+      label: `${customer.givenName} ${customer.familyName} (${customer.email})`,
+      value: customer.id
+   })));
    onMount(() => {
-      data.customers.forEach((customer) =>{
-         const label = `${customer.givenName} ${customer.familyName} (${customer.email})`;
-         const value = customer.id;
-         const datum = {
-            label,
-            value
-         }
-         customerComboBoxData.push(datum);
-      });
       if(data.customer){
          if(!data.customer.emailVerified){
             registerModalOpen=true
