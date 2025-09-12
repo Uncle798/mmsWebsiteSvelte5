@@ -1,5 +1,5 @@
 <script lang="ts">
-   import { Combobox, Modal } from '@skeletonlabs/skeleton-svelte';
+   import { Modal } from '@skeletonlabs/skeleton-svelte';
    import type { PageData } from './$types';
    import NewRefundForm from '$lib/forms/NewRefundForm.svelte';
    import type { PaymentRecord, User } from '@prisma/client';

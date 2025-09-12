@@ -13,8 +13,8 @@
    import utc from 'dayjs/plugin/utc'
    import Revenue from '$lib/displayComponents/Revenue.svelte';
    import Address from '$lib/displayComponents/AddressEmployee.svelte';
-   import { Combobox, Modal } from '@skeletonlabs/skeleton-svelte';
-   import { goto, onNavigate } from '$app/navigation';
+   import { Modal } from '@skeletonlabs/skeleton-svelte';
+   import { onNavigate } from '$app/navigation';
    import { PanelTopClose, SearchIcon } from 'lucide-svelte';
 	import EmailCustomer from '$lib/emailCustomer.svelte';
 	import DownloadPdfButton from '$lib/DownloadPDFButton.svelte';

@@ -14,8 +14,7 @@
    import Revenue from '$lib/displayComponents/Revenue.svelte';  
    import Address from '$lib/displayComponents/AddressEmployee.svelte';
    import RefundForm from '$lib/forms/NewRefundForm.svelte'
-   import { Combobox, Modal } from '@skeletonlabs/skeleton-svelte';
-   import { goto } from '$app/navigation';
+   import { Modal } from '@skeletonlabs/skeleton-svelte';
 	import { SearchIcon, PanelTopCloseIcon } from 'lucide-svelte';
 	import EmailCustomer from '$lib/emailCustomer.svelte';
 	import DownloadPdfButton from '$lib/DownloadPDFButton.svelte';
