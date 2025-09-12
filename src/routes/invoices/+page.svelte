@@ -105,6 +105,9 @@
       yearComboboxData.unshift({
          label:'Unpaid',
          value: 'unpaid'
+      }, {
+         label: 'Past Due',
+         value: 'pastDue'
       })
    })
 </script>
@@ -120,9 +123,12 @@
          openOnClick={true}
          onValueChange={(details) => {
             if(details.value[0] === 'unpaid'){
-               goto('/invoices/unpaid')
+               goto('/invoices/unpaid');
+            } else if(details.value[0] === 'pastDue') {
+               goto('/invoices/pastDue')
+            } else {
+               goto(`/invoices/year/${details.value[0]}`);
             }
-            goto(`/invoices/year/${details.value[0]}`)
          }}
          classes='mx-1 sm:mx-2'
          zIndex='40'
