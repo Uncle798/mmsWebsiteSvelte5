@@ -18,6 +18,7 @@
    import { PanelTopClose, SearchIcon } from 'lucide-svelte';
 	import EmailCustomer from '$lib/emailCustomer.svelte';
    import DownloadPdfButton from '$lib/DownloadPDFButton.svelte';
+	import { onMount } from 'svelte';
    dayjs.extend(utc)
    let { data }: { data: PageData } = $props();
    let pageNum = $state(1);
@@ -91,15 +92,20 @@
       label: string;
       value: string;
    }
-   let yearComboboxData:ComboboxData[] = [
-      {label:'Unpaid Invoices', value: 'unpaid'},
-   ]
-   data.years.forEach((year) => {
-      yearComboboxData.push({label:year.toString(), value: year.toString()})
-   })
+   let yearComboboxData:ComboboxData[] = $derived(data.years.map(year => ({
+      label: year.toString(),
+      value: year.toString()
+   })))
+   
    let searchDrawerOpen = $state(false);
    onNavigate(()=>{
       searchDrawerOpen = false
+   })
+   onMount(() =>{
+      yearComboboxData.unshift({
+         label:'Unpaid',
+         value: 'unpaid'
+      })
    })
 </script>
 {#await wrapper}
@@ -113,7 +119,10 @@
          placeholder='Select year...'
          openOnClick={true}
          onValueChange={(details) => {
-               goto(`/invoices/year/${details.value[0]}`)
+            if(details.value[0] === 'unpaid'){
+               goto('/invoices/unpaid')
+            }
+            goto(`/invoices/year/${details.value[0]}`)
          }}
          classes='mx-1 sm:mx-2'
          zIndex='40'
@@ -146,7 +155,7 @@
                open={searchDrawerOpen}
                onOpenChange={(event)=>(searchDrawerOpen = event.open)}
                triggerBase='btn preset-filled-primary-50-950 rounded-lg fixed top-0 right-0 z-50 h-12 sm:h-8'
-               contentBase='bg-surface-100-900 h-[390px] w-screen rounded-lg'
+               contentBase='bg-surface-100-900 h-[405px] w-screen rounded-lg'
                positionerJustify=''
                positionerAlign=''
                positionerPadding=''
@@ -164,7 +173,7 @@
                         <Search data={data.searchForm} bind:search={nameSearch} searchType='Customer' classes='m-1 sm:m-2 '/>
                         <DateSearch data={data.dateSearchForm} bind:startDate={startDate} bind:endDate={endDate} {minDate} {maxDate} classes='w-1/2 mb-1 sm:mb-2 mx-1 sm:mx-2'/>
                   </div>
-                  <button class="btn preset-filled-primary-50-950 m-1 sm:m-2" onclick={()=> {
+                  <button class="btn preset-filled-primary-50-950 m-1 sm:m-2 h-8" onclick={()=> {
                      sortBy = !sortBy;
                      searchDrawerOpen = false;
                   }}>
@@ -172,39 +181,45 @@
                   </button>
                {/snippet}
             </Modal>
-            <div class="grid grid-cols-1 sm:m-2 m-1 gap-2 mt-28 sm:mt-20" in:fade={{duration:600}} out:fade={{duration:0}}>
+            <div class="grid grid-cols-1 sm:m-2 m-1 gap-2 mt-28 sm:mt-20 mb-8 sm:mb-8" in:fade={{duration:600}} out:fade={{duration:0}}>
                {#each slicedInvoices(sortedByDate(dateSearchedInvoices(searchedInvoices(searchByUser(invoices, currentUsers(customers)))))) as invoice}  
                {@const customer = customers.find((customer) => customer.id === invoice.customerId)}
                   <div class="sm:grid sm:grid-cols-2 border-2 border-primary-50-950 rounded-lg ">
+                     <div>
                         <InvoiceEmployee {invoice} classes=' px-2' />
-                        {#if customer}
-                        {@const address = addresses.find((address) => address.userId === customer.id)}
-                           <div class="flex flex-col px-2 pt-2">
-                              <UserEmployee user={customer} classes=''/>
-                              {#if address}
-                                    <Address {address} />
-                              {/if}
-                              {#if customer.email && customer.emailVerified}
-                                 <EmailCustomer
-                                    emailAddress={customer.email}
-                                    recordNum={invoice.invoiceNum}
-                                    buttonText='Email invoice'
-                                    apiEndPoint='/api/sendInvoice'
-                                 />
-                              {/if}
-                              <DownloadPdfButton
-                                 recordType='invoiceNum'
-                                 num={invoice.invoiceNum}
-                              />
-                           </div>
+                        <div class="flex flex-col sm:flex-row">
                            {#if !invoice.paymentRecordNum}
-                              <a href="/paymentRecords/new?userId={customer?.id}&invoiceNum={invoice.invoiceNum}" class="btn preset-filled-primary-50-950 m-1 justify-between">Make Payment Record For this invoice</a>
+                              <a href="/paymentRecords/new?userId={customer?.id}&invoiceNum={invoice.invoiceNum}" class="btn preset-filled-primary-50-950 h-8 sm:mr-2 ml-2 mt-2 rounded-lg w-80">Make payment record For this invoice</a>
                            {/if}
-                        {/if}
+                           {#if customer?.email && customer.emailVerified}
+                              <EmailCustomer
+                                 emailAddress={customer.email}
+                                 recordNum={invoice.invoiceNum}
+                                 buttonText='Email invoice'
+                                 apiEndPoint='/api/sendInvoice'
+                                 classes='my-2 m-2'
+                              />
+                           {/if}
+                           <DownloadPdfButton
+                              recordType='invoiceNum'
+                              num={invoice.invoiceNum}
+                              classes='mx-2'
+                           />
+                        </div>
+                     </div>
+                     {#if customer}
+                     {@const address = addresses.find((address) => address.userId === customer.id)}
+                        <div class="flex flex-col px-2 pt-2">
+                           <UserEmployee user={customer} classes=''/>
+                           {#if address}
+                                 <Address {address} />
+                           {/if}
+                        </div>
+                     {/if}
                   </div>
                {/each}
+               <Pagination bind:pageNum={pageNum} bind:size={size} array={searchedInvoices(searchByUser(invoices, currentUsers(customers)))} label='invoices' />
             </div>
-            <Pagination bind:pageNum={pageNum} bind:size={size} array={searchedInvoices(searchByUser(invoices, currentUsers(customers)))} label='invoices' />
          {/if}
       {/await}
    {/await}
