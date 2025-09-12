@@ -17,10 +17,10 @@
       <div class="flex flex-col sm:flex-row gap-x-1 mx-1 sm:mx-2 mt-14 sm:mt-10 border-2 border-primary-50-950 rounded-lg">
          <div class="flex flex-col">
          <InvoiceEmployee invoice={data.invoice} classes="min-w-64 mx-2 " />
-            <div class="flex gap-2 m-2">
+            <div class="flex gap-2 my-2 ml-2">
                {#if !data.invoice.paymentRecordNum}
                   <a href="/paymentRecords/new?invoiceNum={data.invoice.invoiceNum}" 
-                     class="btn rounded-lg preset-filled-primary-50-950 mx-2 mb-2 w-84 h-8"
+                     class="btn rounded-lg preset-filled-primary-50-950 w-84 h-8"
                   >
                      Make a payment record for this invoice
                   </a>
