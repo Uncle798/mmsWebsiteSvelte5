@@ -8,6 +8,7 @@
 	import { onMount } from "svelte";
 	import type { Unit } from "@prisma/client";
 	import TextArea from "$lib/formComponents/TextArea.svelte";
+	import { invalidateAll } from "$app/navigation";
 
    
    interface Props {
@@ -18,7 +19,7 @@
    }
    let { data, unitNotesFormModalOpen, unit, classes }:Props = $props();
 
-   let { form, message, errors, constraints, enhance, delayed, timeout} = superForm(data, {
+   let { form, message, errors, constraints, enhance, delayed, timeout, submit } = superForm(data, {
       onChange(event) {
          if(event.target){
             const formName = 'unitNotesForm'
@@ -65,16 +66,21 @@
          label='Notes'
          name='notes'
       />
-
-      <Switch 
-         checked={$form.unavailable}
-         onCheckedChange={(e)=> $form.unavailable = e.checked}
-         name='unavailable'  
-         classes='p-4'
-      >
-         Unit is unavailable
-      </Switch>
+      <div class="flex flex-col sm:flex-row">
+         <Switch 
+            checked={$form.unavailable}
+            onCheckedChange={(e)=> {
+               $form.unavailable = e.checked;
+               submit()
+               invalidateAll()
+            }}
+            name='unavailable'  
+            classes='m-2'
+         >
+            Unit is unavailable
+         </Switch>
+         <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} buttonText='Update notes'/>
+      </div>
       <input type="hidden" name="unitNum" id="unitNum" value={unit.num} />
-      <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} buttonText='Update notes'/>
    </form>
 </div>
