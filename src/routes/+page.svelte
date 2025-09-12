@@ -7,7 +7,7 @@
 	import UnitCustomer from "$lib/displayComponents/customerViews/UnitCustomer.svelte";
 	import { fade } from "svelte/transition";
 	import Placeholder from "$lib/displayComponents/Placeholder.svelte";
-	import { Tooltip, Combobox } from "@skeletonlabs/skeleton-svelte";
+	import { Tooltip } from "@skeletonlabs/skeleton-svelte";
    interface Props {
       data: PageData;
    }
