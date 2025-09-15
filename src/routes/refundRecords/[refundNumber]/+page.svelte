@@ -6,7 +6,7 @@
    import RefundRecordEmployee from '$lib/displayComponents/RefundRecordEmployee.svelte';
 	import UserEmployee from '$lib/displayComponents/UserEmployee.svelte';
 	import Header from '$lib/Header.svelte';
-   import EmailCustomer from '$lib/emailCustomer.svelte';
+   import EmailCustomer from '$lib/EmailCustomer.svelte';
    import type { PageData } from './$types';
 	import DownloadPdfButton from '$lib/DownloadPDFButton.svelte';
 
@@ -19,14 +19,14 @@
       {#if data.user?.employee}
       <div class="w-1/2">
          <RefundRecordEmployee refundRecord={data.refundRecord} classes=''/>
-         <div class="flex my-2">
+         <div class="flex m-2 gap-2">
             {#if customer.email && customer.emailVerified}
                <EmailCustomer
                   emailAddress={customer.email}
                   recordNum={data.refundRecord.refundNumber}
                   apiEndPoint='/api/sendRefund'
                   buttonText='Send Refund email'
-                  classes='mx-2'
+                  classes=''
                />
             {/if}
             <DownloadPdfButton
