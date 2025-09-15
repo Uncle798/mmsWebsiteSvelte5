@@ -217,18 +217,11 @@
                      <div class="rounded-lg border border-primary-50-950 grid sm:grid-cols-2 m-2">
                         <div>
                            <PaymentRecordEmployee paymentRecord={paymentRecord} classes="px-2" />
-                           {#if !paymentRecord.refunded}
-                                 <button type="button" class="btn rounded-lg preset-filled-primary-50-950 m-2" onclick={() => refundModal(paymentRecord)}>Refund this payment</button>
-                           {/if}
-                        </div>
-                        {#if customer}
-                        {@const address = addresses.find((address)=> address.userId === customer.id)}
-                           <div class="flex flex-col mx-2 mb-2">
-                              <UserEmployee user={customer} classes=''/>
-                              {#if address}
-                                 <Address {address} classes=''/>
+                           <div class="m-2 flex flex-col sm:flex-row gap-2">
+                              {#if !paymentRecord.refunded}
+                                    <button type="button" class="btn rounded-lg preset-filled-primary-50-950 h-8" onclick={() => refundModal(paymentRecord)}>Refund this payment</button>
                               {/if}
-                              {#if customer.email && customer.emailVerified}
+                              {#if customer?.email && customer.emailVerified}
                                  <EmailCustomer
                                     emailAddress={customer.email}
                                     recordNum={paymentRecord.paymentNumber}
@@ -240,6 +233,15 @@
                                  recordType='paymentNum'
                                  num={paymentRecord.paymentNumber}
                               />
+                           </div>
+                        </div>
+                        {#if customer}
+                        {@const address = addresses.find((address)=> address.userId === customer.id)}
+                           <div class="flex flex-col mx-2 mb-2">
+                              <UserEmployee user={customer} classes=''/>
+                              {#if address}
+                                 <Address {address} classes=''/>
+                              {/if}
                            </div>
                         {/if}
                      </div>
