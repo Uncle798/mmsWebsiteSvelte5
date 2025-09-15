@@ -46,7 +46,7 @@
       comboboxData.unshift({label: 'All', value: 'all'})
    });
 </script>
-<div class="flex fixed bg-tertiary-50-950 w-full rounded-b-lg top-9" transition:fade={{duration:600}}>
+<div class="flex fixed bg-tertiary-50-950 w-full rounded-b-lg top-7 pt-2" transition:fade={{duration:600}}>
    <span class="m-2">Unavailable: {data.units.length} of {data.unitCount}</span>
    <span class="m-2">Available percentage {Math.floor((data.units.length*100)/data.unitCount)}%</span>
    <span class="m-2">Unavailable revenue per month: {currencyFormatter.format(lostRevenue)}</span>
@@ -101,9 +101,6 @@
    {#each filterSize(data.units) as unit}
       <div class="border-2 border-primary-50-950 rounded-lg">
          <UnitEmployee {unit}/>
-         <div class="text-center sm:col-span-2">
-            <a href="/employeeNewLease?unitNum={unit.num}" class="anchor">Rent this unit</a>
-         </div>
          <UnitNotesForm {unit} data={data.unitNotesForm} classes='mx-2' />
       </div>
    {/each}
