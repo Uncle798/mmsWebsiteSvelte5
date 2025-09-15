@@ -16,7 +16,7 @@
    import { Combobox, Modal } from '@skeletonlabs/skeleton-svelte';
    import { goto, onNavigate } from '$app/navigation';
    import { PanelTopClose, SearchIcon } from 'lucide-svelte';
-	import EmailCustomer from '$lib/emailCustomer.svelte';
+	import EmailCustomer from '$lib/EmailCustomer.svelte';
 	import DownloadPdfButton from '$lib/DownloadPDFButton.svelte';
 	import { onMount } from 'svelte';
    dayjs.extend(utc)

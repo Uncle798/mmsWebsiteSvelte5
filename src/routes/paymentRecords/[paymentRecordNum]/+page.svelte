@@ -6,7 +6,7 @@
    import PaymentRecordEmployee from '$lib/displayComponents/PaymentRecordEmployee.svelte';
 	import UserEmployee from '$lib/displayComponents/UserEmployee.svelte';
 	import DownloadPdfButton from '$lib/DownloadPDFButton.svelte';
-	import EmailCustomer from '$lib/emailCustomer.svelte';
+	import EmailCustomer from '$lib/EmailCustomer.svelte';
 	import Header from '$lib/Header.svelte';
    import type { PageData } from './$types';
 

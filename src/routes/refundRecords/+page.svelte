@@ -13,7 +13,7 @@
 	import Address from '$lib/displayComponents/AddressEmployee.svelte';
 	import { fade } from 'svelte/transition';
 	import { Combobox, Modal } from '@skeletonlabs/skeleton-svelte';
-	import EmailCustomer from '$lib/emailCustomer.svelte';
+	import EmailCustomer from '$lib/EmailCustomer.svelte';
 	import { SearchIcon, PanelTopClose } from 'lucide-svelte';
 	import { goto } from '$app/navigation';
 	let { data }: { data: PageData } = $props();

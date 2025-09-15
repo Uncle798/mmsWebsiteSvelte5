@@ -16,7 +16,7 @@
    import { Modal } from '@skeletonlabs/skeleton-svelte';
    import { onNavigate } from '$app/navigation';
    import { PanelTopClose, SearchIcon } from 'lucide-svelte';
-	import EmailCustomer from '$lib/emailCustomer.svelte';
+	import EmailCustomer from '$lib/EmailCustomer.svelte';
 	import DownloadPdfButton from '$lib/DownloadPDFButton.svelte';
    dayjs.extend(utc)
    let { data }: { data: PageData } = $props();

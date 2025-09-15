@@ -4,7 +4,7 @@
 	import UserCustomer from '$lib/displayComponents/customerViews/UserCustomer.svelte';
    import InvoiceEmployee from '$lib/displayComponents/InvoiceEmployee.svelte';
    import UserEmployee from '$lib/displayComponents/UserEmployee.svelte';
-	import EmailCustomer from '$lib/emailCustomer.svelte';
+	import EmailCustomer from '$lib/EmailCustomer.svelte';
    import DownloadPdfButton from '$lib/DownloadPDFButton.svelte';
 	import Header from '$lib/Header.svelte';
    import type { PageData } from './$types';
