@@ -17,7 +17,6 @@
          return unit
       }
    }));
-   $inspect(sizeFilter)
    let lostRevenue = $state(0);
    data.units.forEach((unit) => {
       if(unit.size !== 'ours'){
@@ -48,7 +47,7 @@
 </script>
 <div class="flex fixed bg-tertiary-50-950 w-full rounded-b-lg top-7 pt-2" transition:fade={{duration:600}}>
    <span class="m-2">Unavailable: {data.units.length} of {data.unitCount}</span>
-   <span class="m-2">Available percentage {Math.floor((data.units.length*100)/data.unitCount)}%</span>
+   <span class="m-2">Unavailable percentage {Math.round((data.units.length*100)/data.unitCount)}%</span>
    <span class="m-2">Unavailable revenue per month: {currencyFormatter.format(lostRevenue)}</span>
 </div>
 <Modal
