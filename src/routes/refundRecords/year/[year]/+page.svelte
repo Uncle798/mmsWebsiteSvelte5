@@ -13,6 +13,8 @@
    import { Combobox, Modal } from '@skeletonlabs/skeleton-svelte';
 	import { goto } from '$app/navigation';
 	import { SearchIcon, PanelTopClose } from 'lucide-svelte';
+	import EmailCustomer from '$lib/EmailCustomer.svelte';
+	import DownloadPdfButton from '$lib/DownloadPDFButton.svelte';
    
    let { data }: { data: PageData } = $props();
    let size = $state(25)
@@ -58,17 +60,20 @@
    let searchDrawerOpen = $state(false);
 </script>
 
+<Header title='Refund Records' />
 {#await wrapper}
-   <Header title='Refund Records' />
-   Loading {numberFormatter.format(data.refundCount)} refund records or select month:
-   <Combobox
-      data={monthComboBoxData}
-      openOnClick={true}
-      onValueChange={(details) => {
-         const date = dayjs(parseInt(details.value[0]))
-         goto(`/refundRecords/year/${date.format('YYYY')}/month/${(date.get('month'))+1}`)
-      }}
-   />
+   <div class="mt-18 sm:mt-16 mx-1 sm:mx-2 mb-8">
+      Loading {numberFormatter.format(data.refundCount)} refund records or select month:
+      <Combobox
+         data={monthComboBoxData}
+         openOnClick={true}
+         onValueChange={(details) => {
+            const date = dayjs(parseInt(details.value[0]))
+            goto(`/refundRecords/year/${date.format('YYYY')}/month/${(date.get('month'))+1}`)
+         }}
+         placeholder='Select Month'
+      />
+   </div>
    {:then refunds}
       {#await data.customers}
          Loading customers
@@ -113,19 +118,35 @@
                <Revenue 
                   label="Total refunds" 
                   amount={totalRevenue(searchRefunds(dateSearchRefunds(refunds)))}
-                  classes='bg-tertiary-50-950 w-full rounded-b-lg fixed top-11 sm:top-7 p-0.5 z-40'	
+                  classes='bg-tertiary-50-950 w-full rounded-b-lg fixed top-11 sm:top-9 p-0.5 z-40'	
                />
                <div class="mt-22 sm:mt-20 mx-1 sm:mx-2 mb-20 sm:mb-12 lg:mb-8">
                   {#each slicedRefunds(searchRefunds(dateSearchRefunds(refunds))) as refund (refund.refundNumber)}
                   {@const customer = customers.find((customer) => customer.id === refund.customerId)}
-                     <div class="border-2 rounded-lg border-primary-50-950 my-2"> 
-                        <RefundRecordEmployee refundRecord={refund} classes='px-2 pt-2 '/>
+                     <div class="border-2 rounded-lg border-primary-50-950 my-2 flex flex-col sm:flex-row"> 
+                        <div >
+                           <RefundRecordEmployee refundRecord={refund} classes='mx-2'/>
+                           <div class="m-2 flex flex-col sm:flex-row gap-2">
+                              {#if customer?.email }
+                                 <EmailCustomer
+                                    emailAddress={customer.email}
+                                    recordNum={refund.refundNumber}
+                                    apiEndPoint='/api/sendRefund'
+                                    buttonText='Email refund' 
+                                 />
+                              {/if}
+                              <DownloadPdfButton
+                                 recordType='refundNum'
+                                 num={refund.refundNumber}
+                              />
+                           </div>   
+                        </div>
                         {#if customer}
                         {@const address = addresses.find((address) => address.userId === customer.id)}
-                           <div class="flex flex-col rounded-lg border-2 border-primary-50-950">
-                              <UserEmployee user={customer} classes='pt-2 pl-2 ' />
+                           <div class="flex flex-col min-w-1/3">
+                              <UserEmployee user={customer} classes='mt-2 mx-2 ' />
                               {#if address}
-                                 <Address {address} classes='pl-2'/>
+                                 <Address {address} classes='mx-2'/>
                               {/if}
                            </div>
                         {/if}
