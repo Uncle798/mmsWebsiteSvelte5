@@ -208,7 +208,8 @@
                <button onclick={()=>{
                   sortBy = !sortBy;
                   searchDrawerOpen = false;
-                  }} class="anchor col-span-full mx-2">Sort by date {sortBy ? 'starting earliest' : 'starting latest'}</button>
+                  }} class="anchor col-span-full mx-2"
+               >Sort by date {sortBy ? 'starting earliest' : 'starting latest'}</button>
             {/snippet}
             </Modal>
                <div class="mt-32 sm:mt-20 mb-8" in:fade={{duration:600}} out:fade={{duration:0}}>
