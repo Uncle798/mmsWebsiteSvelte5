@@ -13,7 +13,6 @@
 	import TextArea from "$lib/formComponents/TextArea.svelte";
 	import RadioButton from "$lib/formComponents/RadioButton.svelte";
    import FormSubmitWithProgress from "$lib/formComponents/FormSubmitWithProgress.svelte";
-	import type { Attachment } from "svelte/attachments";
 
    interface Props {
       data: SuperValidated<Infer<NewPaymentRecordFormSchema>>;
@@ -135,7 +134,8 @@
       <button type="button" onclick={()=>invoiceModalOpen=true} class='btn preset-filled-primary-50-950'>Create Invoice</button>
    {/if}
    {#if invoice}  
-      <form action="/forms/newPaymentRecordForm" method="POST" use:enhance {@attach ()=>{
+      <form action="/forms/newPaymentRecordForm" method="POST" use:enhance {@attach ()=> {
+         $inspect.trace('{@attach} trace');
          explainerModalOpen=true;
          $form.invoiceNum=invoice.invoiceNum;
          $form.paymentNotes=`Payment for Invoice ${invoice.invoiceNum} ${invoice.invoiceNotes}`
