@@ -44,12 +44,14 @@
       const paymentRecords = await data.paymentRecords
       if(paymentRecords.length > 0){
          startDate = dayjs.utc(paymentRecords[0].paymentCreated).startOf('year').toDate();
+         console.log(startDate);
          minDate = startDate;
          endDate = dayjs.utc(paymentRecords[paymentRecords.length-1].paymentCreated).endOf('year').toDate();
          maxDate = endDate;
       }
       res(paymentRecords);
    })
+
    const numberFormatter = new Intl.NumberFormat('en-US');
    let slicedSource = $derived((paymentRecords:PaymentRecord[]) => paymentRecords.slice((pageNum -1) * size, pageNum*size));
    let searchedPayments = $derived((paymentRecords:PaymentRecord[]) => {
@@ -72,7 +74,7 @@
    }))
    let dateSearchPayments = $derived((paymentRecords:PaymentRecord[]) => paymentRecords.filter((paymentRecord) => {
       if(!startDate || !endDate){
-         return
+         return true;
       }
       return paymentRecord.paymentCreated >= startDate && paymentRecord.paymentCreated <= endDate;
    }))
@@ -110,6 +112,10 @@
    let monthComboboxData:ComboboxData[] = $derived(data.months.map(month => ({
       label: dayjs(month).add(1, 'month').format('MMMM'),
       value: (month.getMonth() + 1).toString(),
+   })))
+   let yearsComboboxData:ComboboxData[] = $derived(data.years.map(year => ({
+      label: year.toString(),
+      value: year.toString(),
    })))
    let searchDrawerOpen = $state(false);
 </script>
@@ -172,7 +178,7 @@
                   open={searchDrawerOpen}
                   onOpenChange={(event)=>(searchDrawerOpen = event.open)}
                   triggerBase='btn preset-filled-primary-50-950 rounded-lg fixed top-0 right-0 z-50'
-                  contentBase='bg-surface-100-900 h-[400px] w-screen rounded-lg'
+                  contentBase='bg-surface-100-900 h-[180px] w-screen rounded-lg'
                   positionerJustify=''
                   positionerAlign=''
                   positionerPadding=''
@@ -185,31 +191,45 @@
             {/snippet}
             {#snippet content()}
                <button onclick={()=>searchDrawerOpen=false} class='btn preset-filled-primary-50-950 rounded-lg m-1 absolute top-0 right-0'><PanelTopCloseIcon/></button>
-               <Search 
-                  bind:search={search} 
-                  searchType='payment record number' 
-                  data={data.searchForm}
-                  classes='m-1 sm:m-2 mt-11 sm:mt-11'
-               />
-               <Search
-                  bind:search={nameSearch}
-                  searchType='customer name'
-                  data={data.searchForm}
-                  classes='m-1 sm:m-2'
-               />
-               <DateSearch 
-                  bind:startDate={startDate} 
-                  bind:endDate={endDate} 
-                  {minDate} 
-                  {maxDate} 
-                  data={data.dateSearchForm}
-                  classes='flex flex-col md:grid md:grid-cols-2 m-1 sm:m-2'    
-               />
-               <button onclick={()=>{
-                  sortBy = !sortBy;
-                  searchDrawerOpen = false;
-                  }} class="anchor col-span-full mx-2"
-               >Sort by date {sortBy ? 'starting earliest' : 'starting latest'}</button>
+               <div class="flex flex-col sm:flex-row mt-7 w-screen gap-2 mx-2">
+                  <Search 
+                     bind:search={search} 
+                     searchType='payment record number' 
+                     data={data.searchForm}
+                     classes=''
+                  />
+                  <Search
+                     bind:search={nameSearch}
+                     searchType='customer name'
+                     data={data.searchForm}
+                  />
+                  <DateSearch 
+                     bind:startDate={startDate} 
+                     bind:endDate={endDate} 
+                     {minDate} 
+                     {maxDate} 
+                     data={data.dateSearchForm}
+                  />
+                  <Combobox
+                     data={yearsComboboxData}
+                     label='Select different year'
+                     placeholder='Select year...'
+                     openOnClick={true}
+                     onValueChange={(details) => {
+                        goto(`/paymentRecords/year/${details.value[0]}`)
+                     }}
+                     labelBase=''
+                  />
+               </div>
+               <button 
+                  onclick={()=>{
+                     sortBy = !sortBy;
+                     searchDrawerOpen = false;
+                  }} 
+                  class="btn preset-filled-primary-50-950 m-2"
+                  type='button'
+               >Sort by date {sortBy ? 'starting earliest' : 'starting latest'}
+               </button>
             {/snippet}
             </Modal>
                <div class="mt-32 sm:mt-20 mb-8" in:fade={{duration:600}} out:fade={{duration:0}}>
