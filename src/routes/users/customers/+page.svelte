@@ -8,86 +8,110 @@
    import { fade } from 'svelte/transition';
    import Search from '$lib/forms/Search.svelte';
    import Revenue from '$lib/displayComponents/Revenue.svelte';
-   import type { Lease } from '@prisma/client';
+   import type { Invoice, Lease, User } from '@prisma/client';
    import Address from '$lib/displayComponents/AddressEmployee.svelte';
 	import { Modal } from '@skeletonlabs/skeleton-svelte';
 	import { PanelTopClose, SearchIcon } from 'lucide-svelte';
+	import UserNotesForm from '$lib/forms/UserNotesForm.svelte';
    let { data }: { data: PageData } = $props();
    let pageNum = $state(1);
    let size = $state(25);
    let search = $state('');
-   let slicedSource = $derived((customers:PartialUser[]) => customers.slice((pageNum-1)*size, pageNum*size));
-   let searchedSource = $derived((customers:PartialUser[]) => customers.filter((customer) => {
+   let slicedSource = $derived((customers:User[]) => customers.slice((pageNum-1)*size, pageNum*size));
+   let searchedSource = $derived((customers:User[]) => customers.filter((customer) => {
       return customer.familyName?.toLowerCase().includes(search.toLowerCase()) 
       || customer.givenName?.toLowerCase().includes(search.toLowerCase())
       || customer.organizationName?.toLowerCase().includes(search.toLowerCase())
    }))
-   const totalLeased = $derived((leases:Lease[]) => {
+   let totalLeased = $derived((leases:Lease[]) => {
       let totalLeased = 0;
       leases.forEach((lease) => {
          totalLeased += lease.price
       });
       return totalLeased
    })
+   let customerPastDue= $derived((invoices:Invoice[]) => {
+      let pastDueAmount = 0;
+      for(const invoice of invoices){
+         if(invoice.invoiceDue <= new Date()){
+            pastDueAmount += invoice.invoiceAmount
+         }
+      }
+      return pastDueAmount;
+   })
    let searchDrawerOpen = $state(false);
+   const currencyFormatter = new Intl.NumberFormat('en-US', {style:'currency', currency:'USD'});
 </script>
 <Header title='Current Customers'/>
 {#await data.customers}
-   <div class="mt-14 sm:mt-10 m-1">
+   <div class="mt-14 sm:mt-10 mx-2">
       Loading {data.customerCount} customers...
    </div>
 {:then customers}
    {#await data.leases}
-      <div class="mt-14 sm:mt-10">
+      <div class="mt-14 sm:mt-10 mx-2">
          Loading leases...
       </div>   
    {:then leases} 
       {#await data.addresses}
-         <div class="mt-14 sm:mt-10">
+         <div class="mt-14 sm:mt-10 mx-2">
             Loading addresses...
          </div>
-      {:then addresses}    
-         <div in:fade={{duration:600}}>
-            <Revenue label='Current monthly invoiced' amount={totalLeased(leases)} classes='fixed top-11 sm:top-9 p-1 w-screen left-0 bg-tertiary-50-950 rounded-b-lg'/>
-            <Modal
-               open={searchDrawerOpen}
-               onOpenChange={(event)=>(searchDrawerOpen = event.open)}
-               triggerBase='btn preset-filled-primary-50-950 rounded-lg fixed top-0 right-0 z-50 h-12 sm:h-8'
-               contentBase='bg-surface-100-900 h-[140px] w-screen rounded-b-lg'
-               positionerJustify=''
-               positionerAlign=''
-               positionerPadding=''
-               transitionsPositionerIn={{y:-140, duration: 600}}
-               transitionsPositionerOut={{y:-140, duration: 600}}
-               modal={false}
-            >
-               {#snippet trigger()}
-                  <SearchIcon aria-label='search' />
-               {/snippet}
-               {#snippet content()}
-                  <button onclick={()=>searchDrawerOpen=false} class='btn preset-filled-primary-50-950 rounded-lg m-1 absolute top-0 right-0'><PanelTopClose aria-label='Close'/></button>
-                  <Search bind:search={search} searchType='customer name' data={data.userSearchForm} classes='mx-2 mt-11'/>
-               {/snippet}
-            </Modal>
-            <div class="grid grid-cols-1 mx-1 sm:mx-2 gap-y-2 gap-x-1 mt-20 sm:mt-18">
-               {#each slicedSource(searchedSource(customers)) as customer}
-               {@const address = addresses.find((address) => address.userId === customer.id)}
-               {@const lease = leases.find((lease) => lease.customerId === customer.id)}
-                  <div class="border rounded-lg border-primary-50-950 sm:grid sm:grid-cols-2">
-                     <div class="p-2">
-                        <UserEmployee user={customer} classes=''/>
-                        {#if address}
-                           <Address {address} />
+      {:then addresses}
+         {#await data.invoices}
+            <div class="mt-14 sm:mt-10 mx-2">
+               Loading invoices...
+            </div>
+         {:then invoices}             
+            <div in:fade={{duration:600}}>
+               <Revenue label='Current monthly invoiced' amount={totalLeased(leases)} classes='fixed top-11 sm:top-9 p-1 w-screen left-0 bg-tertiary-50-950 rounded-b-lg'/>
+               <Modal
+                  open={searchDrawerOpen}
+                  onOpenChange={(event)=>(searchDrawerOpen = event.open)}
+                  triggerBase='btn preset-filled-primary-50-950 rounded-lg fixed top-0 right-0 z-50 h-12 sm:h-8'
+                  contentBase='bg-surface-100-900 h-[140px] w-screen rounded-b-lg'
+                  positionerJustify=''
+                  positionerAlign=''
+                  positionerPadding=''
+                  transitionsPositionerIn={{y:-140, duration: 600}}
+                  transitionsPositionerOut={{y:-140, duration: 600}}
+                  modal={false}
+               >
+                  {#snippet trigger()}
+                     <SearchIcon aria-label='search' />
+                  {/snippet}
+                  {#snippet content()}
+                     <button onclick={()=>searchDrawerOpen=false} class='btn preset-filled-primary-50-950 rounded-lg m-1 absolute top-0 right-0'><PanelTopClose aria-label='Close'/></button>
+                     <Search bind:search={search} searchType='customer name' data={data.userSearchForm} classes='mx-2 mt-11'/>
+                  {/snippet}
+               </Modal>
+               <div class="grid grid-cols-1 mx-1 sm:mx-2 gap-y-2 gap-x-1 mt-20 sm:mt-18">
+                  {#each slicedSource(searchedSource(customers)) as customer}
+                  {@const address = addresses.find((address) => address.userId === customer.id)}
+                  {@const lease = leases.find((lease) => lease.customerId === customer.id)}
+                  {@const customerInvoices = invoices.filter((invoice) => invoice.customerId === customer.id)}
+                     <div class="border rounded-lg border-primary-50-950 sm:grid sm:grid-cols-2">
+                        <div class="p-2">
+                           <UserEmployee user={customer} classes=''/>
+                           {#if address}
+                              <Address {address} />
+                           {/if}
+                           <UserNotesForm user={customer} data={data.userNotesForm} />
+                           <div>
+                           {#if customerPastDue(customerInvoices)}
+                              <p class=" text-error-100-900">Past due amount: {currencyFormatter.format(customerPastDue(customerInvoices))}</p>
+                           {/if}
+                           </div>
+                        </div>
+                        {#if lease}
+                           <LeaseEmployee {lease} classes='p-2'/>
                         {/if}
                      </div>
-                     {#if lease}
-                        <LeaseEmployee {lease} classes='p-2'/>
-                     {/if}
-                  </div>
-               {/each}
+                  {/each}
+               </div>
+               <Pagination bind:pageNum={pageNum} bind:size={size} label='users' array={searchedSource(customers)}/>
             </div>
-            <Pagination bind:pageNum={pageNum} bind:size={size} label='users' array={searchedSource(customers)}/>
-         </div>
+         {/await}    
       {/await}
    {/await}
 {/await}

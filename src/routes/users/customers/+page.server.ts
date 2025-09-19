@@ -3,13 +3,14 @@ import type { Actions, PageServerLoad } from './$types';
 import { prisma } from '$lib/server/prisma';
 import { superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
-import { searchFormSchema } from '$lib/formSchemas/schemas';
+import { searchFormSchema, userNotesFormSchema } from '$lib/formSchemas/schemas';
 
 export const load = (async (event) => {
    if(!event.locals.user?.employee){
       redirect(302, '/login?toast=employee')
    }
-   const userSearchForm = await superValidate(valibot(searchFormSchema))
+   const userSearchForm = await superValidate(valibot(searchFormSchema));
+   const userNotesForm = await superValidate(valibot(userNotesFormSchema));
    const customerCount = await prisma.user.count({
       where: {
          customerLeases: {
@@ -21,11 +22,27 @@ export const load = (async (event) => {
    })
    const customers = prisma.user.findMany({
       where: {
-         customerLeases: {
-            some: {
-               leaseEnded: null
+         OR:[
+            { 
+               customerLeases: {
+                  some: {
+                     leaseEnded: null
+                  }
             }
-         }
+            }, 
+            {
+               customerInvoices: {
+                  some: {
+                     AND: [
+                        {paymentRecordNum: null},
+                        {invoiceDue: {
+                           gte: new Date()
+                        }}
+                     ]
+                  }
+               }
+            }
+         ]
       },
       orderBy: {
          familyName: 'asc'
@@ -50,7 +67,43 @@ export const load = (async (event) => {
          }
       }
    })
-   return { customers, leases, userSearchForm, customerCount, addresses };
+   const invoices = prisma.invoice.findMany({
+      where: {
+         AND: [
+            {
+               customer: {
+                  customerLeases: {
+                     some: {
+                        leaseEnded: null
+                     }
+                  }
+               }
+            },
+            {
+               deposit: false
+            }
+         ]   
+      }
+   })
+   const paymentRecords = prisma.paymentRecord.findMany({
+      where: {
+         AND: [
+            {
+               customer: {
+                  customerLeases: {
+                     some: {
+                        leaseEnded: null
+                     }
+                  }
+               }
+            },
+            {
+               deposit: false
+            }
+         ]
+      }
+   })
+   return { customers, leases, userSearchForm, customerCount, addresses, invoices, paymentRecords, userNotesForm };
 }) satisfies PageServerLoad;
 
 export const actions: Actions = {
