@@ -22,6 +22,8 @@ model User {
   archive              Boolean         @default(false)
   googleId             String?
   yahooId              String?
+  customerNotes        String?
+  doNotRent            Boolean         @default(false)
   address              Address[]
   customerInvoices     Invoice[]       @relation("customer")
   employeeInvoices     Invoice[]       @relation("employee")
