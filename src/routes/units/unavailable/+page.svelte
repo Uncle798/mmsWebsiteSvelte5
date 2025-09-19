@@ -17,12 +17,13 @@
          return unit
       }
    }));
-   let lostRevenue = $state(0);
-   data.units.forEach((unit) => {
-      if(unit.size !== 'ours'){
-         lostRevenue += unit.advertisedPrice;
+   let lostRevenue = $derived.by(() => {
+      let revenue = 0;
+      for(const unit of data.units){
+         revenue += unit.advertisedPrice;
       }
-   })
+      return revenue
+   });
    const currencyFormatter = new Intl.NumberFormat('en-US', {style:'currency', currency:'USD'});
    interface ComboboxData {
       label: string;
