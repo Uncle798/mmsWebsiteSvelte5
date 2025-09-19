@@ -27,7 +27,7 @@
 </script>
 
 <div class="mb-2 ">
-	<label class="label">
+	<label class="label-text">
 		{#if label}<span class="label-text">{label}</span>{/if}
 		<input
 			type="date"
