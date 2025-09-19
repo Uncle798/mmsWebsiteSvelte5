@@ -81,6 +81,10 @@
       label: dayjs(month).add(1, 'month').format('MMMM'),
       value: (month.getMonth() + 1).toString()
    })))
+   let yearComboboxData:ComboboxData[] = $derived(data.years.map(year => ({
+      label: year.toString(),
+      value: year.toString()
+   })))
    let searchDrawerOpen = $state(false);
    onNavigate(()=>{
       searchDrawerOpen = false
@@ -149,6 +153,16 @@
                         <Search data={data.searchForm} bind:search={search} searchType='invoice number' classes='m-1 sm:m-2 '/>
                         <Search data={data.searchForm} bind:search={nameSearch} searchType='Customer' classes='m-1 sm:m-2 '/>
                         <DateSearch data={data.dateSearchForm} bind:startDate={startDate} bind:endDate={endDate} {minDate} {maxDate} classes='w-1/2 mb-1 sm:mb-2 mx-1 sm:mx-2'/>
+                        <Combobox
+                           data={yearComboboxData}
+                           label='Select different year'
+                           placeholder='Select year...'
+                           openOnClick={true}
+                           onValueChange={(details) => {
+                              goto(`/invoices/year/${details.value[0]}`)
+                           }}
+                           classes='mx-1 sm:mx-2'
+                        />
                   </div>
                {/snippet}
             </Modal>
