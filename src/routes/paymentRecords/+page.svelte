@@ -180,7 +180,7 @@
                   open={searchDrawerOpen}
                   onOpenChange={(event)=>(searchDrawerOpen = event.open)}
                   triggerBase='btn preset-filled-primary-50-950 rounded-lg fixed top-0 right-0 z-50 h-12 sm:h-auto'
-                  contentBase='bg-surface-100-900 h-[400px] w-screen rounded-lg'
+                  contentBase='bg-surface-100-900 h-[200px] w-screen rounded-lg'
                   positionerJustify=''
                   positionerAlign=''
                   positionerPadding=''
@@ -193,17 +193,16 @@
             {/snippet}
             {#snippet content()}
                <button onclick={()=>searchDrawerOpen=false} class='btn preset-filled-primary-50-950 rounded-lg m-1 absolute top-0 right-0'><PanelTopCloseIcon aria-label='Close'/></button>
+               <div class="flex flex-col sm:flex-row mt-11 gap-2 mx-2" >
                <Search 
                   bind:search={search} 
                   searchType='payment record number' 
                   data={data.searchForm}
-                  classes='m-1 sm:m-2 mt-11 sm:mt-11'
                />
                <Search
                   bind:search={nameSearch}
                   searchType='customer name'
                   data={data.searchForm}
-                  classes='m-1 sm:m-2'
                />
                <DateSearch 
                   bind:startDate={startDate} 
@@ -211,12 +210,16 @@
                   {minDate} 
                   {maxDate} 
                   data={data.dateSearchForm}
-                  classes='flex flex-col md:grid md:grid-cols-2 m-1 sm:m-2'    
+                  classes='flex flex-col sm:flex-row'    
                />
-               <button onclick={()=>{
-                  sortBy = !sortBy;
-                  searchDrawerOpen = false;
-                  }} class="anchor col-span-full mx-2">Sort by date {sortBy ? 'starting earliest' : 'starting latest'}</button>
+               </div>
+               <button 
+                  onclick={()=>{
+                     sortBy = !sortBy;
+                     searchDrawerOpen = false;
+                  }} 
+                  class="btn preset-filled-primary-50-950 m-2"
+               >Sort by date {sortBy ? 'starting earliest' : 'starting latest'}</button>
             {/snippet}
             </Modal>
                <div class="mt-32 sm:mt-20 mb-20 sm:mb-12 lg:mb-8" in:fade={{duration:600}} out:fade={{duration:0}}>
