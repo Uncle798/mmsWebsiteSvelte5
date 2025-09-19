@@ -24,6 +24,13 @@ export const unitNotesFormSchema =  v.object({
 });
 export type  UnitNotesFormSchema = typeof unitNotesFormSchema;
 
+export const userNotesFormSchema = v.object({
+   notes: v.nullable(v.string()),
+   doNotRent: v.boolean(),
+   userId: v.pipe(v.string(), v.cuid2())
+})
+export type UserNotesFormSchema = typeof userNotesFormSchema;
+
 export const leaseEndFormSchema = v.object({
    leaseId: v.pipe(v.string(), v.cuid2()),
    customer: v.nullable(v.boolean()),
