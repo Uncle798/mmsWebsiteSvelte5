@@ -7,9 +7,9 @@ import { redirect } from '@sveltejs/kit';
 import { arrayOfYears } from '$lib/server/utils';
 
 export const load = (async (event) => {
-   // if(!event.locals.user?.employee){
-   //    redirect(302, '/login?toast=employee&redirectTo=paymentRecords');
-   // }
+   if(!event.locals.user?.employee){
+      redirect(302, '/login?toast=employee&redirectTo=paymentRecords');
+   }
    const searchForm = await superValidate(valibot(searchFormSchema));
    const dateSearchForm = await superValidate(valibot(dateSearchFormSchema));
    const refundForm = await superValidate(valibot(refundFormSchema));
