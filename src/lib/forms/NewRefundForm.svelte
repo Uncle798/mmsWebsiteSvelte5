@@ -68,6 +68,7 @@
          bind:value={$form.notes}
          errors={$errors.notes}
          constraints={$constraints.notes}
+         rows={5}
          label='Refund Notes'
          name='notes'
       />
