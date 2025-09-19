@@ -19,7 +19,7 @@
          data={yearComboboxData}
          label='Select year'
          placeholder='Select year ...'
-         openOnChange={true}
+         openOnClick={true}
          onValueChange={(details) => {
             goto(`/paymentRecords/year/${details.value[0]}`)
          }}
