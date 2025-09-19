@@ -6,7 +6,7 @@ import { dateSearchFormSchema, refundFormSchema, searchFormSchema } from '$lib/f
 import { redirect } from '@sveltejs/kit';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc'
-import { arrayOfMonths } from '$lib/server/utils';
+import { arrayOfMonths, arrayOfYears } from '$lib/server/utils';
 
 dayjs.extend(utc)
 
@@ -72,5 +72,11 @@ export const load = (async (event) => {
       }
     });
     const months = arrayOfMonths(startDate, endDate);
-    return { paymentRecords, searchForm, paymentRecordCount, customers, months, dateSearchForm, addresses, refundForm, year };
+    const firstPayment = await prisma.paymentRecord.findFirst({
+      orderBy: {
+        paymentCreated: 'asc'
+      }
+    })
+    const years = arrayOfYears(firstPayment?.paymentCreated.getFullYear())
+    return { paymentRecords, searchForm, paymentRecordCount, customers, months, dateSearchForm, addresses, refundForm, year, years };
 }) satisfies PageServerLoad;
