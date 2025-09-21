@@ -6,7 +6,7 @@ import { valibot } from 'sveltekit-superforms/adapters';
 import { error, redirect } from "@sveltejs/kit";
 import { ratelimit } from "$lib/server/rateLimit";
 import { qStash } from "$lib/server/qStash";
-import { PUBLIC_URL } from "$env/static/public";
+import { PUBLIC_PHONE, PUBLIC_URL } from "$env/static/public";
 
 export const load:PageServerLoad = (async (event) =>{
    const unitNum = event.url.searchParams.get('unitNum');
@@ -72,6 +72,9 @@ export const actions:Actions = {
             id:event.locals.user?.id
          }
       })
+      if(customer.doNotRent){
+         return message(leaseForm, `Unable to rent, please call ${PUBLIC_PHONE}`)
+      }
       const unit = await prisma.unit.findFirst({
          where:{
             num:leaseForm.data.unitNum,
