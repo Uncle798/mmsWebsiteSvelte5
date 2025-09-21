@@ -89,7 +89,6 @@
       }
    })
    const paymentTypes = [ 'CASH', 'CHECK', 'CREDIT'];
-   $inspect($form.paymentNotes);
 </script>
 <ExplainerModal
    bind:modalOpen={explainerModalOpen}
@@ -135,7 +134,6 @@
    {/if}
    {#if invoice}  
       <form action="/forms/newPaymentRecordForm" method="POST" use:enhance {@attach ()=> {
-         $inspect.trace('{@attach} trace');
          explainerModalOpen=true;
          $form.invoiceNum=invoice.invoiceNum;
          $form.paymentNotes=`Payment for Invoice ${invoice.invoiceNum} ${invoice.invoiceNotes}`
