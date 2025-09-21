@@ -12,9 +12,11 @@
 </script>
 
 <div class="{classes} flex flex-col">
-	<span><a href="/users/{user.id}" class="anchor">{user.givenName} {user.familyName}</a></span>
 	{#if user.organizationName}
-		<span>{user.organizationName}</span>
+		<span><a href="/users/{user.id}" class="anchor">{user.organizationName}</a></span>
+		<span>{user.givenName} {user.familyName}</span>
+	{:else}
+		<span><a href="/users/{user.id}" class="anchor">{user.givenName} {user.familyName}</a></span>
 	{/if}
 	<span class="flex"><a href="mailto:{user.email}" class="anchor">{user.email}</a>
 	{#if user.emailVerified}
