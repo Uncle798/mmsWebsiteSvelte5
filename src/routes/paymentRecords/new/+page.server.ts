@@ -50,7 +50,7 @@ export const load = (async (event) => {
             id:userId
          }
       })
-      const customerInvoices = await prisma.invoice.findMany({
+      const invoices = await prisma.invoice.findMany({
          where: {
             AND: [
                { paymentRecordNum: null },
@@ -63,7 +63,7 @@ export const load = (async (event) => {
             customerId: userId
          }
       })
-      return {newPaymentRecordForm, registerForm, invoiceForm, emailVerificationForm, customer, customerInvoices, leases, invoiceNum}
+      return {newPaymentRecordForm, registerForm, invoiceForm, emailVerificationForm, customer, invoices, leases, invoiceNum}
    }
    const invoices = await prisma.invoice.findMany({
       where: {
