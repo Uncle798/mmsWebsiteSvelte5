@@ -46,7 +46,7 @@
 				bind:value={search}
 			/>
 			<button
-				class="btn rounded-lg preset-filled-primary-50-950 my-1"
+				class="btn rounded-lg preset-filled-primary-50-950 h-8 my-1"
 				type="button"
 				onclick={() => {
 					$form.search = '';
