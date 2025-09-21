@@ -54,7 +54,7 @@
          label='Notes'
          name='notes'
       />
-      <div>
+      <div class="flex flex-row gap-2">
          <Switch
             checked={$form.doNotRent}
             onCheckedChange={(e) => {
