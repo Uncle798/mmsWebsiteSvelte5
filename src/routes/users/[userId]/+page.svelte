@@ -186,26 +186,35 @@
             {@const paymentRecord = paymentRecords.find((payment) => payment.invoiceNum === invoice.invoiceNum)}
             {@const refund = refunds.find((refund) => refund.paymentRecordNum === paymentRecord?.paymentNumber)}
                   <InvoiceEmployee invoice={invoice} classes='rounded-lg border-2 border-primary-50-950'/>
+                  {#if !invoice.paymentRecordNum}
+                     <a href="/paymentRecords/new?userId={invoice.customerId}" class="btn preset-filled-primary-50-950">Make a payment Record for this invoice</a>
+                  {/if}
                   {#if paymentRecord}
-                     <PaymentRecordEmployee paymentRecord={paymentRecord} classes='rounded-lg border-2 border-primary-50-950'/>
+                  <PaymentRecordEmployee paymentRecord={paymentRecord} classes='rounded-lg border-2 border-primary-50-950'/>
                   {:else}
-                     <div class="min-w-1/3"></div>
+                  <div class="min-w-1/3"></div>
                   {/if}
                   {#if refund}
-                     <RefundRecordDisplay refundRecord={refund} classes='rounded-lg border-2 border-primary-50-950 min-h-72'/>
+                  <RefundRecordDisplay refundRecord={refund} classes='rounded-lg border-2 border-primary-50-950 min-h-72'/>
                   {:else}
-                     <div class="min-w-1/3"></div>
+                  <div class="min-w-1/3"></div>
                   {/if}
                   {/each}
-            </div>
-         {:else}
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-1 gap-y-3 mx-2">
-            {#each slicedInvoices(invoices) as invoice}
-            {@const paymentRecord = paymentRecords.find((payment) => payment.invoiceNum === invoice.invoiceNum)}
-
-               <InvoiceEmployee invoice={invoice} classes='rounded-lg border-2 border-primary-50-950'/>
+               </div>
+               {:else}
+               <div class="grid grid-cols-1 md:grid-cols-2 gap-x-1 gap-y-3 mx-2">
+                  {#each slicedInvoices(invoices) as invoice}
+                  {@const paymentRecord = paymentRecords.find((payment) => payment.invoiceNum === invoice.invoiceNum)}
+                  <div class="rounded-lg border-2 border-primary-50-950">
+                     <InvoiceEmployee invoice={invoice} classes=''/>
+                     {#if !invoice.paymentRecordNum}
+                        <a href="/paymentRecords/new?invoiceNum={invoice.invoiceNum}" class="btn preset-filled-primary-50-950 h-8 w-fit m-2">Make a payment Record for this invoice</a>
+                     {/if}
+                  </div>
                {#if paymentRecord}
-                  <PaymentRecordEmployee paymentRecord={paymentRecord} classes='rounded-lg border-2 border-primary-50-950'/>               
+                  <PaymentRecordEmployee paymentRecord={paymentRecord} classes='rounded-lg border-2 border-primary-50-950'/>
+               {:else}
+                  <div></div>
                {/if}
             {/each}
             </div>
