@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { PUBLIC_ADDRESS_PHONE } from '$env/static/public';
+	import { PUBLIC_PHONE } from '$env/static/public';
    import type { InputConstraint } from 'sveltekit-superforms';
    
    interface Props {
@@ -10,7 +10,7 @@
       placeholder?:string | undefined;
       name: string;
    }
-   let { value = $bindable(), label, errors, constraints, placeholder=PUBLIC_ADDRESS_PHONE, name, ...others }:Props = $props()
+   let { value = $bindable(), label, errors, constraints, placeholder=PUBLIC_PHONE, name, ...others }:Props = $props()
    function formatPhoneOnChange(event:Event & {currentTarget: EventTarget & HTMLInputElement; }) {
       const digits = event.currentTarget.value.replace(/\D/g, '').substring(0,10)
       const areaCode = digits.substring(0, 3);
