@@ -226,7 +226,7 @@
                      sortBy = !sortBy;
                      searchDrawerOpen = false;
                   }} 
-                  class="btn preset-filled-primary-50-950 m-2"
+                  class="btn preset-filled-primary-50-950 h-8 m-2"
                   type='button'
                >Sort by date {sortBy ? 'starting earliest' : 'starting latest'}
                </button>
