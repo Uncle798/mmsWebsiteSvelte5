@@ -161,7 +161,7 @@
                open={searchDrawerOpen}
                onOpenChange={(event)=>(searchDrawerOpen = event.open)}
                triggerBase='btn preset-filled-primary-50-950 rounded-lg fixed top-0 right-0 z-50 h-12 sm:h-8'
-               contentBase='bg-surface-100-900 h-[405px] w-screen rounded-lg'
+               contentBase='bg-surface-100-900 h-[385px] sm:h-[180px] w-screen rounded-lg'
                positionerJustify=''
                positionerAlign=''
                positionerPadding=''
@@ -174,10 +174,10 @@
                {/snippet}
                {#snippet content()}  
                   <button onclick={()=>searchDrawerOpen=false} class='btn preset-filled-primary-50-950 rounded-lg m-1 absolute top-0 right-0'><PanelTopClose aria-label='Close'/></button>
-                  <div class="mt-8">
-                        <Search data={data.searchForm} bind:search={search} searchType='invoice number' classes='m-1 sm:m-2 '/>
-                        <Search data={data.searchForm} bind:search={nameSearch} searchType='Customer' classes='m-1 sm:m-2 '/>
-                        <DateSearch data={data.dateSearchForm} bind:startDate={startDate} bind:endDate={endDate} {minDate} {maxDate} classes='w-1/2 mb-1 sm:mb-2 mx-1 sm:mx-2'/>
+                  <div class="mt-8 flex flex-col sm:flex-row gap-2 mx-2">
+                     <Search data={data.searchForm} bind:search={search} searchType='invoice number' classes=''/>
+                     <Search data={data.searchForm} bind:search={nameSearch} searchType='Customer' classes=''/>
+                     <DateSearch data={data.dateSearchForm} bind:startDate={startDate} bind:endDate={endDate} {minDate} {maxDate} classes=''/>
                   </div>
                   <button class="btn preset-filled-primary-50-950 m-1 sm:m-2 h-8" onclick={()=> {
                      sortBy = !sortBy;
