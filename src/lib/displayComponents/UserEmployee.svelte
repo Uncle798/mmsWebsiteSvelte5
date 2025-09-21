@@ -1,11 +1,9 @@
 <script lang="ts">
-	import EmailVerificationForm from '$lib/forms/EmailVerificationForm.svelte';
-	import type { PartialUser } from '$lib/server/partialTypes';
-	import { Modal } from '@skeletonlabs/skeleton-svelte';
+	import type { User } from '@prisma/client';
 	import { Check } from 'lucide-svelte';
 
 	interface Props {
-		user: PartialUser;
+		user: User;
 		classes?: string;
 	}
 	let { user, classes }: Props = $props();

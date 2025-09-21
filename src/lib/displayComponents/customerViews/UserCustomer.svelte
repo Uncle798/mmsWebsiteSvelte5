@@ -1,8 +1,8 @@
 <script lang="ts">
-	import type { PartialUser } from '$lib/server/partialTypes';
+	import type { User } from '@prisma/client';
 
 	interface Props {
-		user: PartialUser;
+		user: User;
 		classes?: string;
 	}
 	let { user, classes }: Props = $props();
