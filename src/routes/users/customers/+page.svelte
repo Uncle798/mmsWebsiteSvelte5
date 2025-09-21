@@ -8,7 +8,7 @@
    import { fade } from 'svelte/transition';
    import Search from '$lib/forms/Search.svelte';
    import Revenue from '$lib/displayComponents/Revenue.svelte';
-   import type { Invoice, Lease, User } from '@prisma/client';
+   import type { Invoice, Lease, PaymentRecord, User } from '@prisma/client';
    import Address from '$lib/displayComponents/AddressEmployee.svelte';
 	import { Modal } from '@skeletonlabs/skeleton-svelte';
 	import { PanelTopClose, SearchIcon } from 'lucide-svelte';
@@ -30,15 +30,23 @@
       });
       return totalLeased
    })
-   let customerPastDue= $derived((invoices:Invoice[]) => {
-      let pastDueAmount = 0;
+   let totalInvoiced = $derived((invoices:Invoice[]) => {
+      let total = 0;
       for(const invoice of invoices){
-         if(invoice.invoiceDue <= new Date()){
-            pastDueAmount += invoice.invoiceAmount
-         }
+         total += invoice.invoiceAmount;
       }
-      return pastDueAmount;
+      return total;
+   });
+   let totalPaid = $derived((paymentRecords:PaymentRecord[]) =>{
+      let total = 0;
+      for(const payment of paymentRecords){
+         total += payment.paymentAmount;
+      }
+      return total;
    })
+   let overdueInvoices = $derived((invoices:Invoice[]) => invoices.filter((invoice) => {
+      return invoice.invoiceDue <= new Date() && !invoice.paymentRecordNum
+   }))
    let searchDrawerOpen = $state(false);
    const currencyFormatter = new Intl.NumberFormat('en-US', {style:'currency', currency:'USD'});
 </script>
@@ -62,55 +70,66 @@
             <div class="mt-14 sm:mt-10 mx-2">
                Loading invoices...
             </div>
-         {:then invoices}             
-            <div in:fade={{duration:600}}>
-               <Revenue label='Current monthly invoiced' amount={totalLeased(leases)} classes='fixed top-11 sm:top-9 p-1 w-screen left-0 bg-tertiary-50-950 rounded-b-lg'/>
-               <Modal
-                  open={searchDrawerOpen}
-                  onOpenChange={(event)=>(searchDrawerOpen = event.open)}
-                  triggerBase='btn preset-filled-primary-50-950 rounded-lg fixed top-0 right-0 z-50 h-12 sm:h-8'
-                  contentBase='bg-surface-100-900 h-[140px] w-screen rounded-b-lg'
-                  positionerJustify=''
-                  positionerAlign=''
-                  positionerPadding=''
-                  transitionsPositionerIn={{y:-140, duration: 600}}
-                  transitionsPositionerOut={{y:-140, duration: 600}}
-                  modal={false}
-               >
-                  {#snippet trigger()}
-                     <SearchIcon aria-label='search' />
-                  {/snippet}
-                  {#snippet content()}
-                     <button onclick={()=>searchDrawerOpen=false} class='btn preset-filled-primary-50-950 rounded-lg m-1 absolute top-0 right-0'><PanelTopClose aria-label='Close'/></button>
-                     <Search bind:search={search} searchType='customer name' data={data.userSearchForm} classes='mx-2 mt-11'/>
-                  {/snippet}
-               </Modal>
-               <div class="grid grid-cols-1 mx-1 sm:mx-2 gap-y-2 gap-x-1 mt-20 sm:mt-18">
-                  {#each slicedSource(searchedSource(customers)) as customer}
-                  {@const address = addresses.find((address) => address.userId === customer.id)}
-                  {@const lease = leases.find((lease) => lease.customerId === customer.id)}
-                  {@const customerInvoices = invoices.filter((invoice) => invoice.customerId === customer.id)}
-                     <div class="border rounded-lg border-primary-50-950 sm:grid sm:grid-cols-2">
-                        <div class="p-2">
-                           <UserEmployee user={customer} classes=''/>
-                           {#if address}
-                              <Address {address} />
-                           {/if}
-                           <UserNotesForm user={customer} data={data.userNotesForm} />
-                           <div>
-                           {#if customerPastDue(customerInvoices)}
-                              <p class=" text-error-100-900">Past due amount: {currencyFormatter.format(customerPastDue(customerInvoices))}</p>
-                           {/if}
+         {:then invoices}
+            {#await data.paymentRecords}
+               <div class="mt-14 sm:mt-10 mx-2">
+                  Loading payments...
+               </div>               
+            {:then paymentRecords}        
+               <div in:fade={{duration:600}}>
+                  <Revenue label='Current monthly invoiced' amount={totalLeased(leases)} classes='fixed top-11 sm:top-9 p-1 w-screen left-0 bg-tertiary-50-950 rounded-b-lg'/>
+                  <Modal
+                     open={searchDrawerOpen}
+                     onOpenChange={(event)=>(searchDrawerOpen = event.open)}
+                     triggerBase='btn preset-filled-primary-50-950 rounded-lg fixed top-0 right-0 z-50 h-12 sm:h-8'
+                     contentBase='bg-surface-100-900 h-[140px] w-screen rounded-b-lg'
+                     positionerJustify=''
+                     positionerAlign=''
+                     positionerPadding=''
+                     transitionsPositionerIn={{y:-140, duration: 600}}
+                     transitionsPositionerOut={{y:-140, duration: 600}}
+                     modal={false}
+                  >
+                     {#snippet trigger()}
+                        <SearchIcon aria-label='search' />
+                     {/snippet}
+                     {#snippet content()}
+                        <button onclick={()=>searchDrawerOpen=false} class='btn preset-filled-primary-50-950 rounded-lg m-1 absolute top-0 right-0'><PanelTopClose aria-label='Close'/></button>
+                        <Search bind:search={search} searchType='customer name' data={data.userSearchForm} classes='mx-2 mt-11'/>
+                     {/snippet}
+                  </Modal>
+                  <div class="grid grid-cols-1 mx-1 sm:mx-2 gap-y-2 gap-x-1 mt-20 sm:mt-18">
+                     {#each slicedSource(searchedSource(customers)) as customer}
+                     {@const address = addresses.find((address) => address.userId === customer.id)}
+                     {@const lease = leases.find((lease) => lease.customerId === customer.id)}
+                     {@const customerInvoices = invoices.filter((invoice) => invoice.customerId === customer.id)}
+                     {@const customerPayments = paymentRecords.filter((payment) => payment.customerId === customer.id)}
+                        <div class="border rounded-lg border-primary-50-950 sm:grid sm:grid-cols-2">
+                           <div class="p-2">
+                              <UserEmployee user={customer} classes=''/>
+                              {#if address}
+                                 <Address {address} />
+                              {/if}
+                              <UserNotesForm user={customer} data={data.userNotesForm} />
+                              <div class="flex flex-col sm:flex-row gap-2">
+                                 <p class="text-error-200-800">Total invoiced: {currencyFormatter.format(totalInvoiced(customerInvoices))}</p>
+                                 <p class=" text-success-300-700">Total paid: {currencyFormatter.format(totalPaid(customerPayments))}</p>
+                                 {#if totalInvoiced(overdueInvoices(customerInvoices)) > 0 && overdueInvoices(customerInvoices).length > 1}
+                                    <p class=" text-error-100-900">Overdue amount: <a href="/paymentRecords/new?userId={customer.id}">{currencyFormatter.format(totalInvoiced(overdueInvoices(customerInvoices)))}</a></p>
+                                 {:else if overdueInvoices(customerInvoices).length === 1}
+                                    <p class=" text-error-100-900">Overdue amount: <a href="/paymentRecords/new?invoiceNum={overdueInvoices(customerInvoices)[0].invoiceNum}" class="">{currencyFormatter.format(totalInvoiced(overdueInvoices(customerInvoices)))}</a></p>
+                                 {/if}
+                              </div>
                            </div>
+                           {#if lease}
+                              <LeaseEmployee {lease} classes='p-2 max-h-64'/>
+                           {/if}
                         </div>
-                        {#if lease}
-                           <LeaseEmployee {lease} classes='p-2'/>
-                        {/if}
-                     </div>
-                  {/each}
+                     {/each}
+                  </div>
+                  <Pagination bind:pageNum={pageNum} bind:size={size} label='users' array={searchedSource(customers)}/>
                </div>
-               <Pagination bind:pageNum={pageNum} bind:size={size} label='users' array={searchedSource(customers)}/>
-            </div>
+            {/await}            
          {/await}    
       {/await}
    {/await}
