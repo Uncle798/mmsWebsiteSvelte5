@@ -111,13 +111,13 @@
                                  <Address {address} />
                               {/if}
                               <UserNotesForm user={customer} data={data.userNotesForm} />
-                              <div class="flex flex-col sm:flex-row gap-2">
-                                 <p class="text-error-200-800">Total invoiced: {currencyFormatter.format(totalInvoiced(customerInvoices))}</p>
-                                 <p class=" text-success-300-700">Total paid: {currencyFormatter.format(totalPaid(customerPayments))}</p>
+                              <div class="flex flex-col sm:flex-row gap-2 bg-primary-contrast-100-900 p-2 rounded-lg">
+                                 <p class="text-error-400-600">Total invoiced: {currencyFormatter.format(totalInvoiced(customerInvoices))}</p>
+                                 <p class="text-success-300-700">Total paid: {currencyFormatter.format(totalPaid(customerPayments))}</p>
                                  {#if totalInvoiced(overdueInvoices(customerInvoices)) > 0 && overdueInvoices(customerInvoices).length > 1}
-                                    <p class=" text-error-100-900">Overdue amount: <a href="/paymentRecords/new?userId={customer.id}">{currencyFormatter.format(totalInvoiced(overdueInvoices(customerInvoices)))}</a></p>
+                                    <p class="text-error-100-900">Overdue amount: <a href="/paymentRecords/new?userId={customer.id}">{currencyFormatter.format(totalInvoiced(overdueInvoices(customerInvoices)))}</a></p>
                                  {:else if overdueInvoices(customerInvoices).length === 1}
-                                    <p class=" text-error-100-900">Overdue amount: <a href="/paymentRecords/new?invoiceNum={overdueInvoices(customerInvoices)[0].invoiceNum}" class="">{currencyFormatter.format(totalInvoiced(overdueInvoices(customerInvoices)))}</a></p>
+                                    <p class="text-error-100-900">Overdue amount: <a href="/paymentRecords/new?invoiceNum={overdueInvoices(customerInvoices)[0].invoiceNum}" class="">{currencyFormatter.format(totalInvoiced(overdueInvoices(customerInvoices)))}</a></p>
                                  {/if}
                               </div>
                            </div>
