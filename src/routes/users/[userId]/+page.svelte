@@ -153,6 +153,7 @@
                >
                   End lease
                </button>
+               <a href="/invoices/new?leaseId={lease.leaseId}" class="btn preset-filled-primary-50-950 m-2">Make an invoice for this lease</a>
             {/if}
          </div>
       {/each}
