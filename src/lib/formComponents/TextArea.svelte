@@ -3,7 +3,7 @@
    import type { InputConstraint } from 'sveltekit-superforms';
    
    interface Props {
-      value:string | undefined | null;
+      value:string | null | undefined;
       label: string | undefined;
       errors: string[] | undefined;
       constraints: InputConstraint | undefined;
@@ -22,7 +22,7 @@
          <span class="label-text">{label}</span>
       {/if}
       <textarea
-         class="input rounded-none h-auto"
+         class="input rounded-none"
          rows={rows}
          name={name}
          aria-invalid={errors ? 'true' : undefined}
@@ -30,7 +30,6 @@
          autocomplete={autocomplete}
          {...constraints}
          {...others}
-         
       >{value}</textarea>
    </label>
    {#if errors}<span class="invalid">{errors}</span>{/if}

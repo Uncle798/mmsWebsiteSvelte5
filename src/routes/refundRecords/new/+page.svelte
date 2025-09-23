@@ -10,6 +10,7 @@
 	import { PanelTopClose, SearchIcon } from 'lucide-svelte';
 	import UserEmployee from '$lib/displayComponents/UserEmployee.svelte';
 	import AddressEmployee from '$lib/displayComponents/AddressEmployee.svelte';
+	import DownloadPDFButton from '$lib/DownloadPDFButton.svelte';
    let { data }: { data: PageData } = $props();
    let size = $state(25);
    let pageNum = $state(1);
@@ -37,6 +38,16 @@
          user.organizationName?.toLowerCase().includes(nameSearch.toLowerCase())
       })
    );
+   let depositFilterOn = $state(false)
+   let depositsFilter = $derived((paymentRecords:PaymentRecord[]) => 
+      paymentRecords.filter(paymentRecord => {
+         if(depositFilterOn){
+            return paymentRecord.deposit
+         } else {
+            return paymentRecord
+         }
+      })   
+   )
 </script>
 <Header title='New Refund' />
 {#if data.paymentRecord}
@@ -57,67 +68,85 @@
 {:else}
    {#await data.paymentRecords}
       <div class="mt-14 sm:mt-10 mx-1 sm:mx-2">
-         Loading deposits ...
+         Loading payment records...
       </div>
    {:then paymentRecords}
       {#await data.customers}
          <div class="mt-14 sm:mt-10 mx-1 sm:mx-2">
             Loading customers...
          </div>
-      {:then customers} 
-         <Modal
-            open={searchDrawerOpen}
-            onOpenChange={(event)=>(searchDrawerOpen = event.open)}
-            triggerBase='btn preset-filled-primary-50-950 rounded-lg fixed top-0 right-0 z-50 h-12 sm:h-auto'
-            contentBase='bg-surface-100-900 h-[350px] w-screen rounded-lg'
-            positionerJustify=''
-            positionerAlign=''
-            positionerPadding=''
-            transitionsPositionerIn={{y:-350, duration: 600}}
-            transitionsPositionerOut={{y:-350, duration: 600}}
-            modal={false}
-         >
-            {#snippet trigger()}
-               <SearchIcon aria-label='Search' />
-            {/snippet}
-            {#snippet content()}
-               <button onclick={()=>(searchDrawerOpen=false)} class='btn preset-filled-primary-50-950 rounded-lg m-1 absolute top-0 right-0'><PanelTopClose aria-label='Close'/></button>
-               <Search
-                  bind:search={nameSearch}
-                  searchType='customer name'
-                  data={data.searchForm}
-                  classes='m-1 sm:m-2 mt-11'
-               />
-               <Search
-                  bind:search={search}
-                  searchType='payment notes'
-                  data={data.searchForm}
-                  classes='m-1 sm:m-2 mt-11'
-               />
-            {/snippet}
-         </Modal>
-         {#if paymentRecords}
-            {#if customers}                
-               <div class="mt-14 sm:mt-10 mx-1 sm:mx-2 grid grid-cols-1 gap-y-2">
-                  {#each slicedPayments(searchedPayments(searchByUser(paymentRecords, currentUsers(customers)))) as paymentRecord}
-                  {@const customer = customers.find((customer) => customer.id === paymentRecord.customerId)}
-                     <div class="border-2 border-primary-50-950 rounded-lg grid grid-cols-1 sm:grid-cols-2 ">
-                        {#if customer}
-                           <UserEmployee user={customer} classes='mx-2'/>
-                        {/if}
+         {:then customers} 
+            {#await data.addresses}
+            <div class="mt-14 sm:mt-10 mx-1 sm:mx-2">
+               Loading addresses...
+            </div>
+            {:then addresses}
+            <Modal
+               open={searchDrawerOpen}
+               onOpenChange={(event)=>(searchDrawerOpen = event.open)}
+               triggerBase='btn preset-filled-primary-50-950 rounded-lg fixed top-0 right-0 z-50 h-12 sm:h-auto'
+               contentBase='bg-surface-100-900 h-[350px] w-screen rounded-lg'
+               positionerJustify=''
+               positionerAlign=''
+               positionerPadding=''
+               transitionsPositionerIn={{y:-350, duration: 600}}
+               transitionsPositionerOut={{y:-350, duration: 600}}
+               modal={false}
+            >
+               {#snippet trigger()}
+                  <SearchIcon aria-label='Search' />
+               {/snippet}
+               {#snippet content()}
+                  <button onclick={()=>(searchDrawerOpen=false)} class='btn preset-filled-primary-50-950 rounded-lg m-1 absolute top-0 right-0'><PanelTopClose aria-label='Close'/></button>
+                  <div class="flex flex-col sm:flex-row mt-11 gap-2 mx-2">
+                     <Search
+                        bind:search={nameSearch}
+                        searchType='customer name'
+                        data={data.searchForm}
+                     />
+                     <Search
+                        bind:search={search}
+                        searchType='payment notes'
+                        data={data.searchForm}
+                     />
+                  </div>
+                  <button onclick={() => depositFilterOn = !depositFilterOn} class='btn preset-filled-primary-50-950 m-2'>{depositFilterOn ? 'All payments' : 'Deposits only'}</button>
+               {/snippet}
+            </Modal>
+            <div class="mt-14 sm:mt-10 mx-1 sm:mx-2 grid grid-cols-1 gap-y-2 mb-8">
+               {#each slicedPayments(depositsFilter(searchedPayments(searchByUser(paymentRecords, currentUsers(customers))))) as paymentRecord}
+               {@const customer = customers.find((customer) => customer.id === paymentRecord.customerId)}
+               {@const address = addresses.find((address) => address.userId === customer?.id)}
+                  <div class="border-2 border-primary-50-950 rounded-lg grid grid-cols-1 sm:grid-cols-2 gap-2">
+                     <div class="mx-2">
                         <PaymentRecordEmployee {paymentRecord} />
-                        <a href="/refundRecords/new?paymentNum={paymentRecord.paymentNumber}" class="btn preset-filled-primary-50-950 sm:col-span-2 m-1">Refund this payment</a>
+                        <div class="flex flex-col sm:flex-row my-2 gap-2 ">
+                           <a href="/refundRecords/new?paymentNum={paymentRecord.paymentNumber}" class="btn preset-filled-primary-50-950 sm:col-span-2 h-8">Refund this payment</a>
+                           <DownloadPDFButton
+                              recordType='paymentNum'
+                              num={paymentRecord.paymentNumber}
+                           />
+                        </div>
                      </div>
-                  {/each}
-               </div>
-               <Pagination 
-                  bind:size={size} 
-                  bind:pageNum={pageNum} 
-                  array={searchedPayments(searchByUser(paymentRecords, currentUsers(customers)))}
-                  label='payment records'
-               />
-            {/if}
-         {/if}
+                     <div class="flex flex-col">
+                        {#if customer}
+                           <UserEmployee user={customer}/>
+                        {/if}
+                        {#if address}
+                           <AddressEmployee {address} />
+   
+                        {/if}
+                     </div>
+                  </div>
+               {/each}
+            </div>
+            <Pagination 
+               bind:size={size} 
+               bind:pageNum={pageNum} 
+               array={searchedPayments(searchByUser(paymentRecords, currentUsers(customers)))}
+               label='payment records'
+            />
+         {/await}
       {/await}
    {/await}
 {/if}

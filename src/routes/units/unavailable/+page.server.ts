@@ -27,6 +27,5 @@ export const load = (async (event) => {
       }
    })
    const cookie = event.cookies.get('unitsUnavailableComplete');
-   console.log(cookie)
    return { units, unitNotesForm, unitCount, sizes, cookie };
 }) satisfies PageServerLoad;

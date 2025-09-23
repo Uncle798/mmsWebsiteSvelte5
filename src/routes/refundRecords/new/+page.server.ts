@@ -40,22 +40,40 @@ export const load = (async (event) => {
    }
    const paymentRecords = prisma.paymentRecord.findMany({
       where: {
-         refunded: false,
+         refundNumber: null
       },
       orderBy: {
          paymentNumber: 'desc'
       }
    })
-   const customers = await prisma.user.findMany({
+   const customers = prisma.user.findMany({
       where: {
          paymentMade: {
             some: {
-               refunded: false,
+               refundNumber: null,
             }
          }
       }
    })
-   return { paymentRecords, refundForm, searchForm, customers };
+   const addresses = prisma.address.findMany({
+      where: {
+         AND: [
+            {
+               user: {
+                  paymentMade: {
+                     some: {
+                        refundNumber: null
+                     }
+                  }
+               }
+            },
+            {
+               softDelete: false
+            }
+         ]
+      }
+   })
+   return { paymentRecords, refundForm, searchForm, customers, addresses };
 }) satisfies PageServerLoad;
 
 

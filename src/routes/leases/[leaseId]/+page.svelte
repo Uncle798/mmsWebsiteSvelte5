@@ -31,41 +31,48 @@
    </Modal>
 {/if}
 {#if data.user?.employee}   
-   <div class="grid sm:grid-cols-2 m-1 sm:m-2 border-2 border-primary-50-950 rounded-lg mt-14 sm:mt-10">
+   <div class="mt-14 sm:mt-10 mb-8">
       {#if data.lease}
-         <div>
-            <LeaseEmployee lease={data.lease} classes='border-b border-primary-50-950'/>
+         <div class="border rounded-lg border-primary-50-950 flex flex-col sm:flex-row mx-2">
+            <LeaseEmployee lease={data.lease} classes=''/>
             {#if !data.lease.leaseEnded}
-            <button type="button" class="btn preset-filled-primary-50-950 m-2" onclick={()=>{
+            <button type="button" class="btn preset-filled-primary-50-950 m-2 h-8"  onclick={()=>{
                modalOpen = true;
             }}
             >End Lease</button>
             {/if}
+            <div class="m-1 sm:m-2">
+               {#if data.customer}
+                  <UserEmployee user={data.customer} classes='mx-2'/>
+               {/if}
+               {#if data.address}
+                  {#if data.currentAddress}
+                  <label class="label-text">Lease Address:
+                     <AddressEmployee address={data.address} classes='text-base mx-2' />
+                  </label>
+                  {:else}
+                     <AddressEmployee address={data.address} classes='mx-2'/>
+                  {/if}
+               {/if}
+               {#if data.currentAddress}
+                  <label >Current address
+                     <AddressEmployee address={data.currentAddress} classes='mx-2'/>
+                  </label>
+                  
+               {/if}
+            </div>
          </div>
       {/if}
-      <div class="m-1 sm:m-2">
-         {#if data.customer}
-            <UserEmployee user={data.customer} classes='mx-2'/>
-         {/if}
-         {#if data.address}
-            {#if data.currentAddress}
-            <label class="label-text">Lease Address:
-               <AddressEmployee address={data.address} classes='text-base mx-2' />
-            </label>
-            {:else}
-               <AddressEmployee address={data.address} classes='mx-2'/>
-            {/if}
-         {/if}
-         {#if data.currentAddress}
-            <label >Current address
-               <AddressEmployee address={data.currentAddress} classes='mx-2'/>
-            </label>
-            
-         {/if}
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2">
+         {#each data.invoices as invoice}
+            <div class="border border-primary-50-950 rounded-lg">
+               <InvoiceEmployee invoice={invoice} classes='h-60 p-2'/>
+               {#if !invoice.paymentRecordNum}
+                  <a href="/paymentRecord/new?invoiceNum={invoice.invoiceNum}" class="btn preset-filled-primary-50-950 h-8 m-2">Make a payment record for this invoice</a>
+               {/if}
+            </div>
+         {/each}
       </div>
-      {#each data.invoices as invoice}
-            <InvoiceEmployee invoice={invoice} />
-      {/each}
    </div>
 {:else}
    <div class="flex flex-col sm:flex-row mt-14 mx-1 sm:mx-2" in:fade={{duration:600}} out:fade={{duration:0}}>

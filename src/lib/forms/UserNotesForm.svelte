@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { invalidateAll } from "$app/navigation";
+	import { page } from "$app/state";
 	import FormMessage from "$lib/formComponents/FormMessage.svelte";
 	import FormSubmitWithProgress from "$lib/formComponents/FormSubmitWithProgress.svelte";
 	import TextArea from "$lib/formComponents/TextArea.svelte";
@@ -8,7 +8,6 @@
 	import { Switch } from "@skeletonlabs/skeleton-svelte";
 	import { onMount } from "svelte";
 	import { superForm, type SuperValidated, type Infer } from "sveltekit-superforms";
-
 
    interface Props {
       data: SuperValidated<Infer<UserNotesFormSchema>>;
@@ -20,13 +19,28 @@
    let { form, message, errors, constraints, enhance, delayed, timeout, submit } = superForm(data, {
       onUpdated(){
          userNotesFormModalOpen = false;
-      }
+      },
+      onChange(event){
+         console.log(event);
+         if(event.target){
+            if(event.path === 'notes'){
+               const fullKey = `${url}/userNotesForm/${user.id}:${event.path}`;
+               const value = event.get(event.path);
+               if(value){
+                  sessionStorage.setItem(fullKey, value);
+               }
+            }
+         }
+      },
+      id: user.id,
+      invalidateAll:'force'
    })
+   const url = page.url.pathname
    onMount(() => {
       $form.doNotRent = user.doNotRent;
       $form.notes = user.customerNotes;
       for(const key in $form){
-         let fullKey = `userNotesForm:${key}`;
+         let fullKey = `${url}/userNotesForm/${user.id}:${key}`;
          const storedValue = sessionStorage.getItem(fullKey)
          if(storedValue){
             if(isNaN(parseInt(storedValue, 10))){

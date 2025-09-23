@@ -8,6 +8,8 @@
 	import { SearchIcon, PanelTopClose, } from 'lucide-svelte';
 	import { onMount } from 'svelte';
 	import Header from '$lib/Header.svelte';
+	import ExplainerModal from '$lib/demo/ExplainerModal.svelte';
+	import { page } from '$app/state';
    let { data }: { data: PageData } = $props();
    let sizeFilter = $state('');
    const filterSize = $derived((units:Unit[]) => units.filter((unit) => {
@@ -45,6 +47,7 @@
       }
       comboboxData.unshift({label: 'All', value: 'all'})
    });
+   const url = page.url.pathname
 </script>
 <div class="flex fixed bg-tertiary-50-950 w-full rounded-b-lg top-7 pt-2" transition:fade={{duration:600}}>
    <span class="m-2">Unavailable: {data.units.length} of {data.unitCount}</span>
@@ -83,19 +86,13 @@
    </div>
    {/snippet}
 </Modal>
-<Modal
-   open={descriptionModalOpen}
-   onOpenChange={(event) =>(descriptionModalOpen = event.open)}
-   contentBase='card bg-surface-100-900 p-2 space-y-4 shadow-xl max-w-screen-sm'
-   backdropClasses='backdrop-blur-lg'
+<ExplainerModal
+   modalOpen={descriptionModalOpen}
 >
-   {#snippet content()}
-      <p>
-         Need to clean a unit? Unit have a broken door? Mark it unavailable on its page or, <a href="/units" class="anchor">all units</a> and it will show up here. This is a todo list.
-      </p>
-      <button class="btn preset-filled-primary-50-950" onclick={()=>(descriptionModalOpen=false)}>Close</button>
+   {#snippet copy()}
+      Need to clean a unit? Unit have a broken door? Mark it unavailable on its page or, <a href="/units" class="anchor">all units</a> and it will show up here. This is a todo list.
    {/snippet}
-</Modal>
+</ExplainerModal>
 <Header title='Unavailable Units' />
 <div class="grid grid-cols-1 gap-3 m-1 sm:m-2 sm:mt-20 mt-32 mb-8 sm:mb-8">
    {#each filterSize(data.units) as unit}

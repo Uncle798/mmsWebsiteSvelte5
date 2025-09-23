@@ -10,6 +10,7 @@
 	import PhoneInput from '$lib/formComponents/PhoneInput.svelte';
 	import { onMount } from 'svelte';
 	import { keyof } from 'valibot';
+	import { page } from '$app/state';
 
    interface Props {
       data:SuperValidated<Infer<AddressFormSchema>>, 
@@ -22,10 +23,10 @@
    let { form, message, errors, constraints, enhance, delayed, timeout, capture, restore, } = superForm(data, {
       onChange(event) {
          if(event.target){
-            const formName = 'addressForm'
+            const key = `${url}/addressForm/userId=${userId}:${event.path}`
             const value = event.get(event.path);
             if(value){
-               sessionStorage.setItem(`${formName}:${event.path}`, value);
+               sessionStorage.setItem(`${key}:${event.path}`, value);
             }
          }
       },
@@ -45,9 +46,10 @@
       capture,
       restore,
    }
+   const url = page.url.pathname
    onMount(() =>{
       for(const key in $form){
-         let fullKey = `addressForm:${key}`;
+         const fullKey = `${url}/addressForm/userId=${userId}:${key}`;
          const storedValue = sessionStorage.getItem(fullKey)
          if(storedValue){
             $form[key as keyof typeof $form] = storedValue;

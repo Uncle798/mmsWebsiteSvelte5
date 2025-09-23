@@ -45,8 +45,13 @@
          if(event.target){
             const formName = 'newPaymentRecordForm'
             const value = event.get(event.path);
-            if(value){
-               sessionStorage.setItem(`${formName}:${event.path}`, value.toString());
+            console.log(value);
+            if(value && value !== ''){
+               sessionStorage.setItem(`${formName}/invoiceNum=${invoice?.invoiceNum}:${event.path}`, value.toString());
+            } else if(value === ''){
+               sessionStorage.removeItem(`${formName}/invoiceNum=${invoice?.invoiceNum}:${event.path}`)
+            } else if(value === false){
+               sessionStorage.removeItem(`${formName}/invoiceNum=${invoice?.invoiceNum}:${event.path}`)
             }
          }
       },
@@ -71,7 +76,7 @@
    let explainerModalOpen = $state(false);
    onMount(() => {
       for(const key in $form){
-         const fullKey = `newPaymentRecordForm:${key}`;
+         const fullKey = `newPaymentRecordForm/invoiceNum=${invoice?.invoiceNum}:${key}`;
          const storedValue = sessionStorage.getItem(fullKey);
          if(storedValue){
             if(isNaN(parseInt(storedValue, 10))){

@@ -119,7 +119,6 @@
                placeholder='Type or select...'
                onValueChange={(details) => {
                   selectedCustomer = details.value;
-                  console.log()
                   if(customerCuidId){
                      customerCuidId.value=details.value[0].toString()
                   }

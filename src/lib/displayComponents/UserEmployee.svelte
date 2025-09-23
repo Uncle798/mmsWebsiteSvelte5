@@ -10,6 +10,9 @@
 </script>
 
 <div class="{classes} flex flex-col">
+	{#if user.doNotRent}
+		<span class=" font-extrabold text-error-50-950 bg-error-contrast-50-950 text-center ">DO NOT RENT TO {user.organizationName ? user.organizationName.toUpperCase() : `${user.givenName?.toUpperCase()} ${user.familyName?.toUpperCase()}`}</span>
+	{/if}
 	{#if user.organizationName}
 		<span><a href="/users/{user.id}" class="anchor">{user.organizationName}</a></span>
 		<span>{user.givenName} {user.familyName}</span>
@@ -21,4 +24,8 @@
 		<Check aria-label='Email verified' color='green' />
 	{/if}
 	</span>
+	{#if user.customerNotes}
+		<span>{user.customerNotes}</span>
+	{/if}
+
 </div>

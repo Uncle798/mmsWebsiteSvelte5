@@ -37,14 +37,6 @@ export const actions:Actions = {
                deposit: newPaymentRecordForm.data.deposit
             }  
          })
-         await prisma.invoice.update({
-            where: {
-               invoiceNum: paymentRecord.invoiceNum!
-            },
-            data: {
-               paymentRecordNum: paymentRecord.paymentNumber
-            }
-         })
          redirect(302, '/paymentRecords/' + paymentRecord.paymentNumber)
       }
       

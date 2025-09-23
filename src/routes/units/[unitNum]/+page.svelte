@@ -11,11 +11,13 @@
    import { Modal } from '@skeletonlabs/skeleton-svelte';
    import Revenue from '$lib/displayComponents/Revenue.svelte';
    import Address from '$lib/displayComponents/AddressEmployee.svelte';
+	import { page } from '$app/state';
 
    let modalOpen = $state(false);
    let currentLeaseId = $state('')
    let { data }: { data: PageData } = $props();
    const formattedCurrency = new Intl.NumberFormat('en-US', {style: 'currency', currency: 'USD'})
+   const url = page.url.pathname
 </script>
 
 {#await data.unit}
@@ -35,15 +37,15 @@
 </Modal>
    {#if unit}
       <Header title='Unit number: {unit.num}' />
-      <Revenue label='Total revenue from this unit' amount={data.totalRevenue} classes="flex sticky top-10 bg-tertiary-50-950 rounded-b-lg w-full p-2"/>
-      <div transition:fade={{duration:600}} class="m-1 sm:m-2 mt-12 mb-8">
+      <Revenue label='Total revenue from this unit' amount={data.totalRevenue} classes="flex sticky top-9 bg-tertiary-50-950 rounded-b-lg w-full p-2"/>
+      <div transition:fade={{duration:600}} class="m-1 sm:m-2 mt-12 sm:mt-12 mb-8 sm:mb-8">
          <div class="border-2 border-primary-50-950 rounded-lg">
             <UnitEmployee {unit} classes='mx-2'/>
             <a href="/employeeNewLease?unitNum={unit.num}" class="btn preset-filled-primary-50-950 m-2 rounded-lg">Rent Unit {unit.num.replace(/^0+/gm, '')}</a>
          </div>
          <UnitNotesForm data={data.unitNotesForm} {unit} classes=''/>
          <UnitPricingForm data={data.unitPricingForm} size={unit.size} oldPrice={unit.advertisedPrice} unitPricingFormModalOpen={modalOpen} />
-         <div class="grid grid-cols-1 gap-y-2 gap-x-1">
+         <div class="grid grid-cols-1 gap-y-2 sm:grid-cols-2 gap-x-1">
             {#each data.leases as lease}
             {@const customer = data.customers.find((customer) => customer.id === lease.customerId)}
                <div class="rounded-lg border-2 border-primary-50-950 ">

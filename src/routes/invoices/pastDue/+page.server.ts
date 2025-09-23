@@ -15,18 +15,16 @@ export const load = (async (event) => {
    const invoiceCount = await prisma.invoice.count({
       where: {
          AND: [
-            {paymentRecordNum: null},
             {invoiceDue: {
                lte: new Date()
             }},
             {deposit: false}
          ]
-      }
+      },
    })
    const invoices = prisma.invoice.findMany({
       where: {
          AND: [
-            {paymentRecordNum: null},
             {invoiceDue: {
                lte: new Date()
             }},
@@ -35,7 +33,7 @@ export const load = (async (event) => {
       },
       orderBy: {
          invoiceNum:'asc'
-      }
+      },
    })
    const customers = prisma.user.findMany({
       where: {

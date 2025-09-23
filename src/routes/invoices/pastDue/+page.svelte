@@ -2,7 +2,7 @@
    import { fade } from 'svelte/transition';
    import type { PageData } from './$types';
    import UserEmployee from '$lib/displayComponents/UserEmployee.svelte';
-   import type { Invoice, User } from '@prisma/client';
+   import type { Invoice, PaymentRecord, User } from '@prisma/client';
    import InvoiceEmployee from '$lib/displayComponents/InvoiceEmployee.svelte';
    import Header from '$lib/Header.svelte';
    import Pagination from '$lib/displayComponents/Pagination.svelte';
@@ -18,6 +18,7 @@
    import { Modal } from '@skeletonlabs/skeleton-svelte';
 	import EmailCustomer from '$lib/EmailCustomer.svelte';
    import DownloadPdfButton from '$lib/DownloadPDFButton.svelte';
+   import { Prisma } from '@prisma/client';
    dayjs.extend(utc)
    let { data }: { data: PageData } = $props();
    let pageNum = $state(1);
@@ -53,6 +54,7 @@
       }
       return customerInvoices
    })
+
    let slicedInvoices = $derived((invoices:Invoice[]) => invoices.slice((pageNum-1)*size, pageNum*size));
    let searchedInvoices = $derived((invoices:Invoice[]) => invoices.filter((invoice) => invoice.invoiceNum.toString().includes(search)));
    let dateSearchedInvoices = $derived((invoices:Invoice[]) => invoices.filter((invoice) => {
@@ -69,6 +71,29 @@
          }
       })
       return totalRevenue
+   })
+   const overdueInvoices = $derived((invoices:Invoice[], paymentRecords:PaymentRecord[]) => {
+      let returnedInvoices:Invoice[] = []
+      for(const invoice of invoices){
+         const payments = paymentRecords.filter(paymentRecord => paymentRecord.invoiceNum === invoice.invoiceNum)
+         let totalPaid = 0;
+         for(const payment of payments){
+            totalPaid += payment.paymentAmount;
+         }
+         if(totalPaid === invoice.invoiceAmount){
+            returnedInvoices.push(invoice)
+         }
+      }
+      return returnedInvoices;
+   })
+   const amountOverdueInvoice = $derived((invoice:Invoice, paymentRecords:PaymentRecord[]) =>{
+      let totalPaid = 0;
+      for(const payment of paymentRecords){
+         if(payment.invoiceNum === invoice.invoiceNum){
+            totalPaid += payment.paymentAmount;
+         }
+      }
+      return invoice.invoiceAmount - totalPaid;
    })
    let searchDrawerOpen = $state(false);
    onNavigate(()=>{
@@ -96,7 +121,7 @@
                <Placeholder numCols={1} numRows={size} heightClass='h-40'/>
             </div>
          {:then addresses}
-                  {#if invoices.length >0}       
+            {#if invoices.length >0}       
             <Header title='Past Due invoices' />
             <Revenue label="Current past due invoice total" amount={totalRevenue(searchedInvoices(dateSearchedInvoices(invoices)))} classes="bg-tertiary-50-950 w-screen rounded-b-lg fixed top-10 sm:top-9 p-2 left-0 z-40"/>
             <Modal
@@ -131,7 +156,7 @@
                         <div>
                            <InvoiceEmployee {invoice} classes='px-2' />
                            <div class="flex gap-2 m-2">
-                              {#if !invoice.paymentRecordNum}
+                              {#if amountOverdueInvoice(invoice,) > 0}
                                  <a href="/paymentRecords/new?userId={customer?.id}&invoiceNum={invoice.invoiceNum}" class="btn preset-filled-primary-50-950 h-8">Make payment record for this invoice</a>
                               {/if}
                               {#if customer?.emailVerified && customer.email}

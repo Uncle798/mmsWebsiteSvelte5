@@ -10,7 +10,10 @@
    let { delayed = $bindable(), timeout=$bindable(), buttonText=$bindable('Submit'), classes }:Props = $props();
 </script>
 <div class="flex py-2 {classes}">
-   <button class="btn rounded-lg preset-filled-primary-50-950 text-wrap h-8 w-auto" >{buttonText}</button>
+   <button class="btn rounded-lg preset-filled-primary-50-950 h-8 w-fit" >{buttonText}</button>
+   {#if !delayed && !timeout}
+      <div class="w-8 h-8"></div>
+   {/if}
    {#if delayed && !timeout}
    <div transition:fade={{duration:600}}>
       <ProgressRing value={null} size="size-8" strokeWidth="6px" meterStroke="stroke-secondary-600-400" trackStroke="stroke-secondary-50-950" classes='ml-2' />

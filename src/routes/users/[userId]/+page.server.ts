@@ -3,7 +3,7 @@ import type { PageServerLoad, } from "./$types";
 import { prisma } from "$lib/server/prisma";;
 import { superValidate } from "sveltekit-superforms";
 import { valibot } from "sveltekit-superforms/adapters";
-import { addressFormSchema, emailFormSchema, emailVerificationFormSchema, leaseEndFormSchema } from "$lib/formSchemas/schemas";
+import { addressFormSchema, emailFormSchema, emailVerificationFormSchema, leaseEndFormSchema, userNotesFormSchema } from "$lib/formSchemas/schemas";
 export const load: PageServerLoad = async (event) => {
    if(!event.locals.user?.employee){
       redirect(302, '/login?toast=employee')
@@ -11,7 +11,8 @@ export const load: PageServerLoad = async (event) => {
    const addressForm = await superValidate(valibot(addressFormSchema));
    const leaseEndForm = await superValidate(valibot(leaseEndFormSchema));
    const emailChangeForm = await superValidate(valibot(emailFormSchema));
-   const emailVerificationForm = await superValidate(valibot(emailVerificationFormSchema))
+   const emailVerificationForm = await superValidate(valibot(emailVerificationFormSchema));
+   const userNotesForm = await superValidate(valibot(userNotesFormSchema));
    const userId = event.params.userId;
 
    const dbUser = await prisma.user.findUnique({
@@ -29,8 +30,7 @@ export const load: PageServerLoad = async (event) => {
             { softDelete: false }
          ]
       }
-   })
-   
+   })  
    const leases = prisma.lease.findMany({
       where: {
          customerId: dbUser?.id
@@ -45,7 +45,10 @@ export const load: PageServerLoad = async (event) => {
       },
       orderBy: {
          invoiceCreated: 'desc'
-      }
+      },
+      include: {
+         paymentRecords: true
+      },
    })
    const paymentRecords = prisma.paymentRecord.findMany({
       where: {
@@ -63,5 +66,5 @@ export const load: PageServerLoad = async (event) => {
          refundCreated: 'desc'
       }
    })
-   return { dbUser, address, leases, invoices, paymentRecords, addressForm, leaseEndForm, refunds, emailChangeForm, emailVerificationForm }
+   return { dbUser, address, leases, invoices, paymentRecords, addressForm, leaseEndForm, refunds, emailChangeForm, emailVerificationForm, userNotesForm }
 };

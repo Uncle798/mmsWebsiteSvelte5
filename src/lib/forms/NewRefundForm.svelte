@@ -10,6 +10,7 @@
    import RadioButton from "$lib/formComponents/RadioButton.svelte";
 	import type { PaymentRecord } from "@prisma/client";
 	import PaymentRecordEmployee from "$lib/displayComponents/PaymentRecordEmployee.svelte";
+	import { page } from "$app/state";
    interface Props {
       data: SuperValidated<Infer<RefundFormSchema>>;
       refundFormModalOpen?: boolean;
@@ -22,13 +23,18 @@
       paymentRecord,
       classes
    }:Props = $props();
+   const url = page.url.pathname
    let { form, errors, message, constraints, enhance, delayed, timeout} = superForm(data, {
       onChange(event) {
          if(event.target){
-            const formName = 'newRefundForm';
+            const formName = `${url}/newRefundForm?paymentNum=${paymentRecord.paymentNumber}:${event.path}`;
             const value = event.get(event.path);
-            if(value){
-               sessionStorage.setItem(`${formName}:${event.path}`, value.toString());
+            if(value && value !== ''){
+               sessionStorage.setItem(formName, value.toString());
+            }else if(value === ''){
+               sessionStorage.removeItem(formName);
+            }else if(value === 0){
+               sessionStorage.removeItem(formName);
             }
          }
       },

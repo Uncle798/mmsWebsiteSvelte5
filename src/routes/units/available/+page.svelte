@@ -9,6 +9,7 @@
 	import { Combobox, Modal } from '@skeletonlabs/skeleton-svelte';
 	import { SearchIcon, PanelTopClose } from 'lucide-svelte';
 	import { onMount } from 'svelte';
+	import { page } from '$app/state';
    let { data }:{data:PageData} = $props();
    const currencyFormatter = new Intl.NumberFormat('en-US', {style: 'currency', currency:'USD'});
    let sizeFilter = $state('');
@@ -66,6 +67,7 @@
          return units;
       }
    })
+   const url = page.url.pathname;
 </script>
 <Header title='Available Units' />
 {#await data.availableUnits}
