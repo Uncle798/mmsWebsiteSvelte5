@@ -68,10 +68,20 @@
       label: `${customer.givenName} ${customer.familyName} (${customer.email})`,
       value: customer.id
    })));
-   const invoicesComboboxData:ComboBoxData[] | undefined = $derived(invoices?.map(invoice =>({
-      label: `Number ${invoice.invoiceNum} ${invoice.invoiceNotes}`,
-      value: invoice.invoiceNum.toString()
-   })));
+   const invoicesComboboxData:ComboBoxData[] | undefined = $derived(invoices?.map(invoice =>{
+      const customer = customers?.find((customer) => customer.id === invoice.customerId)
+      if(customer){
+         return {
+            label: `Number ${invoice.invoiceNum} ${invoice.invoiceNotes} (${customer.organizationName? customer.organizationName : customer.givenName + ' ' + customer.familyName})`,
+            value: invoice.invoiceNum.toString()
+         }
+      } else {
+         return {
+            label: `Number ${invoice.invoiceNum} ${invoice.invoiceNotes}`,
+            value: invoice.invoiceNum.toString()
+         }
+      }
+   }));
    let invoiceModalOpen = $state(false);
    let explainerModalOpen = $state(false);
    onMount(() => {
