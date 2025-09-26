@@ -31,31 +31,28 @@
    const numberFormatter = new Intl.NumberFormat('en-US');
    const wrapper = new Promise<Invoice[]>(async res => {
       const invoices = await data.invoices
-      startDate = dayjs.utc(invoices[0].invoiceCreated).startOf('year').toDate();
-      minDate = startDate;
-      endDate = new Date();
-      maxDate = endDate;
+      if(invoices.length > 0){
+         startDate = dayjs.utc(invoices[0].invoiceCreated).startOf('year').toDate();
+         minDate = startDate;
+         endDate = new Date();
+         maxDate = endDate;
+      }
       res(invoices)
-   })
-   let customers:User[] = [];
-   const userWrapper = new Promise<User[]>(async res => {
-      customers = await data.customers
-      res(customers)
    })
    let nameSearch = $state('');
    let currentUsers = $derived((users:User[]) => users.filter((user) => {
       return user.givenName?.toLowerCase().includes(nameSearch.toLowerCase()) || user.familyName?.toLowerCase().includes(nameSearch.toLowerCase())
    }))
-   const searchByUser = $derived((invoices:Invoice[]) => {
+   const searchByUser = $derived((invoices:Invoice[], customers:User[]) => {
       const users = currentUsers(customers);
       const customerInvoices:Invoice[] = [];
       users.forEach((user)=>{
          const userInvoices = invoices.filter((invoice) => {
                return invoice.customerId === user.id
-         })
+         });
          userInvoices.forEach((invoice) => {
                customerInvoices.push(invoice)
-         })
+         });
       })
       return customerInvoices
    })
@@ -127,13 +124,13 @@
             </Modal>
             <div class="m-1 sm:m-2 sm:mt-20 mt-22  mb-20 sm:mb-12 lg:mb-8 z-30">
                <div class="grid grid-cols-1 gap-y-3 gap-x-1" in:fade={{duration:600}} out:fade={{duration:0}}>
-                  {#each  slicedInvoices(searchedInvoices(searchByUser(invoices))) as invoice}  
+                  {#each  slicedInvoices(searchedInvoices(searchByUser(invoices, customers))) as invoice}  
                   {@const customer = customers.find((customer) => customer.id === invoice.customerId)}  
                      <div class="rounded-lg border border-primary-50-950 grid sm:grid-cols-2">
                         <div>
                            <InvoiceEmployee {invoice} classes='px-2' />
                            <div class="flex gap-2 m-2">
-                              {#if !invoice.paymentRecordNum}
+                              {#if invoice.invoiceAmount > invoice.amountPaid}
                                  <a href="/paymentRecords/new?userId={customer?.id}&invoiceNum={invoice.invoiceNum}" class="btn preset-filled-primary-50-950 h-8">Make payment record for this invoice</a>
                               {/if}
                               {#if customer?.emailVerified && customer.email}

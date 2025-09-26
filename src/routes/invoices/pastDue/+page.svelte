@@ -18,7 +18,6 @@
    import { Modal } from '@skeletonlabs/skeleton-svelte';
 	import EmailCustomer from '$lib/EmailCustomer.svelte';
    import DownloadPdfButton from '$lib/DownloadPDFButton.svelte';
-   import { Prisma } from '@prisma/client';
    dayjs.extend(utc)
    let { data }: { data: PageData } = $props();
    let pageNum = $state(1);
@@ -29,14 +28,6 @@
    let maxDate = $state<Date>();
    let minDate = $state<Date>();
    const numberFormatter = new Intl.NumberFormat('en-US');
-   const wrapper = new Promise<Invoice[]>(async res => {
-      const invoices = await data.invoices
-      startDate = dayjs.utc(invoices[0].invoiceCreated).startOf('year').toDate();
-      minDate = startDate;
-      endDate = new Date();
-      maxDate = endDate;
-      res(invoices)
-   })
    let nameSearch = $state('');
    let currentUsers = $derived((users:User[]) => users.filter((user) => {
       return user.givenName?.toLowerCase().includes(nameSearch.toLowerCase()) || user.familyName?.toLowerCase().includes(nameSearch.toLowerCase())
@@ -72,38 +63,18 @@
       })
       return totalRevenue
    })
-   const overdueInvoices = $derived((invoices:Invoice[], paymentRecords:PaymentRecord[]) => {
-      let returnedInvoices:Invoice[] = []
-      for(const invoice of invoices){
-         const payments = paymentRecords.filter(paymentRecord => paymentRecord.invoiceNum === invoice.invoiceNum)
-         let totalPaid = 0;
-         for(const payment of payments){
-            totalPaid += payment.paymentAmount;
-         }
-         if(totalPaid === invoice.invoiceAmount){
-            returnedInvoices.push(invoice)
-         }
-      }
-      return returnedInvoices;
-   })
-   const amountOverdueInvoice = $derived((invoice:Invoice, paymentRecords:PaymentRecord[]) =>{
-      let totalPaid = 0;
-      for(const payment of paymentRecords){
-         if(payment.invoiceNum === invoice.invoiceNum){
-            totalPaid += payment.paymentAmount;
-         }
-      }
-      return invoice.invoiceAmount - totalPaid;
+   const amountOverdueInvoice = $derived((invoice:Invoice) =>{
+      return invoice.invoiceAmount - invoice.amountPaid
    })
    let searchDrawerOpen = $state(false);
    onNavigate(()=>{
       searchDrawerOpen = false
    })
 </script>
-{#await wrapper}
+{#await data.invoices}
    <Header title='Loading invoices' />
    <div class="mt-14 sm:mt-10 mx-1 sm:mx-2">
-      Loading {numberFormatter.format(data.invoiceCount)} invoices, 
+      Loading {numberFormatter.format(data.invoiceCount!)} invoices, 
       <Placeholder numCols={1} numRows={size} heightClass='h-40'/>
    </div>
    {:then invoices}
@@ -156,7 +127,7 @@
                         <div>
                            <InvoiceEmployee {invoice} classes='px-2' />
                            <div class="flex gap-2 m-2">
-                              {#if amountOverdueInvoice(invoice,) > 0}
+                              {#if invoice.invoiceAmount > invoice.amountPaid}
                                  <a href="/paymentRecords/new?userId={customer?.id}&invoiceNum={invoice.invoiceNum}" class="btn preset-filled-primary-50-950 h-8">Make payment record for this invoice</a>
                               {/if}
                               {#if customer?.emailVerified && customer.email}

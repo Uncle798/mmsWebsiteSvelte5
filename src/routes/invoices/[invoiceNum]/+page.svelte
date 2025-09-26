@@ -18,7 +18,7 @@
          <div class="flex flex-col">
          <InvoiceEmployee invoice={data.invoice} classes="min-w-64 mx-2 " />
             <div class="flex gap-2 my-2 ml-2">
-               {#if !data.invoice.paymentRecordNum}
+               {#if data.invoice.amountPaid < data.invoice.invoiceAmount}
                   <a href="/paymentRecords/new?invoiceNum={data.invoice.invoiceNum}" 
                      class="btn rounded-lg preset-filled-primary-50-950 w-84 h-8"
                   >

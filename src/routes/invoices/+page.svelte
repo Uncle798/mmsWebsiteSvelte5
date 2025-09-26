@@ -19,6 +19,7 @@
 	import EmailCustomer from '$lib/EmailCustomer.svelte';
    import DownloadPdfButton from '$lib/DownloadPDFButton.svelte';
 	import { onMount } from 'svelte';
+	import { invoice } from '../../../drizzle/schema';
    dayjs.extend(utc)
    let { data }: { data: PageData } = $props();
    let pageNum = $state(1);
@@ -194,8 +195,8 @@
                      <div>
                         <InvoiceEmployee {invoice} classes=' px-2' />
                         <div class="flex flex-col sm:flex-row">
-                           {#if !invoice.paymentRecordNum}
-                              <a href="/paymentRecords/new?userId={customer?.id}&invoiceNum={invoice.invoiceNum}" class="btn preset-filled-primary-50-950 h-8 sm:mr-2 ml-2 mt-2 rounded-lg w-80">Make payment record For this invoice</a>
+                           {#if invoice.invoiceAmount > invoice.amountPaid}
+                              <a href="/paymentRecords/new?invoiceNum{invoice.invoiceNum}" class="btn preset-filled-primary-50-950">Make a payment record for this invoice</a>
                            {/if}
                            {#if customer?.email && customer.emailVerified}
                               <EmailCustomer
