@@ -63,9 +63,6 @@
       })
       return totalRevenue
    })
-   const amountOverdueInvoice = $derived((invoice:Invoice) =>{
-      return invoice.invoiceAmount - invoice.amountPaid
-   })
    let searchDrawerOpen = $state(false);
    onNavigate(()=>{
       searchDrawerOpen = false
@@ -94,7 +91,7 @@
          {:then addresses}
             {#if invoices.length >0}       
             <Header title='Past Due invoices' />
-            <Revenue label="Current past due invoice total" amount={totalRevenue(searchedInvoices(dateSearchedInvoices(invoices)))} classes="bg-tertiary-50-950 w-screen rounded-b-lg fixed top-10 sm:top-9 p-2 left-0 z-40"/>
+            <Revenue label="Current past due invoice total" amount={totalRevenue(invoices)} classes="bg-tertiary-50-950 w-screen rounded-b-lg fixed top-10 sm:top-9 p-2 left-0 z-40"/>
             <Modal
                open={searchDrawerOpen}
                onOpenChange={(event)=>(searchDrawerOpen = event.open)}
@@ -119,7 +116,7 @@
                   </div>
                {/snippet}
             </Modal>
-            <div class="m-1 sm:m-2 sm:mt-20 mt-22  mb-20 sm:mb-12 lg:mb-8 z-30">
+            <div class="m-1 sm:m-2 sm:mt-20 mt-22 mb-20 sm:mb-12 lg:mb-8 z-30">
                <div class="grid grid-cols-1 gap-y-3 gap-x-1" in:fade={{duration:600}} out:fade={{duration:0}}>
                   {#each  slicedInvoices(searchedInvoices(searchByUser(invoices, currentUsers(customers)))) as invoice}  
                   {@const customer = customers.find((customer) => customer.id === invoice.customerId)}  
