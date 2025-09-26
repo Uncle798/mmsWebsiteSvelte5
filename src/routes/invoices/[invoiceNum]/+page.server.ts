@@ -29,31 +29,36 @@ export const load = (async (event) => {
             where: {
                userId: invoice!.customerId!
             }
+         });
+         const paymentRecords = await prisma.paymentRecord.findMany({
+            where: {
+               invoiceNum: invoice.invoiceNum
+            }
          })
-          return { invoice, address, customer };
-         } else {
-            const invoice = await prisma.invoice.findFirst({
-               where: {
-                  invoiceNum:parseInt(invoiceNum, 10),
-               },
-            })
-            if(!invoice){
-               error(404)
+         return { invoice, address, customer, paymentRecords };
+      } else {
+         const invoice = await prisma.invoice.findFirst({
+            where: {
+               invoiceNum:parseInt(invoiceNum, 10),
+            },
+         })
+         if(!invoice){
+            error(404)
+         }
+         if(invoice?.customerId !== event.locals.user.id){
+            error(400);
+         }
+         const customer = await prisma.user.findFirst({
+            where: {
+               id: invoice!.customerId!
             }
-            if(invoice?.customerId !== event.locals.user.id){
-               error(400);
+         })
+         const address = await prisma.address.findFirst({
+            where: {
+               userId: invoice!.customerId!
             }
-            const customer = await prisma.user.findFirst({
-               where: {
-                  id: invoice!.customerId!
-               }
-            })
-            const address = await prisma.address.findFirst({
-               where: {
-                  userId: invoice!.customerId!
-               }
-            })
-             return { invoice, address, customer };   
+         })
+         return { invoice, address, customer };   
       }
    }
 }) satisfies PageServerLoad;
