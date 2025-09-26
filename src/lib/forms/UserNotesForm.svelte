@@ -37,8 +37,6 @@
    })
    const url = page.url.pathname
    onMount(() => {
-      $form.doNotRent = user.doNotRent;
-      $form.notes = user.customerNotes;
       for(const key in $form){
          let fullKey = `${url}/userNotesForm/${user.id}:${key}`;
          const storedValue = sessionStorage.getItem(fullKey)
@@ -56,6 +54,8 @@
             }
          }
       }
+      $form.doNotRent = user.doNotRent;
+      $form.notes = user.customerNotes;
    })
 </script> 
 <div class={classes}>
