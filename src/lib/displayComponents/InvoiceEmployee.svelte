@@ -18,6 +18,9 @@
    <div class='text-right'>Amount</div>
    <div class="font-medium ">{currencyFormatter.format(invoice.invoiceAmount)}</div>
    <HorizontalDivider classes='col-span-2' />
+   <div class="text-right">Amount left to be paid</div>
+   <div class="font-medium">{currencyFormatter.format(invoice.invoiceAmount - invoice.amountPaid)}</div>
+   <HorizontalDivider classes='col-span-2' />
    <div class='text-right'>Created</div> 
    <div class="font-medium">{dayjs(invoice.invoiceCreated).format('M/D/YYYY')}</div>
    <HorizontalDivider classes='col-span-2' />
@@ -29,10 +32,9 @@
    <HorizontalDivider classes='col-span-2' />
    <div class="text-right">Notes</div> 
    <div class="font-medium">{invoice.invoiceNotes}</div>
-   {#if invoice.paymentRecordNum}
+   {#if invoice.amountPaid > 0 }
       <HorizontalDivider classes='col-span-2' />
-      <div class='text-right'>Payment number</div> 
-      <div class="font-medium"><a href="/paymentRecords/{invoice.paymentRecordNum}" class="anchor">{invoice.paymentRecordNum}</a></div>
+      <div class="col-span-2 font-medium text-center"><a href="/paymentRecords?invoiceNum={invoice.invoiceNum}" class="anchor">See Payments for this invoice</a></div>
    {/if}
    {#if invoice.deposit}
       <HorizontalDivider classes='col-span-2'/>
