@@ -1,10 +1,16 @@
 generator client {
   provider = "prisma-client-js"
+  previewFeatures = ["typedSql"]
+}
+generator drizzle {
+  provider = "drizzle-prisma-generator"
+  output = "../drizzle/prisma"
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("POSTGRES_PRISMA_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model User {
@@ -108,16 +114,18 @@ model Invoice {
   customerId     String
   employeeId     String?
   leaseId        String?
-  invoiceAmount  Float
+  invoiceAmount  Float           @map("invoice_amount")
   invoiceCreated DateTime        @default(now())
-  invoiceDue     DateTime
+  invoiceDue     DateTime        @map("invoice_due")
   invoiceNotes   String?
   deposit        Boolean         @default(false)
-  amountPaid     Float           @default(0.0)
+  amountPaid     Float           @default(0.0) @map("amount_paid")
   customer       User?           @relation("customer", fields: [customerId], references: [id])
   employee       User?           @relation("employee", fields: [employeeId], references: [id])
   lease          Lease?          @relation(fields: [leaseId], references: [leaseId])
   paymentRecords PaymentRecord[]
+
+  @@map("invoice")
 }
 
 model PaymentRecord {
