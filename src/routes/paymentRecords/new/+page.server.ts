@@ -53,7 +53,9 @@ export const load = (async (event) => {
       const invoices = await prisma.invoice.findMany({
          where: {
             AND: [
-               { paymentRecordNum: null },
+               { invoiceAmount: {
+                  gt: prisma.invoice.fields.amountPaid
+               }},
                { customerId: userId }
             ]
          }
@@ -67,14 +69,18 @@ export const load = (async (event) => {
    }
    const invoices = await prisma.invoice.findMany({
       where: {
-         paymentRecordNum: null
+         invoiceAmount: {
+            gt: prisma.invoice.fields.amountPaid
+         }
       }
    });
    const leases = await prisma.lease.findMany({
       where: {
          invoices: {
             some: {
-               paymentRecordNum: null
+               invoiceAmount: {
+                  gt: prisma.invoice.fields.amountPaid
+               }
             }
          }
       }
@@ -93,7 +99,9 @@ export const load = (async (event) => {
             {
                customerInvoices: {
                   some: {
-                     paymentRecordNum: null
+                     invoiceAmount: {
+                        gt: prisma.invoice.fields.amountPaid
+                     }
                   }
                }
             }

@@ -3,8 +3,9 @@ import type { PageServerLoad } from './$types';
 import { prisma } from '$lib/server/prisma';
 import { superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
+import { invoice } from '../../../../drizzle/schema'
 import { dateSearchFormSchema, searchFormSchema } from '$lib/formSchemas/schemas';
-import dayjs from 'dayjs';
+import { gte, and, lte, lt, eq } from 'drizzle-orm';
 
 export const load = (async (event) => {
    if(!event.locals.user?.employee){
@@ -15,6 +16,9 @@ export const load = (async (event) => {
    const invoiceCount = await prisma.invoice.count({
       where: {
          AND: [
+            { invoiceAmount: {
+               gt: prisma.invoice.fields.amountPaid
+            }},
             {invoiceDue: {
                lte: new Date()
             }},
@@ -25,15 +29,21 @@ export const load = (async (event) => {
    const invoices = prisma.invoice.findMany({
       where: {
          AND: [
-            {invoiceDue: {
-               lte: new Date()
-            }},
-            {deposit: false}
+            {
+               invoiceAmount: {
+                  gt: prisma.invoice.fields.amountPaid
+               }
+            },
+            {
+               invoiceDue: {
+                  lte: new Date()
+               }
+            },
+            {
+               deposit: false
+            }
          ]
-      },
-      orderBy: {
-         invoiceNum:'asc'
-      },
+      }
    })
    const customers = prisma.user.findMany({
       where: {
@@ -46,4 +56,5 @@ export const load = (async (event) => {
       }
    })
    return { invoices, invoiceCount, searchForm, customers, addresses, dateSearchForm };
+
 }) satisfies PageServerLoad;

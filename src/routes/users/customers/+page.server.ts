@@ -4,6 +4,8 @@ import { prisma } from '$lib/server/prisma';
 import { superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import { searchFormSchema, userNotesFormSchema } from '$lib/formSchemas/schemas';
+import { invoice } from '../../../../drizzle/schema';
+import { and, eq, lt } from 'drizzle-orm';
 
 export const load = (async (event) => {
    if(!event.locals.user?.employee){
@@ -28,17 +30,14 @@ export const load = (async (event) => {
                   some: {
                      leaseEnded: null
                   }
-            }
+               }
             }, 
             {
                customerInvoices: {
                   some: {
-                     AND: [
-                        {paymentRecordNum: null},
-                        {invoiceDue: {
-                           gte: new Date()
-                        }}
-                     ]
+                     amountPaid: {
+                        lt: prisma.invoice.fields.invoiceAmount
+                     }
                   }
                }
             }
@@ -69,20 +68,9 @@ export const load = (async (event) => {
    })
    const invoices = prisma.invoice.findMany({
       where: {
-         AND: [
-            {
-               customer: {
-                  customerLeases: {
-                     some: {
-                        leaseEnded: null
-                     }
-                  }
-               }
-            },
-            {
-               deposit: false
-            }
-         ]   
+         invoiceAmount: {
+            gt: prisma.invoice.fields.amountPaid
+         }
       }
    })
    const paymentRecords = prisma.paymentRecord.findMany({

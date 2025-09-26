@@ -12,13 +12,13 @@ export const load = (async (event) => {
    const searchForm = await superValidate(valibot(searchFormSchema));
    const dateSearchForm = await superValidate(valibot(dateSearchFormSchema));
    const invoiceCount = await prisma.invoice.count({
-      where: {
-         paymentRecordNum: null
-      }
+
    })
    const invoices = prisma.invoice.findMany({
       where: {
-         paymentRecordNum: null
+         amountPaid: {
+            lt: prisma.invoice.fields.invoiceAmount
+         }
       },
       orderBy: {
          invoiceNum:'asc'
