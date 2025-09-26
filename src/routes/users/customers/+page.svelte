@@ -45,7 +45,7 @@
       return total;
    })
    let overdueInvoices = $derived((invoices:Invoice[]) => invoices.filter((invoice) => {
-      return invoice.invoiceDue <= new Date() && !invoice.paymentRecordNum
+      return invoice.invoiceDue <= new Date() && (invoice.invoiceAmount > invoice.amountPaid);
    }))
    let searchDrawerOpen = $state(false);
    const currencyFormatter = new Intl.NumberFormat('en-US', {style:'currency', currency:'USD'});
