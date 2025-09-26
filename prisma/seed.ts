@@ -278,31 +278,6 @@ function makeLocalRefund(paymentRecord:PaymentRecord){
    return refund;
 }
 
-async function makeRefund(paymentRecord:PaymentRecord){
-   const refund = await prisma.refundRecord.create({
-      data:{
-         customerId: paymentRecord.customerId,
-         employeeId: paymentRecord.employeeId,
-         refundAmount: paymentRecord.paymentAmount,
-         paymentRecordNum: paymentRecord.paymentNumber,
-         refundType: paymentRecord.paymentType,
-         refundNotes: `Refund of payment record number ${paymentRecord.paymentNumber}.\n${paymentRecord.paymentNotes}`,
-         refundCreated: dayjs(paymentRecord.paymentCreated).add(1, 'months').toDate(),
-         refundCompleted: dayjs(paymentRecord.paymentCreated).add(1, 'months').toDate(),
-         deposit: paymentRecord.deposit
-      }
-   })
-   await prisma.paymentRecord.update({
-      where: {
-         paymentNumber: paymentRecord.paymentNumber
-      }, 
-      data: {
-         refunded: true,
-         refundNumber: refund.refundNumber
-      }
-   })
-   return refund
-}
 
 function makeDiscount(employee:User){
    const discount:PartialDiscount ={
@@ -441,7 +416,7 @@ async function  main (){
       }
       const employee = employees[Math.floor(Math.random()*employees.length)];
       const randNum = Math.floor(Math.random()*3);
-      const paymentType = PaymentType[Object.keys(PaymentType)[randNum]];
+      const paymentType = PaymentType[Object.values(PaymentType)[randNum]];
       const record:PartialPaymentRecord = {
             paymentType: paymentType,
             customerId: invoice!.customerId!,
@@ -465,7 +440,7 @@ async function  main (){
             invoiceNum: record.invoiceNum!,
          },
          data: {
-            paymentRecordNum: record.paymentNumber,
+            amountPaid: record.paymentAmount
          }
       });
       if(record.deposit){
@@ -485,7 +460,7 @@ async function  main (){
             paymentNumber: refund.paymentRecordNum,
          },
          data: {
-            refundNumber: refund.refundNumber,
+            refundedAmount: refund.refundAmount,
          }
       })
    }            
