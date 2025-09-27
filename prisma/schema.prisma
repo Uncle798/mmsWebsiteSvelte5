@@ -2,10 +2,6 @@ generator client {
   provider = "prisma-client-js"
   previewFeatures = ["typedSql"]
 }
-generator drizzle {
-  provider = "drizzle-prisma-generator"
-  output = "../drizzle/prisma"
-}
 
 datasource db {
   provider = "postgresql"
