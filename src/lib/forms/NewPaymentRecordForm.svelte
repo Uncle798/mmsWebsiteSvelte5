@@ -102,6 +102,9 @@
             }
          }
       }
+      if(invoice){
+         $form.paymentAmount = invoice.invoiceAmount - invoice?.amountPaid;
+      }
    })
    const paymentTypes = [ 'CASH', 'CHECK', 'CREDIT'];
 </script>
@@ -152,7 +155,7 @@
          explainerModalOpen=true;
          $form.invoiceNum=invoice.invoiceNum;
          $form.paymentNotes=`Payment for Invoice ${invoice.invoiceNum} ${invoice.invoiceNotes}`
-         $form.paymentAmount=invoice.invoiceAmount;
+         $form.paymentAmount=invoice.invoiceAmount - invoice.amountPaid;
          $form.deposit=invoice.deposit;
          setTimeout(()=>{explainerModalOpen=false}, 5000);
       }}>
