@@ -45,12 +45,64 @@ export const load = (async (event) => {
    })
    const customers = prisma.user.findMany({
       where: {
-         archive: false
+         AND: [
+            {
+               archive: false
+            },
+            {
+               customerInvoices: {
+                  some: {
+                     AND: [
+                        {
+                           invoiceAmount: {
+                              gt: prisma.invoice.fields.amountPaid
+                           }
+                        },
+                        {
+                           invoiceDue: {
+                              lte: new Date()
+                           }
+                        },
+                        {
+                           deposit: false
+                        }
+                     ]
+                  }
+               }
+            }
+         ]
       }
    });
    const addresses = prisma.address.findMany({
       where: {
-         softDelete: false
+         AND: [
+            {
+               softDelete: false
+            },
+            {
+               user: {
+                  customerInvoices: {
+                     some: {
+                        AND: [
+                           {
+                              invoiceAmount: {
+                                 gt: prisma.invoice.fields.amountPaid
+                              }
+                           },
+                           {
+                              invoiceDue: {
+                                 lte: new Date()
+                              }
+                           },
+                           {
+                              deposit: false
+                           }
+                        ]
+                     }
+                  }
+               }
+            }
+         ]
       }
    })
    return { invoices, invoiceCount, searchForm, customers, addresses, dateSearchForm };
