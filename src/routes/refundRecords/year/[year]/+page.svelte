@@ -10,8 +10,8 @@
    import Revenue from '$lib/displayComponents/Revenue.svelte';
    import Header from '$lib/Header.svelte';
    import Address from '$lib/displayComponents/AddressEmployee.svelte';
-   import { Combobox, Modal } from '@skeletonlabs/skeleton-svelte';
-	import { goto } from '$app/navigation';
+   import { Combobox, Modal, Progress, ProgressRing } from '@skeletonlabs/skeleton-svelte';
+	import { goto, onNavigate } from '$app/navigation';
 	import { SearchIcon, PanelTopClose } from 'lucide-svelte';
 	import EmailCustomer from '$lib/EmailCustomer.svelte';
 	import DownloadPdfButton from '$lib/DownloadPDFButton.svelte';
@@ -58,6 +58,12 @@
       monthComboBoxData.push({label:dayjs(month).format('MMMM'), value:month.toUTCString()})
    }
    let searchDrawerOpen = $state(false);
+   let delayed = $state(false);
+   let timeout = $state(false);
+   onNavigate(() =>{
+      delayed = false;
+      timeout = false
+   })
 </script>
 
 <Header title='Refund Records' />
@@ -73,6 +79,29 @@
          }}
          placeholder='Select Month'
       />
+      {#if delayed}
+         <ProgressRing  
+            value={null} 
+            size="size-8" 
+            meterStroke="stroke-tertiary-600-400" 
+            trackStroke="stroke-tertiary-50-950"
+            classes='mt-6 mx-2'
+            {@attach () => {
+               setTimeout(() => {
+                  delayed = false;
+                  timeout = true;
+               }, 800)
+            }}
+         />
+      {/if}
+      {#if timeout}
+         <Progress 
+            value={null}
+            meterBg="bg-tertiary-500"
+            width='w-12'
+            classes='mt-9 mx-2'
+         />
+      {/if}
    </div>
    {:then refunds}
       {#await data.customers}
@@ -120,40 +149,40 @@
                   amount={totalRevenue(searchRefunds(dateSearchRefunds(refunds)))}
                   classes='bg-tertiary-50-950 w-full rounded-b-lg fixed top-11 sm:top-9 p-0.5 z-40'	
                />
-               <div class="mt-22 sm:mt-20 mx-1 sm:mx-2 mb-20 sm:mb-12 lg:mb-8">
-                  {#each slicedRefunds(searchRefunds(dateSearchRefunds(refunds))) as refund (refund.refundNumber)}
-                  {@const customer = customers.find((customer) => customer.id === refund.customerId)}
-                     <div class="border-2 rounded-lg border-primary-50-950 my-2 flex flex-col sm:flex-row"> 
-                        <div >
-                           <RefundRecordEmployee refundRecord={refund} classes='mx-2'/>
-                           <div class="m-2 flex flex-col sm:flex-row gap-2">
-                              {#if customer?.email }
-                                 <EmailCustomer
-                                    emailAddress={customer.email}
-                                    recordNum={refund.refundNumber}
-                                    apiEndPoint='/api/sendRefund'
-                                    buttonText='Email refund' 
-                                 />
-                              {/if}
-                              <DownloadPdfButton
-                                 recordType='refundNum'
-                                 num={refund.refundNumber}
+            <div class="mt-22 sm:mt-20 mx-1 sm:mx-2 mb-20 sm:mb-12 lg:mb-8">
+               {#each slicedRefunds(searchRefunds(dateSearchRefunds(refunds))) as refund (refund.refundNumber)}
+               {@const customer = customers.find((customer) => customer.id === refund.customerId)}
+                  <div class="border-2 rounded-lg border-primary-50-950 my-2 flex flex-col sm:flex-row"> 
+                     <div >
+                        <RefundRecordEmployee refundRecord={refund} classes='mx-2'/>
+                        <div class="m-2 flex flex-col sm:flex-row gap-2">
+                           {#if customer?.email }
+                              <EmailCustomer
+                                 emailAddress={customer.email}
+                                 recordNum={refund.refundNumber}
+                                 apiEndPoint='/api/sendRefund'
+                                 buttonText='Email refund' 
                               />
-                           </div>   
-                        </div>
-                        {#if customer}
-                        {@const address = addresses.find((address) => address.userId === customer.id)}
-                           <div class="flex flex-col min-w-1/3">
-                              <UserEmployee user={customer} classes='mt-2 mx-2 ' />
-                              {#if address}
-                                 <Address {address} classes='mx-2'/>
-                              {/if}
-                           </div>
-                        {/if}
+                           {/if}
+                           <DownloadPdfButton
+                              recordType='refundNum'
+                              num={refund.refundNumber}
+                           />
+                        </div>   
                      </div>
-                  {/each}
-                  <Pagination bind:size bind:pageNum label="refund records" array={searchRefunds(dateSearchRefunds(refunds))} />
-               </div>
+                     {#if customer}
+                     {@const address = addresses.find((address) => address.userId === customer.id)}
+                        <div class="flex flex-col min-w-1/3">
+                           <UserEmployee user={customer} classes='mt-2 mx-2 ' />
+                           {#if address}
+                              <Address {address} classes='mx-2'/>
+                           {/if}
+                        </div>
+                     {/if}
+                  </div>
+               {/each}
+               <Pagination bind:size bind:pageNum label="refund records" array={searchRefunds(dateSearchRefunds(refunds))} />
+            </div>
          {/if}
       {/await}
    {/await} 

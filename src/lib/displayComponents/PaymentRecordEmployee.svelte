@@ -2,6 +2,7 @@
 	import type { PaymentRecord } from "@prisma/client";
 	import dayjs from "dayjs";
 	import HorizontalDivider from "./HorizontalDivider.svelte";
+	import { page } from "$app/state";
 
 
    interface Props {
@@ -10,6 +11,7 @@
    }
    let { paymentRecord, classes }:Props =$props();
    const currencyFormatter = new Intl.NumberFormat('en-US', {style:'currency', currency:'USD'});
+   const url = page.url.pathname;
 </script>
 
 <div class="{classes} grid grid-cols-2 gap-x-2">
@@ -50,9 +52,13 @@
       <HorizontalDivider classes='col-span-2' />
       <div class="col-span-2 text-center px-2 font-medium">Deposit</div>
    {/if}
-   {#if paymentRecord.refunded}
+   {#if paymentRecord.refundedAmount > 0}
       <HorizontalDivider classes='col-span-2' />
-      <div class="text-right">Refund Number</div>
-      <div class="font-medium"><a href="/refundRecords/{paymentRecord.refundNumber}" class="anchor">{paymentRecord.refundNumber}</a></div>
+      <div class="text-right">Amount Refunded</div>
+      {#if url !== `/paymentRecords/${paymentRecord.paymentNumber}`}
+         <div class="font-medium"><a href="/paymentRecords/{paymentRecord.paymentNumber}" class="anchor">{currencyFormatter.format(paymentRecord.refundedAmount)}</a></div>
+      {:else}
+         <div class="font-medium">{currencyFormatter.format(paymentRecord.refundedAmount)}</div>
+      {/if}
    {/if}
 </div>

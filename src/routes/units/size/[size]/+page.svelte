@@ -2,15 +2,14 @@
    import LeaseEmployee from '$lib/displayComponents/LeaseEmployee.svelte';
    import UnitEmployee from '$lib/displayComponents/UnitEmployee.svelte';
 	import Header from '$lib/Header.svelte';
-	import { Modal, Combobox } from '@skeletonlabs/skeleton-svelte';
+	import { Modal, Combobox, Progress, ProgressRing } from '@skeletonlabs/skeleton-svelte';
    import type { PageData } from './$types';
 	import UnitPricingForm from '$lib/forms/UnitPricingForm.svelte';
 	import UserEmployee from '$lib/displayComponents/UserEmployee.svelte';
-	import { fade, blur } from 'svelte/transition';
 	import Revenue from '$lib/displayComponents/Revenue.svelte';
 	import type  { Lease, Unit } from '@prisma/client';
 	import Address from '$lib/displayComponents/AddressEmployee.svelte';
-	import { goto } from '$app/navigation';
+	import { goto, onNavigate } from '$app/navigation';
    import { browser } from '$app/environment';
 	import { PanelTopClose, SearchIcon } from 'lucide-svelte';
    let { data }: { data: PageData } = $props();
@@ -56,6 +55,12 @@
       value: size
    })))
    let searchDrawerOpen = $state(false);
+   let delayed = $state(false);
+   let timeout = $state(false);
+   onNavigate(() => {
+      delayed = false;
+      timeout = false;
+   })
 </script>
 <Header title='All {data.size.replace(/^0+/gm,'').replace(/0x/gm,'x')} units' />
 
@@ -99,11 +104,14 @@
          {/snippet}
          {#snippet content()}   
             <button onclick={()=>searchDrawerOpen=false} class='btn preset-filled-primary-50-950 rounded-lg m-1 absolute top-0 right-0'><PanelTopClose aria-label='Close'/></button>
-            <div class="mx-2 mt-11">
+            <div class="mx-2 mt-11 flex flex-row gap-2">
                <Combobox
                   data={comboboxData}
                   label='Select Size'
                   onValueChange={(event) =>{
+                     setTimeout(() =>{
+                        delayed = true;
+                     }, 300);
                      if(browser && event.value[0] === 'all'){
                         if(browser){
                            goto('/units')
@@ -116,6 +124,29 @@
                   positionerClasses='overflow-auto h-24 small:h-44 tall:h-96 grande:h-128 venti:h-auto'
                   openOnClick={true}
                />
+               {#if delayed}
+                  <ProgressRing  
+                     value={null} 
+                     size="size-8" 
+                     meterStroke="stroke-tertiary-600-400" 
+                     trackStroke="stroke-tertiary-50-950"
+                     classes='mt-6 mx-2'
+                     {@attach () => {
+                        setTimeout(() => {
+                           delayed = false;
+                           timeout = true;
+                        }, 800)
+                     }}
+                  />
+               {/if}
+               {#if timeout}
+                  <Progress 
+                     value={null}
+                     meterBg="bg-tertiary-500"
+                     width='w-12'
+                     classes='mt-9 mx-2'
+                  />
+               {/if}
                <button class="btn preset-filled-primary-50-950 rounded-lg mt-5" onclick={()=>openModal(units[0].advertisedPrice)}>Change All {data.size.replace(/^0+/gm, '').replace(/x0/gm,'x')} prices</button>
             </div>
          {/snippet}

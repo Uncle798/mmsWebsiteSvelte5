@@ -40,15 +40,15 @@ export const load = (async (event) => {
                ]
             }
          })
-         let refundRecord:RefundRecord | null = null;
-         if(paymentRecord?.refundNumber){
-            refundRecord = await prisma.refundRecord.findUnique({
+         let refundRecords:RefundRecord[] = [];
+         if(paymentRecord?.refundedAmount){
+            refundRecords = await prisma.refundRecord.findMany({
                where: {
-                  refundNumber: paymentRecord.refundNumber
+                  paymentRecordNum: paymentRecord.paymentNumber
                }
             })
          }
-         return { paymentRecord, customer, invoice, refundRecord, address };
+         return { paymentRecord, customer, invoice, refundRecords, address };
       } else {
          const paymentRecord = await prisma.paymentRecord.findUnique({
             where: {
@@ -76,15 +76,15 @@ export const load = (async (event) => {
                ]
             }
          })
-         let refundRecord:RefundRecord | null = null;
-         if(paymentRecord?.refundNumber){
-            refundRecord = await prisma.refundRecord.findUnique({
+         let refundRecords:RefundRecord[] = [];
+         if(paymentRecord?.refundedAmount){
+            refundRecords = await prisma.refundRecord.findMany({
                where: {
-                  refundNumber: paymentRecord.refundNumber
+                  paymentRecordNum: paymentRecord.paymentNumber
                }
             })
          }
-         return { paymentRecord, customer, invoice, refundRecord, address };
+         return { paymentRecord, customer, invoice, refundRecords, address };
       }
    }
    return {}

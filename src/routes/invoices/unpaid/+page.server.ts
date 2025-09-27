@@ -12,7 +12,11 @@ export const load = (async (event) => {
    const searchForm = await superValidate(valibot(searchFormSchema));
    const dateSearchForm = await superValidate(valibot(dateSearchFormSchema));
    const invoiceCount = await prisma.invoice.count({
-
+      where: {
+         amountPaid: {
+            lt: prisma.invoice.fields.invoiceAmount
+         }
+      }
    })
    const invoices = prisma.invoice.findMany({
       where: {
@@ -26,12 +30,40 @@ export const load = (async (event) => {
    })
    const customers = prisma.user.findMany({
       where: {
-         archive: false
+         AND: [
+            {
+               archive: false
+            },
+            {
+               customerInvoices: {
+                  some: {
+                     amountPaid: {
+                        lt: prisma.invoice.fields.invoiceAmount
+                     }
+                  }
+               }
+            },
+         ]
       }
    });
    const addresses = prisma.address.findMany({
       where: {
-         softDelete: false
+         AND: [
+            {
+               softDelete: false
+            },
+            {
+               user: {
+                  customerInvoices: {
+                     some: {
+                        amountPaid: {
+                           lt: prisma.invoice.fields.invoiceAmount
+                        }
+                     }
+                  }
+               }
+            }
+         ]
       }
    })
    return { invoices, invoiceCount, searchForm, customers, addresses, dateSearchForm };

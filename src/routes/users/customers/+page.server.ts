@@ -4,8 +4,6 @@ import { prisma } from '$lib/server/prisma';
 import { superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import { searchFormSchema, userNotesFormSchema } from '$lib/formSchemas/schemas';
-import { invoice } from '../../../../drizzle/schema';
-import { and, eq, lt } from 'drizzle-orm';
 
 export const load = (async (event) => {
    if(!event.locals.user?.employee){

@@ -48,7 +48,7 @@
       $form.amount = paymentRecord.paymentAmount;
       $form.notes = `Refund of payment record number: ${paymentRecord.paymentNumber}, ${paymentRecord.paymentNotes}`
       for(const key in $form){
-         let fullKey = `addressForm:${key}`;
+         let fullKey = `${url}/newRefundForm?paymentNum=${paymentRecord.paymentNumber}:${key}`;
          const storedValue = sessionStorage.getItem(fullKey)
          if(storedValue){
             if(isNaN(parseInt(storedValue, 10))){

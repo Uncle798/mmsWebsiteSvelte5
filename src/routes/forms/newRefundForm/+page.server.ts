@@ -37,6 +37,9 @@ export const actions: Actions = {
         if(!paymentRecord){
             return message(refundForm, 'Payment record not found')
         }
+        if(paymentRecord.refundedAmount >= paymentRecord.paymentAmount){
+            return message(refundForm, 'Payment already refunded');
+        }
         if(refundForm.data.refundType === 'CREDIT'){
             const res = await event.fetch('/api/elavon/refundCredit', {
                 method: 'POST',
@@ -64,8 +67,7 @@ export const actions: Actions = {
                     paymentNumber: paymentRecord.paymentNumber
                 },
                 data: {
-                    refunded: true,
-                    refundNumber: refundRecord.refundNumber
+                    refundedAmount: (paymentRecord.refundedAmount + refundRecord.refundAmount),
                 }
             })
             redirect(302, `/refundRecords/${refundRecord.refundNumber}`)

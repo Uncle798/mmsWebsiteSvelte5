@@ -28,9 +28,10 @@
          aria-invalid={errors ? 'true' : undefined}
          placeholder={placeholder}
          autocomplete={autocomplete}
+         value={value}
          {...constraints}
          {...others}
-      >{value}</textarea>
+      ></textarea>
    </label>
    {#if errors}<span class="invalid">{errors}</span>{/if}
 </div>

@@ -17,7 +17,9 @@ export const load = (async (event) => {
                deposit: true
             },
             {
-               refunded: false
+               refundedAmount: {
+                  lt: prisma.paymentRecord.fields.paymentAmount
+               }
             }
          ]
       },
@@ -31,7 +33,11 @@ export const load = (async (event) => {
             some: {
                AND: [
                   { deposit: true },
-                  { refunded: false }
+                  {                
+                     refundedAmount: {
+                        lt: prisma.paymentRecord.fields.paymentAmount
+                     }  
+                  }
                ]
             }
          }
@@ -44,7 +50,11 @@ export const load = (async (event) => {
                some: {
                   AND: [
                      { deposit: true }, 
-                     { refunded: false}
+                     {               
+                        refundedAmount: {
+                           lt: prisma.paymentRecord.fields.paymentAmount
+                        }
+                     }
                   ]
                }
             }
@@ -58,7 +68,9 @@ export const load = (async (event) => {
                deposit: true
             },
             {
-               refunded: false
+               refundedAmount: {
+                  lt: prisma.paymentRecord.fields.paymentAmount
+               }
             }
          ]
       },

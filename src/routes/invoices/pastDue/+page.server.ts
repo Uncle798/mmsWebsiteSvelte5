@@ -3,9 +3,7 @@ import type { PageServerLoad } from './$types';
 import { prisma } from '$lib/server/prisma';
 import { superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
-import { invoice } from '../../../../drizzle/schema'
 import { dateSearchFormSchema, searchFormSchema } from '$lib/formSchemas/schemas';
-import { gte, and, lte, lt, eq } from 'drizzle-orm';
 
 export const load = (async (event) => {
    if(!event.locals.user?.employee){
