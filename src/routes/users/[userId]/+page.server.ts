@@ -46,9 +46,6 @@ export const load: PageServerLoad = async (event) => {
       orderBy: {
          invoiceCreated: 'desc'
       },
-      include: {
-         paymentRecords: true
-      },
    })
    const paymentRecords = prisma.paymentRecord.findMany({
       where: {
