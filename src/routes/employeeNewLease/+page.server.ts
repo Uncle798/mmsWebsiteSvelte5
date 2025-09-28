@@ -215,7 +215,7 @@ export const actions: Actions = {
                invoiceNum: invoice.invoiceNum
             },
             data: {
-               paymentRecordNum: paymentRecord.paymentNumber
+               amountPaid: invoice.amountPaid + paymentRecord.paymentAmount
             }
          });
          const emailResponse = await sendPaymentReceipt(customer, paymentRecord, address);  
