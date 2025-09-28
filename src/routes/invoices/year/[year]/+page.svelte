@@ -175,7 +175,7 @@
                         <div class="flex flex-col"> 
                         <InvoiceEmployee {invoice} classes=' px-2' />
                            <div class="m-2 flex flex-col sm:flex-row gap-2">
-                              {#if !invoice.paymentRecordNum}
+                              {#if invoice.amountPaid < invoice.invoiceAmount}
                                  <a href='/paymentRecords/new?invoiceNum={invoice.invoiceNum}'
                                     class="btn preset-filled-primary-50-950 h-8"
                                  >
