@@ -3,7 +3,6 @@
    import UserEmployee from '$lib/displayComponents/UserEmployee.svelte';
    import type { PageData } from './$types';
    import Header from '$lib/Header.svelte';
-   import type { PartialUser } from '$lib/server/partialTypes';
    import Pagination from '$lib/displayComponents/Pagination.svelte';
    import { fade } from 'svelte/transition';
    import Search from '$lib/forms/Search.svelte';
@@ -122,7 +121,10 @@
                               </div>
                            </div>
                            {#if lease}
-                              <LeaseEmployee {lease} classes='p-2 max-h-64'/>
+                              <div>
+                                 <LeaseEmployee {lease} classes='p-2 max-h-64'/>
+                                 <a href="/invoices/new?leaseId={lease.leaseId}" class="btn preset-filled-primary-50-950 mx-2">Make and invoice for this lease</a>
+                              </div>
                            {/if}
                         </div>
                      {/each}
