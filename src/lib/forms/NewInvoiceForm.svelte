@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { EmailVerificationFormSchema, NewInvoiceFormSchema, RegisterFormSchema } from "$lib/formSchemas/schemas";
 	import type { Lease, User } from "@prisma/client";
-	import { Combobox, Modal, Tooltip, Switch } from "@skeletonlabs/skeleton-svelte";
+	import { Combobox, Modal, Tooltip, Switch, Progress, ProgressRing } from "@skeletonlabs/skeleton-svelte";
 	import { onMount } from "svelte";
 	import { superForm, type Infer, type SuperValidated } from "sveltekit-superforms";
 	import EmailVerificationForm from "./EmailVerificationForm.svelte";
@@ -11,9 +11,10 @@
    import NumberInput from "$lib/formComponents/NumberInput.svelte";
    import DateInput from "$lib/formComponents/DateInput.svelte";
    import FormSubmitWithProgress from "$lib/formComponents/FormSubmitWithProgress.svelte";
-	import { goto } from "$app/navigation";
+	import { goto, onNavigate } from "$app/navigation";
 	import { Info } from "lucide-svelte";
 	import dayjs from "dayjs";
+	import { page } from "$app/state";
    
    interface Props {
       data: SuperValidated<Infer<NewInvoiceFormSchema>>;
@@ -37,13 +38,14 @@
       lease, 
       classes,
    }:Props = $props();
+   let url = page.url.pathname
    let { form, errors, message, constraints, enhance, delayed, timeout, } = superForm(data, {
       onChange(event) {
          if(event.target){
-            const formName = 'newInvoiceForm'
+            const formName = `${url}/newInvoiceForm/${customer?.id ? `customerId=${customer.id}` : undefined}${lease?.unitNum ? `&unitNum:${lease.unitNum}` : undefined}:${event.path}`
             const value = event.get(event.path);
             if(value){
-               sessionStorage.setItem(`${formName}:${event.path}`, value.toString());
+               sessionStorage.setItem(formName, value.toString());
             }
          }
       },
@@ -89,6 +91,14 @@
          $form.customerId=customer.id
       }
    })
+   let navDelayed = $state(false);
+   let navTimeout = $state(false);
+   let navReason = $state('');
+   onNavigate(() =>{
+      navDelayed = false;
+      navTimeout = false;
+      navReason = '';
+   })
 </script>
 <Modal
    open={registerFormModalOpen}
@@ -110,39 +120,129 @@
 <div class={classes}>
    {#if !customer}
       <button class="btn preset-filled-primary-50-950 my-2" onclick={() => registerFormModalOpen = true}>Create new customer</button>
-      or, 
-      <Combobox
-         data={customersComboboxData}
-         label='Select Customer'
-         placeholder='Type or select...'
-         openOnClick={true}
-         optionClasses='truncate'
-         onValueChange={(details) => {
-            goto(`/invoices/new?userId=${details.value}`);
-         }}
-      />
+      or,
+      <div class="flex flex-row">
+         <Combobox
+            data={customersComboboxData}
+            label='Select Customer'
+            placeholder='Type or select...'
+            openOnClick={true}
+            optionClasses='truncate'
+            onValueChange={(details) => {
+               navReason = 'customersComboBoxData'
+               setTimeout(() =>{
+                  navDelayed = true
+               }, 300)
+               goto(`/invoices/new?userId=${details.value}`);
+            }}
+            width='w-11/12'
+         />
+         {#if navDelayed && navReason === 'customersComboBoxData'}
+            <ProgressRing  
+               value={null} 
+               size="size-8" 
+               meterStroke="stroke-tertiary-600-400" 
+               trackStroke="stroke-tertiary-50-950"
+               classes='mt-6 mx-2'
+               {@attach () => {
+                  setTimeout(() => {
+                     navDelayed = false;
+                     navTimeout = true;
+                  }, 800)
+               }}
+            />
+         {/if}
+         {#if navTimeout && navReason === 'customersComboBoxData'}
+            <Progress 
+               value={null}
+               meterBg="bg-tertiary-500"
+               width='w-12'
+               classes='mt-9 mx-2'
+            />
+         {/if}
+      </div>
    {/if}
    {#if leases}
-      {#if customer}         
-         <Combobox
-            data={leasesComboboxData}
-            label='Select unit'
-            placeholder='Type or select'
-            openOnClick={true}
-            onValueChange={(details) => {
-               goto(`/invoices/new?leaseId=${details.value}&userId=${customer.id}`)
-            }}
-         />
+      {#if customer}
+         <div class="flex flex-row">
+            <Combobox
+               data={leasesComboboxData}
+               label='Select unit'
+               placeholder='Type or select'
+               openOnClick={true}
+               onValueChange={(details) => {
+                  setTimeout(() => {
+                     navReason = 'leasesComboboxData'
+                     navDelayed = true;
+                  }, 300)
+                  goto(`/invoices/new?leaseId=${details.value}&userId=${customer.id}`)
+               }}
+               width='w-11/12'
+            />
+            {#if navDelayed && navReason === 'leasesComboboxData'}
+               <ProgressRing  
+                  value={null} 
+                  size="size-8" 
+                  meterStroke="stroke-tertiary-600-400" 
+                  trackStroke="stroke-tertiary-50-950"
+                  classes='mt-6 mx-2'
+                  {@attach () => {
+                     setTimeout(() => {
+                        navDelayed = false;
+                        navTimeout = true;
+                     }, 800)
+                  }}
+               />
+            {/if}
+            {#if navTimeout && navReason === 'leasesComboboxData'}
+               <Progress 
+                  value={null}
+                  meterBg="bg-tertiary-500"
+                  width='w-12'
+                  classes='mt-9 mx-2'
+               />
+            {/if}
+         </div>        
       {:else}
-         <Combobox
-            data={leasesComboboxData}
-            label='Select unit'
-            placeholder='Type or select'
-            openOnClick={true}
-            onValueChange={(details) => {
-               goto(`/invoices/new?leaseId=${details.value}`)
-            }}
-         />
+         <div class="flex flex-row">
+            <Combobox
+               data={leasesComboboxData}
+               label='Select unit'
+               placeholder='Type or select'
+               openOnClick={true}
+               onValueChange={(details) => {
+                  setTimeout(() => {
+                     navReason = 'leasesComboboxData'
+                     navDelayed = true;
+                  }, 300)
+                  goto(`/invoices/new?leaseId=${details.value}`)
+               }}
+               width='w-11/12'
+            />
+            {#if navDelayed && navReason === 'leasesComboboxData'}
+               <ProgressRing  
+                  value={null} 
+                  size="size-8" 
+                  meterStroke="stroke-tertiary-600-400" 
+                  trackStroke="stroke-tertiary-50-950"
+                  classes='mt-6 mx-2'
+                  {@attach () => {
+                     setTimeout(() => {
+                        navDelayed = false;
+                        navTimeout = true;
+                     }, 800)
+                  }}
+               />
+            {/if}
+            {#if navTimeout && navReason === 'leasesComboboxData'}
+               <Progress 
+                  value={null}
+                  meterBg="bg-tertiary-500"
+                  width='w-12'
+                  classes='mt-9 mx-2'
+               />
+            {/if}
+         </div>
       {/if}
    {/if}
    {#if customer || lease}
