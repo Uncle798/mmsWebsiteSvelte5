@@ -27,11 +27,6 @@
    <div class="text-right">Notes</div> 
    <div class="pl-4 -indent-4 pr-4 font-medium">{invoice.invoiceNotes}</div>
    <HorizontalDivider classes='col-span-2' />
-   {#if invoice.paymentRecordNum}
-      <div class='text-right'>Payment number</div> 
-      <div class="font-medium"><a class="anchor" href="/paymentRecords/{invoice.paymentRecordNum}">{invoice.paymentRecordNum}</a></div>
-      <HorizontalDivider classes='col-span-2'/>
-   {/if}
    {#if invoice.deposit}
       <div class="col-span-2 font-medium text-center">Deposit</div>
    {/if}
