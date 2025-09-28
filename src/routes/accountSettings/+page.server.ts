@@ -74,7 +74,9 @@ export const actions: Actions = {
                AND: [
                   { customerId: lease.customerId },
                   { deposit: false },
-                  { paymentRecordNum: null}
+                  { invoiceAmount: {
+                     gt: prisma.invoice.fields.amountPaid
+                  }}
                ]
             },
             orderBy: {

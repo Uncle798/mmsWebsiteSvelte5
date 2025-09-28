@@ -40,7 +40,7 @@ export const POST: RequestHandler = async (event) => {
             invoiceNum: invoice.invoiceNum
          },
          data: {
-            paymentRecordNum: paymentRecord.paymentNumber
+            amountPaid: invoice.amountPaid + paymentRecord.paymentAmount
          }
       })
       if(ssl_transaction_type === 'CCADDRECURRING'){
