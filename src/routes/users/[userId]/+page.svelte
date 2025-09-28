@@ -24,13 +24,8 @@
    let pageNum = $state(1);
    let size = $state(5);
    const currencyFormatter = new Intl.NumberFormat('en-US', {style:'currency', currency:'USD'});
-   type InvoiceWithPayments = Prisma.InvoiceGetPayload<{
-      include: {
-         paymentRecords: true
-      }
-   }>
-   const slicedInvoices = $derived((invoices:InvoiceWithPayments[]) => invoices.slice((pageNum - 1) * size, pageNum * size));
-   const derivedTotalInvoiced = $derived((invoices:InvoiceWithPayments[]) => {
+   const slicedInvoices = $derived((invoices:Invoice[]) => invoices.slice((pageNum - 1) * size, pageNum * size));
+   const derivedTotalInvoiced = $derived((invoices:Invoice[]) => {
       let total = 0;
       for(const invoice of invoices){
          if(!invoice.deposit){
@@ -48,15 +43,11 @@
       }
       return total
    })
-   const overDueInvoices = $derived((invoices:InvoiceWithPayments[]) => {
-      const returnedInvoices:InvoiceWithPayments[] = [];
+   const overDueInvoices = $derived((invoices:Invoice[]) => {
+      const returnedInvoices:Invoice[] = [];
       for(const invoice of invoices){
-         let totalPaid = 0;
-         for(const payment of invoice.paymentRecords){
-            totalPaid += payment.paymentAmount
-         }
-         if(totalPaid !== invoice.invoiceAmount){
-            returnedInvoices.push(invoice)
+         if(invoice.amountPaid < invoice.invoiceAmount && invoice.invoiceDue < new Date()){
+            returnedInvoices.push(invoice);
          }
       }
       return returnedInvoices;
