@@ -40,7 +40,9 @@ export const load = (async (event) => {
    }
    const paymentRecords = prisma.paymentRecord.findMany({
       where: {
-         refundNumber: null
+         refundedAmount: {
+            lt: prisma.paymentRecord.fields.paymentAmount
+         }
       },
       orderBy: {
          paymentNumber: 'desc'
@@ -50,7 +52,9 @@ export const load = (async (event) => {
       where: {
          paymentMade: {
             some: {
-               refundNumber: null,
+               refundedAmount: {
+                  lt: prisma.paymentRecord.fields.paymentAmount
+               }
             }
          }
       }
@@ -62,7 +66,9 @@ export const load = (async (event) => {
                user: {
                   paymentMade: {
                      some: {
-                        refundNumber: null
+                        refundedAmount: {
+                           lt: prisma.paymentRecord.fields.paymentAmount
+                        }
                      }
                   }
                }

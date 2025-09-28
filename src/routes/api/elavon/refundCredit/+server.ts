@@ -57,7 +57,7 @@ export const POST: RequestHandler = async (event) => {
                      paymentNumber: payment.paymentNumber
                   },
                   data: {
-                     refundNumber: refund.refundNumber
+                     refundedAmount: payment.refundedAmount + refund.refundAmount
                   }
                })
                return new Response(JSON.stringify({refundNumber: refund.refundNumber}), {status: 200})
