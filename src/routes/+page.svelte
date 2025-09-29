@@ -8,6 +8,10 @@
 	import { fade } from "svelte/transition";
 	import Placeholder from "$lib/displayComponents/Placeholder.svelte";
 	import { Tooltip } from "@skeletonlabs/skeleton-svelte";
+   import Shepard from 'shepherd.js';
+   import type { ShepherdBase } from "shepherd.js";
+   import 'shepherd.js/dist/css/shepherd.css';
+	import { onMount } from "svelte";
    interface Props {
       data: PageData;
    }
@@ -22,8 +26,60 @@
    }
    const formattedPhone = PUBLIC_PHONE.substring(0,1) +'-'+ PUBLIC_PHONE.substring(1,4)+'-'+PUBLIC_PHONE.substring(4,7)+'-'+PUBLIC_PHONE.substring(7)
    let copyTooltipOpen = $state(false);
+   const tour = new Shepard.Tour({
+         useModalOverlay: true,
+         defaultStepOptions: {
+            classes:'shadow-xl bg-secondary-50-950',
+            scrollTo: true
+         }
+      })
+   let homeCopy = $state<HTMLElement>();
+   let firstUnit = $state<HTMLElement>()
+   onMount(() => {
+      if(homeCopy){
+         tour.addStep({
+            attachTo: {
+               element: homeCopy,
+               on: 'top'
+            },
+            text: `Welcome to your homepage ${data.user?.givenName}, though you as the owner won't come here all that often. 
+               Check the menu in the top left or rent a random unit to get started. 
+               This page is the first thing a new customer would see upon visiting your site.`,
+            buttons: [
+               {
+                  text: 'Next',
+                  action: tour.next
+               },
+               {
+                  text: 'Exit',
+                  action: tour.cancel
+               }
+            ]
+         }, 0)
+         tour.addStep({
+            attachTo: {
+               element: homeCopy,
+               on:'bottom'
+            },
+            text: 'Here\'s where to tell your story. We can customize everything to match your needs',
+            buttons: [
+               {
+                  text: 'Next',
+                  action: tour.next
+               },
+               {
+                  text: 'Exit',
+                  action: tour.cancel
+               }
+            ]
+         }, 1)
+      }
+
+      tour.start();
+   });
 </script>
 <Header title='Home' />
+
 {#await data.availableUnits}
    <article class="m-2 mt-14 sm:mt-10">
       <div>
@@ -34,13 +90,14 @@
             openDelay={200}
          >
             {#snippet trigger()}
-               
-               Thank you for visiting {PUBLIC_COMPANY_NAME}!
-               Conveniently located, {PUBLIC_COMPANY_NAME} is the place to safely and securely store your belongings.
-               <p>Family owned and operated, you can contact us at 
-                  <a href="tel:{PUBLIC_PHONE}" class="anchor">
-                     { formattedPhone }</a>, or <a href="mailto:{PUBLIC_COMPANY_EMAIL}" class="anchor">{PUBLIC_COMPANY_EMAIL}</a> the office and gates are open 8:00 am to 8:00 pm.
-               </p>
+               <div bind:this={homeCopy}>
+                  Thank you for visiting {PUBLIC_COMPANY_NAME}!
+                  Conveniently located, {PUBLIC_COMPANY_NAME} is the place to safely and securely store your belongings.
+                  <p>Family owned and operated, you can contact us at 
+                     <a href="tel:{PUBLIC_PHONE}" class="anchor">
+                        { formattedPhone }</a>, or <a href="mailto:{PUBLIC_COMPANY_EMAIL}" class="anchor">{PUBLIC_COMPANY_EMAIL}</a> the office and gates are open 8:00 am to 8:00 pm.
+                  </p>
+               </div>
             {/snippet}
             {#snippet content()}
                Tell your story here. We can customize copy to your exact specifications.
@@ -67,15 +124,14 @@
             zIndex='40'
          >
             {#snippet trigger()}
-               <p>
+               <div bind:this={homeCopy}>                 
                   Thank you for visiting {PUBLIC_COMPANY_NAME}!
                   Conveniently located, {PUBLIC_COMPANY_NAME} is the place to safely and securely store your belongings.
-               </p>
-               <p>
-                  Family owned and operated, you can contact us at 
-                  <a href="tel:{PUBLIC_PHONE}" class="anchor">
-                     { formattedPhone }</a>, or <a href="mailto:{PUBLIC_COMPANY_EMAIL}" class="anchor">{PUBLIC_COMPANY_EMAIL}</a>. The office and gates are open 8:00 am to 8:00 pm.
-               </p>
+                  <p>Family owned and operated, you can contact us at 
+                     <a href="tel:{PUBLIC_PHONE}" class="anchor">
+                        { formattedPhone }</a>, or <a href="mailto:{PUBLIC_COMPANY_EMAIL}" class="anchor">{PUBLIC_COMPANY_EMAIL}</a> the office and gates are open 8:00 am to 8:00 pm.
+                  </p>
+               </div>
             {/snippet}
             {#snippet content()}
                Tell your story here. We can customize copy to your exact specifications
@@ -95,13 +151,48 @@
             </select>
          </label>
       </div>
-      {#each filterSize(units) as unit}
+      {#each filterSize(units) as unit, i}
          <div class="flex flex-col border rounded-lg border-primary-50-950 justify-between" in:fade={{duration:600}}>
-            <UnitCustomer {unit}/>
-            {#if data.user?.employee}
-               <a class="btn preset-filled-primary-50-950 m-2" href="/employeeNewLease?unitNum={unit.num}">Rent this Unit</a>
+            {#if i === 0}
+               <div bind:this={firstUnit} {@attach () => {
+                  if(firstUnit){
+                     tour.addStep({
+                        attachTo: {
+                           element: firstUnit,
+                           on: 'top'
+                        },
+                        text: 'Here\'s an available unit to rent.',
+                        buttons: [
+                           {
+                              text: 'Previous',
+                              action: tour.back
+                           },
+                           {
+                              text: 'Next',
+                              action: tour.next
+                           },
+                           {
+                              text: 'Exit',
+                              action: tour.cancel
+                           }
+                        ]
+                     }, 2)
+                  }
+               }}>
+                  <UnitCustomer {unit}/>
+                  {#if data.user?.employee}
+                     <a class="btn preset-filled-primary-50-950 m-2 w-11/12 self-center" href="/employeeNewLease?unitNum={unit.num}">Rent this Unit</a>
+                  {:else}
+                     <a class="btn preset-filled-primary-50-950 m-2" href="/newLease?unitNum={unit.num}">Rent this Unit</a>
+                  {/if}
+               </div>   
             {:else}
-               <a class="btn preset-filled-primary-50-950 m-2" href="/newLease?unitNum={unit.num}">Rent this Unit</a>
+               <UnitCustomer {unit}/>
+               {#if data.user?.employee}
+                  <a class="btn preset-filled-primary-50-950 m-2 w-11/12 self-center" href="/employeeNewLease?unitNum={unit.num}">Rent this Unit</a>
+               {:else}
+                  <a class="btn preset-filled-primary-50-950 m-2" href="/newLease?unitNum={unit.num}">Rent this Unit</a>
+               {/if}
             {/if}
          </div>
       {/each}
