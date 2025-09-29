@@ -97,7 +97,7 @@
                      Loading units...
                   </div>
                {:then units}
-                  <div in:fade={{duration:600}}>
+                  <div in:fade={{duration:600}} class="mt-20 sm:mt-18 mb-8 sm:mb-8">
                      <Revenue label='Current monthly invoiced' amount={totalLeased(leases)} classes='fixed top-11 sm:top-9 p-1 w-screen left-0 bg-tertiary-50-950 rounded-b-lg'/>
                      <Modal
                         open={searchDrawerOpen}
@@ -133,7 +133,7 @@
                            <button onclick={() => leaseEndModalOpen = false} class='btn preset-filled-primary-50-950'>Cancel</button>
                         {/snippet}
                      </Modal>
-                     <div class="grid grid-cols-1 mx-1 sm:mx-2 gap-y-2 gap-x-1 mt-20 sm:mt-18">
+                     <div class="grid grid-cols-1 mx-1 sm:mx-2 gap-y-2 gap-x-1 ">
                         {#each slicedSource(searchedSource(customers)) as customer}
                         {@const address = addresses.find((address) => address.userId === customer.id)}
                         {@const customerLeases = leases.filter((lease) => lease.customerId === customer.id)}
