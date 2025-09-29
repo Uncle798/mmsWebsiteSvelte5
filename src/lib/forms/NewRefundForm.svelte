@@ -9,7 +9,6 @@
 	import TextArea from "$lib/formComponents/TextArea.svelte";
    import RadioButton from "$lib/formComponents/RadioButton.svelte";
 	import type { PaymentRecord } from "@prisma/client";
-	import PaymentRecordEmployee from "$lib/displayComponents/PaymentRecordEmployee.svelte";
 	import { page } from "$app/state";
    interface Props {
       data: SuperValidated<Infer<RefundFormSchema>>;
