@@ -62,11 +62,18 @@ export const load = (async (event) => {
    if(!customer){
       customers = await prisma.user.findMany({
          where: {
-            employee: false
+            AND: [
+               {
+                  employee: false
+               },
+               {
+                  doNotRent: false
+               },
+            ]
          },
          orderBy: {
             familyName: 'asc'
-         }
+         },
       })
    }
    return {
@@ -108,6 +115,9 @@ export const actions: Actions = {
       })
       if(!customer){
          return message(leaseForm, 'Customer not found');
+      }
+      if(customer.doNotRent){
+         return message(leaseForm, `DO NO RENT TO ${customer.organizationName ? customer.organizationName.toUpperCase() : `${customer.givenName?.toUpperCase()} ${customer.familyName?.toUpperCase()}`}` )
       }
       const unit = await prisma.unit.findUnique({
          where: {
