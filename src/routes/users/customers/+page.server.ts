@@ -3,7 +3,7 @@ import type { Actions, PageServerLoad } from './$types';
 import { prisma } from '$lib/server/prisma';
 import { superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
-import { searchFormSchema, userNotesFormSchema } from '$lib/formSchemas/schemas';
+import { leaseEndFormSchema, searchFormSchema, unitNotesFormSchema, userNotesFormSchema } from '$lib/formSchemas/schemas';
 
 export const load = (async (event) => {
    if(!event.locals.user?.employee){
@@ -11,6 +11,8 @@ export const load = (async (event) => {
    }
    const userSearchForm = await superValidate(valibot(searchFormSchema));
    const userNotesForm = await superValidate(valibot(userNotesFormSchema));
+   const leaseEndForm = await superValidate(valibot(leaseEndFormSchema));
+   const unitNotesForm = await superValidate(valibot(unitNotesFormSchema));
    const customerCount = await prisma.user.count({
       where: {
          customerLeases: {
@@ -89,7 +91,16 @@ export const load = (async (event) => {
          ]
       }
    })
-   return { customers, leases, userSearchForm, customerCount, addresses, invoices, paymentRecords, userNotesForm };
+   const units = prisma.unit.findMany({
+      where: {
+         lease: {
+            some: {
+               leaseEnded: null
+            }
+         }
+      }
+   })
+   return { customers, leases, userSearchForm, customerCount, addresses, invoices, paymentRecords, userNotesForm, leaseEndForm, unitNotesForm, units };
 }) satisfies PageServerLoad;
 
 export const actions: Actions = {
