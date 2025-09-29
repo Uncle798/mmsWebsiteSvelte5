@@ -8,7 +8,10 @@
 	import { beforeNavigate } from '$app/navigation';
 	import { enhance } from '$app/forms';
 	import { PUBLIC_ADDRESS1, PUBLIC_COMPANY_NAME, PUBLIC_PHONE } from '$env/static/public';
-	import { XCircleIcon } from 'lucide-svelte';
+	import { CircleX } from 'lucide-svelte';
+	import { onMount, setContext } from 'svelte';
+	import Shepherd from 'shepherd.js';
+	import 'shepherd.js/dist/css/shepherd.css';
 
 	interface Props {
 		data: PageData,
@@ -58,6 +61,21 @@
 	})
 	const formattedPhone = PUBLIC_PHONE.substring(0,1) +'-'+ PUBLIC_PHONE.substring(1,4)+'-'+PUBLIC_PHONE.substring(4,7)+'-'+PUBLIC_PHONE.substring(7);
 	let tooltipOpenIdentifier = $state<string|null>(null);
+	const tour = new Shepherd.Tour();
+	let menuButtonElement = $state<HTMLElement>();
+	onMount(() => {
+		if(menuButtonElement){
+			tour.addStep({
+				attachTo: {
+					element: menuButtonElement,
+					on: 'bottom-end'
+				},
+				text: 'Here is the main menu'
+			}, 3);
+		}
+		tour.start()
+	})
+	setContext('tour', tour);
 </script>
 <Toaster {toaster} ></Toaster>
 {#if data.user?.employee}
@@ -74,7 +92,9 @@
 			transitionsPositionerOut={{ x: -240, duration: 400 }}
 		>
 			{#snippet trigger()}
-				<Menu aria-label='Main Menu' />	
+				<div bind:this={menuButtonElement}>
+					<Menu aria-label='Main Menu' />	
+				</div>
 			{/snippet}
 			{#snippet content()}
 				<article class="h-full">
@@ -164,7 +184,7 @@
 							{/if}
 						</ul>
 					</div>
-					<button class="absolute top-1 left-[205px] btn-icon" onclick={()=>{menuOpen=false}}><XCircleIcon aria-label='close' class=''/></button>
+					<button class="absolute top-1 left-[205px] btn-icon" onclick={()=>{menuOpen=false}}><CircleX aria-label='close' class=''/></button>
 				</article>
 			{/snippet}
 		</Modal>
@@ -192,7 +212,7 @@
 		{/snippet}
 		{#snippet content()}
 			<article class="">
-				<button class="absolute top-1 left-[90px] btn-icon" onclick={()=>{menuOpen=false}}><XCircleIcon aria-label='close' class='h-12 sm:h-9'/></button>
+				<button class="absolute top-1 left-[90px] btn-icon" onclick={()=>{menuOpen=false}}><CircleX aria-label='close' class='h-12 sm:h-9'/></button>
 				<ul>
 					{#each customerLinks as link}
 						<a href={link.link} class="anchor mx-1">{link.label}</a>
