@@ -40,6 +40,15 @@
             registerModalOpen=true
          }
       }
+      if(data.user?.givenName){
+         if(userEmailName?.includes(data.user.givenName.toLowerCase())){
+            if(!userEmailName.includes('.')){
+               gmailName = userEmailName.substring(0, data.user.givenName.length-1) + '.' + userEmailName.substring(0, data.user.givenName.length+1)
+            } else {
+               gmailName = userEmailName.substring(0, userEmailName.indexOf('.')) + userEmailName.substring(userEmailName.indexOf('.')+1);
+            }
+         }
+      }
    })
    const currencyFormatter = new Intl.NumberFormat('en-US', {style: 'currency', currency: 'USD'})
    const paymentTypes = [ 'CASH', 'CHECK', 'CREDIT'];
@@ -48,6 +57,10 @@
    let customerSelectForm:HTMLFormElement | undefined = $state();
    let customerSelectSubmit:HTMLButtonElement | undefined = $state();
    let customerCuidId:HTMLInputElement | undefined = $state();
+   const userEmailAddress = data.user?.email;
+   const userEmailName = userEmailAddress?.substring(0, userEmailAddress.indexOf('@'));
+   const userEmailDomain = userEmailAddress?.substring(userEmailAddress.indexOf('@')+1);
+   let gmailName = $state('')
 </script>
 
 <Header title="Employee New Lease" />
@@ -93,8 +106,14 @@
    bind:modalOpen={newCustomerExplainerModalOpen}
 >
    {#snippet copy()}
-      To create a new customer you'll need an email address that isn't the one you registered for the demo with. If you use gmail you can add a period (.) in the name and it will work as a new email address. 
-      i.e. firstNameLastName@gmail.com and firstName.LastName@gmail.com will both be received in the same inbox but do work as separate email addresses in the database.
+      {#if userEmailAddress?.toLowerCase().includes('@gmail.com') && gmailName !== ''}      
+         To create a new customer you'll need an email address that isn't the one you registered for the demo with. If you use gmail you can add a period (.) in the name and it will work as a new email address. 
+         i.e. <b>{userEmailAddress}</b> and <b>{gmailName + '@' + userEmailDomain}</b> will both be received in the same inbox but do work as separate email addresses in the database.
+      {:else}
+         To create a new customer you'll need an email address that isn't the one you registered for the demo with. If you use gmail you can add a period (.) in the name and it will work as a new email address. 
+         i.e. firstnamelastname@gmail.com and firstname.lastname@gmail.com will both be received in the same inbox but do work as separate email addresses in the database.
+      {/if}
+
    {/snippet}
 </ExplainerModal>
 
