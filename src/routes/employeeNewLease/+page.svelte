@@ -40,15 +40,7 @@
             registerModalOpen=true
          }
       }
-      if(data.user?.givenName){
-         if(userEmailName?.includes(data.user.givenName.toLowerCase())){
-            if(!userEmailName.includes('.')){
-               gmailName = userEmailName.substring(0, data.user.givenName.length-1) + '.' + userEmailName.substring(0, data.user.givenName.length+1)
-            } else {
-               gmailName = userEmailName.substring(0, userEmailName.indexOf('.')) + userEmailName.substring(userEmailName.indexOf('.')+1);
-            }
-         }
-      }
+
    })
    const currencyFormatter = new Intl.NumberFormat('en-US', {style: 'currency', currency: 'USD'})
    const paymentTypes = [ 'CASH', 'CHECK', 'CREDIT'];
@@ -57,10 +49,24 @@
    let customerSelectForm:HTMLFormElement | undefined = $state();
    let customerSelectSubmit:HTMLButtonElement | undefined = $state();
    let customerCuidId:HTMLInputElement | undefined = $state();
-   const userEmailAddress = data.user?.email;
-   const userEmailName = userEmailAddress?.substring(0, userEmailAddress.indexOf('@'));
-   const userEmailDomain = userEmailAddress?.substring(userEmailAddress.indexOf('@')+1);
-   let gmailName = $state('')
+   const userEmailAddress = data.user?.email?.toLowerCase();
+   const userEmailName = userEmailAddress?.substring(0, userEmailAddress.indexOf('@')).toLowerCase();
+   const userEmailDomain = userEmailAddress?.substring(userEmailAddress.indexOf('@')+1).toLowerCase();
+   let gmailName = $derived.by(() => {
+      if(data.user?.givenName && data.user.familyName){
+         const givenName = data.user.givenName.toLowerCase();
+         const familyName = data.user.familyName.toLowerCase();
+         if(userEmailName?.includes('.')){
+            return userEmailName.substring(0, userEmailName.indexOf('.')) + userEmailName.substring(userEmailName.indexOf('.')+1);
+         }else if(userEmailName?.includes(givenName)){
+            return userEmailName.substring(userEmailName.indexOf(givenName, givenName.length)) + '.' + userEmailName.substring(userEmailName.indexOf(givenName) + givenName.length + 1)
+         }else if(userEmailName?.includes(familyName)){
+            return userEmailName.substring(userEmailName.indexOf(familyName, familyName.length)) + '.' + userEmailName.substring(userEmailName.indexOf(familyName) + familyName.length + 1)
+         } else {
+            return userEmailName?.substring(0, 2) + '.' + userEmailName?.substring(2);
+         }
+      }
+   })
 </script>
 
 <Header title="Employee New Lease" />
@@ -106,7 +112,7 @@
    bind:modalOpen={newCustomerExplainerModalOpen}
 >
    {#snippet copy()}
-      {#if userEmailAddress?.toLowerCase().includes('@gmail.com') && gmailName !== ''}      
+      {#if userEmailAddress?.toLowerCase().includes('@gmail.com') && gmailName}      
          To create a new customer you'll need an email address that isn't the one you registered for the demo with. If you use gmail you can add a period (.) in the name and it will work as a new email address. 
          i.e. <b>{userEmailAddress}</b> and <b>{gmailName + '@' + userEmailDomain}</b> will both be received in the same inbox but do work as separate email addresses in the database.
       {:else}
