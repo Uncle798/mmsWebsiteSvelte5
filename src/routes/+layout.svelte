@@ -70,7 +70,21 @@
 					element: menuButtonElement,
 					on: 'bottom-end'
 				},
-				text: 'Here is the main menu'
+				text: 'Here is the main menu',
+				buttons: [
+               {
+                  text: 'Previous',
+                  action: tour.back
+               },
+               {
+                  text: 'Next',
+                  action: tour.next
+               },
+               {
+                  text: 'Exit',
+                  action: tour.cancel
+               }
+            ]
 			}, 3);
 		}
 		tour.start()
