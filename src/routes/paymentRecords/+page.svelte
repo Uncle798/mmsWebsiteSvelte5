@@ -14,8 +14,8 @@
    import Revenue from '$lib/displayComponents/Revenue.svelte';  
    import Address from '$lib/displayComponents/AddressEmployee.svelte';
    import RefundForm from '$lib/forms/NewRefundForm.svelte'
-   import { Combobox, Modal } from '@skeletonlabs/skeleton-svelte';
-   import { goto } from '$app/navigation';
+   import { Combobox, Modal, Progress, ProgressRing } from '@skeletonlabs/skeleton-svelte';
+   import { goto, onNavigate } from '$app/navigation';
 	import { SearchIcon, PanelTopCloseIcon } from 'lucide-svelte';
 	import EmailCustomer from '$lib/EmailCustomer.svelte';
 	import DownloadPdfButton from '$lib/DownloadPDFButton.svelte';
@@ -120,6 +120,13 @@
       value: year.toString()
    })))
    let searchDrawerOpen = $state(false);
+   let navDelayed = $state(false);
+   let navTimeout = $state(false);
+   onNavigate(() => {
+      searchDrawerOpen = false;
+      navDelayed = false;
+      navTimeout = false;
+   })
 </script>
 <Modal
    open={modalOpen}
@@ -140,16 +147,44 @@
       <div class="mx-1 sm:mx-2 mt-14 sm:mt-14 mb-20 sm:mb-12 lg:mb-8">
          Loading {numberFormatter.format(data.paymentRecordCount)} payment records
          {#if data.years}
-            <Combobox
-               data={yearComboboxData}
-               label='or select year'
-               placeholder='Select year ...'
-               openOnClick={true}
-               onValueChange={(details) => {
-                  goto(`/paymentRecords/year/${details.value[0]}`)
-               }}
-               zIndex='50'
-            />
+            <div class="flex flex-row">
+               <Combobox
+                  data={yearComboboxData}
+                  label='or select year'
+                  placeholder='Select year ...'
+                  openOnClick={true}
+                  onValueChange={(details) => {
+                     setTimeout(() => {
+                        navDelayed = true;
+                     }, 300)
+                     goto(`/paymentRecords/year/${details.value[0]}`)
+                  }}
+                  zIndex='50'
+               />
+               {#if navDelayed}
+                  <ProgressRing  
+                     value={null} 
+                     size="size-8" 
+                     meterStroke="stroke-tertiary-600-400" 
+                     trackStroke="stroke-tertiary-50-950"
+                     classes='mt-6 mx-2'
+                     {@attach () => {
+                        setTimeout(() => {
+                           navDelayed = false;
+                           navTimeout = true;
+                        }, 800)
+                     }}
+                  />
+               {/if}
+               {#if navTimeout}
+                  <Progress 
+                     value={null}
+                     meterBg="bg-tertiary-500"
+                     width='w-12'
+                     classes='mt-9 mx-2'
+                  />
+               {/if}
+            </div>
          {/if}
          <Placeholder numCols={1} numRows={size} heightClass='h-64' classes='z-0'/>
       </div>

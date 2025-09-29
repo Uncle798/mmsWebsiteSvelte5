@@ -2,12 +2,12 @@
 	import ExplainerModal from "$lib/demo/ExplainerModal.svelte";
 	import type { EmailVerificationFormSchema, NewInvoiceFormSchema, NewPaymentRecordFormSchema, RegisterFormSchema } from "$lib/formSchemas/schemas";
 	import type { Invoice, Lease, User } from "@prisma/client";
-	import { Combobox, Modal, Switch } from "@skeletonlabs/skeleton-svelte";
+	import { Combobox, Modal, Switch, Progress, ProgressRing } from "@skeletonlabs/skeleton-svelte";
 	import { onMount } from "svelte";
 	import { superForm, type Infer, type SuperValidated } from "sveltekit-superforms";
    import NewInvoiceForm from "./NewInvoiceForm.svelte";
 	import FormMessage from "$lib/formComponents/FormMessage.svelte";
-	import { goto } from "$app/navigation";
+	import { goto, onNavigate } from "$app/navigation";
    import TextInput from "$lib/formComponents/TextInput.svelte";
    import NumberInput from "$lib/formComponents/NumberInput.svelte";
 	import TextArea from "$lib/formComponents/TextArea.svelte";
@@ -84,6 +84,10 @@
    }));
    let invoiceModalOpen = $state(false);
    let explainerModalOpen = $state(false);
+   onNavigate(() => {
+      navDelayed = false;
+      navTimeout = false;
+   })
    onMount(() => {
       for(const key in $form){
          const fullKey = `newPaymentRecordForm/invoiceNum=${invoice?.invoiceNum}:${key}`;
@@ -107,6 +111,8 @@
       }
    })
    const paymentTypes = [ 'CASH', 'CHECK', 'CREDIT'];
+   let navDelayed = $state(false);
+   let navTimeout = $state(false);
 </script>
 <ExplainerModal
    bind:modalOpen={explainerModalOpen}
@@ -136,17 +142,46 @@
 </Modal>
 <div class={classes} >
    <FormMessage message={$message} />
-   {#if invoicesComboboxData}  
-      <Combobox
-         data={invoicesComboboxData}
-         openOnClick={true}
-         label="Select Invoice"
-         placeholder="Type or Select..."
-         onValueChange={(details) => {
-            goto(`/paymentRecords/new?invoiceNum=${details.value}`)
-         }}
-         optionClasses='truncate'
-      />
+   {#if invoicesComboboxData}
+      <div class="flex flex-row w-screen">
+         <Combobox
+            data={invoicesComboboxData}
+            openOnClick={true}
+            label="Select Invoice"
+            placeholder="Type or Select..."
+            onValueChange={(details) => {
+               setTimeout(() => {
+                  navDelayed = true;
+               }, 300);
+               goto(`/paymentRecords/new?invoiceNum=${details.value}`)
+            }}
+            optionClasses='truncate'
+            width='w-11/12'
+         />
+         {#if navDelayed}
+            <ProgressRing  
+               value={null} 
+               size="size-8" 
+               meterStroke="stroke-tertiary-600-400" 
+               trackStroke="stroke-tertiary-50-950"
+               classes='mt-6 mx-2'
+               {@attach () => {
+                  setTimeout(() => {
+                     navDelayed = false;
+                     navTimeout = true;
+                  }, 800)
+               }}
+            />
+         {/if}
+         {#if navTimeout}
+            <Progress 
+               value={null}
+               meterBg="bg-tertiary-500"
+               width='w-12'
+               classes='mt-9 mx-2'
+            />
+         {/if}
+      </div>
       <p>or,</p>
       <button type="button" onclick={()=>invoiceModalOpen=true} class='btn preset-filled-primary-50-950'>Create Invoice</button>
    {/if}

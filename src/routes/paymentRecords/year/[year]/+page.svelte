@@ -14,8 +14,8 @@
    import Revenue from '$lib/displayComponents/Revenue.svelte';  
    import Address from '$lib/displayComponents/AddressEmployee.svelte';
    import RefundForm from '$lib/forms/NewRefundForm.svelte'
-   import { Combobox, Modal } from '@skeletonlabs/skeleton-svelte';
-   import { goto } from '$app/navigation';
+   import { Combobox, Modal, Progress, ProgressRing } from '@skeletonlabs/skeleton-svelte';
+   import { goto, onNavigate } from '$app/navigation';
 	import { SearchIcon, PanelTopCloseIcon } from 'lucide-svelte';
 	import EmailCustomer from '$lib/EmailCustomer.svelte';
 	import DownloadPdfButton from '$lib/DownloadPDFButton.svelte';
@@ -118,6 +118,13 @@
       value: year.toString(),
    })))
    let searchDrawerOpen = $state(false);
+   let navDelayed = $state(false);
+   let navTimeout = $state(false);
+   onNavigate(() => {
+      searchDrawerOpen = false;
+      navDelayed = false;
+      navTimeout = false;
+   })
 </script>
 <Modal
    open={modalOpen}
@@ -143,21 +150,47 @@
             placeholder='Select month...'
             openOnChange={true}
             onValueChange={(details) => {
-               goto(`/paymentRecords/year/${data.year}/month/${details.value[0]}`)
+               setTimeout(() => {
+                  navDelayed = true;
+               }, 300);
+               goto(`/paymentRecords/year/${data.year}/month/${details.value[0]}`);
             }}
             zIndex='50'
          />
+         {#if navDelayed}
+            <ProgressRing  
+               value={null} 
+               size="size-8" 
+               meterStroke="stroke-tertiary-600-400" 
+               trackStroke="stroke-tertiary-50-950"
+               classes='mt-6 mx-2'
+               {@attach () => {
+                  setTimeout(() => {
+                     navDelayed = false;
+                     navTimeout = true;
+                  }, 800)
+               }}
+            />
+         {/if}
+         {#if navTimeout}
+            <Progress 
+               value={null}
+               meterBg="bg-tertiary-500"
+               width='w-12'
+               classes='mt-9 mx-2'
+            />
+         {/if}
       {/if}
       <Placeholder numCols={1} numRows={size} heightClass='h-32' classes='z-0'/>
    </div>
 {:then paymentRecords} 
    {#await data.customers}
-      <div class="mt-14 sm:mt-10">
+      <div class="mt-14 sm:mt-10 mx-2">
          Loading customers...
       </div>
    {:then customers} 
       {#await data.addresses}
-         <div class="mt-14 sm:mt-10">
+         <div class="mt-14 sm:mt-10 mx-2">
             Loading contacts...
          </div>
       {:then addresses}         
@@ -196,7 +229,6 @@
                      bind:search={search} 
                      searchType='payment record number' 
                      data={data.searchForm}
-                     classes=''
                   />
                   <Search
                      bind:search={nameSearch}
@@ -210,16 +242,45 @@
                      {maxDate} 
                      data={data.dateSearchForm}
                   />
-                  <Combobox
-                     data={yearsComboboxData}
-                     label='Select different year'
-                     placeholder='Select year...'
-                     openOnClick={true}
-                     onValueChange={(details) => {
-                        goto(`/paymentRecords/year/${details.value[0]}`)
-                     }}
-                     labelBase=''
-                  />
+                  <div class="flex flex-row w-1/4">
+                     <Combobox
+                        data={yearsComboboxData}
+                        label='Select different year'
+                        placeholder='Select year...'
+                        openOnClick={true}
+                        onValueChange={(details) => {
+                           setTimeout(() => {
+                              navDelayed = true;
+                           }, 300);
+                           goto(`/paymentRecords/year/${details.value[0]}`)
+                        }}
+                        labelBase=''
+                        width='w-11/12'
+                     />
+                     {#if navDelayed}
+                        <ProgressRing  
+                           value={null} 
+                           size="size-8" 
+                           meterStroke="stroke-tertiary-600-400" 
+                           trackStroke="stroke-tertiary-50-950"
+                           classes='mt-6 mx-2'
+                           {@attach () => {
+                              setTimeout(() => {
+                                 navDelayed = false;
+                                 navTimeout = true;
+                              }, 800)
+                           }}
+                        />
+                     {/if}
+                     {#if navTimeout}
+                        <Progress 
+                           value={null}
+                           meterBg="bg-tertiary-500"
+                           width='w-12'
+                           classes='mt-9 mx-2'
+                        />
+                     {/if}
+                  </div>
                </div>
                <button 
                   onclick={()=>{
@@ -239,7 +300,7 @@
                         <div>
                            <PaymentRecordEmployee paymentRecord={paymentRecord} classes="px-2" />
                            <div class="m-2 flex flex-col sm:flex-row gap-2">
-                              {#if !paymentRecord.refunded}
+                              {#if paymentRecord.refundedAmount < paymentRecord.paymentAmount}
                                     <button type="button" class="btn rounded-lg preset-filled-primary-50-950 h-8" onclick={() => refundModal(paymentRecord)}>Refund this payment</button>
                               {/if}
                               {#if customer?.email && customer.emailVerified}

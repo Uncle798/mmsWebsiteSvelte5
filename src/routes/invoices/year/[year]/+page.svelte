@@ -13,7 +13,7 @@
    import utc from 'dayjs/plugin/utc'
    import Revenue from '$lib/displayComponents/Revenue.svelte';
    import Address from '$lib/displayComponents/AddressEmployee.svelte';
-   import { Combobox, Modal } from '@skeletonlabs/skeleton-svelte';
+   import { Combobox, Modal, Progress, ProgressRing } from '@skeletonlabs/skeleton-svelte';
    import { goto, onNavigate } from '$app/navigation';
    import { PanelTopClose, SearchIcon } from 'lucide-svelte';
 	import EmailCustomer from '$lib/EmailCustomer.svelte';
@@ -86,8 +86,13 @@
       value: year.toString()
    })))
    let searchDrawerOpen = $state(false);
+   let navDelayed = $state(false);
+   let navTimeout = $state(false);
+
    onNavigate(()=>{
-      searchDrawerOpen = false
+      searchDrawerOpen = false;
+      navDelayed = false;
+      navTimeout = false;
    })
    onMount(() => {
       monthComboboxData.unshift({label:'Unpaid Invoices', value: 'unpaid'})
@@ -99,15 +104,41 @@
       Loading {numberFormatter.format(data.invoiceCount)} invoices, 
       <Combobox
          data={monthComboboxData}
-         label='or select year'
-         placeholder='Select year...'
+         label='or select month'
+         placeholder='Select month...'
          openOnClick={true}
          onValueChange={(details) => {
-               goto(`/invoices/year/${data.year}/month/${details.value[0]}`)
+            setTimeout(() => {
+               navDelayed = true;
+            }, 300);
+            goto(`/invoices/year/${data.year}/month/${details.value[0]}`)
          }}
          classes='mx-1 sm:mx-2'
          zIndex='40'
       />
+      {#if navDelayed}
+         <ProgressRing  
+            value={null} 
+            size="size-8" 
+            meterStroke="stroke-tertiary-600-400" 
+            trackStroke="stroke-tertiary-50-950"
+            classes='mt-6 mx-2'
+            {@attach () => {
+               setTimeout(() => {
+                  navDelayed = false;
+                  navTimeout = true;
+               }, 800)
+            }}
+         />
+      {/if}
+      {#if navTimeout}
+         <Progress 
+            value={null}
+            meterBg="bg-tertiary-500"
+            width='w-12'
+            classes='mt-9 mx-2'
+         />
+      {/if}
       <Placeholder numCols={1} numRows={size} heightClass='h-40' classes='z-0'/>
    </div>
    
@@ -150,19 +181,47 @@
                {#snippet content()}  
                   <button onclick={()=>searchDrawerOpen=false} class='btn preset-filled-primary-50-950 rounded-lg m-1 absolute top-0 right-0'><PanelTopClose aria-label='Close'/></button>
                   <div class="mt-8">
-                        <Search data={data.searchForm} bind:search={search} searchType='invoice number' classes='m-1 sm:m-2 '/>
-                        <Search data={data.searchForm} bind:search={nameSearch} searchType='Customer' classes='m-1 sm:m-2 '/>
-                        <DateSearch data={data.dateSearchForm} bind:startDate={startDate} bind:endDate={endDate} {minDate} {maxDate} classes='w-1/2 mb-1 sm:mb-2 mx-1 sm:mx-2'/>
+                     <Search data={data.searchForm} bind:search={search} searchType='invoice number' classes='m-1 sm:m-2 '/>
+                     <Search data={data.searchForm} bind:search={nameSearch} searchType='Customer' classes='m-1 sm:m-2 '/>
+                     <DateSearch data={data.dateSearchForm} bind:startDate={startDate} bind:endDate={endDate} {minDate} {maxDate} classes='w-1/2 mb-1 sm:mb-2 mx-1 sm:mx-2'/>
+                     <div class="flex flex-row">
                         <Combobox
                            data={yearComboboxData}
                            label='Select different year'
                            placeholder='Select year...'
                            openOnClick={true}
                            onValueChange={(details) => {
+                              setTimeout(() => {
+                                 navDelayed = true;
+                              }, 300)
                               goto(`/invoices/year/${details.value[0]}`)
                            }}
                            classes='mx-1 sm:mx-2'
                         />
+                        {#if navDelayed}
+                           <ProgressRing  
+                              value={null} 
+                              size="size-8" 
+                              meterStroke="stroke-tertiary-600-400" 
+                              trackStroke="stroke-tertiary-50-950"
+                              classes='mt-6 mx-2'
+                              {@attach () => {
+                                 setTimeout(() => {
+                                    navDelayed = false;
+                                    navTimeout = true;
+                                 }, 800)
+                              }}
+                           />
+                        {/if}
+                        {#if navTimeout}
+                           <Progress 
+                              value={null}
+                              meterBg="bg-tertiary-500"
+                              width='w-12'
+                              classes='mt-9 mx-2'
+                           />
+                        {/if}
+                     </div>
                   </div>
                {/snippet}
             </Modal>
