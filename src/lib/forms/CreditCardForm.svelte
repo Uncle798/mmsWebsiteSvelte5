@@ -149,14 +149,14 @@
                {/snippet}
             </Tooltip>
             <input 
-            name="billingGivenName" 
-            id="billingGivenName" 
-            type="text"
-            class="input"
-            placeholder="Smokey" 
-            bind:value={$form.billingGivenName} 
-            autocomplete="cc-given-name"
-            {...$constraints.billingGivenName}
+               name="billingGivenName" 
+               id="billingGivenName" 
+               type="text"
+               class="input"
+               placeholder="Smokey" 
+               bind:value={$form.billingGivenName} 
+               autocomplete="cc-given-name"
+               {...$constraints.billingGivenName}
             />
          </label>
          {#if $errors.billingFamilyName}
