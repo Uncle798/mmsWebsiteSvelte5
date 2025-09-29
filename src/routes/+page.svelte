@@ -8,10 +8,9 @@
 	import { fade } from "svelte/transition";
 	import Placeholder from "$lib/displayComponents/Placeholder.svelte";
 	import { Tooltip } from "@skeletonlabs/skeleton-svelte";
-   import Shepard from 'shepherd.js';
-   import type { ShepherdBase } from "shepherd.js";
+	import { getContext, onMount } from "svelte";
+	import { type Tour } from "shepherd.js";
    import 'shepherd.js/dist/css/shepherd.css';
-	import { onMount } from "svelte";
    interface Props {
       data: PageData;
    }
@@ -26,22 +25,12 @@
    }
    const formattedPhone = PUBLIC_PHONE.substring(0,1) +'-'+ PUBLIC_PHONE.substring(1,4)+'-'+PUBLIC_PHONE.substring(4,7)+'-'+PUBLIC_PHONE.substring(7)
    let copyTooltipOpen = $state(false);
-   const tour = new Shepard.Tour({
-         useModalOverlay: true,
-         defaultStepOptions: {
-            classes:'shadow-xl bg-secondary-50-950',
-            scrollTo: true
-         }
-      })
    let homeCopy = $state<HTMLElement>();
-   let firstUnit = $state<HTMLElement>()
+   let firstUnit = $state<HTMLElement>();
+   const tour = getContext('tour') as Tour;
    onMount(() => {
       if(homeCopy){
          tour.addStep({
-            attachTo: {
-               element: homeCopy,
-               on: 'top'
-            },
             text: `Welcome to your homepage ${data.user?.givenName}, though you as the owner won't come here all that often. 
                Check the menu in the top left or rent a random unit to get started. 
                This page is the first thing a new customer would see upon visiting your site.`,
@@ -63,6 +52,10 @@
             },
             text: 'Here\'s where to tell your story. We can customize everything to match your needs',
             buttons: [
+               {
+                  text: 'Previous',
+                  action: tour.back
+               },
                {
                   text: 'Next',
                   action: tour.next
