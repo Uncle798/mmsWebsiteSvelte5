@@ -13,9 +13,9 @@
       classes?: string;
       rows?: number | null;
    }
-   let { value = $bindable(), label, errors, constraints, placeholder, name, autocomplete, rows, ...others }:Props = $props()
+   let { value = $bindable(), label, errors, constraints, placeholder, name, autocomplete, rows, classes }:Props = $props()
 </script>
-<div class="">
+<div class={classes}>
    
    <label class="label ">
       {#if label}
@@ -28,9 +28,8 @@
          aria-invalid={errors ? 'true' : undefined}
          placeholder={placeholder}
          autocomplete={autocomplete}
-         value={value}
+         bind:value={value}
          {...constraints}
-         {...others}
       ></textarea>
    </label>
    {#if errors}<span class="invalid">{errors}</span>{/if}
