@@ -10,8 +10,7 @@
 	import { PUBLIC_ADDRESS1, PUBLIC_COMPANY_NAME, PUBLIC_PHONE } from '$env/static/public';
 	import { CircleX } from 'lucide-svelte';
 	import { onMount, setContext } from 'svelte';
-	import Shepherd from 'shepherd.js';
-	import 'shepherd.js/dist/css/shepherd.css';
+	import Shepherd, {type Tour } from 'shepherd.js';
 
 	interface Props {
 		data: PageData,
@@ -61,35 +60,7 @@
 	})
 	const formattedPhone = PUBLIC_PHONE.substring(0,1) +'-'+ PUBLIC_PHONE.substring(1,4)+'-'+PUBLIC_PHONE.substring(4,7)+'-'+PUBLIC_PHONE.substring(7);
 	let tooltipOpenIdentifier = $state<string|null>(null);
-	const tour = new Shepherd.Tour();
 	let menuButtonElement = $state<HTMLElement>();
-	onMount(() => {
-		if(menuButtonElement){
-			tour.addStep({
-				attachTo: {
-					element: menuButtonElement,
-					on: 'bottom-end'
-				},
-				text: 'Here is the main menu',
-				buttons: [
-               {
-                  text: 'Previous',
-                  action: tour.back
-               },
-               {
-                  text: 'Next',
-                  action: tour.next
-               },
-               {
-                  text: 'Exit',
-                  action: tour.cancel
-               }
-            ]
-			}, 3);
-		}
-		tour.start()
-	})
-	setContext('tour', tour);
 </script>
 <Toaster {toaster} ></Toaster>
 {#if data.user?.employee}
@@ -107,7 +78,7 @@
 		>
 			{#snippet trigger()}
 				<div bind:this={menuButtonElement}>
-					<Menu aria-label='Main Menu' />	
+					<Menu aria-label='Main Menu'/>	
 				</div>
 			{/snippet}
 			{#snippet content()}

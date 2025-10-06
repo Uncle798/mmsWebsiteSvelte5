@@ -8,9 +8,7 @@
 	import { fade } from "svelte/transition";
 	import Placeholder from "$lib/displayComponents/Placeholder.svelte";
 	import { Tooltip } from "@skeletonlabs/skeleton-svelte";
-	import { getContext, onMount } from "svelte";
-	import { type Tour } from "shepherd.js";
-   import 'shepherd.js/dist/css/shepherd.css';
+   
    interface Props {
       data: PageData;
    }
@@ -27,49 +25,6 @@
    let copyTooltipOpen = $state(false);
    let homeCopy = $state<HTMLElement>();
    let firstUnit = $state<HTMLElement>();
-   const tour = getContext('tour') as Tour;
-   onMount(() => {
-      if(homeCopy){
-         tour.addStep({
-            text: `Welcome to your homepage ${data.user?.givenName}, though you as the owner won't come here all that often. 
-               Check the menu in the top left or rent a random unit to get started. 
-               This page is the first thing a new customer would see upon visiting your site.`,
-            buttons: [
-               {
-                  text: 'Next',
-                  action: tour.next
-               },
-               {
-                  text: 'Exit',
-                  action: tour.cancel
-               }
-            ]
-         }, 0)
-         tour.addStep({
-            attachTo: {
-               element: homeCopy,
-               on:'bottom'
-            },
-            text: 'Here\'s where to tell your story. We can customize everything to match your needs',
-            buttons: [
-               {
-                  text: 'Previous',
-                  action: tour.back
-               },
-               {
-                  text: 'Next',
-                  action: tour.next
-               },
-               {
-                  text: 'Exit',
-                  action: tour.cancel
-               }
-            ]
-         }, 1)
-      }
-
-      tour.start();
-   });
 </script>
 <Header title='Home' />
 
@@ -83,7 +38,7 @@
             openDelay={200}
          >
             {#snippet trigger()}
-               <div bind:this={homeCopy}>
+               <div>
                   Thank you for visiting {PUBLIC_COMPANY_NAME}!
                   Conveniently located, {PUBLIC_COMPANY_NAME} is the place to safely and securely store your belongings.
                   <p>Family owned and operated, you can contact us at 
@@ -147,36 +102,12 @@
       {#each filterSize(units) as unit, i}
          <div class="flex flex-col border rounded-lg border-primary-50-950 justify-between" in:fade={{duration:600}}>
             {#if i === 0}
-               <div bind:this={firstUnit} {@attach () => {
-                  if(firstUnit){
-                     tour.addStep({
-                        attachTo: {
-                           element: firstUnit,
-                           on: 'top'
-                        },
-                        text: 'Here\'s an available unit to rent.',
-                        buttons: [
-                           {
-                              text: 'Previous',
-                              action: tour.back
-                           },
-                           {
-                              text: 'Next',
-                              action: tour.next
-                           },
-                           {
-                              text: 'Exit',
-                              action: tour.cancel
-                           }
-                        ]
-                     }, 2)
-                  }
-               }}>
+               <div bind:this={firstUnit} >
                   <UnitCustomer {unit}/>
                   {#if data.user?.employee}
-                     <a class="btn preset-filled-primary-50-950 m-2 w-11/12 self-center" href="/employeeNewLease?unitNum={unit.num}">Rent this Unit</a>
+                  <a class="btn preset-filled-primary-50-950 m-2 w-11/12 self-center" href="/employeeNewLease?unitNum={unit.num}">Rent this Unit</a>
                   {:else}
-                     <a class="btn preset-filled-primary-50-950 m-2" href="/newLease?unitNum={unit.num}">Rent this Unit</a>
+                  <a class="btn preset-filled-primary-50-950 m-2" href="/newLease?unitNum={unit.num}">Rent this Unit</a>
                   {/if}
                </div>   
             {:else}
