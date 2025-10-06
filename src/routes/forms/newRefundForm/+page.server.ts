@@ -5,7 +5,6 @@ import { valibot } from 'sveltekit-superforms/adapters';
 import { refundFormSchema } from '$lib/formSchemas/schemas';
 import { ratelimit } from '$lib/server/rateLimit';
 import { prisma } from '$lib/server/prisma';
-import { stripe } from '$lib/server/stripe';
 
 export const load = (async (event) => {
     if(!event.locals.user?.employee){
@@ -38,34 +37,20 @@ export const actions: Actions = {
         if(!paymentRecord){
             return message(refundForm, 'Payment record not found')
         }
-        if(paymentRecord.paymentType === 'CREDIT'){
-            const refund = await stripe.refunds.create({
-                payment_intent: paymentRecord.transactionId!,
-                amount: refundForm.data.amount,
-            })
-            const refundRecord = await prisma.refundRecord.create({
-                data: {
-                    stripeId: refund.id,
-                    refundAmount: refund.amount,
-                    employeeId: event.locals.user.id!,
-                    customerId: paymentRecord.customerId,
-                    refundType: 'CREDIT',
-                    refundNotes: `Refund of payment record number ${paymentRecord.paymentNumber}`,
-                    paymentRecordNum: paymentRecord.paymentNumber
-                }
-            })
-            await prisma.paymentRecord.update({
-                where: {
-                    paymentNumber: paymentRecord.paymentNumber
-                },
-                data: {
-                    refunded: true,
-                    refundNumber: refundRecord.refundNumber
-                }
-            })
-            redirect(302, `/refundRecords/${refundRecord.refundNumber}`)
+        if(paymentRecord.refundedAmount >= paymentRecord.paymentAmount){
+            return message(refundForm, 'Payment already refunded');
         }
-        if(paymentRecord.paymentType === 'CASH' || paymentRecord.paymentType === 'CHECK'){
+        if(refundForm.data.refundType === 'CREDIT'){
+            const res = await event.fetch('/api/elavon/refundCredit', {
+                method: 'POST',
+                body: JSON.stringify({paymentNum: paymentRecord.paymentNumber})
+            })
+            const body = await res.json();
+            if(res.status === 200){
+                redirect(302, `/refundRecords/${body.refundNumber}`)
+            }
+        }
+        if(refundForm.data.refundType === 'CASH' || refundForm.data.refundType === 'CHECK'){
             const refundRecord = await prisma.refundRecord.create({
                 data: {
                     customerId: paymentRecord.customerId,
@@ -82,8 +67,7 @@ export const actions: Actions = {
                     paymentNumber: paymentRecord.paymentNumber
                 },
                 data: {
-                    refunded: true,
-                    refundNumber: refundRecord.refundNumber
+                    refundedAmount: (paymentRecord.refundedAmount + refundRecord.refundAmount),
                 }
             })
             redirect(302, `/refundRecords/${refundRecord.refundNumber}`)

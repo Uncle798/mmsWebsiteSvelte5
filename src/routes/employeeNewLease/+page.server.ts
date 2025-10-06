@@ -1,44 +1,43 @@
 
-import { redirect } from '@sveltejs/kit';
-import { fail, message, superValidate} from 'sveltekit-superforms';
+import { error, redirect } from '@sveltejs/kit';
+import { message, superValidate} from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
-import { newLeaseSchema, registerFormSchema, addressFormSchema, leaseDiscountFormSchema  } from '$lib/formSchemas/schemas'
+import { newLeaseSchema, registerFormSchema, addressFormSchema, leaseDiscountFormSchema, emailVerificationFormSchema, cuidIdFormSchema  } from '$lib/formSchemas/schemas'
 import type { PageServerLoad, Actions } from './$types';
-import { prisma } from '$lib/server/prisma';
-import type { PartialUser } from '$lib/server/partialTypes';
-import type { Address, DiscountCode } from '@prisma/client';
+import { prisma } from '$lib/server/prisma'; 
+import type { Address, DiscountCode, User } from '@prisma/client';
 import { ratelimit } from '$lib/server/rateLimit';
-import { stripe } from "$lib/server/stripe";
-import dayjs from "dayjs";
 import { qStash } from '$lib/server/qStash';
 import { PUBLIC_URL } from '$env/static/public';
-import { MY_EMAIL } from '$env/static/private';
+import { sendPaymentReceipt } from '$lib/server/mailtrap';
 
 export const load = (async (event) => {
-   const unitNum = event.url.searchParams.get('unitNum');
-   if(!unitNum){
-      redirect(302, '/units/available');
-   }
    if(!event.locals.user?.employee){
       redirect(302, '/login?toast=employee')
    } 
+   const unitNum = event.url.searchParams.get('unitNum');
+   const userId = event.url.searchParams.get('userId');
+   if(!unitNum){
+      redirect(302, `/units/available?userId=${userId}`);
+   }
    const leaseForm = await superValidate(valibot(newLeaseSchema));
    const registerForm = await superValidate(valibot(registerFormSchema));
+   const emailVerificationForm = await superValidate(valibot(emailVerificationFormSchema))
    const addressForm = await superValidate(valibot(addressFormSchema));
    const leaseDiscountForm = await superValidate(valibot(leaseDiscountFormSchema));
+   const customerSelectForm = await superValidate(valibot(cuidIdFormSchema));
    const discountId = event.url.searchParams.get('discountId');
    const redirectTo = event.url.searchParams.get('redirectTo');
-   const userId = event.url.searchParams.get('userId');
    const unit = await prisma.unit.findUnique({
       where: {
          num: unitNum
       }
    })
-   let customer:PartialUser | null = null;
-   let customers:PartialUser[] = [];
+   let customer:User | null = null;
+   let customers:User[] = [];
    let address:Address | null = null;
    let discount:DiscountCode | null = null;
-   if(userId){
+   if(userId && userId !== 'null'){
       customer = await prisma.user.findUnique({
          where: {
             id: userId
@@ -60,20 +59,29 @@ export const load = (async (event) => {
          }
       })
    }
-   if(!userId){
+   if(!customer){
       customers = await prisma.user.findMany({
          where: {
-            employee: false
+            AND: [
+               {
+                  employee: false
+               },
+               {
+                  doNotRent: false
+               },
+            ]
          },
          orderBy: {
             familyName: 'asc'
-         }
+         },
       })
    }
    return {
       leaseDiscountForm,
+      customerSelectForm, 
       leaseForm,
       registerForm, 
+      emailVerificationForm,
       addressForm, 
       discountId,
       redirectTo,
@@ -93,12 +101,12 @@ export const actions: Actions = {
       }
       const leaseForm = await superValidate(event.request, valibot(newLeaseSchema));
       if(!leaseForm.valid){
-         message(leaseForm, 'Not valid');
+         return message(leaseForm, 'Not valid');
       }
       const { success, reset } = await ratelimit.employeeForm.limit(event.locals.user.id);
 		if(!success) {
 			const timeRemaining = Math.floor((reset - Date.now()) /1000);
-			return message(leaseForm, `Please wait ${timeRemaining}s before trying again.`)
+			return message(leaseForm, `Please wait ${timeRemaining}s before trying again.`);
 		}
       const customer = await prisma.user.findUnique({
          where: {
@@ -106,15 +114,18 @@ export const actions: Actions = {
          }
       })
       if(!customer){
-         return fail(404, {leaseForm});
+         return message(leaseForm, 'Customer not found');
+      }
+      if(customer.doNotRent){
+         return message(leaseForm, `DO NO RENT TO ${customer.organizationName ? customer.organizationName.toUpperCase() : `${customer.givenName?.toUpperCase()} ${customer.familyName?.toUpperCase()}`}` )
       }
       const unit = await prisma.unit.findUnique({
          where: {
             num: leaseForm.data.unitNum
          }
-      })
+      });
       if(!unit){
-         return fail(404, {leaseForm})
+         return message(leaseForm, 'unit not found');
       }
       const currentLease = await prisma.lease.findFirst({
          where:{
@@ -127,8 +138,7 @@ export const actions: Actions = {
          console.error(err);
       })
       if(currentLease){
-         message(leaseForm, 'That unit is already leased');
-         return{}
+         return message(leaseForm, 'That unit is already leased');
       }
       const address = await prisma.address.findFirst({
          where: {
@@ -137,7 +147,7 @@ export const actions: Actions = {
          }
       })
       if(!address){
-         return fail(400, {leaseForm ,message: 'unable to find address'})
+         return message(leaseForm, 'Unable to find address'); 
       }
       const employee = await prisma.user.findUnique({
          where:{
@@ -173,7 +183,7 @@ export const actions: Actions = {
             discountId: discount ? discount.discountId : undefined,
             discountedAmount: discount ? discountAmount : undefined
          }
-      })
+      });
       await prisma.unit.update({
          where: {
             num: lease.unitNum
@@ -181,9 +191,9 @@ export const actions: Actions = {
          data: {
             leasedPrice: lease.price
          }
-      })
+      });
       await qStash.trigger({
-         url: `${PUBLIC_URL}/api/upstash/workflow`,
+         url: `https://${PUBLIC_URL}/api/upstash/workflow`,
          body:  {leaseId:lease.leaseId},
          workflowRunId: lease.leaseId
       })
@@ -197,6 +207,7 @@ export const actions: Actions = {
             invoiceDue: new Date(),
          }
       })
+
       if(leaseForm.data.paymentType === 'CASH' || leaseForm.data.paymentType === 'CHECK') {
          const paymentRecord = await prisma.paymentRecord.create({
             data: {
@@ -209,80 +220,25 @@ export const actions: Actions = {
                paymentCompleted: new Date()
             }
          })
-         await prisma.invoice.update({
+         const dbInvoice = await prisma.invoice.update({
             where: {
                invoiceNum: invoice.invoiceNum
             },
             data: {
-               paymentRecordNum: paymentRecord.paymentNumber
+               amountPaid: invoice.amountPaid + paymentRecord.paymentAmount
             }
-         })
+         });
+         const emailResponse = await sendPaymentReceipt(customer, paymentRecord, address);  
          redirect(302, `/employeeNewLease/leaseSent?leaseId=${lease.leaseId}`);
       }
-      let name:string = `${customer!.givenName} ${customer!.familyName}`
-      if(customer!.organizationName){
-         name=customer!.organizationName;
-      }
-      const existingStripeCustomer = await stripe.customers.search({
-         query: `email:'${customer!.email}'`
-      })
-      let stripeId:string | null =  null;
-      if(existingStripeCustomer.data[0]){
-         stripeId = existingStripeCustomer.data[0].id
-      }
-      if(existingStripeCustomer.data.length === 0){
-         const stripeCustomer = await stripe.customers.create({
-            name: name ? name : undefined,
-            email: MY_EMAIL, // test mode
-            // email: customer!.email ? customer?.email : undefined, // prod mode
-            address: {
-               line1: address!.address1,
-               line2: address!.address2 ? address!.address2 : undefined,
-               city: address!.city,
-               state: address!.state,
-               postal_code: address!.postalCode,
-               country: address!.country,
-            },
-            description: `Unit number ${unit!.num.replace(/^0+/gm, '')} starting ${dayjs(lease.leaseCreatedAt).format('M/YYYY')}`,
-            metadata: {
-               customerId: customer!.id
-            }
-         })
-         stripeId = stripeCustomer.id
-      } else {
-         await stripe.customers.update(existingStripeCustomer.data[0].id, {
-            name: name,
-            address: {
-               line1: address!.address1,
-               line2: address!.address2 ? address!.address2 : undefined,
-               city: address!.city,
-               state: address!.state,
-               postal_code: address!.postalCode,
-               country: address!.country,
-            },
-            description: `Unit number ${unit!.num.replace(/^0+/gm, '')} starting ${dayjs(lease.leaseCreatedAt).format('M/YYYY')}`,
-            metadata: {
-               customerId: customer!.id
-            }
-         })
-      }
-      await prisma.user.update({
-         where: {
-            id: customer!.id
-         },
-         data: {
-            stripeId
-         }
-      })
-
-      redirect(303, `/makePayment?invoiceNum=${invoice.invoiceNum}&stripeId=${stripeId}&newLease=true`)
+      redirect(303, `/makePayment?invoiceNum=${invoice.invoiceNum}&newLease=true`);
    },
    selectCustomer: async (event ) => {
       if(!event.locals.user?.employee){
-         redirect(302, '/login?toast=employee')
+         redirect(302, '/login?toast=employee');
       }
       const formData = await event.request.formData();
       const unitNum = event.url.searchParams.get('unitNum')
-      redirect(303, `/employeeNewLease?userId=${formData.get('customerId')}&unitNum=${unitNum}`)
+      redirect(303, `/employeeNewLease?userId=${formData.get('cuidId')}&unitNum=${unitNum}`)
    }
 };

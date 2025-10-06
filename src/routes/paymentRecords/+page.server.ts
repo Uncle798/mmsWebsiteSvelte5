@@ -7,12 +7,53 @@ import { redirect } from '@sveltejs/kit';
 import { arrayOfYears } from '$lib/server/utils';
 
 export const load = (async (event) => {
-   // if(!event.locals.user?.employee){
-   //    redirect(302, '/login?toast=employee&redirectTo=paymentRecords');
-   // }
+   if(!event.locals.user?.employee){
+      redirect(302, '/login?toast=employee&redirectTo=paymentRecords');
+   }
+   const invoiceNum = event.url.searchParams.get('invoiceNum');
    const searchForm = await superValidate(valibot(searchFormSchema));
    const dateSearchForm = await superValidate(valibot(dateSearchFormSchema));
    const refundForm = await superValidate(valibot(refundFormSchema));
+   if(invoiceNum){
+      const invoice = await prisma.invoice.findFirstOrThrow({
+         where: {
+            invoiceNum: parseInt(invoiceNum, 10)
+         }
+      });
+      if(invoice){
+         const paymentRecords = prisma.paymentRecord.findMany({
+            where: {
+               invoiceNum: invoice.invoiceNum,
+            }
+         })
+         const customer = prisma.user.findFirst({
+            where: {
+               id:invoice.customerId
+            }
+         });
+         const address = prisma.address.findFirst({
+            where: {
+               AND: [
+                  {
+                     softDelete: false
+                  },
+                  {
+                     userId: invoice.customerId
+                  }
+               ]
+            }
+         });
+         return {
+            invoice, 
+            paymentRecords, 
+            searchForm, 
+            customer, 
+            dateSearchForm, 
+            address, 
+            refundForm
+         };
+      }
+   }
    const paymentRecordCount = await prisma.paymentRecord.count();
    const firstPayment = await prisma.paymentRecord.findFirst({
       orderBy: {

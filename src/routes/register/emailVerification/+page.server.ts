@@ -2,7 +2,7 @@ import { fail as superFormFail, superValidate, message } from 'sveltekit-superfo
 import type { PageServerLoad, Actions } from './$types';
 import { valibot } from 'sveltekit-superforms/adapters';
 import { emailVerificationFormSchema } from '$lib/formSchemas/schemas';
-import { fail, redirect, } from '@sveltejs/kit';
+import { error, redirect, } from '@sveltejs/kit';
 import { ratelimit } from '$lib/server/rateLimit';
 import { generateEmailVerificationRequest } from '$lib/server/authUtils';
 import { sendVerificationEmail } from '$lib/server/mailtrap';
@@ -10,8 +10,7 @@ import { prisma } from '$lib/server/prisma';
 
 export const load:PageServerLoad = (async (event) => {
     if(!event.locals.user){
-        fail(401);
-        return{};
+        error(401);
     }
     if(event.locals.user.emailVerified){
         redirect(302, '/accountSettings')
@@ -36,9 +35,7 @@ export const actions: Actions ={
         if(!event.locals.user){
             redirect(302, '/login')
         }
-        if(event.locals.user.emailVerified){
-            redirect(302, '/');
-        }
+        const userId = event.url.searchParams.get('userId');
         const formData = await event.request.formData();
         const emailVerificationForm = await superValidate(formData, valibot(emailVerificationFormSchema));
         if(!emailVerificationForm.valid){
@@ -49,13 +46,16 @@ export const actions: Actions ={
             const timeRemaining = Math.floor((reset - Date.now()) / 1000);
             return message(emailVerificationForm, `Please wait ${timeRemaining} seconds before trying again`);
         }
+        if(!userId){
+            return message(emailVerificationForm, 'userId not provided')
+        }
         const verification = await prisma.verification.findFirst({
             where: {
-                userId: event.locals.user.id
+                userId: userId
             }
         })
         if(!verification){
-            return fail(401, {verify:'Not authenticated'})
+            error(401, {message:'Not authenticated'})
         }
         if(verification?.expiresAt.getTime() <= Date.now() ){
             const code = await generateEmailVerificationRequest(event.locals.user.id, event.locals.user.email!);
@@ -72,7 +72,7 @@ export const actions: Actions ={
         })
         await prisma.user.update({
             where: {
-                id: event.locals.user.id
+                id: userId
             },
             data: {
                 emailVerified: true
@@ -84,17 +84,13 @@ export const actions: Actions ={
             redirect(302, '/')
         }
         if(redirectTo){
-            redirect(302, `/${redirectTo}?unitNum=${unitNum}`)
+            redirect(302, `/${redirectTo}?unitNum=${unitNum}&userId=${userId}`)
         }
         return message(emailVerificationForm, 'Email verified');
     },
     resend: async(event) =>{
         if(!event.locals.user){
-            return fail(401, {
-                resend: {
-                    message: 'Not authenticated'
-                }
-            })
+            error(401, {message: 'Not authenticated'})
         }
         if(event.locals.user.emailVerified){
             redirect(302, '/users/' + event.locals.user.id)
@@ -102,11 +98,7 @@ export const actions: Actions ={
         const { success, reset } = await ratelimit.emailVerification.limit(event.locals.user.id);
         if(!success){
             const timeRemaining = Math.floor((reset - Date.now()) / 1000);
-            return fail(429, {
-                resend:{
-                    message: `Please wait ${timeRemaining} seconds before trying again`
-                }
-            })
+            error(429, {message: `Please wait ${timeRemaining} seconds before trying again`})
         }
         if(!event.locals.user.email){
             redirect(301, '/register')

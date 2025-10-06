@@ -59,7 +59,6 @@ export const actions: Actions = {
    autoPaySignUp: async (event) => {
       const formData = await event.request.formData();
       const form = await superValidate(formData, valibot(cuidIdFormSchema));
-      console.log(formData)
       if(!form.valid){
          return {form}
       }
@@ -75,7 +74,9 @@ export const actions: Actions = {
                AND: [
                   { customerId: lease.customerId },
                   { deposit: false },
-                  { paymentRecordNum: null}
+                  { invoiceAmount: {
+                     gt: prisma.invoice.fields.amountPaid
+                  }}
                ]
             },
             orderBy: {

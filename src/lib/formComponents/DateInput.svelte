@@ -26,8 +26,8 @@
 	}: Props = $props();
 </script>
 
-<div class="mb-2 ">
-	<label class="label">
+<div class="">
+	<label class="label-text">
 		{#if label}<span class="label-text">{label}</span>{/if}
 		<input
 			type="date"

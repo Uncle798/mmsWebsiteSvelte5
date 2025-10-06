@@ -20,10 +20,10 @@
       redirect=$bindable(''),
       classes,
    }:Props = $props();
-   let { form, errors, constraints, message, enhance, submitting, delayed, timeout } = superForm(data, {
+   let { form, errors, constraints, message, enhance,  delayed, timeout } = superForm(data, {
       onSubmit(){
       }, 
-      onUpdated(event) {
+      onUpdated() {
          emailVerificationModalOpen = false;
        },
    });
@@ -61,7 +61,7 @@
       </div>
    {/if}
    {#if mounted}
-      <form method="POST" action="/register/emailVerification?/verify&redirect={redirect}" use:enhance>
+      <form method="POST" action="/register/emailVerification?/verify&redirect={redirect}&userId={userId}" use:enhance>
          <TextInput
          label="Code: "
          name="code"
@@ -76,7 +76,5 @@
    {:else}
       Sending verification...
    {/if}
-   {#if emailVerificationModalOpen !== undefined}
-      <button class="btn preset-filled-primary-50-950 rounded-lg" onclick={()=> emailVerificationModalOpen = false}>Close</button>
-   {/if}
+
 </div>

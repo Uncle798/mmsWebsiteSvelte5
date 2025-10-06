@@ -5,6 +5,7 @@
 	import CreditCardForm from '$lib/forms/CreditCardForm.svelte';
 	import { invalidate } from '$app/navigation';
 	import InvoiceCustomer from '$lib/displayComponents/customerViews/InvoiceCustomer.svelte';
+	import UserCustomer from '$lib/displayComponents/customerViews/UserCustomer.svelte';
 
    let { data }: { data: PageData } = $props();
    let sessionToken = $state('');
@@ -35,11 +36,16 @@
    }
 </script>
 {#if !mounted}
-   <div class="m-2 mt-10">
+   <div class="m-2 mt-14 sm:mt-10">
       Loading...
    </div>
 {:else}
-   <div class="flex flex-col m-2 gap-2 mt-10">
+   <div class="flex flex-col m-2 gap-2 mt-14 sm:mt-10">
+      {#if data.customer}    
+         <UserCustomer
+            user={data.customer}
+         />
+      {/if}
       <InvoiceCustomer
          invoice={data.invoice}
          classes='border border-primary-50-950 rounded-lg'

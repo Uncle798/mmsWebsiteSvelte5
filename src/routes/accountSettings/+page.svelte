@@ -26,13 +26,13 @@
 
    function setCurrentLeaseId(leaseId:string){
       currentLeaseId = leaseId;
+      console.log("leaseId", leaseId);
       modalSelector = 'leaseEnd';
       globalModalOpen = true;
    }
    function autoPaySignUp(leaseId:string){
       currentLeaseId = leaseId;
       autoPaySpinner = true;
-      console.log(leaseId)
       submit()
    } 
    function autoPayCancel(leaseId:string){
@@ -45,6 +45,7 @@
 <Header title='Settings for {data.user?.givenName}' />
 <Modal
    open={globalModalOpen}
+   onOpenChange={(e)=> globalModalOpen = e.open}
    contentBase="card bg-surface-400-600 p-4 space-y-4 shadow-xl max-w-(--breakpoint-sm)"
    backdropClasses="backdrop-blur-xs"
 >
@@ -75,7 +76,7 @@
    {/snippet}
 </Modal>
 
-<div in:fade={{duration:600}} class="mx-2 mt-10 mb-24 sm:mb-14 lg:mb-9 sm:mt-10 lg:mt-10">
+<div in:fade={{duration:600}} class="mx-2 mb-24 sm:mb-14 lg:mb-9 mt-14 sm:mt-10">
    <div class="flex flex-col sm:flex-row gap-2">
       <div>
          {#if data.user}
@@ -119,7 +120,7 @@
       {#if address}
          <AddressCustomer {address} classes=''/>
       {/if}
-         <button class="btn preset-filled-primary-50-950 m-1 sm:m-2" onclick={()=> {
+         <button class="btn preset-filled-primary-50-950 m-1 sm:m-2 rounded-lg" onclick={()=> {
             modalSelector = 'address'
             globalModalOpen = true;
          }}>

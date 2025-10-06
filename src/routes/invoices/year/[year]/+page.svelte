@@ -13,10 +13,12 @@
    import utc from 'dayjs/plugin/utc'
    import Revenue from '$lib/displayComponents/Revenue.svelte';
    import Address from '$lib/displayComponents/AddressEmployee.svelte';
-   import { Combobox, Modal } from '@skeletonlabs/skeleton-svelte';
+   import { Combobox, Modal, Progress, ProgressRing } from '@skeletonlabs/skeleton-svelte';
    import { goto, onNavigate } from '$app/navigation';
    import { PanelTopClose, SearchIcon } from 'lucide-svelte';
-	import EmailCustomer from '$lib/emailCustomer.svelte';
+	import EmailCustomer from '$lib/EmailCustomer.svelte';
+	import DownloadPdfButton from '$lib/DownloadPDFButton.svelte';
+	import { onMount } from 'svelte';
    dayjs.extend(utc)
    let { data }: { data: PageData } = $props();
    let pageNum = $state(1);
@@ -71,54 +73,85 @@
       })
       return totalRevenue
    })
-   let monthSelect = $state(['']);
    interface ComboboxData {
       label: string;
       value: string;
    }
-   let monthComboboxData:ComboboxData[] = [
-      {label:'Unpaid Invoices', value: 'unpaid'},
-   ]
-   for(const [index, month] of data.months.entries()){
-      monthComboboxData.push({
-         label: dayjs(month).add(1, 'month').format('MMMM'),
-         value: (index+1).toString(),
-      })
-   }
+   let monthComboboxData:ComboboxData[] = $derived(data.months.map(month => ({
+      label: dayjs(month).add(1, 'month').format('MMMM'),
+      value: (month.getMonth() + 1).toString()
+   })))
+   let yearComboboxData:ComboboxData[] = $derived(data.years.map(year => ({
+      label: year.toString(),
+      value: year.toString()
+   })))
    let searchDrawerOpen = $state(false);
+   let navDelayed = $state(false);
+   let navTimeout = $state(false);
+
    onNavigate(()=>{
-      searchDrawerOpen = false
+      searchDrawerOpen = false;
+      navDelayed = false;
+      navTimeout = false;
+   })
+   onMount(() => {
+      monthComboboxData.unshift({label:'Unpaid Invoices', value: 'unpaid'})
    })
 </script>
 {#await wrapper}
    <Header title='Loading invoices' />
-   <div class="mx-1 sm:mx-2 mt-10" in:fade={{duration:600}}>
+   <div class="mx-1 sm:mx-2 mt-14 sm:mt-10" in:fade={{duration:600}}>
       Loading {numberFormatter.format(data.invoiceCount)} invoices, 
       <Combobox
          data={monthComboboxData}
-         bind:value={monthSelect}
-         label='or select year'
-         placeholder='Select year...'
+         label='or select month'
+         placeholder='Select month...'
          openOnClick={true}
          onValueChange={(details) => {
-               goto(`/invoices/year/${data.year}/month/${details.value[0]}`)
+            setTimeout(() => {
+               navDelayed = true;
+            }, 300);
+            goto(`/invoices/year/${data.year}/month/${details.value[0]}`)
          }}
          classes='mx-1 sm:mx-2'
          zIndex='40'
       />
+      {#if navDelayed}
+         <ProgressRing  
+            value={null} 
+            size="size-8" 
+            meterStroke="stroke-tertiary-600-400" 
+            trackStroke="stroke-tertiary-50-950"
+            classes='mt-6 mx-2'
+            {@attach () => {
+               setTimeout(() => {
+                  navDelayed = false;
+                  navTimeout = true;
+               }, 800)
+            }}
+         />
+      {/if}
+      {#if navTimeout}
+         <Progress 
+            value={null}
+            meterBg="bg-tertiary-500"
+            width='w-12'
+            classes='mt-9 mx-2'
+         />
+      {/if}
       <Placeholder numCols={1} numRows={size} heightClass='h-40' classes='z-0'/>
    </div>
    
    {:then invoices}
    {#await data.customers}
       <Header title='Loading customers' />
-      <div class="mt-10">
+      <div class="mt-14 sm:mt-10">
          Loading customers...
       </div>
       <Placeholder numCols={1} numRows={size} heightClass='h-40'/>
    {:then customers}
       {#await data.addresses}
-         <div class="mt-10">
+         <div class="mt-14 sm:mt-10">
                Loading addresses...
          </div>
          <Placeholder numCols={1} numRows={size} heightClass='h-40'/>
@@ -128,7 +161,7 @@
             <Revenue 
                label="Total invoiced (not including deposits)" 
                amount={totalRevenue(searchedInvoices(dateSearchedInvoices(invoices)))} 
-               classes='bg-tertiary-50-950 w-full rounded-b-lg fixed top-8 p-2 z-40'
+               classes='bg-tertiary-50-950 w-full rounded-b-lg fixed top-9 p-2 z-40'
             />
             <Modal
                open={searchDrawerOpen}
@@ -148,23 +181,65 @@
                {#snippet content()}  
                   <button onclick={()=>searchDrawerOpen=false} class='btn preset-filled-primary-50-950 rounded-lg m-1 absolute top-0 right-0'><PanelTopClose aria-label='Close'/></button>
                   <div class="mt-8">
-                        <Search data={data.searchForm} bind:search={search} searchType='invoice number' classes='m-1 sm:m-2 '/>
-                        <Search data={data.searchForm} bind:search={nameSearch} searchType='Customer' classes='m-1 sm:m-2 '/>
-                        <DateSearch data={data.dateSearchForm} bind:startDate={startDate} bind:endDate={endDate} {minDate} {maxDate} classes='w-1/2 mb-1 sm:mb-2 mx-1 sm:mx-2'/>
+                     <Search data={data.searchForm} bind:search={search} searchType='invoice number' classes='m-1 sm:m-2 '/>
+                     <Search data={data.searchForm} bind:search={nameSearch} searchType='Customer' classes='m-1 sm:m-2 '/>
+                     <DateSearch data={data.dateSearchForm} bind:startDate={startDate} bind:endDate={endDate} {minDate} {maxDate} classes='w-1/2 mb-1 sm:mb-2 mx-1 sm:mx-2'/>
+                     <div class="flex flex-row">
+                        <Combobox
+                           data={yearComboboxData}
+                           label='Select different year'
+                           placeholder='Select year...'
+                           openOnClick={true}
+                           onValueChange={(details) => {
+                              setTimeout(() => {
+                                 navDelayed = true;
+                              }, 300)
+                              goto(`/invoices/year/${details.value[0]}`)
+                           }}
+                           classes='mx-1 sm:mx-2'
+                        />
+                        {#if navDelayed}
+                           <ProgressRing  
+                              value={null} 
+                              size="size-8" 
+                              meterStroke="stroke-tertiary-600-400" 
+                              trackStroke="stroke-tertiary-50-950"
+                              classes='mt-6 mx-2'
+                              {@attach () => {
+                                 setTimeout(() => {
+                                    navDelayed = false;
+                                    navTimeout = true;
+                                 }, 800)
+                              }}
+                           />
+                        {/if}
+                        {#if navTimeout}
+                           <Progress 
+                              value={null}
+                              meterBg="bg-tertiary-500"
+                              width='w-12'
+                              classes='mt-9 mx-2'
+                           />
+                        {/if}
+                     </div>
                   </div>
                {/snippet}
             </Modal>
-            <div class="grid grid-cols-1 sm:m-2 m-1 gap-2 mt-24 sm:mt-20" in:fade={{duration:600}} out:fade={{duration:0}}>
+            <div class="grid grid-cols-1 sm:m-2 m-1 gap-2 mt-26 sm:mt-20" in:fade={{duration:600}} out:fade={{duration:0}}>
                {#each slicedInvoices(searchedInvoices(searchByUser(invoices, currentUsers(customers)))) as invoice}  
                {@const customer = customers.find((customer) => customer.id === invoice.customerId)}
-                  <div class="sm:grid sm:grid-cols-2 border-2 border-primary-50-950 rounded-lg">
+                  {#if customer}
+                  {@const address = addresses.find((address) => address.userId === customer.id)}
+                     <div class="sm:grid sm:grid-cols-2 border-2 border-primary-50-950 rounded-lg">
+                        <div class="flex flex-col"> 
                         <InvoiceEmployee {invoice} classes=' px-2' />
-                        {#if customer}
-                        {@const address = addresses.find((address) => address.userId === customer.id)}
-                           <div class="flex flex-col px-2 pt-2">
-                              <UserEmployee user={customer} classes=''/>
-                              {#if address}
-                                    <Address {address} />
+                           <div class="m-2 flex flex-col sm:flex-row gap-2">
+                              {#if invoice.amountPaid < invoice.invoiceAmount}
+                                 <a href='/paymentRecords/new?invoiceNum={invoice.invoiceNum}'
+                                    class="btn preset-filled-primary-50-950 h-8"
+                                 >
+                                    Make payment record for this invoice
+                                 </a>
                               {/if}
                               {#if customer.email && customer.emailVerified}
                                  <EmailCustomer
@@ -172,14 +247,26 @@
                                     recordNum={invoice.invoiceNum}
                                     buttonText='Email invoice'
                                     apiEndPoint='/api/sendInvoice'
+                                    classes='h-8'
                                  />
                               {/if}
+                              <DownloadPdfButton
+                                 recordType='invoiceNum'
+                                 num={invoice.invoiceNum}
+                              />
                            </div>
-                        {/if}
-                  </div>
+                        </div>
+                           <div class="flex flex-col px-2 pt-2">
+                              <UserEmployee user={customer} classes=''/>
+                              {#if address}
+                                    <Address {address} />
+                              {/if}
+                           </div>
+                     </div>
+                  {/if}
                {/each}
+                  <Pagination bind:pageNum={pageNum} bind:size={size} array={searchedInvoices(searchByUser(invoices, currentUsers(customers)))} label='invoices' />
             </div>
-            <Pagination bind:pageNum={pageNum} bind:size={size} array={searchedInvoices(searchByUser(invoices, currentUsers(customers)))} label='invoices' />
          {/if}
       {/await}
    {/await}

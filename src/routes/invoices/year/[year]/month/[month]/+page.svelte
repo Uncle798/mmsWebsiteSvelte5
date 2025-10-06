@@ -13,10 +13,11 @@
    import utc from 'dayjs/plugin/utc'
    import Revenue from '$lib/displayComponents/Revenue.svelte';
    import Address from '$lib/displayComponents/AddressEmployee.svelte';
-   import { Combobox, Modal } from '@skeletonlabs/skeleton-svelte';
-   import { goto, onNavigate } from '$app/navigation';
+   import { Modal } from '@skeletonlabs/skeleton-svelte';
+   import { onNavigate } from '$app/navigation';
    import { PanelTopClose, SearchIcon } from 'lucide-svelte';
-	import EmailCustomer from '$lib/emailCustomer.svelte';
+	import EmailCustomer from '$lib/EmailCustomer.svelte';
+	import DownloadPdfButton from '$lib/DownloadPDFButton.svelte';
    dayjs.extend(utc)
    let { data }: { data: PageData } = $props();
    let pageNum = $state(1);
@@ -78,7 +79,7 @@
 </script>
 {#await wrapper}
    <Header title='Loading invoices' />
-   <div class="mx-1 sm:mx-2 mt-10" in:fade={{duration:600}}>
+   <div class="mx-1 sm:mx-2 mt-14 sm:mt-10" in:fade={{duration:600}}>
       Loading {numberFormatter.format(data.invoiceCount)} invoices, 
       <Placeholder numCols={1} numRows={size} heightClass='h-40' classes='z-0'/>
    </div>
@@ -86,13 +87,13 @@
    {:then invoices}
    {#await data.customers}
       <Header title='Loading customers' />
-      <div class="mt-10">
+      <div class="mt-14 sm:mt-10">
          Loading customers...
       </div>
       <Placeholder numCols={1} numRows={size} heightClass='h-40'/>
    {:then customers}
       {#await data.addresses}
-         <div class="mt-10">
+         <div class="mt-14 sm:mt-10">
                Loading addresses...
          </div>
          <Placeholder numCols={1} numRows={size} heightClass='h-40'/>
@@ -148,6 +149,10 @@
                                     apiEndPoint='/api/sendInvoice'
                                  />
                               {/if}
+                              <DownloadPdfButton
+                                 recordType='invoiceNum'
+                                 num={invoice.invoiceNum}
+                              />
                            </div>
                         {/if}
                   </div>

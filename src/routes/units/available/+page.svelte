@@ -9,6 +9,7 @@
 	import { Combobox, Modal } from '@skeletonlabs/skeleton-svelte';
 	import { SearchIcon, PanelTopClose } from 'lucide-svelte';
 	import { onMount } from 'svelte';
+	import { page } from '$app/state';
    let { data }:{data:PageData} = $props();
    const currencyFormatter = new Intl.NumberFormat('en-US', {style: 'currency', currency:'USD'});
    let sizeFilter = $state('');
@@ -60,23 +61,24 @@
          return units;
       } else if(selectedSize[0] !== ''){
          return units.filter((unit) => {
-            unit.size === selectedSize[0]
+            return unit.size === selectedSize[0]
          });
       } else {
          return units;
       }
    })
+   const url = page.url.pathname;
 </script>
 <Header title='Available Units' />
 {#await data.availableUnits}
-   <div class="m-2 mt-10">
+   <div class="m-2 mt-14 sm:mt-10">
       ...loading available units
    </div>
 {:then availableUnits}   
    <Modal
       open={searchDrawerOpen}
       onOpenChange={(event)=>(searchDrawerOpen = event.open)}
-      triggerBase='btn preset-filled-primary-50-950 rounded-lg fixed top-0 right-0 z-50'
+      triggerBase='btn preset-filled-primary-50-950 rounded-lg fixed top-0 right-0 z-50 h-12 sm:h-auto'
       contentBase='bg-surface-100-900 h-[120px] w-screen rounded-b-lg'
       positionerJustify=''
       positionerAlign=''
@@ -91,33 +93,34 @@
 
    {#snippet content()}         
       <button onclick={()=>searchDrawerOpen=false} class='btn preset-filled-primary-50-950 rounded-lg m-1 absolute top-0 right-0'><PanelTopClose aria-label='Close'/></button>
-      <div class="m-1 sm:m-2 mt-9 sm:mt-9">
+      <div class="m-1 sm:m-2 mt-11 sm:mt-11">
          <Combobox
             data={comboboxData}
             label='Filter by Size' 
-            bind:value={selectedSize} 
+            value={selectedSize} 
             positionerBase='overflow-auto small:h-44 tall:h-96 venti:h-auto'
             placeholder='Select size...'
             onValueChange={(details) => {
                searchDrawerOpen = false
                selectedSize=details.value
             }}
+            openOnClick={true}
          />
       </div>
    {/snippet}
    </Modal>
    {#if data.user?.employee}
-      <div class="flex fixed bg-tertiary-50-950 rounded-b-lg z-40 w-full top-9">
+      <div class="flex fixed bg-tertiary-50-950 rounded-b-lg z-40 w-full top-11 sm:top-8">
          <span class="m-1">Available: {availableUnits.length} of {data.unitCount}</span>
          <span class="m-1">Percentage: {Math.round((availableUnits.length*100)/data.unitCount)}%</span>
          <span class="m-1">Open revenue per month: {currencyFormatter.format(lostRevenue(availableUnits))}</span>
       </div>
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 m-1 sm:m-2 bg-surface-50-950 mt-24 sm:mt-18">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 m-1 sm:m-2 bg-surface-50-950 mt-28 sm:mt-18">
          {#each filteredUnits(availableUnits) as unit}
             <div class="border-2 border-primary-50-950 rounded-lg">
                <UnitEmployee {unit}/>
                <div class="text-center sm:col-span-2">
-                  <a href="/employeeNewLease?unitNum={unit.num}" class="btn preset-filled-primary-50-950 rounded-lg m-2 text-wrap">Rent this unit</a>
+                  <a href="/employeeNewLease?unitNum={unit.num}&userId={data.userId}" class="btn preset-filled-primary-50-950 rounded-lg m-2 text-wrap">Rent this unit</a>
                </div>
                <UnitNotesForm {unit} data={data.unitNotesForm} classes='mx-2' />
             </div>

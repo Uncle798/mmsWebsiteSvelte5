@@ -1,5 +1,6 @@
 import { PUBLIC_COMPANY_NAME } from "$env/static/public";
 import type { Address, Invoice, PaymentRecord, RefundRecord, User } from "@prisma/client";
+import BlobStream, { type IBlobStream } from "blob-stream";
 import dayjs from "dayjs";
 import PdfPrinter from "pdfmake"
 import type { ContentTable, ContentText, StyleDictionary, TDocumentDefinitions } from "pdfmake/interfaces";
@@ -76,7 +77,7 @@ function makeNamePlate(user:User){
    return pdfNamePlate
 }
 
-export async function makeInvoicePdf(invoice:Invoice, customer:User, address:Address) {
+export async function makeInvoicePdf(invoice:Invoice, customer:User, address:Address, download?:boolean):Promise<Blob | PDFKit.PDFDocument> {
    const header:ContentText = {
       text:`${PUBLIC_COMPANY_NAME} Invoice number ${invoice.invoiceNum}`,
       style: 'header'
@@ -118,11 +119,23 @@ export async function makeInvoicePdf(invoice:Invoice, customer:User, address:Add
       }
    }
    const pdf = printer.createPdfKitDocument(invoiceDocDef);
+   if(download){
+      return new Promise((resolve, reject) => {
+         pdf.pipe(BlobStream()).on('finish', function(this:IBlobStream){
+            console.log('pdf generated')
+            resolve(this.toBlob('application/pdf'));
+         }).on('error', (err) => {
+            console.error('err', err);
+            reject(err)
+         })
+         pdf.end();
+      })
+   }
    pdf.end();
    return pdf
 }
 
-export async function makeReceiptPdf(paymentRecord:PaymentRecord, customer:User, address:Address){
+export async function makeReceiptPdf(paymentRecord:PaymentRecord, customer:User, address:Address, download?:boolean):Promise<Blob | PDFKit.PDFDocument>{
    const header:ContentText = {
       text: `${PUBLIC_COMPANY_NAME} Payment receipt number ${paymentRecord.paymentNumber}`,
       style: 'header'
@@ -174,10 +187,22 @@ export async function makeReceiptPdf(paymentRecord:PaymentRecord, customer:User,
       styles: styles,
    }
    const pdf = printer.createPdfKitDocument(receiptDocDef, {});
+   if(download){
+      return new Promise((resolve, reject) => {
+         pdf.pipe(BlobStream()).on('finish', function(this:IBlobStream){
+            resolve(this.toBlob('application/pdf'));
+         }).on('error', (err)=>{
+            console.error(err);
+            reject(err)
+         });
+         pdf.end();
+      })
+   }
+   pdf.end()
    return pdf
 }
 
-export async function makeRefundPdf(refund:RefundRecord, customer:User, address:Address){
+export async function makeRefundPdf(refund:RefundRecord, customer:User, address:Address, download?:boolean):Promise<Blob | PDFKit.PDFDocument>{
    const header:ContentText = { 
       text: `${PUBLIC_COMPANY_NAME} Refund ${refund.refundNumber}`,
       style: 'header'
@@ -214,6 +239,19 @@ export async function makeRefundPdf(refund:RefundRecord, customer:User, address:
       }
    }
    const pdf = printer.createPdfKitDocument(refundDocDef);
-   pdf.end()
+   if(download){
+      return new Promise((resolve, reject) => {
+         pdf.pipe(BlobStream()).on('finish', function(this:IBlobStream){
+            console.log('pdf generated')
+            resolve(this.toBlob('application/pdf'));
+         }).on('error', (err) => {
+            console.error('err', err);
+            reject(err)
+         })
+         pdf.end();
+         console.log('pdf ended')
+      })
+   }
+   pdf.end();
    return pdf
 }

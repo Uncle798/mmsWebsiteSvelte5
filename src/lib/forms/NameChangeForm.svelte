@@ -4,6 +4,7 @@
    import FormProgress from '$lib/formComponents/FormSubmitWithProgress.svelte';
 	import type { NameFormSchema } from '$lib/formSchemas/schemas';
 	import FormMessage from '$lib/formComponents/FormMessage.svelte';
+	import { onMount } from 'svelte';
    
    interface Props {
       data: SuperValidated<Infer<NameFormSchema>>;
@@ -13,10 +14,29 @@
 
    let { data, nameModalOpen=$bindable(false), classes }:Props = $props();
    let { form, errors, message, constraints, enhance, delayed, timeout} = superForm(data, {
+      onChange(event) {
+         if(event.target){
+            const formName = 'nameChangeForm';
+            const value = event.get(event.path);
+            if(value){
+               sessionStorage.setItem(`${formName}:${event.path}`, value);
+            }
+         }
+      },
       onUpdate(){
-         nameModalOpen=false
+         nameModalOpen=false;
+
       }
    });
+   onMount(() => {
+      for(const key in $form){
+         let fullKey = `nameChangeForm:${key}`;
+         const storedValue = sessionStorage.getItem(fullKey)
+         if(storedValue){
+            $form[key as keyof typeof $form] = storedValue;
+         }
+      }
+   })
 </script>
 <div class={classes}>
    <FormMessage message={$message} />

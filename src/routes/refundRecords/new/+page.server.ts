@@ -1,5 +1,5 @@
 import type { PageServerLoad, Actions } from './$types';
-import { fail, redirect } from '@sveltejs/kit';
+import { error, redirect } from '@sveltejs/kit';
 import { prisma } from '$lib/server/prisma'
 import { message, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
@@ -20,35 +20,66 @@ export const load = (async (event) => {
             paymentNumber: parseInt(paymentNum, 10)
          }
       })
+      const customer = await prisma.user.findUnique({
+         where: {
+            id: paymentRecord?.customerId
+         }
+      })
       if(!paymentRecord){
-         fail(404);
+         throw error(404);
       }
-      return { paymentRecord, refundForm, searchForm }
+      const address = await prisma.address.findFirst({
+         where: {
+            AND: [
+               {userId: customer?.id},
+               {softDelete: false}
+            ]
+         }
+      })
+      return { paymentRecord, customer, address, refundForm, searchForm }
    }
-   const deposits = prisma.paymentRecord.findMany({
-      where: {
-         AND:[
-            {
-               refunded: false
-            },
-            {
-               deposit: true
-            },
-         ]
-      },
-      orderBy: {
-         paymentCreated: 'desc'
-      }
-   });
    const paymentRecords = prisma.paymentRecord.findMany({
       where: {
-         refunded: false,
+         refundedAmount: {
+            lt: prisma.paymentRecord.fields.paymentAmount
+         }
       },
       orderBy: {
          paymentNumber: 'desc'
       }
    })
-   return { deposits, paymentRecords, refundForm, searchForm };
+   const customers = prisma.user.findMany({
+      where: {
+         paymentMade: {
+            some: {
+               refundedAmount: {
+                  lt: prisma.paymentRecord.fields.paymentAmount
+               }
+            }
+         }
+      }
+   })
+   const addresses = prisma.address.findMany({
+      where: {
+         AND: [
+            {
+               user: {
+                  paymentMade: {
+                     some: {
+                        refundedAmount: {
+                           lt: prisma.paymentRecord.fields.paymentAmount
+                        }
+                     }
+                  }
+               }
+            },
+            {
+               softDelete: false
+            }
+         ]
+      }
+   })
+   return { paymentRecords, refundForm, searchForm, customers, addresses };
 }) satisfies PageServerLoad;
 
 

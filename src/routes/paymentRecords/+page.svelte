@@ -14,11 +14,14 @@
    import Revenue from '$lib/displayComponents/Revenue.svelte';  
    import Address from '$lib/displayComponents/AddressEmployee.svelte';
    import RefundForm from '$lib/forms/NewRefundForm.svelte'
-   import { Combobox, Modal } from '@skeletonlabs/skeleton-svelte';
-   import { goto } from '$app/navigation';
+   import { Combobox, Modal, Progress, ProgressRing } from '@skeletonlabs/skeleton-svelte';
+   import { goto, onNavigate } from '$app/navigation';
 	import { SearchIcon, PanelTopCloseIcon } from 'lucide-svelte';
-	import EmailCustomer from '$lib/emailCustomer.svelte';
-   dayjs.extend(utc)
+	import EmailCustomer from '$lib/EmailCustomer.svelte';
+	import DownloadPdfButton from '$lib/DownloadPDFButton.svelte';
+
+   dayjs.extend(utc);
+   
    let { data }: { data: PageData } = $props();
    let pageNum = $state(1);
    let size = $state(25);
@@ -44,7 +47,7 @@
       if(paymentRecords.length > 0){
          startDate = dayjs.utc(paymentRecords[0].paymentCreated).startOf('year').toDate();
          minDate = startDate;
-         endDate = dayjs.utc(paymentRecords[paymentRecords.length-1].paymentCreated).endOf('year').toDate();
+         endDate = new Date();
          maxDate = endDate;
       }
       res(paymentRecords);
@@ -52,7 +55,8 @@
    const numberFormatter = new Intl.NumberFormat('en-US');
    let slicedSource = $derived((paymentRecords:PaymentRecord[]) => paymentRecords.slice((pageNum -1) * size, pageNum*size));
    let searchedPayments = $derived((paymentRecords:PaymentRecord[]) => {
-      return paymentRecords.filter((paymentRecord) => paymentRecord.paymentNumber.toString().includes(search)) || paymentRecords.filter((paymentRecord) => paymentRecord.paymentNotes!.includes(search));
+      const returnedPayments = paymentRecords.filter((paymentRecord) => paymentRecord.paymentNumber.toString().includes(search))
+      return returnedPayments;
    })
    let sortedByDate = $derived((paymentRecords:PaymentRecord[]) => paymentRecords.sort((a,b) => {
       if(a.paymentCreated > b.paymentCreated){
@@ -69,15 +73,20 @@
       }
       return 0
    }))
-   let dateSearchPayments = $derived((paymentRecords:PaymentRecord[]) => paymentRecords.filter((paymentRecord) => {
-      if(!startDate || !endDate){
-         return
-      }
-      return paymentRecord.paymentCreated >= startDate && paymentRecord.paymentCreated <= endDate;
-   }))
+   let dateSearchPayments = $derived((paymentRecords:PaymentRecord[]) => {
+      const returnedPayments = paymentRecords.filter((paymentRecord) => {
+         if(!startDate || !endDate){
+            return paymentRecord
+         }
+         return paymentRecord.paymentCreated >= startDate && paymentRecord.paymentCreated <= endDate;
+      });
+      return returnedPayments;
+   })
    let nameSearch = $state('');
    let currentUsers = $derived((users:User[]) => users.filter((user) => {
-      return user.givenName?.toLowerCase().includes(nameSearch.toLowerCase()) || user.familyName?.toLowerCase().includes(nameSearch.toLowerCase()) || user.organizationName?.toLowerCase().includes(nameSearch.toLowerCase())
+      return user.givenName?.toLowerCase().includes(nameSearch.toLowerCase()) 
+      || user.familyName?.toLowerCase().includes(nameSearch.toLowerCase()) 
+      || user.organizationName?.toLowerCase().includes(nameSearch.toLowerCase())
    }));
    const searchByUser = $derived((paymentRecords:PaymentRecord[], customers:User[]) => {
       const customerPayments:PaymentRecord[] = [];
@@ -102,21 +111,26 @@
       currentPaymentRecord = paymentRecord;
       modalOpen = true
    }
-   let yearSelect = $state(['']);
    interface ComboboxData {
       label: string;
       value: string;
    }
-   let yearComboboxData:ComboboxData[] = [
-      {label:'Unpaid Invoices', value: 'unpaid'},
-   ]
-   data.years.forEach((year) => {
-      yearComboboxData.push({label:year.toString(), value: year.toString()})
-   })
+   let yearComboboxData:ComboboxData[] | undefined = $derived(data.years?.map(year => ({
+      label: year.toString(),
+      value: year.toString()
+   })))
    let searchDrawerOpen = $state(false);
+   let navDelayed = $state(false);
+   let navTimeout = $state(false);
+   onNavigate(() => {
+      searchDrawerOpen = false;
+      navDelayed = false;
+      navTimeout = false;
+   })
 </script>
 <Modal
-   bind:open={modalOpen}
+   open={modalOpen}
+   onOpenChange={(e) => modalOpen = e.open}
    contentBase="card bg-surface-400-600 p-4 space-y-4 shadow-xl"
    backdropClasses=""
    modal={true}
@@ -128,125 +142,223 @@
 
 </Modal>
 <Header title='Payment Records' />
-{#await wrapper}
-   <div class="mx-1 sm:mx-2 mt-10 sm:mt-10">
-      loading {numberFormatter.format(data.paymentRecordCount)} payment records
-      {#if data.years}
-         <Combobox
-            data={yearComboboxData}
-            bind:value={yearSelect}
-            label='or select year'
-            placeholder='Select year ...'
-            openOnChange={true}
-            onValueChange={(details) => {
-               goto(`/paymentRecords/year/${details.value[0]}`)
-            }}
-            zIndex='50'
-         />
-      {/if}
-      <Placeholder numCols={1} numRows={size} heightClass='h-32' classes='z-0'/>
-   </div>
-{:then paymentRecords} 
-   {#await data.customers}
-      <div class="mt-10">
-         Loading customers...
-      </div>
-   {:then customers} 
-      {#await data.addresses}
-         <div class="mt-10">
-            Loading contacts...
-         </div>
-      {:then addresses}         
-         {#if paymentRecords.length >0}
-            <div class="bg-tertiary-50-950 w-screen rounded-b-lg fixed top-8 flex">
-               <Revenue 
-                  label="Total revenue" 
-                  amount={totalRevenue(searchedPayments(dateSearchPayments(paymentRecords)))} 
-                  classes='m-1 sm:m-2'    
+{#if data.paymentRecordCount}
+   {#await wrapper}
+      <div class="mx-1 sm:mx-2 mt-14 sm:mt-14 mb-20 sm:mb-12 lg:mb-8">
+         Loading {numberFormatter.format(data.paymentRecordCount)} payment records
+         {#if data.years}
+            <div class="flex flex-row">
+               <Combobox
+                  data={yearComboboxData}
+                  label='or select year'
+                  placeholder='Select year ...'
+                  openOnClick={true}
+                  onValueChange={(details) => {
+                     setTimeout(() => {
+                        navDelayed = true;
+                     }, 300)
+                     goto(`/paymentRecords/year/${details.value[0]}`)
+                  }}
+                  zIndex='50'
                />
-               <Revenue
-                  label='Non-deposit revenue'
-                  amount={totalRevenue(nonDeposits(paymentRecords))}
-                  classes='m-1 sm:m-2'
-               />
+               {#if navDelayed}
+                  <ProgressRing  
+                     value={null} 
+                     size="size-8" 
+                     meterStroke="stroke-tertiary-600-400" 
+                     trackStroke="stroke-tertiary-50-950"
+                     classes='mt-6 mx-2'
+                     {@attach () => {
+                        setTimeout(() => {
+                           navDelayed = false;
+                           navTimeout = true;
+                        }, 800)
+                     }}
+                  />
+               {/if}
+               {#if navTimeout}
+                  <Progress 
+                     value={null}
+                     meterBg="bg-tertiary-500"
+                     width='w-12'
+                     classes='mt-9 mx-2'
+                  />
+               {/if}
             </div>
-            <Modal
-                  open={searchDrawerOpen}
-                  onOpenChange={(event)=>(searchDrawerOpen = event.open)}
-                  triggerBase='btn preset-filled-primary-50-950 rounded-lg fixed top-0 right-0 z-50'
-                  contentBase='bg-surface-100-900 h-[400px] w-screen rounded-lg'
-                  positionerJustify=''
-                  positionerAlign=''
-                  positionerPadding=''
-                  transitionsPositionerIn={{y:-400, duration: 600}}
-                  transitionsPositionerOut={{y:-400, duration: 600}}
-                  modal={false}
-            >
-            {#snippet trigger()}
-               <SearchIcon />
-            {/snippet}
-            {#snippet content()}
-               <button onclick={()=>searchDrawerOpen=false} class='btn preset-filled-primary-50-950 rounded-lg m-1 absolute top-0 right-0'><PanelTopCloseIcon/></button>
-               <Search 
-                  bind:search={search} 
-                  searchType='payment record number' 
-                  data={data.searchForm}
-                  classes='m-1 sm:m-2 mt-9 sm:mt-9'
-               />
-               <Search
-                  bind:search={nameSearch}
-                  searchType='customer name'
-                  data={data.searchForm}
-                  classes='m-1 sm:m-2'
-               />
-               <DateSearch 
-                  bind:startDate={startDate} 
-                  bind:endDate={endDate} 
-                  {minDate} 
-                  {maxDate} 
-                  data={data.dateSearchForm}
-                  classes='flex flex-col md:grid md:grid-cols-2 m-1 sm:m-2'    
-               />
-               <button onclick={()=>{
-                  sortBy = !sortBy;
-                  searchDrawerOpen = false;
-                  }} class="anchor col-span-full mx-2">Sort by date {sortBy ? 'starting earliest' : 'starting latest'}</button>
-            {/snippet}
-            </Modal>
-               <div class="mt-26 sm:mt-20" in:fade={{duration:600}} out:fade={{duration:0}}>
-                  {#each slicedSource(dateSearchPayments(searchedPayments(sortedByDate(searchByUser(paymentRecords, currentUsers(customers)))))) as paymentRecord}
-                  {@const customer = customers.find((customer) => customer.id === paymentRecord.customerId) }
-                     <div class="rounded-lg border border-primary-50-950 grid sm:grid-cols-2 m-2">
-                        <div>
-                           <PaymentRecordEmployee paymentRecord={paymentRecord} classes="p-2" />
-                           {#if !paymentRecord.refunded}
-                                 <button type="button" class="btn rounded-lg preset-filled-primary-50-950 m-2" onclick={() => refundModal(paymentRecord)}>Refund this payment</button>
+         {/if}
+         <Placeholder numCols={1} numRows={size} heightClass='h-64' classes='z-0'/>
+      </div>
+   {:then paymentRecords} 
+      {#await data.customers}
+         <div class="mt-14 sm:mt-10">
+            Loading customers...
+         </div>
+      {:then customers} 
+         {#await data.addresses}
+            <div class="mt-14 sm:mt-10">
+               Loading contacts...
+            </div>
+         {:then addresses}         
+            {#if paymentRecords.length >0}
+               <div class="bg-tertiary-50-950 w-screen rounded-b-lg fixed top-10 sm:top-7 p-0.5 flex">
+                  <Revenue 
+                     label="Total revenue" 
+                     amount={totalRevenue(searchedPayments(searchByUser(paymentRecords, currentUsers(customers))))} 
+                     classes='m-1 sm:m-2'    
+                  />
+                  <Revenue
+                     label='Non-deposit revenue'
+                     amount={totalRevenue(nonDeposits(searchedPayments(searchByUser(paymentRecords, currentUsers(customers)))))}
+                     classes='m-1 sm:m-2'
+                  />
+               </div>
+               <Modal
+                     open={searchDrawerOpen}
+                     onOpenChange={(event)=>(searchDrawerOpen = event.open)}
+                     triggerBase='btn preset-filled-primary-50-950 rounded-lg fixed top-0 right-0 z-50 h-12 sm:h-auto'
+                     contentBase='bg-surface-100-900 h-[200px] w-screen rounded-lg'
+                     positionerJustify=''
+                     positionerAlign=''
+                     positionerPadding=''
+                     transitionsPositionerIn={{y:-400, duration: 600}}
+                     transitionsPositionerOut={{y:-400, duration: 600}}
+                     modal={false}
+               >
+               {#snippet trigger()}
+                  <SearchIcon aria-label='Search' />
+               {/snippet}
+               {#snippet content()}
+                  <button onclick={()=>searchDrawerOpen=false} class='btn preset-filled-primary-50-950 rounded-lg m-1 absolute top-0 right-0'><PanelTopCloseIcon aria-label='Close'/></button>
+                  <div class="flex flex-col sm:flex-row mt-11 gap-2 mx-2" >
+                  <Search 
+                     bind:search={search} 
+                     searchType='payment record number' 
+                     data={data.searchForm}
+                  />
+                  <Search
+                     bind:search={nameSearch}
+                     searchType='customer name'
+                     data={data.searchForm}
+                  />
+                  <DateSearch 
+                     bind:startDate={startDate} 
+                     bind:endDate={endDate} 
+                     {minDate} 
+                     {maxDate} 
+                     data={data.dateSearchForm}
+                     classes='flex flex-col sm:flex-row'    
+                  />
+                  </div>
+                  <button 
+                     onclick={()=>{
+                        sortBy = !sortBy;
+                        searchDrawerOpen = false;
+                     }} 
+                     class="btn preset-filled-primary-50-950 m-2"
+                  >Sort by date {sortBy ? 'starting earliest' : 'starting latest'}</button>
+               {/snippet}
+               </Modal>
+                  <div class="mt-32 sm:mt-20 mb-20 sm:mb-12 lg:mb-8" in:fade={{duration:600}} out:fade={{duration:0}}>
+                     {#each slicedSource(sortedByDate(dateSearchPayments(searchedPayments(searchByUser(paymentRecords, currentUsers(customers)))))) as paymentRecord}
+                     {@const customer = customers.find((customer) => customer.id === paymentRecord.customerId) }
+                        <div class="rounded-lg border border-primary-50-950 grid sm:grid-cols-2 m-2">
+                           <div class="flex flex-col">
+                              <PaymentRecordEmployee paymentRecord={paymentRecord} classes="p-2" />
+                              <div class="flex flex-col sm:flex-row">
+                                 {#if paymentRecord.refundedAmount < paymentRecord.paymentAmount}
+                                       <button type="button" class="btn rounded-lg preset-filled-primary-50-950 h-8 w-50 m-2 sm:mx-2" onclick={() => refundModal(paymentRecord)}>Refund this payment</button>
+                                 {/if}
+                                 {#if customer?.email && customer.emailVerified}
+                                    <EmailCustomer
+                                       emailAddress={customer.email}
+                                       recordNum={paymentRecord.paymentNumber}
+                                       apiEndPoint='/api/sendReceipt'
+                                       buttonText='Email receipt'
+                                       classes='mx-2 sm:m-auto h-8'
+                                    />
+                                 {/if}
+                                 <DownloadPdfButton
+                                    recordType='paymentNum'
+                                    num={paymentRecord.paymentNumber}
+                                    classes='m-2 sm:mb-2 sm:mx-2'
+                                 />
+                              </div>
+                           </div>
+                           {#if customer}
+                           {@const address = addresses.find((address)=> address.userId === customer.id)}
+                              <div class="flex flex-col mx-2 mb-2">
+                                 <UserEmployee user={customer} classes='truncate'/>
+                                 {#if address}
+                                    <Address {address} classes=''/>
+                                 {/if}
+
+                              </div>
                            {/if}
                         </div>
-                        {#if customer}
-                        {@const address = addresses.find((address)=> address.userId === customer.id)}
-                           <div class="flex flex-col mx-2 mb-2">
-                              <UserEmployee user={customer} classes=''/>
-                              {#if address}
-                                 <Address {address} classes=''/>
-                              {/if}
-                              {#if customer.email && customer.emailVerified}
-                                 <EmailCustomer
-                                    emailAddress={customer.email}
-                                    recordNum={paymentRecord.paymentNumber}
-                                    apiEndPoint='/api/sendReceipt'
-                                    buttonText='Email receipt'
-                                 />
-                              {/if}
-                           </div>
-                        {/if}
-                     </div>
-                  {/each}
-               </div>
-               <Pagination bind:size={size} bind:pageNum={pageNum} array={dateSearchPayments(searchedPayments(searchByUser(paymentRecords, currentUsers(customers))))} label='payment records'/>
-         {:else}
-            No payment records from that year
-         {/if}
+                     {/each}
+                     <Pagination bind:size={size} bind:pageNum={pageNum} array={dateSearchPayments(searchedPayments(searchByUser(paymentRecords, currentUsers(customers))))} label='payment records'/>
+                  </div>
+            {:else}
+               No payment records from that year
+            {/if}
+         {/await}
       {/await}
    {/await}
-{/await}
+{:else}
+   {#await data.customer}
+      <div class="mt-32 sm:mt-20 mb-20 sm:mb-12 lg:mb-8">
+         Loading customer...
+      </div>
+   {:then customer} 
+      {#await data.address}
+         <div class="mt-32 sm:mt-20 mb-20 sm:mb-12 lg:mb-8">
+            Loading address...
+         </div>
+      {:then address} 
+         {#await data.paymentRecords}
+            <div class="mt-20 sm:mt-10 mb-20 sm:mb-12 lg:mb-8">
+               Loading payment records...
+            </div>
+         {:then paymentRecords} 
+            <div class="mt-20 sm:mt-10 mb-20 sm:mb-12 lg:mb-8">
+               
+               {#each slicedSource(sortedByDate(dateSearchPayments(searchedPayments(paymentRecords)))) as paymentRecord}
+                  <div class="rounded-lg border border-primary-50-950 grid sm:grid-cols-2 m-2">
+                     <div class="flex flex-col">
+                        <PaymentRecordEmployee paymentRecord={paymentRecord} classes="p-2" />
+                        <div class="flex flex-col sm:flex-row">
+                           {#if paymentRecord.refundedAmount < paymentRecord.paymentAmount}
+                                 <button type="button" class="btn rounded-lg preset-filled-primary-50-950 h-8 w-50 m-2 sm:mx-2" onclick={() => refundModal(paymentRecord)}>Refund this payment</button>
+                           {/if}
+                           {#if customer?.email && customer.emailVerified}
+                              <EmailCustomer
+                                 emailAddress={customer.email}
+                                 recordNum={paymentRecord.paymentNumber}
+                                 apiEndPoint='/api/sendReceipt'
+                                 buttonText='Email receipt'
+                                 classes='mx-2 sm:m-auto h-8'
+                              />
+                           {/if}
+                           <DownloadPdfButton
+                              recordType='paymentNum'
+                              num={paymentRecord.paymentNumber}
+                              classes='m-2 sm:mb-2 sm:mx-2'
+                           />
+                        </div>
+                     </div>
+                     <div class="flex flex-col mx-2 mb-2">
+                        {#if customer}
+                           <UserEmployee user={customer} classes='truncate'/>
+                        {/if}
+                        {#if address}
+                           <Address {address} classes=''/>
+                        {/if}
+                     </div>
+                  </div>
+               {/each}
+               <Pagination bind:size={size} bind:pageNum={pageNum} array={dateSearchPayments(searchedPayments(paymentRecords))} label='payment records'/>
+            </div>
+         {/await}
+      {/await}
+   {/await}
+{/if}

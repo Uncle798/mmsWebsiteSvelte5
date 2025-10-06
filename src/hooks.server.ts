@@ -4,7 +4,7 @@ import { validateSessionToken } from "$lib/server/authUtils";
 import type { Handle } from "@sveltejs/kit";
 
 export const handle: Handle = async ({ event, resolve }) => {
-   const token = event.cookies.get('session') ?? null;
+   const token = event.cookies.get('demoSession') ?? null;
    if(!token){
       event.locals.user = null;
       event.locals.session = null;
@@ -16,7 +16,7 @@ export const handle: Handle = async ({ event, resolve }) => {
    }
    const { session, user } = await validateSessionToken(token);
    if(session){
-      event.cookies.set('session', token, {
+      event.cookies.set('demoSession', token, {
          httpOnly: true,
          path: '/',
          secure: import.meta.env.PROD,
@@ -24,7 +24,7 @@ export const handle: Handle = async ({ event, resolve }) => {
          expires: session.expiresAt
       })
    } else {      
-      event.cookies.set('session', '', {
+      event.cookies.set('demoSession', '', {
          httpOnly: true,
          path: '/',
          secure: import.meta.env.PROD,

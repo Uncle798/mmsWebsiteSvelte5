@@ -1,39 +1,40 @@
 <script lang="ts">
     import NewPaymentRecordForm from '$lib/forms/NewPaymentRecordForm.svelte';
     import type { PageData } from './$types';
-    import { Modal } from '@skeletonlabs/skeleton-svelte';
     import { fade } from 'svelte/transition';
-    import RegisterForm from '$lib/forms/RegisterForm.svelte';
+	import Header from '$lib/Header.svelte';
+	import InvoiceEmployee from '$lib/displayComponents/InvoiceEmployee.svelte';
+	import UserEmployee from '$lib/displayComponents/UserEmployee.svelte';
+	import AddressEmployee from '$lib/displayComponents/AddressEmployee.svelte';
 
     let { data }: { data: PageData } = $props();
-    let registerFormModalOpen = $state(false);
-    let customerSelected = $state(false)
 </script>
 
-<Modal
-   bind:open={registerFormModalOpen}
-   contentBase="card bg-surface-400-600 p-4 space-y-4 shadow-xl max-w-(--breakpoint-sm)"
-   backdropClasses="backdrop-blur-xs"
->
-    {#snippet content()}
-        <RegisterForm data={data.registerForm} registerFormModalOpen={registerFormModalOpen} formType='employee'/>
-        <button class="btn" onclick={()=>registerFormModalOpen=false}>Cancel</button>
-    {/snippet}
-</Modal>
-
-<div in:fade={{duration:600}} out:fade={{duration:0}} class="mt-10 mx-1 sm:mt-10 sm:mx-2">
-   {#if !customerSelected}
-      <button class="btn preset-filled-primary-50-950 rounded-lg" type="button" onclick={()=>registerFormModalOpen = true}>Create New Customer</button>
-   {/if}
-   <NewPaymentRecordForm 
+<Header title='New Payment Record' />
+<div in:fade={{duration:600}} out:fade={{duration:0}} class="mt-14 sm:mt-10 mx-1 sm:mx-2 mb-8">
+    {#if data.invoice}
+        <div class="border border-primary-50-950 rounded-lg grid grid-cols-1 sm:grid-cols-2 my-2 gap-2">
+            <InvoiceEmployee invoice={data.invoice} classes='mx-2'/>
+            <div>
+                {#if data.customer}
+                <UserEmployee user={data.customer} />
+                {/if}
+                {#if data.address}
+                <AddressEmployee address={data.address} />
+                {/if}
+            </div>
+        </div>
+    {/if}
+    <NewPaymentRecordForm 
       data={data.newPaymentRecordForm} 
       invoices={data.invoices} 
-      customers={data.customers}
-      employeeId={data.user?.id}
+      employeeId={data.user!.id}
       leases={data.leases}
-      invoiceForm={data.invoiceForm}
-      defaultCustomer={data.defaultCustomer}
-      defaultInvoice={data.defaultInvoice}
-      bind:customerSelected={customerSelected}
+      invoiceFormData={data.invoiceForm}
+      registerFormData={data.registerForm}
+      customer={data.customer}
+      invoice={data.invoice}
+      emailVerificationFormData={data.emailVerificationForm}
+      customers={data.customers}
    />
 </div>

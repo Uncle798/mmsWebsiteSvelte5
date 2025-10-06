@@ -31,7 +31,7 @@
          <option value={array.length}>Show all {array.length} {label}</option>
       </select>
    {/if}
-   <Pagination data={array} bind:page={pageNum} bind:pageSize={size} showFirstLastButtons={true} alternative >
+   <Pagination data={array} page={pageNum} pageSize={size} onPageChange={(e) => pageNum = e.page} onPageSizeChange={(e) => size = e.pageSize} showFirstLastButtons={true} alternative >
       {#snippet labelEllipsis()}<IconEllipsis class="size-4" />{/snippet}
       {#snippet labelNext()}<IconArrowRight class="size-4" />{/snippet}
       {#snippet labelPrevious()}<IconArrowLeft class="size-4" />{/snippet}

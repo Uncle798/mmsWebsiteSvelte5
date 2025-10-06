@@ -5,7 +5,7 @@
     import FormProgress from '$lib/formComponents/FormSubmitWithProgress.svelte';
     import { superForm } from 'sveltekit-superforms';
     import { onMount, getContext } from 'svelte';
-    import type { ToastContext } from '@skeletonlabs/skeleton-svelte';
+    import { toaster } from '../toaster';
     import type { PageData } from './$types';
 	import UnitCustomer from '$lib/displayComponents/customerViews/UnitCustomer.svelte';
 	import Checkbox from '$lib/formComponents/Checkbox.svelte';
@@ -18,11 +18,10 @@
     let { data }: {data:PageData} = $props();
     let { form, message, errors, constraints, enhance, delayed, timeout } = superForm(data.leaseForm);
     let addressModalOpen = $state(false);
-    export const toast:ToastContext = getContext('toast');
     const toastReason = data.redirectTo
     onMount(()=> {
         if(toastReason === 'newLease'){
-            toast.create({
+            toaster.create({
                 title: 'Thanks for logging in',
                 description: 'We appreciate your business',
                 type:'success'
@@ -33,13 +32,14 @@
     const currencyFormatter = new Intl.NumberFormat('en-US', {style: 'currency', currency: 'USD'})
 </script>
 <Header title='New lease'/>
-<div in:fade={{duration:600}} class="mx-2 mt-10">
+<div in:fade={{duration:600}} class="mx-2 mt-14 sm:mt-10">
     {#if data.user}
         <UserCustomer user={data.user} />
     {/if}
     <FormMessage message={$message} />
     <form method="post" use:enhance>
-        <input type='hidden' name=customerId value={data.user?.id} />
+        <input type='hidden' name='customerId' value={data.user?.id} />
+        <input type='hidden' name='paymentType' value='CREDIT' />
         {#if data.user?.organizationName}
             <Checkbox
                 bind:value={$form.organization}
@@ -53,7 +53,8 @@
             <AddressCustomer address={data.address} />
         {:else}
             <Modal
-                bind:open={addressModalOpen}
+                open={addressModalOpen}
+                onOpenChange={(e) => addressModalOpen = e.open}
                 triggerBase="btn rounded-lg preset-filled-primary-50-950 my-2"
                 contentBase="card bg-surface-400-600 p-4 space-y-4 shadow-xl max-w-(--breakpoint-sm)"
                 backdropClasses="backdrop-blur-xs"

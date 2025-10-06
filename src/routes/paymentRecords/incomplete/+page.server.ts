@@ -1,8 +1,9 @@
 import { prisma } from '$lib/server/prisma';
-import { fail, superValidate } from 'sveltekit-superforms';
+import { superValidate } from 'sveltekit-superforms';
 import type { PageServerLoad, Actions } from './$types';
 import { valibot } from 'sveltekit-superforms/adapters';
 import { paymentRecordDeleteSchema } from '$lib/formSchemas/schemas';
+import { error } from '@sveltejs/kit';
 
 export const load = (async () => {
    const paymentRecords = await prisma.paymentRecord.findMany({
@@ -22,7 +23,7 @@ export const actions: Actions = {
       const formData = await event.request.formData();
       const paymentRecordDeleteForm = await superValidate(formData, valibot(paymentRecordDeleteSchema));
       if(!paymentRecordDeleteForm.valid){
-         fail(404, paymentRecordDeleteForm)
+         error(404)
       }
       const paymentRecord = await prisma.paymentRecord.findUnique({
          where: {

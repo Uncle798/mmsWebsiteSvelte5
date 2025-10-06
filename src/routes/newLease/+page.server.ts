@@ -3,11 +3,10 @@ import type { Actions, PageServerLoad } from './$types';
 import {superValidate, message } from 'sveltekit-superforms';
 import { addressFormSchema, leaseDiscountFormSchema, nameFormSchema, newLeaseSchema } from "$lib/formSchemas/schemas";
 import { valibot } from 'sveltekit-superforms/adapters';
-import { redirect } from "@sveltejs/kit";
+import { error, redirect } from "@sveltejs/kit";
 import { ratelimit } from "$lib/server/rateLimit";
-import { fail } from "@sveltejs/kit";
 import { qStash } from "$lib/server/qStash";
-import { PUBLIC_URL } from "$env/static/public";
+import { PUBLIC_PHONE, PUBLIC_URL } from "$env/static/public";
 
 export const load:PageServerLoad = (async (event) =>{
    const unitNum = event.url.searchParams.get('unitNum');
@@ -73,6 +72,9 @@ export const actions:Actions = {
             id:event.locals.user?.id
          }
       })
+      if(customer.doNotRent){
+         return message(leaseForm, `Unable to rent, please call ${PUBLIC_PHONE}`)
+      }
       const unit = await prisma.unit.findFirst({
          where:{
             num:leaseForm.data.unitNum,
@@ -81,7 +83,7 @@ export const actions:Actions = {
          console.error(err);
       })
       if(!unit){
-         return fail(404, {message: 'Unit not found'})
+         error(404, {message: 'Unit not found'})
       }
       const currentLease = await prisma.lease.findFirst({
          where:{
@@ -103,7 +105,7 @@ export const actions:Actions = {
          }
       })
       if(!address){
-         return fail(400, {message: 'unable to find address'})
+         error(400, {message: 'unable to find address'})
       }
       const employees = await prisma.user.findMany({
          where:{
@@ -141,7 +143,6 @@ export const actions:Actions = {
             discountedAmount: discountedAmount
          }
       })
-      console.log(lease)
       await prisma.unit.update({
          where: {
             num: unit.num
@@ -159,9 +160,9 @@ export const actions:Actions = {
             deposit: true,  
             invoiceDue: new Date()
          }
-      })
-       await qStash.trigger({
-         url: `${PUBLIC_URL}/api/upstash/workflow`,
+      });
+      await qStash.trigger({
+         url: `https://${PUBLIC_URL}/api/upstash/workflow`,
          body:  { leaseId:lease.leaseId },
          workflowRunId: lease.leaseId
       })

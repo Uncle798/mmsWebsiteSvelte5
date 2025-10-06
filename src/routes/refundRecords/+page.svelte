@@ -12,8 +12,10 @@
 	import Placeholder from '$lib/displayComponents/Placeholder.svelte';
 	import Address from '$lib/displayComponents/AddressEmployee.svelte';
 	import { fade } from 'svelte/transition';
-	import { Modal } from '@skeletonlabs/skeleton-svelte';
-	import EmailCustomer from '$lib/emailCustomer.svelte';
+	import { Combobox, Modal } from '@skeletonlabs/skeleton-svelte';
+	import EmailCustomer from '$lib/EmailCustomer.svelte';
+	import { SearchIcon, PanelTopClose } from 'lucide-svelte';
+	import { goto } from '$app/navigation';
 	let { data }: { data: PageData } = $props();
 	let size = $state(25);
 	let pageNum = $state(1);
@@ -79,34 +81,87 @@
 		return returnedRefunds;
 	})
 	let searchDrawerOpen = $state(false);
+	interface ComboboxData {
+      label: string;
+      value: string;
+   }
+   let yearComboboxData:ComboboxData[] = $derived(data.years.map(year => ({
+		label: year.toString(),
+		value: year.toString()
+	})))
 </script>
 
 <Header title="All Refunds" />
 {#await wrapper}
-	<div class="mt-10">
+	<div class="mt-14 sm:mt-10">
 		Loading {numberFormatter.format(data.refundCount)} refunds...
 		{#if data.years}
-			or select year:
-			{#each data.years as year}
-				<a href="/refundRecords/year/{year}" class="btn">{year.toString()},</a>
-			{/each}
+			<Combobox
+				data={yearComboboxData}
+				label='Select year'
+				placeholder='Select year...'
+				openOnClick={true}
+				onValueChange={(details) => {
+					goto(`/refundRecords/year/${details.value[0]}`)
+				}}
+				zIndex='50'
+			/>
 		{/if}
 	</div>
 		<Placeholder numCols={2} numRows={size} heightClass='h-44'/>
 	{:then refunds}
 	{#await data.customers}
-		<div class="mt-10">
+		<div class="mt-14 sm:mt-10">
 			Loading customers...
 		</div>
 		<Placeholder numCols={2} numRows={size} heightClass='h-44'/>
 	{:then customers}
 		{#await data.addresses}
-			<div class="mt-10">
+			<div class="mt-14 sm:mt-10">
 				Loading addresses...
 			</div>
 			<Placeholder numCols={2} numRows={size} heightClass='h-44'/>
 		{:then addresses}
-		<div class=" bg-tertiary-50-950 w-full rounded-b-lg fixed top-9 left-0 flex flex-col sm:flex-row z-50">
+				<Modal
+			open={searchDrawerOpen}
+			onOpenChange={(event)=>(searchDrawerOpen = event.open)}
+			triggerBase='btn preset-filled-primary-50-950 rounded-lg fixed top-0 right-0 z-50 h-12 sm:h-auto'
+			contentBase='bg-surface-100-900 h-[400px] w-screen rounded-lg'
+			positionerJustify=''
+			positionerAlign=''
+			positionerPadding=''
+			transitionsPositionerIn={{y:-400, duration: 600}}
+			transitionsPositionerOut={{y:-400, duration: 600}}
+			modal={false}
+		>
+			{#snippet trigger()}
+				<SearchIcon aria-label='Search' />
+			{/snippet}
+			{#snippet content()}
+				<button onclick={()=>searchDrawerOpen=false} class='btn preset-filled-primary-50-950 rounded-lg m-1 absolute top-0 right-0'><PanelTopClose aria-label='Close'/></button>
+				<Search
+					bind:search={search}
+					searchType="refund records" 
+					data={data.searchForm} 
+					classes='p-2 '	
+				/>
+				<Search
+					bind:search={nameSearch} 
+					searchType="user name" 
+					data={data.searchForm} 
+					classes='p-2 '	
+				/>
+				<DateSearch 
+					bind:endDate 
+					bind:startDate 
+					data={data.dateSearchForm} 
+					{minDate} 
+					{maxDate} 
+					classes='p-2'	
+				/>
+			{/snippet}
+		</Modal>
+		<div class=" bg-tertiary-50-950 w-full rounded-b-lg fixed top-12 sm:top-9 left-0 flex flex-col sm:flex-row z-50">
 			<Revenue 
 				label="Total refunds" 
 				amount={totalRevenue(searchRefunds(dateSearchRefunds(refunds)))}
@@ -117,47 +172,8 @@
 				amount={refundsNotDeposits(searchRefunds(dateSearchRefunds(refunds)))}
 				classes=''	
 			/>
-
 		</div>
-		<Modal
-			open={searchDrawerOpen}
-			onOpenChange={(event)=>(searchDrawerOpen = event.open)}
-			triggerBase='btn preset-filled-primary-50-950 rounded-lg fixed top-0 right-3 z-50'
-			contentBase='bg-surface-100-900 h-[400px] w-screen rounded-lg'
-			positionerJustify=''
-			positionerAlign=''
-			positionerPadding=''
-			transitionsPositionerIn={{y:-400, duration: 600}}
-			transitionsPositionerOut={{y:-400, duration: 600}}
-			modal={false}
-		>
-			{#snippet content()}
-				<div class="flex" >
-					<Search
-					bind:search={search}
-					searchType="refund records" 
-					data={data.searchForm} 
-					classes='p-2 '	
-					/>
-					<Search
-					bind:search={nameSearch} 
-					searchType="user name" 
-					data={data.searchForm} 
-					classes='p-2 '	
-					/>
-					<DateSearch 
-					bind:endDate 
-					bind:startDate 
-					data={data.dateSearchForm} 
-					{minDate} 
-					{maxDate} 
-					classes='p-2'	
-					/>
-				</div>
-				
-			{/snippet}
-		</Modal>
-			<div class="grid grid-cols-1 mx-2 mt-24 sm:mt-18 gap-3 shadow-lg" in:fade={{duration:600}}>
+			<div class="grid grid-cols-1 mx-2 mt-26 sm:mt-18 gap-3 mb-20 sm:mb-12 lg:mb-8" in:fade={{duration:600}}>
 				{#each slicedRefunds(searchRefunds(dateSearchRefunds(searchByUser(refunds, currentUsers(customers))))) as refund (refund.refundNumber)}
 				{@const customer = customers.find((customer) => customer.id === refund.customerId)}
 					<div class="border rounded-lg border-primary-50-950 sm:grid sm:grid-cols-2">
@@ -169,21 +185,21 @@
 								{#if address}
 									<Address {address} classes='mx-2'/>
 								{/if}
+								{#if customer.email && customer.emailVerified}
+									<EmailCustomer
+										emailAddress={customer.email}
+										recordNum={refund.refundNumber}
+										apiEndPoint='/api/sendRefund'
+										buttonText='Send Refund email'
+										classes='mx-2'
+									/>
+								{/if}
 							</div>
-							{#if customer.email && customer.emailVerified}
-								<EmailCustomer
-									emailAddress={customer.email}
-									recordNum={refund.refundNumber}
-									apiEndPoint='/api/sendRefund'
-									buttonText='Send Refund email'
-									classes='mx-2'
-								/>
-							{/if}
 						{/if}
 					</div>
 				{/each}
+				<Pagination bind:size bind:pageNum label="refund records" array={searchRefunds(dateSearchRefunds(searchByUser(refunds, currentUsers(customers))))} />
 			</div>
-			<Pagination bind:size bind:pageNum label="refund records" array={searchRefunds(dateSearchRefunds(searchByUser(refunds, currentUsers(customers))))} />
 		{/await}
 	{/await}
 {/await}

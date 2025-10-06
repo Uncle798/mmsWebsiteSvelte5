@@ -1,7 +1,7 @@
 import { redirect } from '@sveltejs/kit';
 import { ratelimit } from "$lib/server/rateLimit";
 import type { PageServerLoad, Actions } from './$types';
-import { fail, superValidate, message } from 'sveltekit-superforms';
+import { superValidate, message } from 'sveltekit-superforms';
 import { valibot, } from 'sveltekit-superforms/adapters';
 import { unitNotesFormSchema } from '$lib/formSchemas/schemas';
 import { prisma } from '$lib/server/prisma';
@@ -18,7 +18,7 @@ export const actions: Actions = {
       const formData = await event.request.formData();
       const unitNotesForm = await superValidate(formData, valibot(unitNotesFormSchema));
       if(!unitNotesForm.valid){
-         fail(500, unitNotesForm);
+         message(unitNotesForm, 'Form not valid');
       }
       const { success, reset } = await ratelimit.employeeForm.limit(event.locals.user.id)
       if(!success) {

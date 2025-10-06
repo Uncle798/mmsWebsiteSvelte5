@@ -2,15 +2,14 @@
    import LeaseEmployee from '$lib/displayComponents/LeaseEmployee.svelte';
    import UnitEmployee from '$lib/displayComponents/UnitEmployee.svelte';
 	import Header from '$lib/Header.svelte';
-	import { Modal, Combobox } from '@skeletonlabs/skeleton-svelte';
+	import { Modal, Combobox, Progress, ProgressRing } from '@skeletonlabs/skeleton-svelte';
    import type { PageData } from './$types';
 	import UnitPricingForm from '$lib/forms/UnitPricingForm.svelte';
 	import UserEmployee from '$lib/displayComponents/UserEmployee.svelte';
-	import { fade, blur } from 'svelte/transition';
 	import Revenue from '$lib/displayComponents/Revenue.svelte';
 	import type  { Lease, Unit } from '@prisma/client';
 	import Address from '$lib/displayComponents/AddressEmployee.svelte';
-	import { goto } from '$app/navigation';
+	import { goto, onNavigate } from '$app/navigation';
    import { browser } from '$app/environment';
 	import { PanelTopClose, SearchIcon } from 'lucide-svelte';
    let { data }: { data: PageData } = $props();
@@ -51,20 +50,23 @@
       label: string;
       value: string;
    }
-   const comboboxData:ComboboxData[] = [{label:'All', value:'all'}];
-   for(const size of data.sizes){
-      comboboxData.push({
-         label: size.replace(/^0+/gm, '').replace(/x0/gm, 'x'),
-         value: size
-      })
-   }
-   let selectedSize = $state(['']);
+   const comboboxData:ComboboxData[] = $derived(data.sizes.map(size => ({
+      label: size.replace(/^0+/gm, '').replace(/x0/gm, 'x'),
+      value: size
+   })))
    let searchDrawerOpen = $state(false);
+   let delayed = $state(false);
+   let timeout = $state(false);
+   onNavigate(() => {
+      delayed = false;
+      timeout = false;
+   })
 </script>
 <Header title='All {data.size.replace(/^0+/gm,'').replace(/0x/gm,'x')} units' />
 
 <Modal
-   bind:open={unitPricingModalOpen}
+   open={unitPricingModalOpen}
+   onOpenChange={(e) => unitPricingModalOpen = e.open}
    contentBase="card bg-surface-400-600 p-4 shadow-xl m-1 w-fit"
    backdropClasses=""
 >  
@@ -73,49 +75,10 @@
       <button class="btn preset-filled-primary-50-950 rounded-lg" onclick={()=>unitPricingModalOpen = false}>Close</button>
    {/snippet}
 </Modal>
-<Modal 
-   open={searchDrawerOpen}
-   onOpenChange={(event)=>(searchDrawerOpen = event.open)}
-   triggerBase='btn preset-filled-primary-50-950 rounded-lg fixed top-0 right-0 z-50'
-   contentBase='bg-surface-100-900 h-[170px] w-screen rounded-b-lg'
-   positionerJustify=''
-   positionerAlign=''
-   positionerPadding=''
-   transitionsPositionerIn={{y:-170, duration: 600}}
-   transitionsPositionerOut={{y:-170, duration: 600}}
-   modal={false}
->
-   {#snippet trigger()}
-      <SearchIcon aria-label='search' />
-   {/snippet}
-   {#snippet content()}   
-      <button onclick={()=>searchDrawerOpen=false} class='btn preset-filled-primary-50-950 rounded-lg m-1 absolute top-0 right-0'><PanelTopClose aria-label='Close'/></button>
-      <div class="mx-2 mt-9">
-         <Combobox
-            data={comboboxData}
-            label='Select Size'
-            value={selectedSize}
-            onValueChange={(event) =>{
-               if(event.value[0] === 'all'){
-                  if(browser){
-                     goto('/units')
-                  }
-               }
-               if(browser){
-                  goto(`/units/size/${event.value[0]}`)
-               }
-            }}
-            positionerBase=''
-            positionerClasses='overflow-auto h-24 small:h-44 tall:h-96 grande:h-128 venti:h-auto'
-            openOnClick={true}
-         />
-         <button class="btn preset-filled-primary-50-950 rounded-lg mt-5" onclick={()=>openModal(currentOldPrice)}>Change All {data.size.replace(/^0+/gm, '').replace(/x0/gm,'x')} prices</button>
-      </div>
-   {/snippet}
-</Modal>
+
 
 {#await data.units}
-   <div class="relative m-1 sm:m-2 mt-10">
+   <div class="relative m-1 sm:m-2 mt-14 sm:mt-10">
       Loading units...
    </div>
 {:then units}
@@ -124,8 +87,72 @@
       Loading leases...
    </div>
    {:then leases} 
+      <Modal 
+         open={searchDrawerOpen}
+         onOpenChange={(event)=>(searchDrawerOpen = event.open)}
+         triggerBase='btn preset-filled-primary-50-950 rounded-lg fixed top-0 right-0 z-50 h-12 sm:h-8'
+         contentBase='bg-surface-100-900 h-[170px] w-screen rounded-b-lg'
+         positionerJustify=''
+         positionerAlign=''
+         positionerPadding=''
+         transitionsPositionerIn={{y:-170, duration: 600}}
+         transitionsPositionerOut={{y:-170, duration: 600}}
+         modal={false}
+      >
+         {#snippet trigger()}
+            <SearchIcon aria-label='search' />
+         {/snippet}
+         {#snippet content()}   
+            <button onclick={()=>searchDrawerOpen=false} class='btn preset-filled-primary-50-950 rounded-lg m-1 absolute top-0 right-0'><PanelTopClose aria-label='Close'/></button>
+            <div class="mx-2 mt-11 flex flex-row gap-2">
+               <Combobox
+                  data={comboboxData}
+                  label='Select Size'
+                  onValueChange={(event) =>{
+                     setTimeout(() =>{
+                        delayed = true;
+                     }, 300);
+                     if(browser && event.value[0] === 'all'){
+                        if(browser){
+                           goto('/units')
+                        }
+                     } else if(browser){
+                        goto(`/units/size/${event.value[0]}`)
+                     }
+                  }}
+                  positionerBase=''
+                  positionerClasses='overflow-auto h-24 small:h-44 tall:h-96 grande:h-128 venti:h-auto'
+                  openOnClick={true}
+               />
+               {#if delayed}
+                  <ProgressRing  
+                     value={null} 
+                     size="size-8" 
+                     meterStroke="stroke-tertiary-600-400" 
+                     trackStroke="stroke-tertiary-50-950"
+                     classes='mt-6 mx-2'
+                     {@attach () => {
+                        setTimeout(() => {
+                           delayed = false;
+                           timeout = true;
+                        }, 800)
+                     }}
+                  />
+               {/if}
+               {#if timeout}
+                  <Progress 
+                     value={null}
+                     meterBg="bg-tertiary-500"
+                     width='w-12'
+                     classes='mt-9 mx-2'
+                  />
+               {/if}
+               <button class="btn preset-filled-primary-50-950 rounded-lg mt-5" onclick={()=>openModal(units[0].advertisedPrice)}>Change All {data.size.replace(/^0+/gm, '').replace(/x0/gm,'x')} prices</button>
+            </div>
+         {/snippet}
+      </Modal>
       {#if units.length > 0 }
-         <div class="flex fixed top-9 bg-tertiary-50-950 rounded-b-lg w-screen">
+         <div class="flex fixed top-11 sm:top-8 p-1 bg-tertiary-50-950 rounded-b-lg w-screen">
             <Revenue amount={currentRevenue(units)} label='Current revenue from {data.size.replace(/^0+/gm, '').replace(/x0/gm,'x')} units' />
                <span class="mx-1 sm:mx-2 w-1/3">Available: {availableUnits(units, leases).length} of {units.length} ({Math.round((availableUnits(units, leases).length*100)/units.length)}%)</span>
                <span class="mx-1 sm:mx-2 w-1/3">Open revenue: {currencyFormatter.format(lostRevenue(availableUnits(units, leases)))}</span>
@@ -145,7 +172,7 @@
                Loading addresses
             </div>
          {:then addresses}
-            <div class="grid grid-cols-1 gap-3 m-1 sm:m-2 mt-28 sm:mt-22">
+            <div class="grid grid-cols-1 gap-3 m-1 sm:m-2 mt-32 sm:mt-22 mb-8">
                {#each units as unit}
                {@const lease = leases.find((lease) => lease.unitNum === unit.num)}
                {@const customer = customers.find((customer)=> customer.id === lease?.customerId)}

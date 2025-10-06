@@ -1,58 +1,86 @@
 <script lang="ts">
 	import Address from '$lib/displayComponents/AddressEmployee.svelte';
 	import InvoiceCustomer from '$lib/displayComponents/customerViews/InvoiceCustomer.svelte';
-    import InvoiceEmployee from '$lib/displayComponents/InvoiceEmployee.svelte';
-    import UserEmployee from '$lib/displayComponents/UserEmployee.svelte';
-	import EmailCustomer from '$lib/emailCustomer.svelte';
+	import UserCustomer from '$lib/displayComponents/customerViews/UserCustomer.svelte';
+   import InvoiceEmployee from '$lib/displayComponents/InvoiceEmployee.svelte';
+   import UserEmployee from '$lib/displayComponents/UserEmployee.svelte';
+	import EmailCustomer from '$lib/EmailCustomer.svelte';
+   import DownloadPdfButton from '$lib/DownloadPDFButton.svelte';
 	import Header from '$lib/Header.svelte';
-    import type { PageData } from './$types';
+   import type { PageData } from './$types';
+	import PaymentRecordEmployee from '$lib/displayComponents/PaymentRecordEmployee.svelte';
 
-    let { data }: { data: PageData } = $props();
+   let { data }: { data: PageData } = $props();
 </script>
 {#if data.user?.employee}
-    {#if data.invoice}      
-        <Header title="Invoice number {data.invoice.invoiceNum}" />
-        <div class="flex flex-col sm:flex-row gap-x-1 mx-1 sm:mx-2 mt-10 border-2 border-primary-50-950 rounded-lg">
-            <InvoiceEmployee invoice={data.invoice} classes="min-w-64 " />
-            <div class="flex flex-col min-w-64"> 
-                {#if data.customer}
-                    <UserEmployee user={data.customer} classes="px-2 pt-2" />
-                {/if}
-                {#if data.address}
-                    <Address address={data.address} classes='px-2'/>
-                {/if}
+   {#if data.invoice}      
+      <Header title="Invoice number {data.invoice.invoiceNum}" />
+      <div class="flex flex-col sm:flex-row gap-x-1 mx-1 sm:mx-2 mt-14 sm:mt-10 border-2 border-primary-50-950 rounded-lg">
+         <div class="flex flex-col">
+         <InvoiceEmployee invoice={data.invoice} classes="min-w-64 mx-2 " />
+            <div class="flex flex-col sm:flex-row gap-2 my-2 ml-2">
+               {#if data.invoice.amountPaid < data.invoice.invoiceAmount}
+                  <a href="/paymentRecords/new?invoiceNum={data.invoice.invoiceNum}" 
+                     class="btn rounded-lg preset-filled-primary-50-950 w-84 h-8"
+                  >
+                     Make a payment record for this invoice
+                  </a>
+               {/if}
+               {#if data.customer?.email && data.customer?.emailVerified}         
+                  <EmailCustomer
+                     recordNum={data.invoice.invoiceNum}
+                     apiEndPoint='/api/sendInvoice'
+                     emailAddress={data.customer?.email}
+                     buttonText='Send invoice'
+                  />
+               {/if}
+               <DownloadPdfButton
+                  recordType='invoiceNum'
+                  num={data.invoice.invoiceNum}
+               />
             </div>
-            {#if data.customer?.email && data.customer?.emailVerified}         
-                <EmailCustomer
-                    recordNum={data.invoice.invoiceNum}
-                    apiEndPoint='/api/sendInvoice'
-                    emailAddress={data.customer?.email}
-                    buttonText='Send invoice'
-                />
+         </div>
+         <div class="flex flex-col min-w-64"> 
+            {#if data.customer}
+               <UserEmployee user={data.customer} classes="px-2 pt-2" />
             {/if}
-        </div>
-    {/if}
+            {#if data.address}
+               <Address address={data.address} classes='px-2'/>
+            {/if}
+         </div>
+      </div>
+      {#if data.paymentRecords}
+         <div class="flex flex-col gap-2 mx-2 mt-2 mb-8">
+            {#each data.paymentRecords as payment}
+               <PaymentRecordEmployee paymentRecord={payment} classes='border border-primary-50-950 rounded-lg p-2'/>
+            {/each}
+         </div>
+      {/if}
+   {/if}
 {:else}
-    {#if data.invoice}
-        <Header title="Invoice number {data.invoice.invoiceNum}" />
-        <div class="flex flex-col sm:flex-row gap-x-1 mx-1 sm:mx-2 mt-10 mb-20 sm:mb-12 lg:mb-7 border-2 border-primary-50-950 rounded-lg w-fit">
+   {#if data.invoice}
+      {#if data.user?.id === data.customer?.id}         
+         <Header title="Invoice number {data.invoice.invoiceNum}" />
+         <div class="flex flex-col sm:flex-row gap-x-1 mx-1 sm:mx-2 mt-14 sm:mt-10 mb-20 sm:mb-12 lg:mb-8 border-2 border-primary-50-950 rounded-lg w-fit">
             <InvoiceCustomer invoice={data.invoice} classes="min-w-64" />
             <div class="flex flex-col min-w-64"> 
-                {#if data.customer}
-                    <UserEmployee user={data.customer} classes="px-2 pt-2" />
-                {/if}
-                {#if data.address}
-                    <Address address={data.address} classes='px-2'/>
-                {/if}
-                {#if data.customer?.email && data.customer?.emailVerified}         
-                    <EmailCustomer
-                        recordNum={data.invoice.invoiceNum}
-                        apiEndPoint='/api/sendInvoice'
-                        emailAddress={data.customer?.email}
-                        buttonText='Send invoice'
-                    />
-                {/if}
+               {#if data.customer}
+                  <UserCustomer user={data.customer} classes="px-2 pt-2" />
+               {/if}
+               {#if data.address}
+                  <Address address={data.address} classes='px-2'/>
+               {/if}
+               {#if data.customer?.email && data.customer?.emailVerified}         
+                  <EmailCustomer
+                     recordNum={data.invoice.invoiceNum}
+                     apiEndPoint='/api/sendInvoice'
+                     emailAddress={data.customer.email}
+                     buttonText='Send invoice'
+                     classes='m-1 sm:m-2'
+                  />
+               {/if}
             </div>
-        </div>
-    {/if}
+         </div>
+      {/if}
+   {/if}
 {/if}

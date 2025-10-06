@@ -1,7 +1,7 @@
 import { prisma } from '$lib/server/prisma';
 import type { PageServerLoad } from './$types';
 import pricingData from '$lib/server/pricingData';
-export const load:PageServerLoad = (async () => {
+export const load:PageServerLoad = (async (event) => {
    const availableUnits = prisma.unit.findMany({
       where: {
          AND: [
@@ -27,6 +27,6 @@ export const load:PageServerLoad = (async () => {
          sizes.push(datum.size)
       }
    })
-
-   return { availableUnits, sizes, }
+   const demoCookie =  event.cookies.get('homeComplete');
+   return { availableUnits, sizes, demoCookie };
 })

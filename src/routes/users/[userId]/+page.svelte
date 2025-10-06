@@ -9,20 +9,22 @@
    import LeaseEndForm from '$lib/forms/LeaseEndForm.svelte';
    import PaymentRecordEmployee from '$lib/displayComponents/PaymentRecordEmployee.svelte';
    import Header from '$lib/Header.svelte';
-   import type { Invoice, PaymentRecord } from '@prisma/client';
+   import type { Invoice, PaymentRecord, User } from '@prisma/client';
+   import { Prisma } from '@prisma/client';
 	import RefundRecordDisplay from '$lib/displayComponents/RefundRecordEmployee.svelte';
 	import Pagination from '$lib/displayComponents/Pagination.svelte';
-	import dayjs from 'dayjs';
+	import EmailChangeForm from '$lib/forms/EmailChangeForm.svelte';
+	import EmailVerificationForm from '$lib/forms/EmailVerificationForm.svelte';
+	import UserNotesForm from '$lib/forms/UserNotesForm.svelte';
    let { data }: { data: PageData } = $props();
-   let addressModalOpen = $state(false);
-   let leaseEndModalOpen = $state(false);
-   let search = $state('')
+
+   let globalModalOpen = $state(false);
+   let modalReason = $state('');
+   let currentLeaseId = $state('');
    let pageNum = $state(1);
    let size = $state(5);
    const currencyFormatter = new Intl.NumberFormat('en-US', {style:'currency', currency:'USD'});
-   let slicedPayments = $derived((paymentRecords:PaymentRecord[]) => paymentRecords.slice((pageNum -1) * size, pageNum*size));
    const slicedInvoices = $derived((invoices:Invoice[]) => invoices.slice((pageNum - 1) * size, pageNum * size));
-   let searchedPayments = $derived((paymentRecords:PaymentRecord[]) => paymentRecords.filter((paymentRecord) => paymentRecord.paymentNumber.toString().includes(search) ))
    const derivedTotalInvoiced = $derived((invoices:Invoice[]) => {
       let total = 0;
       for(const invoice of invoices){
@@ -44,76 +46,157 @@
    const overDueInvoices = $derived((invoices:Invoice[]) => {
       const returnedInvoices:Invoice[] = [];
       for(const invoice of invoices){
-         if(invoice.invoiceDue < new Date() && !invoice.paymentRecordNum && !invoice.deposit){
-            returnedInvoices.push(invoice)
+         if(invoice.amountPaid < invoice.invoiceAmount && invoice.invoiceDue < new Date()){
+            returnedInvoices.push(invoice);
          }
       }
       return returnedInvoices;
    })
+   const overDueInvoice = $derived((invoice:Invoice) =>{
+      if(invoice.amountPaid < invoice.invoiceAmount){
+         return invoice.invoiceAmount - invoice.amountPaid;
+      } else {
+         return 0;
+      }
+   })
+   function leaseModal(leaseId:string) {
+      currentLeaseId = leaseId;
+      modalReason = 'leaseEnd';
+      globalModalOpen = true;
+   }
+   let currentUser = $state<User>(data.dbUser);
+   function emailChangeModal(user:User){
+      modalReason='emailVerification'
+      globalModalOpen=true
+      currentUser=user
+   }
 </script>
+<Modal
+   open={globalModalOpen}
+   onOpenChange={(e) => globalModalOpen = e.open}
+   triggerBase="btn preset-filled-primary-50-950 rounded-lg m-2"
+   contentBase="card bg-surface-400-600 p-4 space-y-4 shadow-xl max-w-(--breakpoint-sm)"
+   backdropClasses="backdrop-blur-xl"
+   modal={true}
+>
+   {#snippet content()}
+      {#if modalReason === 'emailChange'}
+         <EmailChangeForm data={data.emailChangeForm} bind:emailModalOpen={globalModalOpen} user={currentUser}/>
+      {:else if modalReason === 'emailVerification'}
+         <EmailVerificationForm 
+            data={data.emailVerificationForm}
+            userId={data.dbUser.id}
+            bind:emailVerificationModalOpen={globalModalOpen}
+            redirect='false'
+         />
+      {:else if modalReason === 'addressChange'}
+         <AddressForm
+            data={data.addressForm}
+            userId={data.dbUser.id}
+            bind:addressModalOpen={globalModalOpen}
+         />
+      {:else if modalReason === 'leaseEnd'}
+         <LeaseEndForm
+            data={data.leaseEndForm}
+            bind:leaseEndModalOpen={globalModalOpen}
+            leaseId={currentLeaseId}
+         />
+      {/if}
+      <button class="btn preset-filled-primary-50-950" onclick={()=>globalModalOpen=false}>Close</button>
+   {/snippet}
+</Modal>
 
 {#if data.dbUser}
    <Header title='{data.dbUser.givenName} {data.dbUser.familyName}' />
-   <UserEmployee user={data.dbUser} classes='mx-2 mt-10' />
+   <div class="grid grid-cols-1 sm:grid-cols-2 mt-14 sm:mt-10 mx-1 sm:mx-2">
+      <div>
+         <UserEmployee user={data.dbUser} classes='mx-2' />
+         <button class="btn preset-filled-primary-50-950 mx-2" 
+            onclick={() => emailChangeModal(data.dbUser) }
+            type='button'
+            >
+               Change email address
+            </button>
+         {#if !data.dbUser.emailVerified}      
+            <button class="btn preset-filled-primary-50-950 mx-2" 
+               onclick={()=>{
+                  modalReason='emailVerify' 
+                  globalModalOpen=true
+               }} 
+               type='button'
+               >
+                  Verify email address
+               </button>
+         {/if}
+      </div>
+      <div>
+         <UserNotesForm user={data.dbUser} data={data.userNotesForm} />
+      </div>
+   </div>
 {:else}
 ...loading user
 {/if}
-{#if data.address}
-   <Address bind:address={data.address} classes='px-2'/>
-   <Modal
-      bind:open={addressModalOpen}
-      triggerBase="btn preset-filled-primary-50-950 rounded-lg mx-2 "
-      contentBase="card bg-surface-400-600 p-4 space-y-4 shadow-xl max-w-(--breakpoint-sm)"
-      backdropClasses="backdrop-blur-xs"
-   >
-   {#snippet trigger()}
-      Change Address
-   {/snippet}
-   {#snippet content()}
-      <AddressForm data={data.addressForm} bind:addressModalOpen={addressModalOpen} userId={data.dbUser?.id!}/>
-      <button class="btn preset-filled-primary-50-950 rounded-lg" onclick={()=>addressModalOpen=false}>Close</button>
-   {/snippet}
-   </Modal>
-{:else}
-   ...loading address
-{/if}
+<div class="mx-1 sm:mx-2">
+   {#if data.address}
+      <Address address={data.address} classes=''/>
+      <button class="btn preset-filled-primary-50-950"
+         onclick={()=>{
+            modalReason='addressChange' 
+            globalModalOpen=true
+         }} 
+         type='button'
+      >
+         Change address
+      </button>
+   {:else}
+      <button class="btn preset-filled-primary-50-950 mx-2"
+         onclick={()=>{
+            modalReason='addressChange' 
+            globalModalOpen=true
+         }} 
+         type='button'
+      >
+         Add address
+      </button>
+   {/if}
+</div>
 {#await data.leases}
-...loading leases
+   <div class="mx-2">
+      Loading leases...
+   </div>
 {:then leases}
-   {#each leases as lease}
-      <div class="rounded-lg border-2 border-primary-50 dark:border-primary-950 flex flex-col m-2">
-         <LeaseEmployee lease={lease} classes='m-2'/>
-         {#if !lease?.leaseEnded}
-            <Modal
-               bind:open={leaseEndModalOpen}
-               triggerBase="btn preset-filled-primary-50-950 rounded-lg m-2"
-               contentBase="card bg-surface-400-600 p-4 space-y-4 shadow-xl max-w-(--breakpoint-sm)"
-               backdropClasses="backdrop-blur-xs"
-               modal={true}
-            >  
-            {#snippet trigger()}
-               End Lease
-            {/snippet}
-            {#snippet content()}
-               <LeaseEndForm data={data.leaseEndForm} leaseId={lease.leaseId} leaseEndModalOpen={leaseEndModalOpen}/>
-               <button class="btn preset-filled-primary-50-950 rounded-lg m-2" onclick={()=>leaseEndModalOpen=false}>Cancel</button>
-            {/snippet}   
-            </Modal>
-         {/if}
-      </div>
-   {/each}
+   <div class="grid grid-cols-1 sm:grid-cols-2">
+      {#each leases as lease}
+         <div class="rounded-lg border-2 border-primary-50 dark:border-primary-950 flex flex-col m-2">
+            <LeaseEmployee lease={lease} classes='m-2'/>
+            {#if !lease?.leaseEnded}
+               <button class="btn preset-filled-primary-50-950 m-2"  
+                  onclick={()=>leaseModal(lease.leaseId)} 
+                  type='button'
+               >
+                  End lease
+               </button>
+               <a href="/invoices/new?leaseId={lease.leaseId}" class="btn preset-filled-primary-50-950 m-2">Make an invoice for this lease</a>
+            {/if}
+         </div>
+      {/each}
+   </div>
 {/await}
-<div>
+<div class="mb-9">
 {#await data.invoices}
-    <div class='col-span-1'>
-        ...loading invoices
+    <div class='mx-2'>
+        Loading invoices...
     </div>
 {:then invoices}
    {#await data.paymentRecords}
-      ...loading payment records
+      <div class="mx-2">
+         Loading payments...
+      </div>
    {:then paymentRecords} 
       {#await data.refunds}
-         ...loading refunds
+         <div class="mx-2">
+            Loading refunds...
+         </div>
       {:then refunds}
          <div class="flex ">
             <span class="mx-1">Total invoiced (not including deposits): {currencyFormatter.format(derivedTotalInvoiced(invoices))}</span>
@@ -126,11 +209,14 @@
             {/if}
          </div>
          {#if refunds.length > 0}
-         <div class="grid grid-cols-1 lg:grid-cols-3 gap-x-1 gap-y-3 mx-2 ">
-            {#each slicedInvoices(invoices) as invoice}
-            {@const paymentRecord = paymentRecords.find((payment) => payment.invoiceNum === invoice.invoiceNum)}
-            {@const refund = refunds.find((refund) => refund.paymentRecordNum === paymentRecord?.paymentNumber)}
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-x-1 gap-y-3 mx-2 ">
+               {#each slicedInvoices(invoices) as invoice}
+               {@const paymentRecord = paymentRecords.find((payment) => payment.invoiceNum === invoice.invoiceNum)}
+               {@const refund = refunds.find((refund) => refund.paymentRecordNum === paymentRecord?.paymentNumber)}
                   <InvoiceEmployee invoice={invoice} classes='rounded-lg border-2 border-primary-50-950'/>
+                  {#if overDueInvoice(invoice) > 0 }
+                     <a href="/paymentRecords/new?userId={invoice.customerId}" class="btn preset-filled-primary-50-950">Make a payment Record for this invoice</a>
+                  {/if}
                   {#if paymentRecord}
                      <PaymentRecordEmployee paymentRecord={paymentRecord} classes='rounded-lg border-2 border-primary-50-950'/>
                   {:else}
@@ -141,18 +227,24 @@
                   {:else}
                      <div class="min-w-1/3"></div>
                   {/if}
-                  {/each}
+               {/each}
             </div>
          {:else}
             <div class="grid grid-cols-1 md:grid-cols-2 gap-x-1 gap-y-3 mx-2">
-            {#each slicedInvoices(invoices) as invoice}
-            {@const paymentRecord = paymentRecords.find((payment) => payment.invoiceNum === invoice.invoiceNum)}
-
-               <InvoiceEmployee invoice={invoice} classes='rounded-lg border-2 border-primary-50-950'/>
-               {#if paymentRecord}
-                  <PaymentRecordEmployee paymentRecord={paymentRecord} classes='rounded-lg border-2 border-primary-50-950'/>               
-               {/if}
-            {/each}
+               {#each slicedInvoices(invoices) as invoice}
+               {@const paymentRecord = paymentRecords.find((payment) => payment.invoiceNum === invoice.invoiceNum)}
+                  <div class="rounded-lg border-2 border-primary-50-950">
+                     <InvoiceEmployee invoice={invoice} classes=''/>
+                     {#if overDueInvoice(invoice) > 0 }
+                        <a href="/paymentRecords/new?invoiceNum={invoice.invoiceNum}" class="btn preset-filled-primary-50-950 h-8 w-fit m-2">Make a payment Record for this invoice</a>
+                     {/if}
+                  </div>
+                  {#if paymentRecord}
+                     <PaymentRecordEmployee paymentRecord={paymentRecord} classes='rounded-lg border-2 border-primary-50-950'/>
+                  {:else}
+                     <div></div>
+                  {/if}
+               {/each}
             </div>
          {/if}
          <Pagination bind:pageNum={pageNum} bind:size={size} label='invoices' array={invoices} />

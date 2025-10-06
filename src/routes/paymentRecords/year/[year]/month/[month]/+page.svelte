@@ -14,10 +14,10 @@
    import Revenue from '$lib/displayComponents/Revenue.svelte';  
    import Address from '$lib/displayComponents/AddressEmployee.svelte';
    import RefundForm from '$lib/forms/NewRefundForm.svelte'
-   import { Combobox, Modal } from '@skeletonlabs/skeleton-svelte';
-   import { goto } from '$app/navigation';
+   import { Modal } from '@skeletonlabs/skeleton-svelte';
 	import { SearchIcon, PanelTopCloseIcon } from 'lucide-svelte';
-	import EmailCustomer from '$lib/emailCustomer.svelte';
+	import EmailCustomer from '$lib/EmailCustomer.svelte';
+	import DownloadPdfButton from '$lib/DownloadPDFButton.svelte';
    dayjs.extend(utc)
    let { data }: { data: PageData } = $props();
    let pageNum = $state(1);
@@ -105,7 +105,8 @@
    let searchDrawerOpen = $state(false);
 </script>
 <Modal
-   bind:open={modalOpen}
+   open={modalOpen}
+   onOpenChange={(e) => modalOpen = e.open}
    contentBase="card bg-surface-400-600 p-4 space-y-4 shadow-xl"
    backdropClasses=""
    modal={true}
@@ -118,18 +119,18 @@
 </Modal>
 <Header title='Payment Records' />
 {#await wrapper}
-   <div class="mx-1 sm:mx-2 mt-10 sm:mt-10">
+   <div class="mx-1 sm:mx-2 mt-14 sm:mt-10">
       Loading {numberFormatter.format(data.paymentRecordCount)} payment records...
       <Placeholder numCols={1} numRows={size} heightClass='h-32' classes='z-0'/>
    </div>
 {:then paymentRecords} 
    {#await data.customers}
-      <div class="mt-10">
+      <div class="mt-14 sm:mt-10">
          Loading customers...
       </div>
    {:then customers} 
       {#await data.addresses}
-         <div class="mt-10">
+         <div class="mt-14 sm:mt-10">
             Loading contacts...
          </div>
       {:then addresses}         
@@ -167,7 +168,7 @@
                   bind:search={search} 
                   searchType='payment record number' 
                   data={data.searchForm}
-                  classes='m-1 sm:m-2 mt-9 sm:mt-9'
+                  classes='m-1 sm:m-2 mt-11 sm:mt-11'
                />
                <Search
                   bind:search={nameSearch}
@@ -189,7 +190,7 @@
                   }} class="anchor col-span-full mx-2">Sort by date {sortBy ? 'starting earliest' : 'starting latest'}</button>
             {/snippet}
             </Modal>
-               <div class="mt-26 sm:mt-20" in:fade={{duration:600}} out:fade={{duration:0}}>
+               <div class="mt-26 sm:mt-20 mb-8" in:fade={{duration:600}} out:fade={{duration:0}}>
                   {#each slicedSource(dateSearchPayments(searchedPayments(sortedByDate(searchByUser(paymentRecords, currentUsers(customers)))))) as paymentRecord}
                   {@const customer = customers.find((customer) => customer.id === paymentRecord.customerId) }
                      <div class="rounded-lg border border-primary-50-950 grid sm:grid-cols-2 m-2">
@@ -214,12 +215,16 @@
                                     buttonText='Email receipt'
                                  />
                               {/if}
+                              <DownloadPdfButton
+                                 recordType='paymentNum'
+                                 num={paymentRecord.paymentNumber}
+                              />
                            </div>
                         {/if}
                      </div>
                   {/each}
+                  <Pagination bind:size={size} bind:pageNum={pageNum} array={dateSearchPayments(searchedPayments(searchByUser(paymentRecords, currentUsers(customers))))} label='payment records'/>
                </div>
-               <Pagination bind:size={size} bind:pageNum={pageNum} array={dateSearchPayments(searchedPayments(searchByUser(paymentRecords, currentUsers(customers))))} label='payment records'/>
          {:else}
             No payment records from that month
          {/if}

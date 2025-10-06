@@ -7,7 +7,9 @@
 	import NumberInput from "$lib/formComponents/NumberInput.svelte";
 	import { onMount } from "svelte";
 	import TextArea from "$lib/formComponents/TextArea.svelte";
+   import RadioButton from "$lib/formComponents/RadioButton.svelte";
 	import type { PaymentRecord } from "@prisma/client";
+	import { page } from "$app/state";
    interface Props {
       data: SuperValidated<Infer<RefundFormSchema>>;
       refundFormModalOpen?: boolean;
@@ -20,10 +22,23 @@
       paymentRecord,
       classes
    }:Props = $props();
+   const url = page.url.pathname
    let { form, errors, message, constraints, enhance, delayed, timeout} = superForm(data, {
-      onSubmit(input) {
+      onChange(event) {
+         if(event.target){
+            const formName = `${url}/newRefundForm?paymentNum=${paymentRecord.paymentNumber}:${event.path}`;
+            const value = event.get(event.path);
+            if(value && value !== ''){
+               sessionStorage.setItem(formName, value.toString());
+            }else if(value === ''){
+               sessionStorage.removeItem(formName);
+            }else if(value === 0){
+               sessionStorage.removeItem(formName);
+            }
+         }
       },
-      
+      onSubmit(input) {
+      }, 
       onUpdate(){
          refundFormModalOpen = false;
       }
@@ -31,16 +46,34 @@
    onMount(()=>{
       $form.amount = paymentRecord.paymentAmount;
       $form.notes = `Refund of payment record number: ${paymentRecord.paymentNumber}, ${paymentRecord.paymentNotes}`
-      $form.refundType = paymentRecord.paymentType;
+      for(const key in $form){
+         let fullKey = `${url}/newRefundForm?paymentNum=${paymentRecord.paymentNumber}:${key}`;
+         const storedValue = sessionStorage.getItem(fullKey)
+         if(storedValue){
+            if(isNaN(parseInt(storedValue, 10))){
+               if(storedValue === 'true'){
+                  $form[key as keyof typeof $form] = true as never;
+               } else if(storedValue === 'false'){
+                  $form[key as keyof typeof $form] = false as never;
+               } else {
+                  $form[key as keyof typeof $form] = storedValue as never;
+               }
+            } else {
+               $form[key as keyof typeof $form] = parseInt(storedValue, 10) as never;
+            }
+         }
+      }
    })
+   const paymentTypes = [ 'CASH', 'CHECK', 'CREDIT'];
 </script>
 <div class="{classes} flex flex-col gap-2">
    <FormMessage message={$message} />
-   <form action="/forms/refundForm" method="post" use:enhance>
+   <form action="/forms/newRefundForm" method="POST" use:enhance>
       <TextArea 
          bind:value={$form.notes}
          errors={$errors.notes}
          constraints={$constraints.notes}
+         rows={5}
          label='Refund Notes'
          name='notes'
       />
@@ -51,14 +84,18 @@
          label='Refund amount'
          name='amount'
       />
-      <label for="refundType" class="label-text">Refund Type
-         <select name="refundType" bind:value={$form.refundType} class="select mt-2">
-            {#each ['Stripe', 'Cash', 'Check'] as type}
-
-                  <option value={type.toUpperCase()}>{type}</option>
-            {/each}
-         </select>
-      </label>
+      <div class="flex">
+         {#each paymentTypes as paymentType}
+            <RadioButton
+               value={paymentType}
+               groupName='refundType'
+               id={paymentType}
+               errors={$errors.refundType}
+               constraints={$constraints.refundType}
+               label={paymentType.substring(0,1)+paymentType.substring(1).toLowerCase()}
+            />
+         {/each}
+      </div>
       <input type="hidden" name="paymentRecordNumber" value={paymentRecord.paymentNumber}>
       <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} buttonText="Submit Refund"/>
    </form>

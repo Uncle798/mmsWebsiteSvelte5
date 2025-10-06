@@ -81,11 +81,11 @@
 <Header title='Make a Payment'/>
 {#if data.newLease}
 {#if !mounted}
-    <div in:fade={{duration:600}} class="mt-10 m-2">
+    <div in:fade={{duration:600}} class="mt-14 sm:mt-10 m-2">
         ...loading
     </div>
 {:else}
-    <div class="mt-10 mx-1 sm:mx-2" in:fade={{duration:600}}>
+    <div class="mt-14 sm:mt-10 mx-1 sm:mx-2" in:fade={{duration:600}}>
         Please pay your deposit in the next {formattedRange} to hold your unit or your transaction will be canceled and you'll need to start again.
     </div>
     <div bind:this={wrapper} class="m-2"></div>
@@ -96,6 +96,6 @@
             ...loading
         </div>
         {:else}
-        <div bind:this={wrapper} class="mt-10 m-2" in:fade={{duration:600}}></div>
+        <div bind:this={wrapper} class="mt-14 sm:mt-10 m-2" in:fade={{duration:600}}></div>
     {/if}
 {/if} -->

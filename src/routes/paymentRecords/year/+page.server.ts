@@ -7,12 +7,14 @@ export const load = (async () => {
          paymentCreated: 'asc'
       }
    })
-   const earliestYear = earliestRecord!.paymentCreated.getFullYear()
-   const thisYear = new Date().getFullYear();
    const years:number[] = [];
-   for(let i=earliestYear; i<=thisYear; i++){
-      years.push(i);
+   if(earliestRecord){
+      const earliestYear = earliestRecord!.paymentCreated.getFullYear()
+      const thisYear = new Date().getFullYear();
+      for(let i=earliestYear; i<=thisYear; i++){
+         years.push(i);
+      }
+      
    }
-
    return {years};
 }) satisfies PageServerLoad;

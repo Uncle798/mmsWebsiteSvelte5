@@ -1,4 +1,4 @@
-import { redirect, fail } from '@sveltejs/kit';
+import { redirect, fail, error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { prisma } from '$lib/server/prisma';
 import { anvilClient, getOrganizationalPacketVariables, getPersonalPacketVariables } from '$lib/server/anvil';
@@ -16,7 +16,7 @@ export const load = (async (event) => {
          }
       })
       if(!lease){
-         return fail(404)
+         return error(404)
       }
       const unit = await prisma.unit.findFirst({
          where: {
@@ -28,7 +28,6 @@ export const load = (async (event) => {
             id: lease.customerId
          }
       });
-      console.log(customer)
       const address = await prisma.address.findUnique({
          where: {
             addressId: lease.addressId
@@ -70,11 +69,11 @@ export const load = (async (event) => {
             }
          });
          if(!invoice){
-            return fail(400)
+            return error(400)
          }
          const paymentRecord = await prisma.paymentRecord.findFirst({
             where: {
-               invoiceNum: invoice.paymentRecordNum 
+               invoiceNum: invoice.invoiceNum
             }
          })
          return { packetDetails, customer, paymentRecord, address };

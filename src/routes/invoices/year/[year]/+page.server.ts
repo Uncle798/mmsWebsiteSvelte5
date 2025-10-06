@@ -3,7 +3,7 @@ import type { PageServerLoad } from './$types';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc'
 import { prisma } from '$lib/server/prisma';
-import { arrayOfMonths } from '$lib/server/utils';
+import { arrayOfMonths, arrayOfYears } from '$lib/server/utils';
 import { superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import { dateSearchFormSchema, searchFormSchema } from '$lib/formSchemas/schemas';
@@ -38,7 +38,16 @@ export const load = (async (event) => {
         }
     })
     const months = arrayOfMonths(startDate, endDate);
-    const customers = prisma.user.findMany({
+    const earliestInvoice = await prisma.invoice.findFirst({
+        orderBy: {
+            invoiceCreated: 'asc'
+        }
+    })
+    let years:number[]=[];
+    if(earliestInvoice){
+        years = arrayOfYears(earliestInvoice.invoiceCreated.getFullYear());
+    }
+    const customers = await prisma.user.findMany({
         where: {
             customerInvoices: {
                 some: {
@@ -67,5 +76,5 @@ export const load = (async (event) => {
             ]
         }
     })
-    return { invoices, invoiceCount, months, customers, searchForm, dateSearchForm, addresses, year };
+    return { invoices, invoiceCount, months, customers, searchForm, dateSearchForm, addresses, year, years };
 }) satisfies PageServerLoad;

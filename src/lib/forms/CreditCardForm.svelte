@@ -6,15 +6,15 @@
 	import { superForm, type Infer, type SuperValidated } from "sveltekit-superforms";
    import { creditCardFormSchema, type CreditCardFormSchema } from "$lib/formSchemas/schemas";
 	import FormMessage from "$lib/formComponents/FormMessage.svelte";
-	import TextInput from "$lib/formComponents/TextInput.svelte";
 	import { browser } from '$app/environment';;
 	import { goto } from '$app/navigation';
    import { fade } from "svelte/transition";
-	import { ProgressRing, Progress } from "@skeletonlabs/skeleton-svelte";
+	import { ProgressRing, Progress, Tooltip, Modal } from "@skeletonlabs/skeleton-svelte";
 	import { valibot, } from "sveltekit-superforms/adapters";
 	import type { Invoice } from "@prisma/client";
    import Payment from "payment";
 	import { onMount } from "svelte";
+	import { Info } from "lucide-svelte";
 
    interface Props {
       data: SuperValidated<Infer<CreditCardFormSchema>>,
@@ -27,7 +27,7 @@
    let { data, sessionToken, invoice, subscription, buttonText='Pay Bill',classes, }:Props = $props();
    let processing = $state(false);
    let errorDisplay = $state<HTMLElement>();
-   let { form, message, errors, constraints, enhance, delayed, timeout} = superForm(data, {
+   let { form, message, errors, constraints, enhance, delayed, timeout, } = superForm(data, {
       SPA: true,
       validators: valibot(creditCardFormSchema),
       onUpdate({form}){
@@ -35,7 +35,6 @@
          if(form.valid){
             const {data} = form;
             let date:string = data.exp.substring(0, data.exp.indexOf(' ')) + data.exp.substring(data.exp.lastIndexOf(' ')+1);
-            console.log(date);
             const paymentData = {
                ssl_txn_auth_token: sessionToken, 
                ssl_card_number: data.ccNum,
@@ -100,47 +99,161 @@
          Payment.formatCardExpiry(ccExpElement);
       }
    })
+   let ccToolTipOpen = $state(false);
+   let expToolTipOpen = $state(false);
+   let cvvToolTipOpen = $state(false);
+   let zipcodeToolTipOpen = $state(false);
+   let explainerModalOpen = $state(true);
+   let familyNameToolTipOpen = $state(false);
+   let givenNameTooltipOpen = $state(false);
+   onMount(()=>{
+      setTimeout(()=>{
+         explainerModalOpen=false
+      }, 4000)
+   })
 </script>
 <FormMessage message={$message} />
+<Modal
+   open={explainerModalOpen}
+   onOpenChange={(event) =>(explainerModalOpen = event.open)}
+   contentBase='card bg-surface-100-900 p-2 space-y-4 shadow-xl max-w-screen-sm'
+   backdropClasses='backdrop-blur-lg'
+>
+   {#snippet content()}
+      <p>
+         Unfortunately there is no way to demo taking a credit payment right now. Please select cash or check to see a payment receipt.
+      </p>
+      <button class="btn preset-tonal" onclick={()=>(explainerModalOpen=false)}>Close</button>
+   {/snippet}
+</Modal>
 <form method="POST" use:enhance>
    <div class='{classes}'> 
-      <TextInput
-         bind:value={$form.billingGivenName}
-         errors={$errors.billingGivenName}
-         constraints={$constraints.billingGivenName}
-         label='Given name on credit card'
-         name='billingGivenName'
-         placeholder='Smokey'
-         autocomplete='cc-given-name'
-      />
-      <TextInput
-         bind:value={$form.billingFamilyName}
-         errors={$errors.billingFamilyName}
-         constraints={$constraints.billingFamilyName}
-         label='Family name on credit card'
-         name='billingFamilyName'
-         placeholder='Bear'
-         autocomplete='cc-family-name'
-      />
-      <div>
-         <label for="ccNum" class="label-text">Credit card number
+      <div>        
+         <label for="billingGivenName" class="label-text">Give name on credit card
+            <Tooltip
+               open={givenNameTooltipOpen}
+               onOpenChange={(e) => givenNameTooltipOpen = e.open}
+               positioning={{placement: 'top-end'}}
+               contentBase="card preset-filled p-2 max-w-screen text-wrap"
+               openDelay={200}
+               closeDelay={2000}
+               zIndex='30'
+            >
+               {#snippet trigger()}
+                  <button onclick={()=>givenNameTooltipOpen = true} class=''>
+                     <Info aria-label='Given name number tool tip' size={15} />
+                  </button>
+               {/snippet}
+               {#snippet content()}
+                  Please use any name
+               {/snippet}
+            </Tooltip>
             <input 
-               name="ccNum" 
-               id="ccNum" 
-               bind:this={ccNumElement} 
-               class="input" 
-               bind:value={$form.ccNum} 
-               autocomplete="cc-number"
-               {...$constraints.ccNum}
-               />
+               name="billingGivenName" 
+               id="billingGivenName" 
+               type="text"
+               class="input"
+               placeholder="Smokey" 
+               bind:value={$form.billingGivenName} 
+               autocomplete="cc-given-name"
+               {...$constraints.billingGivenName}
+            />
+         </label>
+         {#if $errors.billingFamilyName}
+         <span class="invalid">{$errors.billingFamilyName}</span>
+         {/if}
+      </div>
+      <div>        
+         <label for="billingFamilyName" class="label-text">Family name on credit card
+            <Tooltip
+               open={familyNameToolTipOpen}
+               onOpenChange={(e) => familyNameToolTipOpen = e.open}
+               positioning={{placement: 'top-end'}}
+               contentBase="card preset-filled p-2 max-w-screen text-wrap"
+               openDelay={200}
+               closeDelay={2000}
+               zIndex='30'
+            >
+               {#snippet trigger()}
+                  <button onclick={()=>familyNameToolTipOpen=true} class=''>
+                     <Info aria-label='Family name number tool tip' size={15} />
+                  </button>
+               {/snippet}
+               {#snippet content()}
+                  Please use any name
+               {/snippet}
+            </Tooltip>
+            <input 
+            name="billingFamilyName" 
+            id="billingFamilyName" 
+            type="text"
+            class="input"
+            placeholder="Bear" 
+            bind:value={$form.billingFamilyName} 
+            autocomplete="cc-family-name"
+            {...$constraints.billingFamilyName}
+            />
+         </label>
+         {#if $errors.billingFamilyName}
+         <span class="invalid">{$errors.billingFamilyName}</span>
+         {/if}
+      </div>
+      <div>        
+         <label for="ccNum" class="label-text">Credit card number
+            <Tooltip
+               open={ccToolTipOpen}
+               onOpenChange={(e) => ccToolTipOpen = e.open}
+               positioning={{placement: 'top-end'}}
+               contentBase="card preset-filled p-2 max-w-screen text-wrap"
+               openDelay={200}
+               closeDelay={2000}
+               zIndex='30'
+            >
+               {#snippet trigger()}
+                  <button onclick={()=> ccToolTipOpen = true} class=''>
+                     <Info aria-label='Credit card number tool tip' size={15} />
+                  </button>
+               {/snippet}
+               {#snippet content()}
+                  Please use 4000000000000002 or any of the card numbers from <a href="https://developer.elavon.com/test-cards" class="anchor">https://developer.elavon.com/test-cards</a>
+               {/snippet}
+            </Tooltip>
+            <input 
+            name="ccNum" 
+            id="ccNum" 
+            bind:this={ccNumElement} 
+            class="input" 
+            placeholder="4000 0000 0000 0002"
+            bind:value={$form.ccNum} 
+            autocomplete="cc-number"
+            {...$constraints.ccNum}
+            />
          </label>
          {#if $errors.ccNum}
-            <span class="invalid">{$errors.ccNum}</span>
+         <span class="invalid">{$errors.ccNum}</span>
          {/if}
       </div>
       <div class="flex gap-2 flex-row">
-         <div>
+         <div>               
             <label for="ccExp" class="label-text">Expiration
+               <Tooltip
+                  open={expToolTipOpen}
+                  onOpenChange={(e) => expToolTipOpen = e.open}
+                  positioning={{placement: 'top-end'}}
+                  contentBase="card preset-filled p-2 max-w-screen text-wrap"
+                  openDelay={200}
+                  closeDelay={2000}
+                  zIndex='30'
+               >
+                  {#snippet trigger()}
+                     <button onclick={()=>expToolTipOpen=true} class="">
+                        <Info aria-label='Credit card expiration tool tip' size={15}/>
+                     </button>
+                  {/snippet}
+                  {#snippet content()}
+                     Please use a future date, from <a href="https://developer.elavon.com/test-cards" class="anchor">https://developer.elavon.com/test-cards</a>
+                  {/snippet}
+               </Tooltip>
                <input
                   name="ccExp"
                   id="ccExp"
@@ -148,30 +261,83 @@
                   bind:this={ccExpElement}
                   autocomplete="cc-exp"
                   bind:value={$form.exp}
+                  {...$constraints.exp}
+                  placeholder="12/29"
                />
             </label>
             {#if $errors.exp}
                <span class="invalid">{$errors.exp}</span>
             {/if}
          </div>
-         <TextInput
-            bind:value={$form.cvv}
-            errors={$errors.cvv}
-            constraints={$constraints.cvv}
-            label='CVV'
-            name='cvv'
-            placeholder='123'
-            autocomplete='cc-csc'
-         />
-         <TextInput
-            bind:value={$form.postalCode}
-            errors={$errors.postalCode}
-            constraints={$constraints.postalCode}
-            label='Billing zip code'
-            name='postalCode'
-            placeholder='83843'
-            autocomplete='billing postal-code'
-         />
+         <div>               
+            <label for="cvv" class="label-text">CVV code
+               <Tooltip
+                  open={cvvToolTipOpen}
+                  onOpenChange={(e) => cvvToolTipOpen = e.open}
+                  positioning={{placement: 'top-end'}}
+                  contentBase="card preset-filled p-2 max-w-screen text-wrap"
+                  openDelay={200}
+                  closeDelay={2000}
+                  zIndex='30'
+               >
+                  {#snippet trigger()}
+                     <button onclick={()=> cvvToolTipOpen = true} class=''>
+                        <Info aria-label='CVV code tool tip' size={15}/>
+                     </button>
+                  {/snippet}
+                  {#snippet content()}
+                     Please use any valid cvv code, from <a href="https://developer.elavon.com/test-cards" class="anchor">https://developer.elavon.com/test-cards</a>
+                  {/snippet}
+               </Tooltip>
+               <input
+                  name="cvv"
+                  id="cvv"
+                  class="input"
+                  type="text"
+                  autocomplete="cc-csc"
+                  bind:value={$form.cvv}
+                  {...$constraints.cvv}
+                  placeholder="123"
+               />
+            </label>
+            {#if $errors.cvv}
+               <span class="invalid">{$errors.cvv}</span>
+            {/if}
+         </div>
+         <div>
+            <label for="postalCode" class="label-text">Postal code
+               <Tooltip
+                  open={zipcodeToolTipOpen}
+                  onOpenChange={(e) => zipcodeToolTipOpen = e.open}
+                  positioning={{placement: 'top-end'}}
+                  openDelay={200}
+                  closeDelay={2000}
+                  zIndex='30'
+               >
+                  {#snippet trigger()}
+                     <button onclick={()=>zipcodeToolTipOpen=true} class="">
+                        <Info aria-label='Postal code tool tip' size={15}/>
+                     </button>
+                  {/snippet}
+                  {#snippet content()}
+                     Please use any valid postal code.
+                  {/snippet}
+               </Tooltip>
+               <input
+                  name="postalCode"
+                  id="postalCode"
+                  class="input"
+                  type="text"
+                  autocomplete="postal-code"
+                  bind:value={$form.postalCode}
+                  {...$constraints.postalCode}
+                  placeholder="12345"
+               />
+            </label>
+            {#if $errors.postalCode}
+               <span class="invalid">{$errors.postalCode}</span>
+            {/if}
+         </div>
       </div>
    </div>  
    {#if !processing}

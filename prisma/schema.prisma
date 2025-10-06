@@ -1,10 +1,12 @@
 generator client {
   provider = "prisma-client-js"
+  previewFeatures = ["typedSql"]
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("POSTGRES_PRISMA_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model User {
@@ -18,10 +20,11 @@ model User {
   emailVerified        Boolean?        @map("email_verified")
   employee             Boolean         @default(false)
   admin                Boolean         @default(false)
-  stripeId             String?
   archive              Boolean         @default(false)
   googleId             String?
   yahooId              String?
+  customerNotes        String?
+  doNotRent            Boolean         @default(false)
   address              Address[]
   customerInvoices     Invoice[]       @relation("customer")
   employeeInvoices     Invoice[]       @relation("employee")
@@ -102,44 +105,45 @@ model Lease {
   @@index([leaseId, leaseCreatedAt(sort: Desc)])
 }
 
-model PaymentRecord {
-  paymentNumber    Int           @id @unique @default(autoincrement())
-  transactionId    String?       @unique
-  invoiceNum       Int?
-  customerId       String
-  unitNum          String?
-  paymentAmount    Float
-  employeeId       String?
-  payee            String?
-  paymentCreated   DateTime      @default(now())
-  paymentCompleted DateTime?
-  paymentNotes     String?
-  deposit          Boolean       @default(false)
-  refunded         Boolean       @default(false)
-  refundNumber     Int?
-  paymentType      PaymentType
-  invoice          Invoice?
-  customer         User          @relation("customer", fields: [customerId], references: [id])
-  receiver         User?         @relation("employee", fields: [employeeId], references: [id])
-  RefundRecord     RefundRecord? @relation(fields: [refundNumber], references: [refundNumber])
+model Invoice {
+  invoiceNum     Int             @id @unique @default(autoincrement())
+  customerId     String
+  employeeId     String?
+  leaseId        String?
+  invoiceAmount  Float           @map("invoice_amount")
+  invoiceCreated DateTime        @default(now())
+  invoiceDue     DateTime        @map("invoice_due")
+  invoiceNotes   String?
+  deposit        Boolean         @default(false)
+  amountPaid     Float           @default(0.0) @map("amount_paid")
+  customer       User?           @relation("customer", fields: [customerId], references: [id])
+  employee       User?           @relation("employee", fields: [employeeId], references: [id])
+  lease          Lease?          @relation(fields: [leaseId], references: [leaseId])
+  paymentRecords PaymentRecord[]
+
+  @@map("invoice")
 }
 
-model Invoice {
-  invoiceNum       Int            @id @unique @default(autoincrement())
-  customerId       String
-  employeeId       String?
-  leaseId          String?
-  invoiceAmount    Float
-  invoiceCreated   DateTime       @default(now())
-  invoiceDue       DateTime
-  paymentRecordNum Int?           @unique
-  invoiceNotes     String?
-  stripeId         String?        @unique
-  deposit          Boolean        @default(false)
-  customer         User?          @relation("customer", fields: [customerId], references: [id])
-  employee         User?          @relation("employee", fields: [employeeId], references: [id])
-  lease            Lease?         @relation(fields: [leaseId], references: [leaseId])
-  paymentRecord    PaymentRecord? @relation(fields: [paymentRecordNum], references: [paymentNumber])
+model PaymentRecord {
+  paymentNumber     Int            @id @unique @default(autoincrement())
+  transactionId     String?        @unique
+  invoiceNum        Int?
+  customerId        String
+  unitNum           String?
+  paymentAmount     Float
+  employeeId        String?
+  payee             String?
+  paymentCreated    DateTime       @default(now())
+  paymentCompleted  DateTime?
+  paymentNotes      String?
+  deposit           Boolean        @default(false)
+  refundedAmount    Float          @default(0.0)
+  paymentType       PaymentType
+  invoice           Invoice?       @relation(fields: [invoiceInvoiceNum], references: [invoiceNum])
+  customer          User           @relation("customer", fields: [customerId], references: [id])
+  receiver          User?          @relation("employee", fields: [employeeId], references: [id])
+  refundRecords     RefundRecord[]
+  invoiceInvoiceNum Int?
 }
 
 model RefundRecord {

@@ -1,11 +1,10 @@
-import { redirect } from '@sveltejs/kit';
+import { error, redirect } from '@sveltejs/kit';
 import { superValidate, message } from 'sveltekit-superforms';
 import { ratelimit } from "$lib/server/rateLimit";
 import { valibot } from 'sveltekit-superforms/adapters';
 import type { PageServerLoad, Actions } from './$types';
 import { leaseEndFormSchema } from '$lib/formSchemas/schemas';
 import { prisma } from '$lib/server/prisma';
-import { fail } from '@sveltejs/kit';
 
 export const load = (async () => {
     return {};
@@ -26,13 +25,13 @@ export const actions: Actions = {
       if(!leaseEndForm.valid){
          return message(leaseEndForm, 'not valid');
       }
-      const lease = await prisma.lease.findUnique({
+      let lease = await prisma.lease.findUnique({
          where: {
             leaseId: leaseEndForm.data.leaseId
          }
       })
       if(!lease){
-         return fail(404)
+         error(404)
       }
       if(lease.customerId !== event.locals.user.id && !event.locals.user.employee){
          return message(leaseEndForm, 'Not your lease')
@@ -43,7 +42,6 @@ export const actions: Actions = {
             body: JSON.stringify({leaseId: lease.leaseId})
          })
          if(response){
-            console.log(await response.json())
             await prisma.lease.update({
                where: {
                   leaseId: lease.leaseId
@@ -54,7 +52,7 @@ export const actions: Actions = {
             })
          }
       }
-      await prisma.lease.update({
+      lease = await prisma.lease.update({
          where: {
             leaseId:leaseEndForm.data.leaseId
          },
@@ -76,6 +74,7 @@ export const actions: Actions = {
             leasedPrice: null
          }
       })
+      console.log(lease)
       return { leaseEndForm }
    }
 };

@@ -1,10 +1,10 @@
-import { fail, message, superValidate } from 'sveltekit-superforms';
+import { message, superValidate } from 'sveltekit-superforms';
 import { ratelimit } from "$lib/server/rateLimit";
 import type { PageServerLoad, Actions } from './$types';
 import { valibot } from 'sveltekit-superforms/adapters';
 import { nameFormSchema } from '$lib/formSchemas/schemas';
 import { prisma } from '$lib/server/prisma';
-import { redirect } from '@sveltejs/kit';
+import { error, redirect } from '@sveltejs/kit';
 
 export const load:PageServerLoad = (async () => {
     const nameForm = await superValidate(valibot(nameFormSchema));
@@ -24,7 +24,7 @@ export const actions: Actions = {
 			return message(nameForm, `Please wait ${timeRemaining}s before trying again.`)
 		}
         if(!nameForm.valid){
-            fail(400, nameForm);
+            error(400);
         }
         await prisma.user.update({
             where:{

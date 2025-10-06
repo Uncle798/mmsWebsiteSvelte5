@@ -13,26 +13,26 @@
 <Header title='Recently Moved Out' />
 
 {#await data.units}
-   <div class="mt-10">
+   <div class="mt-14 sm:mt-10">
       Loading units...
    </div>
 {:then units}
    {#await data.leases}
-      <div class="mt-10">
+      <div class="mt-14 sm:mt-10">
          Loading leases...
       </div>
    {:then leases} 
       {#await data.customers}
-         <div class="mt-10">
+         <div class="mt-14 sm:mt-10">
             Loading customers...
          </div>
       {:then customers}
          {#await data.addresses}
-            <div class="mt-10">
+            <div class="mt-14 sm:mt-10">
                Loading addresses...
             </div>
          {:then addresses}             
-            <div class="grid grid-cols-1 gap-1 mt-10">
+            <div class="grid grid-cols-1 gap-1 mt-14 sm:mt-10">
                {#each units as unit}
                {@const unitLeases = leases.filter((lease) => lease.unitNum === unit.num)}
                   <div class="mx-2 border-2 border-primary-50-950 rounded-lg">

@@ -1,5 +1,5 @@
 
-import { fail, redirect } from '@sveltejs/kit';
+import { error, redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { prisma } from '$lib/server/prisma';
 import { superValidate } from 'sveltekit-superforms';
@@ -15,7 +15,7 @@ export const load = (async (event) => {
       redirect(302, `/login?toast=employee&redirect=units&unitNum=${unitNum}`)
    }
    if(!unitNum){
-      fail(400)
+      error(400)
    }
    const unit = await prisma.unit.findUnique({
       where: {

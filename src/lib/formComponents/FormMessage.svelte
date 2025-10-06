@@ -6,5 +6,5 @@
 </script>
 
 {#if message}
-   <span>{message}</span>
+   <span class="text-error-200-800 font-extrabold text-lg">{message}</span>
 {/if}

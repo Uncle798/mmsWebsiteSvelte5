@@ -4,14 +4,12 @@
 	import type { Infer, SuperValidated } from "sveltekit-superforms";
 	import FormMessage from "$lib/formComponents/FormMessage.svelte";
 	import FormSubmitWithProgress from "$lib/formComponents/FormSubmitWithProgress.svelte";
-	import TextInput from "$lib/formComponents/TextInput.svelte";
 	import { Switch } from "@skeletonlabs/skeleton-svelte";
-	import { invalidateAll } from "$app/navigation";
 	import { onMount } from "svelte";
 	import type { Unit } from "@prisma/client";
 	import TextArea from "$lib/formComponents/TextArea.svelte";
+	import { page } from "$app/state";
 
-   
    interface Props {
       data: SuperValidated<Infer<UnitNotesFormSchema>>
       unitNotesFormModalOpen?: boolean
@@ -19,21 +17,48 @@
       classes?: string;
    }
    let { data, unitNotesFormModalOpen, unit, classes }:Props = $props();
-
-   let { form, message, errors, constraints, enhance, delayed, timeout} = superForm(data, {
+   const url = page.url.pathname;
+   let { form, message, errors, constraints, enhance, delayed, timeout, submit } = superForm(data, {
       onChange(event) {
-      
+         console.log(event);
+         if(event.target){
+            if(event.path === 'notes'){
+               const formName = `${url}/unitNotesForm${this.id}`
+               const value = event.get(event.path);
+               if(value){
+                  sessionStorage.setItem(`${formName}:${event.path}`, value.toString());
+               }
+            }
+         }
       },
-      multipleSubmits: 'allow',
+      id:unit.num.toString(),
       onUpdated(){
          unitNotesFormModalOpen=false;
       },
-      warnings: {
-         duplicateId: false
-      } 
+      invalidateAll: 'force'
    })
    onMount(()=>{
-      $form.notes = unit.notes
+      $form.unavailable = unit.unavailable;
+      $form.notes = unit.notes;
+      for(const key in $form){
+         if(key === 'notes'){
+            let fullKey = `${url}/unitNotesForm${unit.num.toString()}:${key}`;
+            const storedValue = sessionStorage.getItem(fullKey)
+            if(storedValue){
+               if(isNaN(parseInt(storedValue, 10))){
+                  if(storedValue === 'true'){
+                     $form[key as keyof typeof $form] = true as never;
+                  } else if(storedValue === 'false'){
+                     $form[key as keyof typeof $form] = false as never;
+                  } else {
+                     $form[key as keyof typeof $form] = storedValue as never;
+                  }
+               } else {
+                  $form[key as keyof typeof $form] = parseInt(storedValue, 10) as never;
+               }
+            }
+         }
+         }
    })
 </script>
 <div class="{classes} flex flex-col">
@@ -46,14 +71,20 @@
          label='Notes'
          name='notes'
       />
-      <Switch 
-         bind:checked={unit.unavailable}
-         name='unavailable'  
-         classes='p-4'
-      >
-         Unit is unavailable
-      </Switch>
-      <input type="hidden" name="unitNum" id="unitNum" value={unit.num} />
-      <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} buttonText='Update notes'/>
+      <div class="flex flex-col sm:flex-row">
+         <Switch 
+            checked={$form.unavailable}
+            onCheckedChange={(e)=> {
+               $form.unavailable = e.checked;
+               submit();
+            }}
+            name='unavailable'  
+            classes='m-2'
+         >
+            Unit is unavailable
+         </Switch>
+         <input type="hidden" name="unitNum" id="unitNum" value={unit.num} />
+         <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} buttonText='Update notes'/>
+      </div>
    </form>
 </div>

@@ -10,7 +10,7 @@ export const load:PageServerLoad = (async (event) => {
    const userId = event.url.searchParams.get('userId');
    const unitNotesForm = await superValidate(valibot(unitNotesFormSchema));
    let availableUnits:Promise<Unit[]>;
-   if(event.locals.user){
+   if(event.locals.user?.employee){
       availableUnits = prisma.unit.findMany({
          where: {
             AND: [

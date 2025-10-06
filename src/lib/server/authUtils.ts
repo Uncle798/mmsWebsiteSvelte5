@@ -3,8 +3,7 @@ import { generateRandomString } from '@oslojs/crypto/random';
 import type { RandomReader } from '@oslojs/crypto/random';
 import { sha256 } from '@oslojs/crypto/sha2';
 import { prisma } from './prisma';
-import type { User } from '@prisma/client';
-import type { Session, } from "@prisma/client";
+import type { Session, User } from "@prisma/client";
 import dayjs from 'dayjs';
 import type { RequestEvent } from '@sveltejs/kit';
 
@@ -18,16 +17,16 @@ export function generateSessionToken():string {
 }
 
 export async function createSession(token: string, userId:string):Promise<Session> {
-   const sessionId = encodeHexLowerCase(sha256(new TextEncoder().encode(token)))
+   const sessionId = encodeHexLowerCase(sha256(new TextEncoder().encode(token)));
    const session: Session = {
       id: sessionId,
       userId, 
       expiresAt: dayjs(Date.now()).add(30, 'days').toDate(),
    }
-   await prisma.session.create({
+   const dbSession = await prisma.session.create({
       data:session
-   })
-   return  session 
+   });
+   return dbSession 
 }
 
 export async function validateSessionToken(token:string):Promise<SessionValidationResult> {
@@ -41,7 +40,7 @@ export async function validateSessionToken(token:string):Promise<SessionValidati
       where: {
          id: session?.userId
       },
-   })
+   });
    if(!session){
       return {session: null, user: null};
    }
@@ -80,23 +79,45 @@ export async function invalidateSession(sessionId:string):Promise<void> {
 }
 
 export function setSessionTokenCookie(event: RequestEvent, token:string, expiresAt: Date):void {
-   event.cookies.set('session', token, {
-      httpOnly: true,
-      path: '/',
-      secure: import.meta.env.PROD,
-      sameSite: 'lax',
-      expires: expiresAt
-   })
+   if(process.env.VERCEL){
+      event.cookies.set('demoSession', token, {
+         domain: 'ministoragemanagementsoftware.com',
+         httpOnly: true,
+         path: '/',
+         secure: true,
+         sameSite: 'lax',
+         expires: expiresAt
+      })
+   } else {
+      event.cookies.set('demoSession', token, {
+         httpOnly: true,
+         path: '/',
+         secure: true,
+         sameSite: 'lax',
+         expires: expiresAt
+      })
+   }
 }
 
 export function deleteSessionTokenCookie(event: RequestEvent):void {
-   event.cookies.set('session', '', {
-      httpOnly: true,
-      path: '/',
-      secure: import.meta.env.PROD,
-      sameSite: 'lax',
-      maxAge: 0
-   })
+   if(process.env.VERCEL){
+      event.cookies.set('demoSession', '', {
+         domain: 'ministoragemanagementsoftware.com',
+         httpOnly: true,
+         path: '/',
+         secure: true,
+         sameSite: 'lax',
+         maxAge: 0
+      })
+   } else {
+      event.cookies.set('demoSession', '', {
+         httpOnly: true,
+         path: '/',
+         secure: true,
+         sameSite: 'lax',
+         maxAge: 0
+      })
+   }
 }
 
 export function generateRandomOTP():string {

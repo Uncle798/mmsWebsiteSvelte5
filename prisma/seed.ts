@@ -1,4 +1,5 @@
-import {  PrismaClient, User, PaymentType, Unit, Address, Lease, PaymentRecord, RefundRecord, } from '@prisma/client';
+import {  PrismaClient, PaymentType } from '@prisma/client';
+import type { User,  Unit, Address, Lease, PaymentRecord, RefundRecord, DiscountCode,} from '@prisma/client'
 import { faker } from '@faker-js/faker';
 import dayjs  from 'dayjs';
 import  unitData from './unitData'
@@ -80,86 +81,83 @@ async function deleteAll() {
 
  function userMakeEmail() {
    for(let i = 0; i < userData.length; i++){
-      const randString: string = String(Math.floor(Math.random() * 101));
+      const randString: string = String(Math.floor(Math.random() * 1001));
       const emailFront = userData[i].givenName + '.' + userData[i].familyName + randString;
-      if (i % 7 === 0) {
-         userData[i].email = emailFront.toLowerCase() + '@veryFakeEmail.com'.toLowerCase();
+      userData[i].email = emailFront.toLowerCase() + '@veryFakeEmail.com'.toLowerCase();
+      if(i % 7 === 0){
          userData[i].organizationName = faker.company.name();
-      } else if (i % 7 === 1) {
-         userData[i].email = emailFront.toLowerCase() + '@sillyNotRealEmail.com'.toLowerCase();
-      } else if (i % 7 === 2) {
-         // cSpell:disable 
-         userData[i].email = emailFront.toLowerCase() + '@blahblahblahEmail.com'.toLowerCase();
-      } else if (i % 7 === 3) {
-         userData[i].email = emailFront.toLowerCase() + '@horribleEmailAddress.com'.toLowerCase();
-      } else if (i % 7 === 4) {
-         userData[i].email = emailFront.toLowerCase() + '@emailemailemail.com';
-      } else if (i % 7 === 5) {
-         userData[i].email = emailFront.toLowerCase() + '@dumbfancyemail.com';
-      } else if (i % 7 === 6) {
-         userData[i].email = emailFront.toLowerCase() + '@sweetsweetemail.com';
       }
    }
    for(const user of userData){
       const sameEmail = userData.filter((u) => u.email === user.email);
       if(sameEmail.length > 1){
-         const randString:string=String(Math.floor(Math.random()*101));
+         const randString:string=String(Math.floor(Math.random()*1001));
          const emailFront = user.givenName + '.' + user.familyName + randString;
-         user.email = emailFront.toLowerCase() + 'yetanotherfakeemail.com';
-         //cSpell:enable
+         user.email = emailFront.toLowerCase() + 'yetAnotherFakeEmail.com'.toLowerCase();
       }
    }
 }
 
 async function createEmployees() {
-   const employees: User[] = [];
-   
+   const employees: User[] = [];   
+   // employees.push(
+   //    await prisma.user.create({
+   //       data:{
+   //          email: String(process.env.GEORGE_EMAIL),
+   //          emailVerified: true,
+   //          givenName: 'George',
+   //          familyName: 'Branson',
+   //          address:{
+   //             create:{
+   //                address1: faker.location.streetAddress(), 
+   //                city: faker.location.city(),
+   //                state: faker.location.state({abbreviated: true}),
+   //                postalCode: faker.location.zipCode(),
+   //                country: 'US',
+   //                phoneNum1: faker.helpers.fromRegExp('[0-9]{10}'),
+   //                phoneNum1Country: '1',
+   //             }
+   //          },
+   //          employee: true,
+   //          admin: true
+   //       }
+   //    })
+   // );
    employees.push(
       await prisma.user.create({
-         data:{
-            email: String(process.env.GEORGE_EMAIL),
-            emailVerified: true,
-            givenName: 'George',
+         data: {
+            givenName: 'Eric',
             familyName: 'Branson',
-            address:{
-               create:{
-                  address1: faker.location.streetAddress(), 
-                  city: faker.location.city(),
-                  state: faker.location.state({abbreviated: true}),
-                  postalCode: faker.location.zipCode(),
-                  country: 'US',
-                  phoneNum1: faker.helpers.fromRegExp('[0-9]{10}'),
-                  phoneNum1Country: '1',
-               }
-            },
+            email: process.env.MY_EMAIL,
+            emailVerified: true,
             employee: true,
-            admin: true
+            admin: true,
          }
       })
    )
-   employees.push(
-      await prisma.user.create({
-         data:{
-            email: String(process.env.EMPLOYEE_EMAIL),
-            emailVerified: true,
-            givenName: 'Walter',
-            familyName: 'Branson',
-            address:{
-               create:{
-                  address1: faker.location.streetAddress(), 
-                  city: faker.location.city(),
-                  state: faker.location.state({abbreviated: true}),
-                  postalCode: faker.location.zipCode(),
-                  country: 'US',
-                  phoneNum1: faker.helpers.fromRegExp('[0-9]{10}'),
-                  phoneNum1Country: '1',
-               }
-            },
-            employee: true,
-            admin: false
-         }
-      })
-   )
+   // employees.push(
+   //    await prisma.user.create({
+   //       data:{
+   //          email: String(process.env.EMPLOYEE_EMAIL),
+   //          emailVerified: true,
+   //          givenName: 'Walter',
+   //          familyName: 'Branson',
+   //          address:{
+   //             create:{
+   //                address1: faker.location.streetAddress(), 
+   //                city: faker.location.city(),
+   //                state: faker.location.state({abbreviated: true}),
+   //                postalCode: faker.location.zipCode(),
+   //                country: 'US',
+   //                phoneNum1: faker.helpers.fromRegExp('[0-9]{10}'),
+   //                phoneNum1Country: '1',
+   //             }
+   //          },
+   //          employee: true,
+   //          admin: false
+   //       }
+   //    })
+   // )
    return employees
 }
 
@@ -184,17 +182,19 @@ function arrayOfMonths(startDate:Date, endDate:Date){
    return dateArray;
 }
 
-async function createLease(unit: Unit, leaseStart:Date, leaseEnd: Date | null, randEmployee: User, customer: User, address:Address) {
+async function createLease(unit: Unit, leaseStart:Date, leaseEnd: Date | null, randEmployee: User, customer: User, address:Address, discount?:DiscountCode) {
    const leaseEnded:Date | null = leaseEnd;
    const lease:PartialLease = {
-       customerId: customer.id,
-       employeeId: randEmployee.id,
-       addressId: address.addressId,
-       unitNum: unit.num,
-       price: unit.advertisedPrice,
-       leaseEffectiveDate: leaseStart,
-       leaseReturnedAt: leaseStart,
-       leaseEnded,
+      customerId: customer.id,
+      employeeId: randEmployee.id,
+      addressId: address.addressId,
+      unitNum: unit.num,
+      price: discount ? unit.advertisedPrice-discount.amountOff : unit.advertisedPrice ,
+      leaseEffectiveDate: leaseStart,
+      leaseReturnedAt: leaseStart,
+      leaseEnded,
+      discountId: discount?.discountId ? discount.discountId : null,
+      discountedAmount: discount?.amountOff ? discount.amountOff : null,
    };
    return lease;
  }
@@ -278,31 +278,6 @@ function makeLocalRefund(paymentRecord:PaymentRecord){
    return refund;
 }
 
-async function makeRefund(paymentRecord:PaymentRecord){
-   const refund = await prisma.refundRecord.create({
-      data:{
-         customerId: paymentRecord.customerId,
-         employeeId: paymentRecord.employeeId,
-         refundAmount: paymentRecord.paymentAmount,
-         paymentRecordNum: paymentRecord.paymentNumber,
-         refundType: paymentRecord.paymentType,
-         refundNotes: `Refund of payment record number ${paymentRecord.paymentNumber}.\n${paymentRecord.paymentNotes}`,
-         refundCreated: dayjs(paymentRecord.paymentCreated).add(1, 'months').toDate(),
-         refundCompleted: dayjs(paymentRecord.paymentCreated).add(1, 'months').toDate(),
-         deposit: paymentRecord.deposit
-      }
-   })
-   await prisma.paymentRecord.update({
-      where: {
-         paymentNumber: paymentRecord.paymentNumber
-      }, 
-      data: {
-         refunded: true,
-         refundNumber: refund.refundNumber
-      }
-   })
-   return refund
-}
 
 function makeDiscount(employee:User){
    const discount:PartialDiscount ={
@@ -348,6 +323,9 @@ async function  main (){
          employee: true
       }
    })
+   const discount = await prisma.discountCode.create({
+      data: makeDiscount(employees[0])
+   })
    for await (const unit of units) {
       let leaseStart = dayjs(earliestStarting).add(Math.floor(Math.random()*30), 'days');
       const today = dayjs();
@@ -357,12 +335,18 @@ async function  main (){
       let leaseEnd = leaseStart.add(lengthOfLease, 'months');
       let customer = users.pop();
       numMonthsLeft = today.diff(leaseStart, 'months');
+      const discounted = Math.floor(Math.random()*100) >= 95
       if(!customer){
          break
       }
       let contact = dbContacts.find((c) => c.userId === customer!.id);
       while(numMonthsLeft > 3 ){
-         const lease = await createLease(unit, leaseStart.toDate(), leaseEnd.toDate(), randEmployee, customer!, contact!);
+         let lease:PartialLease;
+         if(discounted){
+            lease = await createLease(unit, leaseStart.toDate(), leaseEnd.toDate(), randEmployee, customer!, contact!, discount);
+         } else {
+            lease = await createLease(unit, leaseStart.toDate(), leaseEnd.toDate(), randEmployee, customer!, contact!)
+         }
          leases.push(lease);
          customer = users.pop();
          if(!customer){
@@ -402,10 +386,6 @@ async function  main (){
          }
       })
    }
-   const discount = makeDiscount(employees[0])
-   await prisma.discountCode.create({
-      data: discount
-   })
    const leaseEndTime = dayjs();
    console.log(`🎫 ${leases.length} leases created in ${leaseEndTime.diff(unitEndTime, 'second')} seconds`);
    const invoices: PartialInvoice[] = [];
@@ -436,7 +416,7 @@ async function  main (){
       }
       const employee = employees[Math.floor(Math.random()*employees.length)];
       const randNum = Math.floor(Math.random()*3);
-      const paymentType = PaymentType[Object.keys(PaymentType)[randNum]];
+      const paymentType = PaymentType[Object.values(PaymentType)[randNum]];
       const record:PartialPaymentRecord = {
             paymentType: paymentType,
             customerId: invoice!.customerId!,
@@ -460,7 +440,7 @@ async function  main (){
             invoiceNum: record.invoiceNum!,
          },
          data: {
-            paymentRecordNum: record.paymentNumber,
+            amountPaid: record.paymentAmount
          }
       });
       if(record.deposit){
@@ -480,7 +460,7 @@ async function  main (){
             paymentNumber: refund.paymentRecordNum,
          },
          data: {
-            refundNumber: refund.refundNumber,
+            refundedAmount: refund.refundAmount,
          }
       })
    }            

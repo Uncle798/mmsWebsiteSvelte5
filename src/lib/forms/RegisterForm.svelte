@@ -5,7 +5,7 @@
    import FormSubmitWithProgress from "$lib/formComponents/FormSubmitWithProgress.svelte";
    import { superForm, type Infer, type SuperValidated } from "sveltekit-superforms";
 	import type { RegisterFormSchema } from "$lib/formSchemas/schemas";
-	import { invalidateAll } from "$app/navigation";
+	import { onMount } from "svelte";
    
    interface Props {
       data: SuperValidated<Infer<RegisterFormSchema>>
@@ -13,17 +13,50 @@
       formType: 'customer' | 'employee'
       redirectTo?:string;
       classes?: string;
+      emailVerificationModalOpen?: boolean
+      unitNum?: string;
+      userId?: string;
    }
-   let { data, registerFormModalOpen = $bindable(), formType, redirectTo, classes }:Props = $props();
-   let { form, errors, constraints, message, enhance, delayed, timeout} = superForm(data, {
+   let { data, registerFormModalOpen=$bindable(false), emailVerificationModalOpen=$bindable(false), formType, redirectTo, classes, unitNum, userId=$bindable('') }:Props = $props();
+   let { form, errors, constraints, message, enhance, delayed, timeout, capture, restore, } = superForm(data, {
+      onChange(event) {
+         if(event.target){
+            const formName = 'registerForm'
+            const value = event.get(event.path);
+            if(value){
+               sessionStorage.setItem(`${formName}:${event.path}`, value);
+            }
+         }
+      },
+      onUpdate({form, result}){
+         const data = result.data;
+         if(form.valid && data.userId){
+            userId = data.userId;
+         }
+      }, 
       onUpdated(){
+
          registerFormModalOpen=false;
+         emailVerificationModalOpen=true;
+      }
+   });
+   export const snapshot = {
+      capture, 
+      restore, 
+   }
+   onMount(() =>{
+      for(const key in $form){
+         let fullKey = `registerForm:${key}`;
+         const storedValue = sessionStorage.getItem(fullKey)
+         if(storedValue){
+            $form[key as keyof typeof $form] = storedValue;
+         }
       }
    })
 </script>
 <div class={classes}>
    <FormMessage message={$message} />
-   <form method="POST" action="/forms/registerForm?/{formType}&redirectTo={redirectTo}" use:enhance>
+   <form method="POST" action="/forms/registerForm?/{formType}&redirectTo={redirectTo}&unitNum={unitNum}" use:enhance>
       <TextInput
          label='Given name'
          name='givenName'

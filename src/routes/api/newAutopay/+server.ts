@@ -21,7 +21,9 @@ export const POST: RequestHandler = async (event) => {
       where: {
          AND: [
             { leaseId: lease.leaseId },
-            { paymentRecordNum: null }
+            { invoiceAmount: {
+               gt: prisma.invoice.fields.amountPaid
+            }}
          ]
       }
    })

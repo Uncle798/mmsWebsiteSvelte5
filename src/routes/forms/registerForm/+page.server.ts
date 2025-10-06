@@ -32,7 +32,7 @@ export const actions: Actions = {
 		})
       if(userAlreadyExists){
 			if(userAlreadyExists.emailVerified === false){
-				redirect(302, '/register/emailVerification')
+				redirect(302, `/register/emailVerification?userId=${userAlreadyExists.id}`)
 			}
 			redirect(302, '/login?toast=userAlreadyExists')
 		}
@@ -51,9 +51,9 @@ export const actions: Actions = {
 		const code = await generateEmailVerificationRequest(user.id, user.email!);
 		sendVerificationEmail(code, user.email!);
 		if(unitNum){	
-			redirect(302, `/register/emailVerification?unitNum=${unitNum}`);
+			redirect(302, `/register/emailVerification?unitNum=${unitNum}&userId=${user.id}`);
 		}
-		redirect(302, `/register/emailVerification`);
+		redirect(302, `/register/emailVerification?userId=${user.id}`);
    },
    employee: async (event) => {
       if(!event.locals.user?.employee){
@@ -86,9 +86,10 @@ export const actions: Actions = {
 				organizationName: registerForm.data.organizationName,
 			}
 		});
-		if(redirectTo){
-			redirect(303, `/${redirectTo}?userId=${user.id}`)
+		const unitNum = event.url.searchParams.get('unitNum');
+		if(redirectTo !== 'false'){
+			redirect(303, `/${redirectTo}?userId=${user.id}&unitNum=${unitNum}`)
 		}
-      return { registerForm }
+      return { registerForm, unitNum }
    }
 };

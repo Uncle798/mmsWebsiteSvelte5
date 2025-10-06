@@ -1,8 +1,8 @@
 import { cuidIdFormSchema } from "$lib/formSchemas/schemas";
 import { prisma } from "$lib/server/prisma";
 import { ratelimit } from "$lib/server/rateLimit";
-import { redirect, type Actions } from "@sveltejs/kit";
-import { superValidate, message, fail } from "sveltekit-superforms";
+import { error, redirect, type Actions } from "@sveltejs/kit";
+import { superValidate, message } from "sveltekit-superforms";
 import { valibot } from "sveltekit-superforms/adapters";
 
 export const actions: Actions = {
@@ -18,7 +18,7 @@ export const actions: Actions = {
 			return message(discountEndForm, `Please wait ${timeRemaining}s before trying again.`)
 		}
       if(!discountEndForm.valid){
-         fail(400, discountEndForm);
+         error(400);
       }
       await prisma.discountCode.update({
          where: {

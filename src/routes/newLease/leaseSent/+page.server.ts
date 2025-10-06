@@ -1,6 +1,6 @@
 import { prisma } from '$lib/server/prisma';
 import { anvilClient, getOrganizationalPacketVariables, getPersonalPacketVariables } from '$lib/server/anvil';
-import { fail, redirect } from '@sveltejs/kit';
+import { error, redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { qStash } from '$lib/server/qStash';
 
@@ -45,7 +45,7 @@ export const load:PageServerLoad = (async (event) => {
          }
       });
       if(!address){
-         fail(400)
+         error(400)
       }
       let variables ={};
       if(customer?.organizationName){

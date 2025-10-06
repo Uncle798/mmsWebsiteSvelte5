@@ -22,7 +22,8 @@
 <Header title='Incomplete Payment Records' />
 
 <Modal
-   bind:open={modalOpen}
+   open={modalOpen}
+   onOpenChange={(e) => modalOpen = e.open}
    contentBase="card bg-surface-400-600 p-4 space-y-4 shadow-xl max-w-(--breakpoint-sm)"
    backdropClasses="backdrop-blur-xs"
 >
@@ -40,7 +41,7 @@
    {#each data.paymentRecords as paymentRecord}
       <div class="card p-4">
          <PaymentRecordEmployee paymentRecord={paymentRecord} />
-         <p><a href="/paymentRecords/new?defaultCustomer={paymentRecord.customerId}&defaultInvoice={paymentRecord.invoiceNum}" class="btn">Take a payment for payment record {paymentRecord.paymentNumber}</a></p>
+         <p><a href="/paymentRecords/new?userId={paymentRecord.customerId}&invoiceNum={paymentRecord.invoiceNum}" class="btn">Take a payment for payment record {paymentRecord.paymentNumber}</a></p>
          <button class="btn" onclick={()=>{ modalOpen=true; currentPaymentRecordNum=paymentRecord.paymentNumber}}>Delete payment record number {paymentRecord.paymentNumber}</button>
       </div>
    {/each}

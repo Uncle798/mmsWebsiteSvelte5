@@ -1,5 +1,5 @@
 import { prisma } from '$lib/server/prisma';
-import {redirect } from '@sveltejs/kit';
+import {error, redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
@@ -9,6 +9,83 @@ export const load = (async (event) => {
    if(!event.locals.user?.employee){
       redirect(302, '/login?toast=employee')
    }
+   const newPaymentRecordForm = await superValidate(valibot(newPaymentRecordFormSchema));
+   const registerForm = await superValidate(valibot(registerFormSchema));
+   const invoiceForm = await superValidate(valibot(newInvoiceFormSchema));
+   const emailVerificationForm = await superValidate(valibot(emailVerificationFormSchema));
+   const invoiceNum = event.url.searchParams.get('invoiceNum')
+   const userId = event.url.searchParams.get('userId');
+   if(invoiceNum){
+      const invoice = await prisma.invoice.findUnique({
+         where: {
+            invoiceNum: parseInt(invoiceNum, 10)
+         }
+      })
+      if(!invoice){
+         error(404, 'Invoice not found');
+      }
+      try {
+         const customer = await prisma.user.findUniqueOrThrow({
+            where: {
+               id: invoice.customerId
+            }
+         })
+         const address = await prisma.address.findFirst({
+            where: {
+               AND: [
+                  {userId: customer?.id},
+                  {softDelete: false}
+               ]
+            }
+         })
+         return { invoice, customer, address, newPaymentRecordForm, registerForm, invoiceForm, emailVerificationForm }
+      } catch (error) {
+         console.error(error);
+         return {newPaymentRecordForm, registerForm, invoiceForm, emailVerificationForm}
+      }
+   }
+   if(userId){
+      const customer = await prisma.user.findUniqueOrThrow({
+         where: {
+            id:userId
+         }
+      })
+      const invoices = await prisma.invoice.findMany({
+         where: {
+            AND: [
+               { invoiceAmount: {
+                  gt: prisma.invoice.fields.amountPaid
+               }},
+               { customerId: userId }
+            ]
+         }
+      });
+      const leases = await prisma.lease.findMany({
+         where: {
+            customerId: userId
+         }
+      })
+      return {newPaymentRecordForm, registerForm, invoiceForm, emailVerificationForm, customer, invoices, leases, invoiceNum}
+   }
+   const invoices = await prisma.invoice.findMany({
+      where: {
+         invoiceAmount: {
+            gt: prisma.invoice.fields.amountPaid
+         }
+      }
+   });
+   const leases = await prisma.lease.findMany({
+      where: {
+         invoices: {
+            some: {
+               invoiceAmount: {
+                  gt: prisma.invoice.fields.amountPaid
+               }
+            }
+         }
+      }
+
+   });
    const customers = await prisma.user.findMany({
       where: {
          OR:[
@@ -22,7 +99,9 @@ export const load = (async (event) => {
             {
                customerInvoices: {
                   some: {
-                     paymentRecordNum: null
+                     invoiceAmount: {
+                        gt: prisma.invoice.fields.amountPaid
+                     }
                   }
                }
             }
@@ -33,22 +112,6 @@ export const load = (async (event) => {
          {givenName: 'asc'}
       ],
    })
-   const invoices = await prisma.invoice.findMany({
-      where: {
-         paymentRecordNum: null
-      }
-   });
-   const leases = await prisma.lease.findMany({})
-   const newPaymentRecordForm = await superValidate(valibot(newPaymentRecordFormSchema));
-   const registerForm = await superValidate(valibot(registerFormSchema));
-   const invoiceForm = await superValidate(valibot(newInvoiceFormSchema));
-   const emailVerificationForm = await superValidate(valibot(emailVerificationFormSchema));
-   let defaultCustomer = event.url.searchParams.get('defaultCustomer');
-   let defaultInvoice = event.url.searchParams.get('defaultInvoice');
-   const userId = event.url.searchParams.get('userId');
-   if(userId){
-      defaultCustomer = userId
-   }
    return { 
       customers, 
       invoices, 
@@ -56,8 +119,7 @@ export const load = (async (event) => {
       registerForm, 
       leases, 
       invoiceForm, 
-      defaultCustomer, 
-      defaultInvoice, 
+      invoiceNum, 
       emailVerificationForm 
    };
 }) satisfies PageServerLoad;

@@ -1,4 +1,4 @@
-import { PUBLIC_COMPANY_NAME, PUBLIC_URL } from "$env/static/public";
+import {  PUBLIC_COMPANY_NAME, PUBLIC_URL } from "$env/static/public";
 import type { Address, Invoice, PaymentRecord, RefundRecord, User } from "@prisma/client";
 import { MailtrapClient } from "mailtrap";
 import dayjs from "dayjs";
@@ -10,10 +10,13 @@ const currencyFormatter = new Intl.NumberFormat('en-us', {style: 'currency', cur
 export const mailtrap = new MailtrapClient({token})
 
 const sender = {
-   name: 'computer@bransonschlegel.com',
-   email: 'computer@bransonschlegel.com',
+   name: 'computer@ministoragemanagementsoftware.com',
+   email: 'computer@ministoragemanagementsoftware.com',
 }
 export async function sendVerificationEmail(verificationCode:string, email:string) {
+   if(email.includes('veryFakeEmail.com'.toLowerCase()) || email.includes('yetAnotherFakeEmail.com'.toLowerCase())){
+      return null;
+   }
    try {
       const response = await mailtrap.send({
          from:sender,
@@ -31,8 +34,10 @@ export async function sendVerificationEmail(verificationCode:string, email:strin
 }
 
 export async function sendMagicLinkEmail(magicLink:string, email:string) {
+   if(email.includes('veryFakeEmail.com'.toLowerCase()) || email.includes('yetAnotherFakeEmail.com'.toLowerCase())){
+      return null;
+   }
    try {
-      
       const response = await mailtrap.send({
          from:sender,
          to: [{email}],
@@ -49,9 +54,12 @@ export async function sendMagicLinkEmail(magicLink:string, email:string) {
    }
 }
 
-export async function sendPaymentReceipt(customer:User, paymentRecord:PaymentRecord, address:Address){
-   const pdf = await makeReceiptPdf(paymentRecord, customer, address);
-   const buf = await buffer(pdf)
+export async function  sendPaymentReceipt(customer:User, paymentRecord:PaymentRecord, address:Address){
+   if(customer.email?.includes('veryFakeEmail.com'.toLowerCase()) || customer.email?.includes('yetAnotherFakeEmail.com'.toLowerCase())){
+      return null;
+   }
+   const pdf = await makeReceiptPdf(paymentRecord, customer, address) as PDFKit.PDFDocument;
+   const buf = await buffer(pdf);
    try {      
       const response = await mailtrap.send({
          from: sender,
@@ -66,7 +74,6 @@ export async function sendPaymentReceipt(customer:User, paymentRecord:PaymentRec
             }
          ]
       })
-      console.log(response)
       return response
    } catch (error) {
       console.error(error) 
@@ -75,7 +82,10 @@ export async function sendPaymentReceipt(customer:User, paymentRecord:PaymentRec
 }
 
 export async function sendInvoice(invoice:Invoice, customer:User, address:Address) {
-   const pdf = await makeInvoicePdf(invoice, customer, address);
+   if(customer.email?.includes('veryFakeEmail.com'.toLowerCase()) || customer.email?.includes('yetAnotherFakeEmail.com'.toLowerCase())){
+      return null;
+   }
+   const pdf = await makeInvoicePdf(invoice, customer, address) as PDFKit.PDFDocument;
    const buf = await buffer(pdf);
    try {
       const response = await mailtrap.send({
@@ -100,23 +110,31 @@ export async function sendInvoice(invoice:Invoice, customer:User, address:Addres
 }
 
 export async function sendStatusEmail(admin:User, invoiceCount:number, totalInvoice:number, emptyUnits:number) {
-   try {
-      const response = await mailtrap.send({
-         from: sender,
-         to: [{email: admin.email!}],
-         subject: `${PUBLIC_COMPANY_NAME} Daily email`,
-         html: `Hello ${admin.givenName}<br/> ${invoiceCount} invoices were created this morning totaling ${currencyFormatter.format(totalInvoice)}.\
-         There are ${emptyUnits} empty units as of this morning. <br/>`
-      })
-      return response 
-   } catch (error) {
-      console.error(error)
-      return error
+   if(admin.email?.includes('veryFakeEmail.com'.toLowerCase()) || admin.email?.includes('yetAnotherFakeEmail.com'.toLowerCase())){
+      return null;
+   }
+   if(admin.admin){
+      try {
+         const response = await mailtrap.send({
+            from: sender,
+            to: [{email: admin.email!}],
+            subject: `${PUBLIC_COMPANY_NAME} Daily email`,
+            html: `Hello ${admin.givenName}<br/> ${invoiceCount} invoices were created this morning totaling ${currencyFormatter.format(totalInvoice)}.\
+            There are ${emptyUnits} empty units as of this morning. <br/>`
+         })
+         return response 
+      } catch (error) {
+         console.error(error)
+         return error
+      }
    }
 }
 
 export async function sendRefundEmail(refund:RefundRecord, customer:User, address:Address) {
-   const pdf = await makeRefundPdf(refund, customer, address);
+   if(customer.email?.includes('veryFakeEmail.com'.toLowerCase()) || customer.email?.includes('yetAnotherFakeEmail.com'.toLowerCase())){
+      return null;
+   }
+   const pdf = await makeRefundPdf(refund, customer, address) as PDFKit.PDFDocument;
    const buf = await buffer(pdf);
    try {
       const response = await mailtrap.send({
@@ -132,7 +150,6 @@ export async function sendRefundEmail(refund:RefundRecord, customer:User, addres
             }
          ]
       })
-      console.log(response)
       return response;
    } catch (error){
       console.error(error)

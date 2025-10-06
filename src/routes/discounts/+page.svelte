@@ -10,6 +10,9 @@
 	import UserEmployee from '$lib/displayComponents/UserEmployee.svelte';
 	import Revenue from '$lib/displayComponents/Revenue.svelte';
 	import type { Lease } from '@prisma/client';
+	import { Modal } from '@skeletonlabs/skeleton-svelte';
+	import { onMount } from 'svelte';
+	import ExplainerModal from '$lib/demo/ExplainerModal.svelte';
 
    let { data }: { data: PageData } = $props();
    const totalDiscounted = $derived((leases:Lease[]) => {
@@ -19,11 +22,22 @@
       }
       return total
    })
+   let explainerModalOpen = $state(true);
+   onMount(()=>{
+      setTimeout(()=>(explainerModalOpen = false), 4000)
+   })
 </script>
 <Header title="Discounts" />
-<div class="fixed top-9 w-screen bg-tertiary-50-950 rounded-b-lg">
+<div class="fixed top-12 sm:top-9 w-screen bg-tertiary-50-950 rounded-b-lg">
    <Revenue amount={totalDiscounted(data.discountedLeases)} label='Total discounts' />
 </div>
+<ExplainerModal
+   bind:modalOpen={explainerModalOpen}
+>
+   {#snippet copy()}
+      Want to give all non-profits $5 off? Want to give Terry down the street a good deal? Manage that here. Set discounts by percentage or a flat amount off.
+   {/snippet}
+</ExplainerModal>
 <div in:fade={{duration:600}} out:fade={{duration:0}} class="mx-2 mt-18">
    <h3 class="h3">Current available Discounts</h3>
    {#each data.discounts as discount}

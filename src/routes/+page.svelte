@@ -1,13 +1,14 @@
 
 <script lang="ts">
 	import { PUBLIC_COMPANY_EMAIL, PUBLIC_COMPANY_NAME, PUBLIC_PHONE } from "$env/static/public";
-   import PalouseHills from '$lib/Photos/Palouse_hills_northeast_of_Walla_Walla.jpg'
    import Header from "$lib/Header.svelte";
    import type { PageData } from "./$types";
    import type { Unit } from '@prisma/client'
 	import UnitCustomer from "$lib/displayComponents/customerViews/UnitCustomer.svelte";
 	import { fade } from "svelte/transition";
 	import Placeholder from "$lib/displayComponents/Placeholder.svelte";
+	import { Tooltip } from "@skeletonlabs/skeleton-svelte";
+   
    interface Props {
       data: PageData;
    }
@@ -21,39 +22,69 @@
       sizeFilter = size;
    }
    const formattedPhone = PUBLIC_PHONE.substring(0,1) +'-'+ PUBLIC_PHONE.substring(1,4)+'-'+PUBLIC_PHONE.substring(4,7)+'-'+PUBLIC_PHONE.substring(7)
-
+   let copyTooltipOpen = $state(false);
+   let homeCopy = $state<HTMLElement>();
+   let firstUnit = $state<HTMLElement>();
 </script>
-
 <Header title='Home' />
+
 {#await data.availableUnits}
-   <article class="m-2 mt-10">
+   <article class="m-2 mt-14 sm:mt-10">
       <div>
-         <p>
-            Thank you for visiting Moscow Mini Storage!
-            Nestled in the hills of the Palouse just outside Moscow off the Troy Highway, {PUBLIC_COMPANY_NAME} is the place to safely and securely store your belongings.</p>
-            <p>Family owned and operated since 1993 you can contact us at 
-            <a href="tel:{PUBLIC_PHONE}" class="anchor">
-               { formattedPhone }</a>, or <a href="mailto:{PUBLIC_COMPANY_EMAIL}" class="anchor">{PUBLIC_COMPANY_EMAIL}</a> the office and gates are open 8:00 am to 8:00 pm.
-         </p>
+         <Tooltip
+            open={copyTooltipOpen}
+            onOpenChange={(e) => copyTooltipOpen = e.open}
+            positioning={{placement: 'top'}}
+            openDelay={200}
+         >
+            {#snippet trigger()}
+               <div>
+                  Thank you for visiting {PUBLIC_COMPANY_NAME}!
+                  Conveniently located, {PUBLIC_COMPANY_NAME} is the place to safely and securely store your belongings.
+                  <p>Family owned and operated, you can contact us at 
+                     <a href="tel:{PUBLIC_PHONE}" class="anchor">
+                        { formattedPhone }</a>, or <a href="mailto:{PUBLIC_COMPANY_EMAIL}" class="anchor">{PUBLIC_COMPANY_EMAIL}</a> the office and gates are open 8:00 am to 8:00 pm.
+                  </p>
+               </div>
+            {/snippet}
+            {#snippet content()}
+               Tell your story here. We can customize copy to your exact specifications.
+            {/snippet}
+         </Tooltip>
       </div>
    </article>
    <div in:fade={{duration:600}} out:fade={{duration:0}}>
-      <span>Loading available units...</span>
+      <span class="mx-2">Loading available units...</span>
       <Placeholder numCols={1} numRows={4} heightClass='h-34' classes='z-0 sm:hidden'/>
       <Placeholder numCols={2} numRows={4} heightClass='h-34' classes='z-0 hidden sm:block md:hidden' />
       <Placeholder numCols={3} numRows={4} heightClass='h-34' classes='z-0 hidden md:block lg:hidden' />
       <Placeholder numCols={4} numRows={4} heightClass='h-34' classes='z-0 hidden lg:block' />     
    </div>
 {:then units} 
-      <article class="m-2 mt-10">
+      <article class="m-2 mt-14 sm:mt-10">
          <div>
-            <p>
-               Thank you for visiting Moscow Mini Storage!
-               Nestled in the hills of the Palouse just outside Moscow off the Troy Highway, {PUBLIC_COMPANY_NAME} is the place to safely and securely store your belongings.</p>
-               <p>Family owned and operated since 1993 you can contact us at 
-               <a href="tel:{PUBLIC_PHONE}" class="anchor">
-                  { formattedPhone }</a>, or <a href="mailto:{PUBLIC_COMPANY_EMAIL}" class="anchor">{PUBLIC_COMPANY_EMAIL}</a> the office and gates are open 8:00 am to 8:00 pm.
-            </p>
+            <Tooltip
+            open={copyTooltipOpen}
+            onOpenChange={(e) => copyTooltipOpen = e.open}
+            positioning={{placement: 'top'}}
+            contentBase="card preset-filled p-2"
+            openDelay={200}
+            zIndex='40'
+         >
+            {#snippet trigger()}
+               <div bind:this={homeCopy}>                 
+                  Thank you for visiting {PUBLIC_COMPANY_NAME}!
+                  Conveniently located, {PUBLIC_COMPANY_NAME} is the place to safely and securely store your belongings.
+                  <p>Family owned and operated, you can contact us at 
+                     <a href="tel:{PUBLIC_PHONE}" class="anchor">
+                        { formattedPhone }</a>, or <a href="mailto:{PUBLIC_COMPANY_EMAIL}" class="anchor">{PUBLIC_COMPANY_EMAIL}</a> the office and gates are open 8:00 am to 8:00 pm.
+                  </p>
+               </div>
+            {/snippet}
+            {#snippet content()}
+               Tell your story here. We can customize copy to your exact specifications
+            {/snippet}
+         </Tooltip>
          </div>
       </article>
    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-1 mx-2 mb-24 sm:mb-14 lg:mb-9" in:fade={{duration:600}}>
@@ -68,10 +99,25 @@
             </select>
          </label>
       </div>
-      {#each filterSize(units) as unit}
+      {#each filterSize(units) as unit, i}
          <div class="flex flex-col border rounded-lg border-primary-50-950 justify-between" in:fade={{duration:600}}>
-            <UnitCustomer {unit}/>
-            <a class="btn preset-filled-primary-50-950 m-2" href="/newLease?unitNum={unit.num}">Rent this Unit</a>
+            {#if i === 0}
+               <div bind:this={firstUnit} >
+                  <UnitCustomer {unit}/>
+                  {#if data.user?.employee}
+                  <a class="btn preset-filled-primary-50-950 m-2 w-11/12 self-center" href="/employeeNewLease?unitNum={unit.num}">Rent this Unit</a>
+                  {:else}
+                  <a class="btn preset-filled-primary-50-950 m-2" href="/newLease?unitNum={unit.num}">Rent this Unit</a>
+                  {/if}
+               </div>   
+            {:else}
+               <UnitCustomer {unit}/>
+               {#if data.user?.employee}
+                  <a class="btn preset-filled-primary-50-950 m-2 w-11/12 self-center" href="/employeeNewLease?unitNum={unit.num}">Rent this Unit</a>
+               {:else}
+                  <a class="btn preset-filled-primary-50-950 m-2" href="/newLease?unitNum={unit.num}">Rent this Unit</a>
+               {/if}
+            {/if}
          </div>
       {/each}
    </div>

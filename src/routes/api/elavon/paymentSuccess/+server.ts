@@ -4,15 +4,24 @@ import type { RequestHandler } from './$types';
 export const POST: RequestHandler = async (event) => {
    const body = await event.request.json();
    const { response } = body;
-   const { ssl_invoice_number, ssl_recurring_id, ssl_amount, ssl_transaction_type } = response;
+   const { ssl_invoice_number, ssl_recurring_id, ssl_txn_id, ssl_amount, ssl_transaction_type, ssl_first_name, ssl_last_name } = response;
    if(ssl_invoice_number){
       const invoice = await prisma.invoice.findUnique({
          where: {
             invoiceNum: parseInt(ssl_invoice_number, 10)
+         },
+         include: {
+            customer: true
          }
       })
       if(!invoice){
          return new Response(JSON.stringify('No invoice found'), {status: 404});
+      }
+      let payee:string | undefined;
+      if(ssl_first_name && ssl_last_name){
+         if(ssl_first_name !== invoice.customer?.givenName){
+            payee = `${ssl_first_name} ${ssl_last_name}`
+         }
       }
       const paymentRecord = await prisma.paymentRecord.create({
          data: {
@@ -21,8 +30,9 @@ export const POST: RequestHandler = async (event) => {
             paymentType: 'CREDIT',
             customerId: invoice.customerId, 
             paymentNotes: `Payment for invoice number ${invoice.invoiceNum}, ${invoice.invoiceNotes}`,
-            transactionId: ssl_recurring_id,
-            paymentCompleted: new Date(), 
+            transactionId: ssl_txn_id ? ssl_txn_id : ssl_recurring_id,
+            paymentCompleted: new Date(),
+            payee,
          }
       })
       await prisma.invoice.update({
@@ -30,7 +40,7 @@ export const POST: RequestHandler = async (event) => {
             invoiceNum: invoice.invoiceNum
          },
          data: {
-            paymentRecordNum: paymentRecord.paymentNumber
+            amountPaid: invoice.amountPaid + paymentRecord.paymentAmount
          }
       })
       if(ssl_transaction_type === 'CCADDRECURRING'){

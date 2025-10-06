@@ -5,6 +5,7 @@ import { prisma } from '$lib/server/prisma';
 import { ratelimit } from '$lib/server/rateLimit';
 import { valibot } from 'sveltekit-superforms/adapters';
 import { newPaymentRecordFormSchema } from '$lib/formSchemas/schemas';
+import { Prisma, type Invoice } from '@prisma/client';
 
 
 export const actions:Actions = {
@@ -22,7 +23,15 @@ export const actions:Actions = {
       if(!newPaymentRecordForm.valid){
          return message(newPaymentRecordForm, 'Unable to process')
       }
-      const data = newPaymentRecordForm.data
+      const data = newPaymentRecordForm.data;
+      let invoice: Invoice | null = null
+      if(data.invoiceNum){
+         invoice = await prisma.invoice.findFirst({
+            where: {
+               invoiceNum: data.invoiceNum,
+            }
+         })
+      }
       if(data.paymentType === 'CASH' || data.paymentType === 'CHECK'){
          const paymentRecord = await prisma.paymentRecord.create({
             data: {
@@ -37,14 +46,16 @@ export const actions:Actions = {
                deposit: newPaymentRecordForm.data.deposit
             }  
          })
-         await prisma.invoice.update({
-            where: {
-               invoiceNum: paymentRecord.invoiceNum!
-            },
-            data: {
-               paymentRecordNum: paymentRecord.paymentNumber
-            }
-         })
+         if(invoice){
+            invoice = await prisma.invoice.update({
+               where: {
+                  invoiceNum: invoice.invoiceNum,
+               },
+               data: {
+                  amountPaid: (invoice.amountPaid + paymentRecord.paymentAmount)
+               }
+            })
+         }
          redirect(302, '/paymentRecords/' + paymentRecord.paymentNumber)
       }
       

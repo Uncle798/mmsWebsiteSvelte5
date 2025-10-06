@@ -1,142 +1,199 @@
-<script lang="ts">
-   import type { SuperValidated, Infer } from "sveltekit-superforms";
-   import { type Lease, type User, PaymentType } from "@prisma/client";
-   import type { NewInvoiceFormSchema, NewPaymentRecordFormSchema} from "$lib/formSchemas/schemas";
-   import { superForm } from "sveltekit-superforms";
-   import { Combobox, Modal, Switch } from "@skeletonlabs/skeleton-svelte";
-   import FormMessage from "$lib/formComponents/FormMessage.svelte";
-   import FormSubmitWithProgress from "$lib/formComponents/FormSubmitWithProgress.svelte";
-   import NumberInput from "$lib/formComponents/NumberInput.svelte";
-   import TextInput from "$lib/formComponents/TextInput.svelte";
-   import type { Invoice } from "@prisma/client";
-	import NewInvoiceForm from "./NewInvoiceForm.svelte";
+<script lang='ts'>
+	import ExplainerModal from "$lib/demo/ExplainerModal.svelte";
+	import type { EmailVerificationFormSchema, NewInvoiceFormSchema, NewPaymentRecordFormSchema, RegisterFormSchema } from "$lib/formSchemas/schemas";
+	import type { Invoice, Lease, User } from "@prisma/client";
+	import { Combobox, Modal, Switch, Progress, ProgressRing } from "@skeletonlabs/skeleton-svelte";
 	import { onMount } from "svelte";
+	import { superForm, type Infer, type SuperValidated } from "sveltekit-superforms";
+   import NewInvoiceForm from "./NewInvoiceForm.svelte";
+	import FormMessage from "$lib/formComponents/FormMessage.svelte";
+	import { goto, onNavigate } from "$app/navigation";
+   import TextInput from "$lib/formComponents/TextInput.svelte";
+   import NumberInput from "$lib/formComponents/NumberInput.svelte";
 	import TextArea from "$lib/formComponents/TextArea.svelte";
 	import RadioButton from "$lib/formComponents/RadioButton.svelte";
+   import FormSubmitWithProgress from "$lib/formComponents/FormSubmitWithProgress.svelte";
 
    interface Props {
       data: SuperValidated<Infer<NewPaymentRecordFormSchema>>;
-      invoiceForm: SuperValidated<Infer<NewInvoiceFormSchema>>;
-      employeeId: string | undefined;
-      customers: User[];
-      invoices: Invoice[];
-      leases: Lease[];
-      defaultCustomer?: string | null;
-      defaultInvoice?: string | null;
+      invoiceFormData: SuperValidated<Infer<NewInvoiceFormSchema>>;
+      registerFormData: SuperValidated<Infer<RegisterFormSchema>>;
+      emailVerificationFormData: SuperValidated<Infer<EmailVerificationFormSchema>>;
+      employeeId: string;
+      customers?: User[];
+      customer?: User;
+      invoices?: Invoice[];
+      invoice?: Invoice;
+      leases?: Lease[];
       classes?: string;
-      customerSelected: boolean;
    }
-   let { data, employeeId, customers, invoices,  invoiceForm, leases, defaultCustomer, defaultInvoice, classes, customerSelected=$bindable(false) }:Props = $props();
-   let { form, errors, message, constraints, enhance, delayed, timeout} = superForm(data, {
-      onSubmit({formData}) {
-         formData.set('customerId', selectedCustomer[0]);
-         formData.set('invoiceNum', selectedInvoice[0]);
-
+   let { 
+      data, 
+      invoiceFormData,
+      registerFormData,
+      emailVerificationFormData,
+      employeeId, 
+      customers, 
+      customer, 
+      invoices, 
+      invoice, 
+      leases, 
+      classes
+   }:Props = $props();
+   let { form, enhance, errors, message, constraints, delayed, timeout, capture, restore} = superForm(data, {
+      onChange(event) {
+         if(event.target){
+            const formName = 'newPaymentRecordForm'
+            const value = event.get(event.path);
+            console.log(value);
+            if(value && value !== ''){
+               sessionStorage.setItem(`${formName}/invoiceNum=${invoice?.invoiceNum}:${event.path}`, value.toString());
+            } else if(value === ''){
+               sessionStorage.removeItem(`${formName}/invoiceNum=${invoice?.invoiceNum}:${event.path}`)
+            } else if(value === false){
+               sessionStorage.removeItem(`${formName}/invoiceNum=${invoice?.invoiceNum}:${event.path}`)
+            }
+         }
       },
-   });
-   let selectedCustomer = $state<string[]>([defaultCustomer ? defaultCustomer : '']);
-   let selectedInvoice = $state<string[]>([defaultInvoice ? defaultInvoice : ''])
+   })
+   export const snapshot = {
+      capture, 
+      restore,
+   }
    interface ComboBoxData {
       label: string;
       value: string;
    } 
-   const customerComboBoxData:ComboBoxData[] = [];
-   const invoiceComboBoxData:ComboBoxData[] = $derived.by(() =>{
-      const customerInvoices = invoices.filter((invoice)=> invoice.customerId === selectedCustomer[0]);
-      const data:ComboBoxData[]=[]
-      customerInvoices.forEach((invoice) =>{
-         const label = invoice.invoiceNotes ? invoice.invoiceNotes : invoice.invoiceNum.toString(10);
-         const value = invoice.invoiceNum.toString(10);
-         data.push({label, value})
-      })
-      return data
-   })
-   for(const customer of customers){
-      const label = `${customer.givenName} ${customer.familyName}`;
-      const value = customer.id;
-      const datum = {
-         label,
-         value
-      }
-      customerComboBoxData.push(datum);
-   };
-   let invoiceFormOpen=$state(false);
-   let invoiceSelected=$state(false);
-   onMount(()=>{
-      if(defaultInvoice){
-         const invoice = invoices.find((invoice) => invoice.invoiceNum.toString() === defaultInvoice)
-         if(invoice){
-            invoiceSelected = true
-            $form.paymentAmount=invoice.invoiceAmount;
-            $form.paymentNotes=`Payment for invoice number: ${invoice.invoiceNum}, ${invoice.invoiceNotes}`
-            $form.deposit=invoice.deposit;
+   const customersComboBoxData:ComboBoxData[] | undefined = $derived(customers?.map(customer => ({
+      label: `${customer.givenName} ${customer.familyName} (${customer.email})`,
+      value: customer.id
+   })));
+   const invoicesComboboxData:ComboBoxData[] | undefined = $derived(invoices?.map(invoice =>{
+      const customer = customers?.find((customer) => customer.id === invoice.customerId)
+      if(customer){
+         return {
+            label: `Number ${invoice.invoiceNum} ${invoice.invoiceNotes} (${customer.organizationName? customer.organizationName : customer.givenName + ' ' + customer.familyName})`,
+            value: invoice.invoiceNum.toString()
+         }
+      } else {
+         return {
+            label: `Number ${invoice.invoiceNum} ${invoice.invoiceNotes}`,
+            value: invoice.invoiceNum.toString()
          }
       }
+   }));
+   let invoiceModalOpen = $state(false);
+   let explainerModalOpen = $state(false);
+   onNavigate(() => {
+      navDelayed = false;
+      navTimeout = false;
    })
+   onMount(() => {
+      for(const key in $form){
+         const fullKey = `newPaymentRecordForm/invoiceNum=${invoice?.invoiceNum}:${key}`;
+         const storedValue = sessionStorage.getItem(fullKey);
+         if(storedValue){
+            if(isNaN(parseInt(storedValue, 10))){
+               if(storedValue === 'true'){
+                  $form[key as keyof typeof $form] = true as never;
+               } else if(storedValue === 'false'){
+                  $form[key as keyof typeof $form] = false as never;
+               } else {
+                  $form[key as keyof typeof $form] = storedValue as never;
+               }
+            } else {
+               $form[key as keyof typeof $form] = parseInt(storedValue, 10) as never;
+            }
+         }
+      }
+      if(invoice){
+         $form.paymentAmount = invoice.invoiceAmount - invoice?.amountPaid;
+      }
+   })
+   const paymentTypes = [ 'CASH', 'CHECK', 'CREDIT'];
+   let navDelayed = $state(false);
+   let navTimeout = $state(false);
 </script>
-
+<ExplainerModal
+   bind:modalOpen={explainerModalOpen}
+>
+   {#snippet copy()}
+      Please choose Cash or Check for the demo. There is currently no way to demo credit card payments.
+   {/snippet}
+</ExplainerModal>
 <Modal
-   bind:open={invoiceFormOpen}
-   contentBase="card bg-surface-400-600 p-4 space-y-4 shadow-xl max-w-(--breakpoint-sm)"
+   open={invoiceModalOpen}
+   onOpenChange={(e) => invoiceModalOpen = e.open}
+   contentBase="card bg-surface-400-600 p-4 space-y-4 shadow-xl"
    backdropClasses="backdrop-blur-xs"
 >
    {#snippet content()}
       <NewInvoiceForm 
-         data={invoiceForm} 
-         customers={customers} 
+         data={invoiceFormData} 
          employeeId={employeeId} 
          leases={leases}
-         defaultCustomer={selectedCustomer[0]}
+         customers={customers} 
+         customer={customer}
+         registerFormData={registerFormData}
+         emailVerificationFormData={emailVerificationFormData}
       />
-      <button class="btn" onclick={()=>invoiceFormOpen=false}>Cancel</button>
+      <button class="btn" onclick={()=>invoiceModalOpen=false}>Cancel</button>
    {/snippet}
 </Modal>
-
-<div class={classes}>
+<div class={classes} >
    <FormMessage message={$message} />
-   <form action="/forms/newPaymentRecordForm" method="POST" use:enhance>
-      <div class="">
+   {#if invoicesComboboxData}
+      <div class="flex flex-row w-screen">
          <Combobox
-            data={customerComboBoxData}
-            bind:value={selectedCustomer}
-            label='Select Customer'
-            placeholder='Select customer...'
+            data={invoicesComboboxData}
             openOnClick={true}
-            onValueChange={(details)=>{
-               if(selectedCustomer.length > 0){
-                  customerSelected = true;
-               }
-               selectedCustomer[0]=details.value[0]
-               selectedInvoice[0]=''
-               invoiceSelected = false
+            label="Select Invoice"
+            placeholder="Type or Select..."
+            onValueChange={(details) => {
+               setTimeout(() => {
+                  navDelayed = true;
+               }, 300);
+               goto(`/paymentRecords/new?invoiceNum=${details.value}`)
             }}
+            optionClasses='truncate'
+            width='w-11/12'
          />
-      </div>
-      <div class="">
-         {#if !invoiceSelected}
-            <button class="btn preset-filled-primary-50-950 rounded-lg my-2" onclick={()=>invoiceFormOpen=true} type='button'>Create New Invoice</button>
-         {/if}
-         {#if invoiceComboBoxData.length > 0 }
-            <Combobox
-               data={invoiceComboBoxData.sort()}
-               bind:value={selectedInvoice}
-               label="Select an invoice"
-               placeholder="Select..."
-               openOnClick={true}
-               onValueChange={(details)=>{
-                  const invoice = invoices.find((invoice) => invoice.invoiceNum.toString() === details.value[0])
-                  if(invoice){
-                     selectedInvoice[0]=invoice.invoiceNum.toString();
-                     $form.paymentAmount=invoice.invoiceAmount;
-                     $form.paymentNotes=`Payment for invoice number: ${invoice.invoiceNum}, ${invoice.invoiceNotes}`
-                     $form.invoiceNum =invoice.invoiceNum;
-                  }
-                  invoiceSelected = true
+         {#if navDelayed}
+            <ProgressRing  
+               value={null} 
+               size="size-8" 
+               meterStroke="stroke-tertiary-600-400" 
+               trackStroke="stroke-tertiary-50-950"
+               classes='mt-6 mx-2'
+               {@attach () => {
+                  setTimeout(() => {
+                     navDelayed = false;
+                     navTimeout = true;
+                  }, 800)
                }}
             />
          {/if}
+         {#if navTimeout}
+            <Progress 
+               value={null}
+               meterBg="bg-tertiary-500"
+               width='w-12'
+               classes='mt-9 mx-2'
+            />
+         {/if}
       </div>
-      {#if invoiceSelected}
+      <p>or,</p>
+      <button type="button" onclick={()=>invoiceModalOpen=true} class='btn preset-filled-primary-50-950'>Create Invoice</button>
+   {/if}
+   {#if invoice}  
+      <form action="/forms/newPaymentRecordForm" method="POST" use:enhance {@attach ()=> {
+         explainerModalOpen=true;
+         $form.invoiceNum=invoice.invoiceNum;
+         $form.paymentNotes=`Payment for Invoice ${invoice.invoiceNum} ${invoice.invoiceNotes}`
+         $form.paymentAmount=invoice.invoiceAmount - invoice.amountPaid;
+         $form.deposit=invoice.deposit;
+         setTimeout(()=>{explainerModalOpen=false}, 5000);
+      }}>
          <NumberInput
             bind:value={$form.paymentAmount}
             errors={$errors.paymentAmount}
@@ -145,14 +202,14 @@
             name='paymentAmount'
          />
          <div class="flex">
-            {#each Object.values(PaymentType) as paymentType}
+            {#each paymentTypes as paymentType}
                <RadioButton
                   value={paymentType}
                   groupName='paymentType'
                   id={paymentType}
                   errors={$errors.paymentType}
                   constraints={$constraints.paymentType}
-                  label={paymentType.substring(0,1) + paymentType.substring(1).toLowerCase()}
+                  label={paymentType.substring(0,1)+paymentType.substring(1).toLowerCase()}
                />
             {/each}
          </div>
@@ -166,7 +223,7 @@
             rows={2}
          />
          <div class="card p-4">
-            <Switch bind:checked={$form.deposit} name='deposit'>
+            <Switch checked={$form.deposit} onCheckedChange={(e) => $form.deposit = e.checked} name='deposit'>
                Deposit
             </Switch>
          </div>
@@ -177,7 +234,10 @@
             label='Payee (if different than customer)'
             name='payee'
          />
+         <input type="hidden" name="invoiceNum" id="invoiceNum" value={invoice.invoiceNum}>
+         <input type="hidden" name="customerId" id="customerId" value={customer?.id}>
+         <input type="hidden" name="employeeId" id="employeeId" value={employeeId}>
          <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} />
-      {/if}
-   </form>
+      </form>
+   {/if}
 </div>

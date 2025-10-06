@@ -1,5 +1,5 @@
 import { deleteSessionTokenCookie, invalidateSession } from '$lib/server/authUtils';
-import { fail, redirect } from '@sveltejs/kit';
+import { error, redirect } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
 
 export const load = (async () => {
@@ -9,7 +9,7 @@ export const load = (async () => {
 export const actions: Actions = {
    default: async (event) =>{
       if(event.locals.session === null ){
-         return fail(401)
+         error(401)
       }
       invalidateSession(event.locals.session.id)
       deleteSessionTokenCookie(event);

@@ -46,7 +46,7 @@
 
    <Combobox
       data={themeComboboxData}
-      bind:value={currentTheme}
+      value={currentTheme}
       label='Select Theme:'
       placeholder='Select Theme...'
       openOnClick={true}

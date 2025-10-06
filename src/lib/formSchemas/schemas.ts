@@ -24,6 +24,13 @@ export const unitNotesFormSchema =  v.object({
 });
 export type  UnitNotesFormSchema = typeof unitNotesFormSchema;
 
+export const userNotesFormSchema = v.object({
+   notes: v.nullable(v.string()),
+   doNotRent: v.boolean(),
+   userId: v.pipe(v.string(), v.cuid2())
+})
+export type UserNotesFormSchema = typeof userNotesFormSchema;
+
 export const leaseEndFormSchema = v.object({
    leaseId: v.pipe(v.string(), v.cuid2()),
    customer: v.nullable(v.boolean()),
@@ -35,7 +42,7 @@ export const newLeaseSchema = v.object({
    organization: v.boolean(),
    discountId: v.optional(v.pipe(v.string(), v.cuid2())),
    customerId: v.pipe(v.string(), v.cuid2()),
-   paymentType: v.optional(v.enum(PaymentType)),
+   paymentType: v.enum(PaymentType),
 })
 export type NewLeaseSchema = typeof newLeaseSchema;
 
@@ -87,7 +94,7 @@ export const addressFormSchema = v.object({
    state: v.pipe(v.string(), v.minLength(2), v.maxLength(255)),
    postalCode: v.pipe(v.string(), v.minLength(5), v.maxLength(9)),
    country: v.pipe(v.string(), v.minLength(2), v.maxLength(2)),
-   phoneNum1: v.pipe(v.string(), v.minLength(10), v.maxLength(12), v.digits()),
+   phoneNum1: v.pipe(v.string(), v.minLength(10), v.maxLength(14)),
    phoneNum1Country: v.pipe(v.string(), v.minLength(2), v.maxLength(2)),
 });
 export type AddressFormSchema = typeof addressFormSchema;
@@ -137,7 +144,7 @@ export const searchFormSchema = v.object({
 export type SearchFormSchema = typeof searchFormSchema;
 
 export const leaseDiscountFormSchema = v.object({
-   code: v.nullable(v.pipe(v.string(), v.minLength(8), v.maxLength(255))),
+   code: v.pipe(v.string(), v.minLength(8), v.maxLength(255)),
    unitNum: v.pipe(v.string(), v.minLength(3), v.maxLength(8)),
 });
 export type LeaseDiscountFormSchema = typeof leaseDiscountFormSchema;
@@ -160,7 +167,7 @@ export const newInvoiceFormSchema = v.object({
    employeeId: v.pipe(v.string(), v.cuid2()),
    invoiceNotes: v.string(),
    invoiceAmount: v.pipe(v.number(), v.gtValue(1)),
-   leaseId: v.pipe(v.string(), v.cuid2()),
+   leaseId: v.optional(v.pipe(v.string(), v.cuid2())),
    deposit: v.boolean(),
    invoiceDue: v.date(),
 })
@@ -210,7 +217,7 @@ export type BlankFormSchema = typeof blankFormSchema;
 export const creditCardFormSchema = v.object({
    ccNum: v.pipe(v.string(), v.creditCard()),
    cvv: v.pipe(v.string(), v.digits(), v.minLength(3), v.maxLength(4)),
-   exp: v.pipe(v.string()),
+   exp: v.pipe(v.string(), v.minLength(7), v.maxLength(7)),
    postalCode: v.pipe(v.string(), v.digits(), v.minLength(5), v.maxLength(5)),
    billingGivenName: v.string(),
    billingFamilyName: v.string(),

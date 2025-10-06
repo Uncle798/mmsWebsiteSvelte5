@@ -1,7 +1,7 @@
 <script lang="ts">
    interface Props {
       recordNum: number;
-      apiEndPoint: string;
+      apiEndPoint: '/api/sendReceipt' | '/api/sendInvoice' | '/api/sendRefund';
       emailAddress: string;
       buttonText: string;
       classes?: string
@@ -27,10 +27,10 @@
 </script>
 <div class={classes}>
    {#if emailed}
-      <div class="my-2">An email has been sent to {emailAddress}</div>
+      <div class="m-2 h-8 truncate">An email has been sent to {emailAddress}</div>
    {:else if emailing}
-      <div class="m-2">Sending email...</div>
+      <div class="m-2 h-8">Sending email...</div>
    {:else if !emailing}
-      <button class="btn rounded-lg preset-filled-primary-50-950 my-2" onclick={()=>sendEmail(recordNum)}>{buttonText}</button>
+      <button class="btn rounded-lg preset-filled-primary-50-950 h-8" onclick={()=>sendEmail(recordNum)}>{buttonText}</button>
    {/if}
 </div>

@@ -4,7 +4,6 @@ import { prisma } from '$lib/server/prisma';
 import { superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import { dateSearchFormSchema, searchFormSchema } from '$lib/formSchemas/schemas';
-import dayjs from 'dayjs';
 
 export const load = (async (event) => {
    if(!event.locals.user?.employee){
@@ -15,37 +14,97 @@ export const load = (async (event) => {
    const invoiceCount = await prisma.invoice.count({
       where: {
          AND: [
-            {paymentRecordNum: null},
-            {invoiceDue: {
-               lte: new Date()
+            { invoiceAmount: {
+               gt: prisma.invoice.fields.amountPaid
             }},
-            {deposit: false}
-         ]
-      }
-   })
-   const invoices = prisma.invoice.findMany({
-      where: {
-         AND: [
-            {paymentRecordNum: null},
             {invoiceDue: {
                lte: new Date()
             }},
             {deposit: false}
          ]
       },
-      orderBy: {
-         invoiceNum:'asc'
+   })
+   const invoices = prisma.invoice.findMany({
+      where: {
+         AND: [
+            {
+               invoiceAmount: {
+                  gt: prisma.invoice.fields.amountPaid
+               }
+            },
+            {
+               invoiceDue: {
+                  lte: new Date()
+               }
+            },
+            {
+               deposit: false
+            }
+         ]
       }
    })
    const customers = prisma.user.findMany({
       where: {
-         archive: false
+         AND: [
+            {
+               archive: false
+            },
+            {
+               customerInvoices: {
+                  some: {
+                     AND: [
+                        {
+                           invoiceAmount: {
+                              gt: prisma.invoice.fields.amountPaid
+                           }
+                        },
+                        {
+                           invoiceDue: {
+                              lte: new Date()
+                           }
+                        },
+                        {
+                           deposit: false
+                        }
+                     ]
+                  }
+               }
+            }
+         ]
       }
    });
    const addresses = prisma.address.findMany({
       where: {
-         softDelete: false
+         AND: [
+            {
+               softDelete: false
+            },
+            {
+               user: {
+                  customerInvoices: {
+                     some: {
+                        AND: [
+                           {
+                              invoiceAmount: {
+                                 gt: prisma.invoice.fields.amountPaid
+                              }
+                           },
+                           {
+                              invoiceDue: {
+                                 lte: new Date()
+                              }
+                           },
+                           {
+                              deposit: false
+                           }
+                        ]
+                     }
+                  }
+               }
+            }
+         ]
       }
    })
    return { invoices, invoiceCount, searchForm, customers, addresses, dateSearchForm };
+
 }) satisfies PageServerLoad;

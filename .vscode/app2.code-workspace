@@ -1,0 +1,21 @@
+{
+	"folders": [
+		{
+			"path": ".."
+		}
+	],
+	"settings": {
+		"cSpell.words": [
+			"elavon",
+			"MMYY",
+			"pdfmake",
+			"valibot",
+			"venti"
+		],
+		"editor.quickSuggestions": {
+			"other": "on",
+			"comments": "off",
+			"strings": "on"
+		}
+	}
+}

@@ -1,5 +1,5 @@
 import { prisma } from "$lib/server/prisma";
-import { redirect, fail } from "@sveltejs/kit";
+import { redirect, error } from "@sveltejs/kit";
 import { superValidate, message } from 'sveltekit-superforms'
 import { ratelimit } from "$lib/server/rateLimit";
 import { valibot } from 'sveltekit-superforms/adapters'
@@ -59,7 +59,7 @@ export const actions:Actions = {
       const formData = await event.request.formData();
       const unitNotesForm = await superValidate(formData, valibot(unitNotesFormSchema));
       if(!unitNotesForm.valid){
-         return fail(400, {unitNotesForm});
+         error(400);
       }
       const { success, reset } = await ratelimit.login.limit(event.locals.user?.id || event.getClientAddress())
       if(!success) {

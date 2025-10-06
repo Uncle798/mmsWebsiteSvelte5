@@ -1,135 +1,289 @@
-<script lang='ts'>
-   import FormMessage from "$lib/formComponents/FormMessage.svelte";
-	import FormSubmitWithProgress from "$lib/formComponents/FormSubmitWithProgress.svelte";
-	import NumberInput from "$lib/formComponents/NumberInput.svelte";
-   import type { NewInvoiceFormSchema, } from "$lib/formSchemas/schemas";
+<script lang="ts">
+	import type { EmailVerificationFormSchema, NewInvoiceFormSchema, RegisterFormSchema } from "$lib/formSchemas/schemas";
 	import type { Lease, User } from "@prisma/client";
-	import type { SuperValidated, Infer } from "sveltekit-superforms";
-   import { superForm } from "sveltekit-superforms";
-
-   import { Combobox, Switch } from "@skeletonlabs/skeleton-svelte";
-	import dayjs from "dayjs";
-	import TextArea from "$lib/formComponents/TextArea.svelte";
-	import DateInput from "$lib/formComponents/DateInput.svelte";
+	import { Combobox, Modal, Tooltip, Switch, Progress, ProgressRing } from "@skeletonlabs/skeleton-svelte";
 	import { onMount } from "svelte";
-
+	import { superForm, type Infer, type SuperValidated } from "sveltekit-superforms";
+	import EmailVerificationForm from "./EmailVerificationForm.svelte";
+	import RegisterForm from "./RegisterForm.svelte";
+	import Header from "$lib/Header.svelte";
+	import FormMessage from "$lib/formComponents/FormMessage.svelte";
+   import NumberInput from "$lib/formComponents/NumberInput.svelte";
+   import DateInput from "$lib/formComponents/DateInput.svelte";
+   import FormSubmitWithProgress from "$lib/formComponents/FormSubmitWithProgress.svelte";
+	import { goto, onNavigate } from "$app/navigation";
+	import { Info } from "lucide-svelte";
+	import dayjs from "dayjs";
+	import { page } from "$app/state";
+   
    interface Props {
       data: SuperValidated<Infer<NewInvoiceFormSchema>>;
-      employeeId: string | undefined;
-      customers: User[];
-      leases: Lease[];
-      defaultCustomer?: string;
+      registerFormData: SuperValidated<Infer<RegisterFormSchema>>;
+      emailVerificationFormData: SuperValidated<Infer<EmailVerificationFormSchema>>;
+      employeeId: string;
+      customers?: User[];
+      customer?: User;
+      leases?: Lease[];
+      lease?: Lease;
       classes?: string;
    }
-   let { data, employeeId, customers, leases, defaultCustomer='', classes }:Props = $props();
-   let { form, errors, message, constraints, enhance, delayed, timeout} = superForm(data, {
-      onSubmit({formData}) {
-         formData.set('customerId', selectedCustomer[0])
-         formData.set('leaseId', selectedLease[0])
+   let {
+      data,
+      registerFormData,
+      emailVerificationFormData,
+      employeeId,
+      customers,
+      customer,
+      leases, 
+      lease, 
+      classes,
+   }:Props = $props();
+   let url = page.url.pathname
+   let { form, errors, message, constraints, enhance, delayed, timeout, } = superForm(data, {
+      onChange(event) {
+         if(event.target){
+            const formName = `${url}/newInvoiceForm/${customer?.id ? `customerId=${customer.id}` : undefined}${lease?.unitNum ? `&unitNum:${lease.unitNum}` : undefined}:${event.path}`
+            const value = event.get(event.path);
+            if(value){
+               sessionStorage.setItem(formName, value.toString());
+            }
+         }
       },
    });
-   onMount(()=> {
-      $form.invoiceDue = new Date()
-   })
-   let selectedCustomer = $state([defaultCustomer]);
-   let selectedLease = $state(['']);
-   interface ComboBoxData {
+   interface ComboboxData {
       label: string;
       value: string;
    }
-   const customerComboBoxData:ComboBoxData[] = [];
-   const leaseComboBoxData:ComboBoxData[] = $derived.by(() =>{
-      const customerLeases = leases.filter((lease) => lease.customerId === selectedCustomer[0]);
-      const data:ComboBoxData[]=[]
-      customerLeases.forEach((lease) =>{
-         const label = lease.unitNum.replace(/^0+/gm,'');
-         const value = lease.leaseId;
-         data.push({label, value})
-      })
-      return data
-   })
-   customers.forEach((customer)=>{
-      const label = `${customer.givenName} ${customer.familyName}`;
-      const value = customer.id;
-      const datum = {
-         label,
-         value
-      }
-      customerComboBoxData.push(datum);
-   });
-   let leaseSelected = $state(false)
-</script>
-
-
-<div class={classes}>
-   <FormMessage message={$message} />
-   <form action="/forms/newInvoiceForm" method="POST" use:enhance>
-      <Combobox
-         data={customerComboBoxData}
-         bind:value={selectedCustomer}
-         label='Select Customer'
-         placeholder='Select...'
-         openOnClick={true}
-         onValueChange={(detail) => {
-            selectedCustomer=detail.value
-         }}
-      />
-      {#if leaseComboBoxData.length > 0 }
-         <Combobox
-            data={leaseComboBoxData.sort()}
-            bind:value={selectedLease}
-            label="Select a unit"
-            placeholder="Select..."
-            openOnClick={true}
-            onValueChange={(details) =>{
-               const lease = leases.find((lease) => lease.leaseId === details.value[0]);
-               if(lease){
-                  $form.invoiceAmount=lease.price
-                  const date = dayjs(new Date()).format('MMMM YYYY')
-                  $form.invoiceNotes=`Rent for Unit Number ${lease.unitNum.replace(/^0+/gm,'')} for ${date}`
+   const customersComboboxData:ComboboxData[] | undefined= $derived(customers?.map(customer => ({
+      label: `${customer.givenName} ${customer.familyName} (${customer.email})`,
+      value: customer.id
+   })));
+   const leasesComboboxData:ComboboxData[] | undefined = $derived(leases?.map(lease => ({
+      label: lease.unitNum.replace(/^0+/gm, ''),
+      value: lease.leaseId
+   })));
+   let invoiceNotesTooltipOpen = $state(false);
+   let registerFormModalOpen = $state(false);
+   onMount(()=>{
+      for(const key in $form){
+         const fullKey = `newInvoiceForm:${key}`;
+         const storedValue = sessionStorage.getItem(fullKey);
+         if(storedValue){
+            if(isNaN(parseInt(storedValue, 10))){
+               if(storedValue === 'true'){
+                  $form[key as keyof typeof $form] = true as never;
+               } else if(storedValue === 'false'){
+                  $form[key as keyof typeof $form] = false as never;
+               } else {
+                  $form[key as keyof typeof $form] = storedValue as never;
                }
-               leaseSelected = true
-            }}
-         />
-      {:else if selectedCustomer[0].length > 0}
-         <TextArea
-            bind:value={$form.invoiceNotes}
-            errors={$errors.invoiceNotes}
-            constraints={$constraints.invoiceNotes}
-            label="Invoice notes"
-            name='invoiceNotes'
-            rows={2}
-         />
-         <NumberInput
-            bind:value={$form.invoiceAmount}
-            errors={$errors.invoiceAmount}
-            constraints={$constraints.invoiceAmount}
-            label='Invoice amount: $'
-            name='invoiceAmount'
-         />
-         <DateInput
-            bind:value={$form.invoiceDue}
-            errors={$errors.invoiceDue}
-            constraints={$constraints.invoiceDue}
-            label='Invoice Due Date'
-            name='invoiceDue'
-            min={dayjs().subtract(1, 'year').toDate()}
-            max={dayjs().add(1, 'year').toDate()}
-         />
-         <Switch name='deposit' bind:checked={$form.deposit} label='Deposit' classes='mt-2'>
-            Deposit
-         </Switch>
-         <input type="hidden" name='employeeId' value={employeeId}/>
-         <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} buttonText='Create Invoice'/>
+            } else {
+               $form[key as keyof typeof $form] = parseInt(storedValue, 10) as never;
+            }
+         }
+      }
+      if(lease){
+         $form.invoiceNotes=`Rent for unit ${lease.unitNum.replace(/^0+/gm, '')} for ${dayjs().format('MMMM YYYY')}`;
+         $form.invoiceAmount=lease.price;
+         $form.invoiceDue=new Date()
+      }
+      if(customer){
+         $form.customerId=customer.id
+      }
+   })
+   let navDelayed = $state(false);
+   let navTimeout = $state(false);
+   let navReason = $state('');
+   onNavigate(() =>{
+      navDelayed = false;
+      navTimeout = false;
+      navReason = '';
+   })
+</script>
+<Modal
+   open={registerFormModalOpen}
+   onOpenChange={(e)=>registerFormModalOpen=e.open}
+   contentBase="card bg-surface-400-600 p-4 space-y-4 shadow-xl max-w-(--breakpoint-sm)"
+   backdropClasses="backdrop-blur-xs"
+>
+   {#snippet content()}
+      {#if customer}
+         <EmailVerificationForm data={emailVerificationFormData} userId={customer.id} redirect='false' bind:emailVerificationModalOpen={registerFormModalOpen} />
+      {:else}
+         <RegisterForm data={registerFormData} bind:registerFormModalOpen={registerFormModalOpen} formType='employee' redirectTo='invoices/new' />
       {/if}
-      {#if leaseSelected}
-         <TextArea
-            bind:value={$form.invoiceNotes}
-            errors={$errors.invoiceNotes}
-            constraints={$constraints.invoiceNotes}
-            label="Invoice notes"
-            name='invoiceNotes'
+         <button class="btn preset-filled-primary-50-950 rounded-lg h-fit" onclick={()=>registerFormModalOpen=false}>Cancel</button>
+   {/snippet}
+</Modal>
+<Header title='New Invoice' />
+<FormMessage message={$message} />
+<div class={classes}>
+   {#if !customer}
+      <button class="btn preset-filled-primary-50-950 my-2" onclick={() => registerFormModalOpen = true}>Create new customer</button>
+      or,
+      <div class="flex flex-row">
+         <Combobox
+            data={customersComboboxData}
+            label='Select Customer'
+            placeholder='Type or select...'
+            openOnClick={true}
+            optionClasses='truncate'
+            onValueChange={(details) => {
+               navReason = 'customersComboBoxData'
+               setTimeout(() =>{
+                  navDelayed = true
+               }, 300)
+               goto(`/invoices/new?userId=${details.value}`);
+            }}
+            width='w-11/12'
          />
+         {#if navDelayed && navReason === 'customersComboBoxData'}
+            <ProgressRing  
+               value={null} 
+               size="size-8" 
+               meterStroke="stroke-tertiary-600-400" 
+               trackStroke="stroke-tertiary-50-950"
+               classes='mt-6 mx-2'
+               {@attach () => {
+                  setTimeout(() => {
+                     navDelayed = false;
+                     navTimeout = true;
+                  }, 800)
+               }}
+            />
+         {/if}
+         {#if navTimeout && navReason === 'customersComboBoxData'}
+            <Progress 
+               value={null}
+               meterBg="bg-tertiary-500"
+               width='w-12'
+               classes='mt-9 mx-2'
+            />
+         {/if}
+      </div>
+   {/if}
+   {#if leases}
+      {#if customer}
+         <div class="flex flex-row">
+            <Combobox
+               data={leasesComboboxData}
+               label='Select unit'
+               placeholder='Type or select'
+               openOnClick={true}
+               onValueChange={(details) => {
+                  setTimeout(() => {
+                     navReason = 'leasesComboboxData'
+                     navDelayed = true;
+                  }, 300)
+                  goto(`/invoices/new?leaseId=${details.value}&userId=${customer.id}`)
+               }}
+               width='w-11/12'
+            />
+            {#if navDelayed && navReason === 'leasesComboboxData'}
+               <ProgressRing  
+                  value={null} 
+                  size="size-8" 
+                  meterStroke="stroke-tertiary-600-400" 
+                  trackStroke="stroke-tertiary-50-950"
+                  classes='mt-6 mx-2'
+                  {@attach () => {
+                     setTimeout(() => {
+                        navDelayed = false;
+                        navTimeout = true;
+                     }, 800)
+                  }}
+               />
+            {/if}
+            {#if navTimeout && navReason === 'leasesComboboxData'}
+               <Progress 
+                  value={null}
+                  meterBg="bg-tertiary-500"
+                  width='w-12'
+                  classes='mt-9 mx-2'
+               />
+            {/if}
+         </div>        
+      {:else}
+         <div class="flex flex-row">
+            <Combobox
+               data={leasesComboboxData}
+               label='Select unit'
+               placeholder='Type or select'
+               openOnClick={true}
+               onValueChange={(details) => {
+                  setTimeout(() => {
+                     navReason = 'leasesComboboxData'
+                     navDelayed = true;
+                  }, 300)
+                  goto(`/invoices/new?leaseId=${details.value}`)
+               }}
+               width='w-11/12'
+            />
+            {#if navDelayed && navReason === 'leasesComboboxData'}
+               <ProgressRing  
+                  value={null} 
+                  size="size-8" 
+                  meterStroke="stroke-tertiary-600-400" 
+                  trackStroke="stroke-tertiary-50-950"
+                  classes='mt-6 mx-2'
+                  {@attach () => {
+                     setTimeout(() => {
+                        navDelayed = false;
+                        navTimeout = true;
+                     }, 800)
+                  }}
+               />
+            {/if}
+            {#if navTimeout && navReason === 'leasesComboboxData'}
+               <Progress 
+                  value={null}
+                  meterBg="bg-tertiary-500"
+                  width='w-12'
+                  classes='mt-9 mx-2'
+               />
+            {/if}
+         </div>
+      {/if}
+   {/if}
+   {#if customer || lease}
+      
+      <form action="/forms/newInvoiceForm" class='mx-2' method="POST" use:enhance {@attach () => {
+         if(!customer?.emailVerified){
+            registerFormModalOpen = true;
+         }
+      }}>
+         <div class="">
+            <label class="label ">
+               <span class="label-text">Invoice notes
+                  <Tooltip
+                     open={invoiceNotesTooltipOpen}
+                     onOpenChange={(e) => invoiceNotesTooltipOpen = e.open}
+                     positioning={{placement: 'top-end'}}
+                     contentBase="card preset-filled p-2 wrap-word max-w-4xl"
+                     openDelay={200}
+                     closeDelay={200}
+                     zIndex='30'
+                     arrow={true}
+                     closeOnScroll={true}
+                  >
+                     {#snippet trigger()}
+                        <Info aria-label='Invoice Notes tooltip' size={15} />
+                     {/snippet}
+                     {#snippet content()}
+                        Invoice notes are the place to store information for you and your customer. MMS has defaults but those can be edited, and we can change the defaults.
+                     {/snippet}
+                  </Tooltip>
+                  </span>
+               <textarea
+                  class="input rounded-none h-auto"
+                  rows=3
+                  name="invoiceNotes"
+                  {...$constraints.invoiceNotes}
+               >{$form.invoiceNotes}</textarea>
+               <!-- Above formatting required for proper display of notes in text area -->
+            </label>
+            {#if $errors.invoiceNotes}<span class="invalid">{$errors.invoiceNotes}</span>{/if}
+         </div>
          <NumberInput
             bind:value={$form.invoiceAmount}
             errors={$errors.invoiceAmount}
@@ -138,7 +292,7 @@
             name='invoiceAmount'
 
          />
-         <Switch name='deposit' bind:checked={$form.deposit} label='Deposit' classes='mt-2'>
+         <Switch name='deposit' checked={$form.deposit} onCheckedChange={(e)=> $form.deposit=e.checked} label='Deposit' classes='mt-2'>
             Deposit
          </Switch>
          <DateInput
@@ -149,10 +303,11 @@
             name='invoiceDue'
             min={dayjs().subtract(1, 'year').toDate()}
             max={dayjs().add(1, 'year').toDate()}
-            placeholder={dayjs().format('MM/DD/YYYY')}
+            placeholder={dayjs().format('YYYY/MM/DD')}
          />
          <input type="hidden" name='employeeId' value={employeeId}/>
+         <input type="hidden" name="customerId" value={customer?.id} />
          <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} buttonText='Create Invoice'/>
-      {/if}
-   </form>
+      </form>
+   {/if}
 </div>
