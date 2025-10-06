@@ -9,8 +9,6 @@
 	import { enhance } from '$app/forms';
 	import { PUBLIC_ADDRESS1, PUBLIC_COMPANY_NAME, PUBLIC_PHONE } from '$env/static/public';
 	import { CircleX } from 'lucide-svelte';
-	import { onMount, setContext } from 'svelte';
-	import Shepherd, {type Tour } from 'shepherd.js';
 
 	interface Props {
 		data: PageData,
