@@ -9,7 +9,6 @@
 	import FormMessage from '$lib/formComponents/FormMessage.svelte';
 	import PhoneInput from '$lib/formComponents/PhoneInput.svelte';
 	import { onMount } from 'svelte';
-	import { keyof } from 'valibot';
 	import { page } from '$app/state';
 
    interface Props {
