@@ -5,7 +5,10 @@
 			"splitTerminals": [
 				{
 					"name": "server",
-					"commands": ["pnpm run dev --host"]
+					"commands": [
+						"nvm use 22", 
+						"pnpm run dev --host"
+					]
 				},
 				{
 					"name": "ngrok",
