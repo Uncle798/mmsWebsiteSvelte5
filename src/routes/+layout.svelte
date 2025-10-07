@@ -1,14 +1,13 @@
 <script lang="ts">
 	import '../app.css';
-	import { Toaster, Tooltip } from '@skeletonlabs/skeleton-svelte';
-	import { toaster } from './toaster';
+	import { Toast, createToaster, Tooltip, Dialog, Portal } from '@skeletonlabs/skeleton-svelte';
 	import type { PageData } from './$types';
-	import { Modal } from '@skeletonlabs/skeleton-svelte';
 	import Menu from 'lucide-svelte/icons/menu';
 	import { beforeNavigate } from '$app/navigation';
 	import { enhance } from '$app/forms';
 	import { PUBLIC_ADDRESS1, PUBLIC_COMPANY_NAME, PUBLIC_PHONE } from '$env/static/public';
 	import { CircleX } from 'lucide-svelte';
+	import { setContext } from 'svelte';
 
 	interface Props {
 		data: PageData,
@@ -59,118 +58,109 @@
 	const formattedPhone = PUBLIC_PHONE.substring(0,1) +'-'+ PUBLIC_PHONE.substring(1,4)+'-'+PUBLIC_PHONE.substring(4,7)+'-'+PUBLIC_PHONE.substring(7);
 	let tooltipOpenIdentifier = $state<string|null>(null);
 	let menuButtonElement = $state<HTMLElement>();
+	const toaster = createToaster();
+	setContext('toaster', toaster)
 </script>
-<Toaster {toaster} ></Toaster>
+<Toast.Group {toaster}>
+	{#snippet children(toast)}
+		<Toast {toast}>
+			<Toast.Message>
+				<Toast.Title>{toast.title}</Toast.Title>
+				<Toast.Description>{toast.description}</Toast.Description>
+			</Toast.Message>
+			<Toast.CloseTrigger />
+		</Toast>
+	{/snippet}
+</Toast.Group>
 {#if data.user?.employee}
-	<header> 
-		<Modal
-			open={menuOpen}
-			onOpenChange={(e)=> menuOpen=e.open}
-			triggerBase="btn bg-primary-50-950 hover:shadow-xl hover:border-2 border-secondary-50-950 fixed top-0 left-0 z-50 h-12 sm:h-9"
-			contentBase="bg-surface-100-900 space-y-2 shadow-xl w-[240px] h-screen"
-			positionerJustify="justify-start"
-			positionerAlign=""
-			positionerPadding=""
-			transitionsPositionerIn={{ x: -240, duration: 400 }}
-			transitionsPositionerOut={{ x: -240, duration: 400 }}
-		>
-			{#snippet trigger()}
-				<div bind:this={menuButtonElement}>
-					<Menu aria-label='Main Menu'/>	
-				</div>
-			{/snippet}
-			{#snippet content()}
-				<article class="h-full">
-					<ul class="overflow-auto h-8/9 m-1">
-						{#if data.user?.employee}
-							{#each employeeLinks as employeeLink}
+	<header>
+		<Dialog>
+			<Dialog.Trigger class='btn bg-primary-50-950 hover:shadow-xl hover:border-2 border-secondary-50-950 fixed top-0 left-0 z-40 h-12 sm:h-9'><Menu aria-label='Main Menu'/></Dialog.Trigger>
+			<Portal>
+				<Dialog.Backdrop class="fixed inset-0 bg-surface-50-950/50 transition transition-discrete opacity-0 starting:data-[state=open]:opacity-0 data-[state=open]:opacity-100"/>
+				<Dialog.Positioner class='fixed inset-0 z-40 flex justify-start'>
+					<Dialog.Content class="h-screen card bg-surface-100-900 w-[250px] p-4 space-y-4 shadow-xl transition transition-discrete opacity-0 -translate-x-full 
+						starting:data-[state=open]:opacity-0 starting:data-[state=open]:-translate-x-full data-[state=open]:opacity-100 data-[state=open]:translate-x-0">
+						<header class='flex justify-between items-center'>
+							<Dialog.Title class='font-bold text-2xl' >Main Menu</Dialog.Title>
+							<Dialog.CloseTrigger><CircleX aria-label='close'/></Dialog.CloseTrigger>
+						</header>
+						<ul>
+							{#if data.user.employee}
+								{#each employeeLinks as employeeLink}
+									<li>
+										<Tooltip>
+											<Tooltip.Trigger>
+												<a href={employeeLink.link} class='anchor'>{employeeLink.label}</a>
+											</Tooltip.Trigger>
+											<Portal>
+												<Tooltip.Positioner class='z-50!'>
+													<Tooltip.Content class='card max-w-md p-2 bg-surface-300-700 shadow-xl'>
+														{employeeLink.toolTip}
+														<Tooltip.Arrow style='--arrow-size: calc(var(--spacing) * 2); --arrow-background: var(--color-surface-300-700);'>
+															<Tooltip.ArrowTip />
+														</Tooltip.Arrow>
+													</Tooltip.Content>
+												</Tooltip.Positioner>
+											</Portal>
+										</Tooltip>
+									</li>
+								{/each}
+							{/if}
+							{#if data.user.admin}
+								{#each adminLinks as adminLink}
+									<li>
+										<Tooltip>
+											<Tooltip.Trigger>
+												<a href={adminLink.link} class="anchor">{adminLink.label}</a>
+											</Tooltip.Trigger>
+											<Portal>
+												<Tooltip.Positioner class='z-50!'>
+													<Tooltip.Content class='card max-w-md p-2 bg-surface-300-700 shadow-xl'>
+														{adminLink.toolTip}
+														<Tooltip.Arrow style='--arrow-size: calc(var(--spacing) * 2); --arrow-background: var(--color-surface-300-700);'>
+															<Tooltip.ArrowTip />
+														</Tooltip.Arrow>
+													</Tooltip.Content>
+												</Tooltip.Positioner>
+											</Portal>
+										</Tooltip>
+									</li>	
+								{/each}
+							{/if}
+						</ul>
+						<div class="fixed bottom-2">
+							<ul>
 								<li>
-									<Tooltip
-										open={tooltipOpenIdentifier === employeeLink.link}
-										onOpenChange={(event) => {
-											if(event.open){
-												tooltipOpenIdentifier = employeeLink.link
-											} else if (tooltipOpenIdentifier === employeeLink.link){
-												tooltipOpenIdentifier = null
-											}
-										}}
-										positioning={{placement: 'top-end'}}
-										contentBase="card preset-filled p-2"
-										openDelay={200}
-										zIndex='30'
-									>
-										{#snippet content()}
-											{employeeLink.toolTip}
-										{/snippet}
-										{#snippet trigger()}
-											<a class="anchor mx-1" href={employeeLink.link}>{employeeLink.label}</a>
-										{/snippet}
+									<Tooltip>
+										<Tooltip.Trigger>
+											<a href="/accountSettings" class="anchor mx-1">Settings</a>
+										</Tooltip.Trigger>
+										<Portal>
+											<Tooltip.Positioner class='z-50'>
+												<Tooltip.Content class='card max-w-md p-2 bg-surface-100-900 shadow-xl'>
+													Change your name or address here. View all invoices, payment receipts, and refund records. Best of all, sign up for Auto-pay here.
+													<Tooltip.Arrow style='--arrow-size: calc(var(--spacing) * 2); --arrow-background: var(--color-surface-100-900);'>
+														<Tooltip.ArrowTip />
+													</Tooltip.Arrow>
+												</Tooltip.Content>
+											</Tooltip.Positioner>
+										</Portal>
 									</Tooltip>
 								</li>
-							{/each}
-						{/if}
-						{#if data.user?.admin}
-							{#each adminLinks as adminLink}
-								<Tooltip
-									open={tooltipOpenIdentifier === adminLink.link}
-									onOpenChange={(event) => {
-										if(event.open){
-											tooltipOpenIdentifier = adminLink.link
-										} else if (tooltipOpenIdentifier === adminLink.link){
-											tooltipOpenIdentifier = null
-										}
-									}}
-									positioning={{placement: 'top-end'}}
-									contentBase="card preset-filled p-2"
-									openDelay={200}
-									zIndex='30'
-								>
-								{#snippet content()}
-									{adminLink.toolTip}
-								{/snippet}
-								{#snippet trigger()}
-									<li><a class="anchor mx-1" href={adminLink.link}>{adminLink.label}</a></li>
-								{/snippet}
-								</Tooltip>
-							{/each}
-						{/if}
-					</ul>
-					<div class="fixed w-[240px] bottom-0 bg-surface-100-900 border-1 border-primary-50-950 rounded-lg">
-						<ul class="m-1">
 							{#if data.user}
-							<Tooltip
-								open={tooltipOpenIdentifier === '/accountSettings'}
-								onOpenChange={(event) => {
-									if(event.open){
-										tooltipOpenIdentifier = '/accountSettings'
-									} else if (tooltipOpenIdentifier === '/accountSettings'){
-										tooltipOpenIdentifier = null
-									}
-								}}
-								positioning={{placement: 'top-end'}}
-								contentBase="card preset-filled p-2"
-								openDelay={200}
-								zIndex='30'
-							>
-								{#snippet content()}
-									Change your name or address here. View all invoices, payment receipts, and refund records. Best of all, sign up for Auto-pay here.
-								{/snippet}
-								{#snippet trigger()}
-									<li><a href="/accountSettings" class="anchor mx-1">Settings</a></li>
-								{/snippet}
-							</Tooltip>
 								<form action="/logout" method="post" use:enhance>
 									<li><button class="anchor mx-1" type="submit">Logout</button></li>
 								</form>
 							{:else}
 								<li><a class="anchor mx-1" href="/login">Login</a></li>
 							{/if}
-						</ul>
-					</div>
-					<button class="absolute top-1 left-[205px] btn-icon" onclick={()=>{menuOpen=false}}><CircleX aria-label='close' class=''/></button>
-				</article>
-			{/snippet}
-		</Modal>
+							</ul>
+						</div>
+					</Dialog.Content>
+				</Dialog.Positioner>
+			</Portal>
+		</Dialog>
 		<div class="bg-tertiary-50-950 fixed w-screen top-0 left-0 h-12 sm:h-9 text-center font-bold z-30 rounded-b-lg">
 			<div class="fixed top-0 left-[85px] w-[225px] sm:w-screen text-center sm:left-0 text-wrap">
 				<a href="/" class="anchor">{PUBLIC_COMPANY_NAME}</a>
@@ -178,42 +168,39 @@
 		</div>
 	</header>
 {:else}
-	<header> 
-		<Modal
-			open={menuOpen}
-			onOpenChange={(e)=> menuOpen= e.open}
-			triggerBase="btn bg-primary-50-950 hover:shadow-xl hover:border-2 border-secondary-50-950 fixed top-0 left-0 z-50 h-12 sm:h-9"
-			contentBase="bg-surface-100-900 p-2 space-y-2 shadow-xl w-[125px] h-screen"
-			positionerJustify="justify-start"
-			positionerAlign=""
-			positionerPadding=""
-			transitionsPositionerIn={{ x: -125, duration: 400 }}
-			transitionsPositionerOut={{ x: -125, duration: 400 }}
-		>
-		{#snippet trigger()}
-			<Menu aria-label='Main Menu'/>	
-		{/snippet}
-		{#snippet content()}
-			<article class="">
-				<button class="absolute top-1 left-[90px] btn-icon" onclick={()=>{menuOpen=false}}><CircleX aria-label='close' class='h-12 sm:h-9'/></button>
-				<ul>
-					{#each customerLinks as link}
-						<a href={link.link} class="anchor mx-1">{link.label}</a>
-					{/each}
-					<div class="absolute bottom-0 m-1 sm:m-2 mb-2  bg-surface-100-900">
-						{#if data.user}
-						<li><a href="/accountSettings" class="anchor">Settings</a></li>
-							<form action="/logout" method="post" use:enhance>
-								<li><button class="anchor mx-1" type="submit">Logout</button></li>
-							</form>
-						{:else}
-							<li><a class="anchor mx-1" href="/login">Login</a></li>
-						{/if}
-					</div>
-				</ul>				
-			</article>
-		{/snippet}
-		</Modal>
+	<header>
+		<Dialog>
+			<Dialog.Trigger class='btn bg-primary-50-950 hover:shadow-xl hover:border-2 border-secondary-50-950 fixed top-0 left-0 z-50 h-12 sm:h-9'><Menu aria-label='Main Menu'/></Dialog.Trigger>
+			<Portal>
+				<Dialog.Backdrop class="fixed inset-0 bg-surface-50-950/50 transition transition-discrete opacity-0 starting:data-[state=open]:opacity-0 data-[state=open]:opacity-100"/>
+				<Dialog.Positioner class='fixed inset-0 z-40 flex justify-start'>
+					<Dialog.Content class="h-screen card bg-surface-100-900 w-[200px] p-4 space-y-4 shadow-xl transition transition-discrete opacity-0 -translate-x-full 
+						starting:data-[state=open]:opacity-0 starting:data-[state=open]:-translate-x-full data-[state=open]:opacity-100 data-[state=open]:translate-x-0">
+						<header class="flex justify-between items-center">
+							<Dialog.Title class='text-2xl font-bold'>Main Menu</Dialog.Title>
+							<Dialog.CloseTrigger><CircleX aria-label='close'/></Dialog.CloseTrigger>
+						</header>
+						<ul>
+							{#each customerLinks as link}
+								<li>
+									<a href={link.link}>{link.label}</a>
+								</li>
+							{/each}
+							<div class="absolute bottom-0 m-1 sm:m-2 mb-2  bg-surface-100-900">
+								{#if data.user}
+								<li><a href="/accountSettings" class="anchor">Settings</a></li>
+									<form action="/logout" method="post" use:enhance>
+										<li><button class="anchor mx-1" type="submit">Logout</button></li>
+									</form>
+								{:else}
+									<li><a class="anchor mx-1" href="/login">Login</a></li>
+								{/if}
+							</div>
+						</ul>
+					</Dialog.Content>
+				</Dialog.Positioner>
+			</Portal>
+		</Dialog>
 		<div class="bg-tertiary-50-950 fixed w-screen top-0 left-0 h-12 sm:h-9 text-center font-bold z-30 rounded-b-lg">
 			<div class="fixed top-0 left-[85px] w-[225px] sm:w-screen text-center sm:left-0 text-wrap mt-0.5">
 				<a href="/" class="anchor">{PUBLIC_COMPANY_NAME}</a>

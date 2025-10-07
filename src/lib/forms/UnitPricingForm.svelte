@@ -5,10 +5,9 @@
    import { invalidateAll } from "$app/navigation";
 	import FormMessage from "$lib/formComponents/FormMessage.svelte";
 	import NumberInput from "$lib/formComponents/NumberInput.svelte";
-	import { Switch } from "@skeletonlabs/skeleton-svelte";
+	import Switch from "$lib/formComponents/Switch.svelte";
 	import FormSubmitWithProgress from "$lib/formComponents/FormSubmitWithProgress.svelte";
 	import { onMount } from "svelte";
-	import { browser } from "$app/environment";
 
    interface Props {
       data: SuperValidated<Infer<UnitPricingFormSchema>>;
@@ -72,22 +71,15 @@
       />
       <div class="flex flex-col sm:flex-row">
          <Switch
-            checked={$form.changeDeposit}
-            onCheckedChange={(e)=> $form.changeDeposit = e.checked}
+            bind:checked={$form.changeDeposit}
             name='changeDeposit'
-            classes='my-2 sm:my-auto'
-         >
-            Change the deposit as well
-         </Switch>
+            label='Change the deposit as well'
+         />
          <Switch
-            checked={$form.lowerPrice}
-            onCheckedChange={(e)=> $form.lowerPrice = e.checked}
+            bind:checked={$form.lowerPrice}
             name="lowerPrice"
             label='Lower Price'
-            classes='sm:mx-2'
-         >
-            Lower the price.
-         </Switch>
+         />
          <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} buttonText='Submit new price'/>
       </div>
       <input type="hidden" name="size" id="size" value={size}>

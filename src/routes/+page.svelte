@@ -7,7 +7,7 @@
 	import UnitCustomer from "$lib/displayComponents/customerViews/UnitCustomer.svelte";
 	import { fade } from "svelte/transition";
 	import Placeholder from "$lib/displayComponents/Placeholder.svelte";
-	import { Tooltip } from "@skeletonlabs/skeleton-svelte";
+	import { Portal, Tooltip } from "@skeletonlabs/skeleton-svelte";
    
    interface Props {
       data: PageData;
@@ -31,25 +31,22 @@
 {#await data.availableUnits}
    <article class="m-2 mt-14 sm:mt-10">
       <div>
-         <Tooltip
-            open={copyTooltipOpen}
-            onOpenChange={(e) => copyTooltipOpen = e.open}
-            positioning={{placement: 'top'}}
-            openDelay={200}
-         >
-            {#snippet trigger()}
-               <div>
+         <Tooltip open={copyTooltipOpen}>
+            <Tooltip.Trigger>
                   Thank you for visiting {PUBLIC_COMPANY_NAME}!
                   Conveniently located, {PUBLIC_COMPANY_NAME} is the place to safely and securely store your belongings.
                   <p>Family owned and operated, you can contact us at 
                      <a href="tel:{PUBLIC_PHONE}" class="anchor">
                         { formattedPhone }</a>, or <a href="mailto:{PUBLIC_COMPANY_EMAIL}" class="anchor">{PUBLIC_COMPANY_EMAIL}</a> the office and gates are open 8:00 am to 8:00 pm.
                   </p>
-               </div>
-            {/snippet}
-            {#snippet content()}
-               Tell your story here. We can customize copy to your exact specifications.
-            {/snippet}
+            </Tooltip.Trigger>
+            <Portal>
+               <Tooltip.Positioner>
+                  <Tooltip.Content>
+                     Tell your story here. We can customize copy to your exact specifications.
+                  </Tooltip.Content>
+               </Tooltip.Positioner>
+            </Portal>
          </Tooltip>
       </div>
    </article>
@@ -60,31 +57,26 @@
       <Placeholder numCols={3} numRows={4} heightClass='h-34' classes='z-0 hidden md:block lg:hidden' />
       <Placeholder numCols={4} numRows={4} heightClass='h-34' classes='z-0 hidden lg:block' />     
    </div>
-{:then units} 
-      <article class="m-2 mt-14 sm:mt-10">
-         <div>
-            <Tooltip
-            open={copyTooltipOpen}
-            onOpenChange={(e) => copyTooltipOpen = e.open}
-            positioning={{placement: 'top'}}
-            contentBase="card preset-filled p-2"
-            openDelay={200}
-            zIndex='40'
-         >
-            {#snippet trigger()}
-               <div bind:this={homeCopy}>                 
-                  Thank you for visiting {PUBLIC_COMPANY_NAME}!
-                  Conveniently located, {PUBLIC_COMPANY_NAME} is the place to safely and securely store your belongings.
-                  <p>Family owned and operated, you can contact us at 
-                     <a href="tel:{PUBLIC_PHONE}" class="anchor">
-                        { formattedPhone }</a>, or <a href="mailto:{PUBLIC_COMPANY_EMAIL}" class="anchor">{PUBLIC_COMPANY_EMAIL}</a> the office and gates are open 8:00 am to 8:00 pm.
-                  </p>
-               </div>
-            {/snippet}
-            {#snippet content()}
-               Tell your story here. We can customize copy to your exact specifications
-            {/snippet}
-         </Tooltip>
+   {:then units} 
+   <article class="m-2 mt-14 sm:mt-10">
+      <div>
+            <Tooltip>
+               <Tooltip.Trigger>
+                     Thank you for visiting {PUBLIC_COMPANY_NAME}!
+                     Conveniently located, {PUBLIC_COMPANY_NAME} is the place to safely and securely store your belongings.
+                     <p>Family owned and operated, you can contact us at 
+                        <a href="tel:{PUBLIC_PHONE}" class="anchor">
+                           { formattedPhone }</a>, or <a href="mailto:{PUBLIC_COMPANY_EMAIL}" class="anchor">{PUBLIC_COMPANY_EMAIL}</a> the office and gates are open 8:00 am to 8:00 pm.
+                     </p>
+               </Tooltip.Trigger>
+               <Portal>
+                  <Tooltip.Positioner>
+                     <Tooltip.Content class='card '>
+                        Tell your story here. We can customize copy to your exact specifications.
+                     </Tooltip.Content>
+                  </Tooltip.Positioner>
+               </Portal>
+            </Tooltip>
          </div>
       </article>
    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-1 mx-2 mb-24 sm:mb-14 lg:mb-9" in:fade={{duration:600}}>

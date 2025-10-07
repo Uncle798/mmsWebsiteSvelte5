@@ -15,6 +15,7 @@
    import Payment from "payment";
 	import { onMount } from "svelte";
 	import { Info } from "lucide-svelte";
+	import ExplainerModal from "$lib/displayComponents/Modals/ExplainerModal.svelte";
 
    interface Props {
       data: SuperValidated<Infer<CreditCardFormSchema>>,
@@ -113,19 +114,13 @@
    })
 </script>
 <FormMessage message={$message} />
-<Modal
-   open={explainerModalOpen}
-   onOpenChange={(event) =>(explainerModalOpen = event.open)}
-   contentBase='card bg-surface-100-900 p-2 space-y-4 shadow-xl max-w-screen-sm'
-   backdropClasses='backdrop-blur-lg'
+<ExplainerModal
+   modalOpen={explainerModalOpen}
 >
-   {#snippet content()}
-      <p>
-         Unfortunately there is no way to demo taking a credit payment right now. Please select cash or check to see a payment receipt.
-      </p>
-      <button class="btn preset-tonal" onclick={()=>(explainerModalOpen=false)}>Close</button>
+   {#snippet copy()}
+      Please chose Cash or Check as there is currently no way of demoing credit card payments
    {/snippet}
-</Modal>
+</ExplainerModal>
 <form method="POST" use:enhance>
    <div class='{classes}'> 
       <div>        
@@ -344,15 +339,27 @@
       <button class="btn rounded-lg preset-filled-primary-50-950 my-1 sm:my-2">{buttonText}</button>
    {:else if processing}
       Processing...
-      {#if $delayed && !$timeout}
-         <div in:fade={{duration:600}}>
-            <ProgressRing value={null} size="size-8" strokeWidth="6px" meterStroke="stroke-secondary-600-400" trackStroke="stroke-secondary-50-950" classes='ml-2' />
-         </div>
+      {#if !delayed && !timeout}
+         <div class="w-8 h-8"></div>
       {/if}
-      {#if $timeout}
-         <div in:fade={{duration:600}}>
-            <Progress value={null} width="size-8" classes='mt-2 ml-2' />
-         </div>
+      {#if delayed && !timeout}
+      <div transition:fade={{duration:600}}>
+         <Progress value={null} class='items-center w-fit'>
+            <Progress.Circle style='--size: 40px; --thickness: 6px'>
+               <Progress.CircleTrack class='stroke-secondary-50-950'/>
+               <Progress.CircleRange class='stroke-secondary-600-400'/>
+            </Progress.Circle>
+         </Progress>
+      </div>
+      {/if}
+      {#if timeout}
+      <div transition:fade={{duration:600}}>
+         <Progress value={null} class='items-center w-fit'>
+            <Progress.Track class='stroke-secondary-50-950 h-4'> 
+               <Progress.Range class='stroke-secondary-600-400' />
+            </Progress.Track>
+         </Progress>
+      </div>
       {/if}
    {/if}
    <div bind:this={errorDisplay}></div>

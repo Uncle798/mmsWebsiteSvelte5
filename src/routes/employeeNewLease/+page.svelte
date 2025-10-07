@@ -1,6 +1,6 @@
 <script lang="ts">
    import UnitEmployee from '$lib/displayComponents/UnitEmployee.svelte';
-   import { Combobox, Modal } from '@skeletonlabs/skeleton-svelte';
+   import { Combobox } from '@skeletonlabs/skeleton-svelte';
    import { superForm } from 'sveltekit-superforms';
    import UserEmployee from '$lib/displayComponents/UserEmployee.svelte';
    import Address from '$lib/displayComponents/AddressEmployee.svelte';
@@ -16,7 +16,8 @@
 	import { onMount } from 'svelte';
 	import RegisterForm from '$lib/forms/RegisterForm.svelte';
 	import EmailVerificationForm from '$lib/forms/EmailVerificationForm.svelte';
-   import ExplainerModal from '$lib/demo/ExplainerModal.svelte';
+   import ExplainerModal from '$lib/displayComponents/Modals/ExplainerModal.svelte';
+   import InfoModal from '$lib/displayComponents/Modals/FormModal.svelte';
 
    let { data }: { data: PageData } = $props();
    let addressModalOpen = $state(false);
@@ -71,12 +72,8 @@
 
 <Header title="Employee New Lease" />
 
-<Modal
+<InfoModal
    open={registerModalOpen}
-   onOpenChange={(e)=> registerModalOpen = e.open}
-   triggerBase="btn preset-filled-primary-50-950"
-   contentBase="card bg-surface-400-600 p-4 space-y-4 shadow-xl max-w-(--breakpoint-sm) sm:min-w-lg"
-   backdropClasses="backdrop-blur-xs"
 >
    {#snippet content()}
    {#if !data.customer}
@@ -100,7 +97,7 @@
          <div {@attach ()=> {registerModalOpen=false}}></div>
       {/if}
    {/snippet}
-</Modal>
+</InfoModal>
 <ExplainerModal
    bind:modalOpen={paymentExplainerModalOpen}
 >

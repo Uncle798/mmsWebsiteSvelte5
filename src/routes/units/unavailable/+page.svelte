@@ -8,7 +8,7 @@
 	import { SearchIcon, PanelTopClose, } from 'lucide-svelte';
 	import { onMount } from 'svelte';
 	import Header from '$lib/Header.svelte';
-	import ExplainerModal from '$lib/demo/ExplainerModal.svelte';
+	import ExplainerModal from '$lib/displayComponents/Modals/ExplainerModal.svelte';
 	import { page } from '$app/state';
    let { data }: { data: PageData } = $props();
    let sizeFilter = $state('');

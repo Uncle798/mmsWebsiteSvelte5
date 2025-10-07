@@ -1,8 +1,7 @@
 <script lang='ts'>
-	import ExplainerModal from "$lib/demo/ExplainerModal.svelte";
+	import ExplainerModal from "$lib/displayComponents/Modals/ExplainerModal.svelte";
 	import type { EmailVerificationFormSchema, NewInvoiceFormSchema, NewPaymentRecordFormSchema, RegisterFormSchema } from "$lib/formSchemas/schemas";
 	import type { Invoice, Lease, User } from "@prisma/client";
-	import { Combobox, Modal, Switch, Progress, ProgressRing } from "@skeletonlabs/skeleton-svelte";
 	import { onMount } from "svelte";
 	import { superForm, type Infer, type SuperValidated } from "sveltekit-superforms";
    import NewInvoiceForm from "./NewInvoiceForm.svelte";
@@ -13,6 +12,11 @@
 	import TextArea from "$lib/formComponents/TextArea.svelte";
 	import RadioButton from "$lib/formComponents/RadioButton.svelte";
    import FormSubmitWithProgress from "$lib/formComponents/FormSubmitWithProgress.svelte";
+   import FormModal from "$lib/displayComponents/Modals/FormModal.svelte";
+   import Combobox from "$lib/formComponents/Combobox.svelte";
+	import ProgressRing from "$lib/displayComponents/ProgressRing.svelte";
+	import ProgressLine from "$lib/displayComponents/ProgressLine.svelte";
+   import Switch from "$lib/formComponents/Switch.svelte";
 
    interface Props {
       data: SuperValidated<Infer<NewPaymentRecordFormSchema>>;
@@ -121,13 +125,10 @@
       Please choose Cash or Check for the demo. There is currently no way to demo credit card payments.
    {/snippet}
 </ExplainerModal>
-<Modal
-   open={invoiceModalOpen}
-   onOpenChange={(e) => invoiceModalOpen = e.open}
-   contentBase="card bg-surface-400-600 p-4 space-y-4 shadow-xl"
-   backdropClasses="backdrop-blur-xs"
+<FormModal
+   modalOpen={invoiceModalOpen}
 >
-   {#snippet content()}
+   {#snippet content()}    
       <NewInvoiceForm 
          data={invoiceFormData} 
          employeeId={employeeId} 
@@ -139,14 +140,14 @@
       />
       <button class="btn" onclick={()=>invoiceModalOpen=false}>Cancel</button>
    {/snippet}
-</Modal>
+</FormModal>
+
 <div class={classes} >
    <FormMessage message={$message} />
    {#if invoicesComboboxData}
       <div class="flex flex-row w-screen">
          <Combobox
             data={invoicesComboboxData}
-            openOnClick={true}
             label="Select Invoice"
             placeholder="Type or Select..."
             onValueChange={(details) => {
@@ -155,31 +156,12 @@
                }, 300);
                goto(`/paymentRecords/new?invoiceNum=${details.value}`)
             }}
-            optionClasses='truncate'
-            width='w-11/12'
          />
          {#if navDelayed}
-            <ProgressRing  
-               value={null} 
-               size="size-8" 
-               meterStroke="stroke-tertiary-600-400" 
-               trackStroke="stroke-tertiary-50-950"
-               classes='mt-6 mx-2'
-               {@attach () => {
-                  setTimeout(() => {
-                     navDelayed = false;
-                     navTimeout = true;
-                  }, 800)
-               }}
-            />
+            <ProgressRing value={null} />
          {/if}
          {#if navTimeout}
-            <Progress 
-               value={null}
-               meterBg="bg-tertiary-500"
-               width='w-12'
-               classes='mt-9 mx-2'
-            />
+            <ProgressLine value={null} />
          {/if}
       </div>
       <p>or,</p>
@@ -223,9 +205,7 @@
             rows={2}
          />
          <div class="card p-4">
-            <Switch checked={$form.deposit} onCheckedChange={(e) => $form.deposit = e.checked} name='deposit'>
-               Deposit
-            </Switch>
+            <Switch bind:checked={$form.deposit} name='deposit' label='Deposit' />
          </div>
          <TextInput
             bind:value={$form.payee}

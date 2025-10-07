@@ -5,7 +5,7 @@
 	import TextArea from "$lib/formComponents/TextArea.svelte";
 	import type { UserNotesFormSchema } from "$lib/formSchemas/schemas";
 	import type { User } from "@prisma/client";
-	import { Switch } from "@skeletonlabs/skeleton-svelte";
+	import Switch from "$lib/formComponents/Switch.svelte";
 	import { onMount } from "svelte";
 	import { superForm, type SuperValidated, type Infer } from "sveltekit-superforms";
 
@@ -71,15 +71,9 @@
       <div class="flex flex-row gap-2">
          <Switch
             checked={$form.doNotRent}
-            onCheckedChange={(e) => {
-               $form.doNotRent = e.checked;
-               submit();
-            }}
             name='doNotRent'
-            classes='m-2'
-         >
-            Do not Rent to {user.organizationName ? user.organizationName : `${user.givenName} ${user.familyName}`}
-         </Switch>
+            label='Do not Rent to {user.organizationName ? user.organizationName : `${user.givenName} ${user.familyName}`}'
+         />
          <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} buttonText='Update notes'/>
       </div>
       <input type="hidden" name="userId" id="userId" value={user.id}>
