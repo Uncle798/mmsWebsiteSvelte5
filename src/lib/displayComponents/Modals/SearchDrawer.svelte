@@ -18,17 +18,17 @@
          transition transition-discrete opacity-0 
          starting:data-[state=open]:opacity-0 data-[state=open]:opacity-100"
       />
-      <Dialog.Positioner class="fixed inset-0 z-50 flex">
+      <Dialog.Positioner class="fixed top-0 left-0 z-50 flex">
          <Dialog.Content class='w-screen {height} card 
-            bg-surface-100-900 p-4 space-x-4 shadow-xl 
+            bg-surface-100-900 p-4 shadow-xl 
             transition transition-discrete opacity-0 -translate-y-full 
             starting:data-[state=open]:opacity-0 starting:data-[state=open]:-translate-y-full 
-            data-[state=open]:opacity-100 data-[state=open]:translate-y-0"'
+            data-[state=open]:opacity-100 data-[state=open]:translate-y-0'
          >
          <header>
-            <Dialog.CloseTrigger ><CircleX /></Dialog.CloseTrigger> 
+            <Dialog.CloseTrigger class='fixed right-2 top-2'><CircleX /></Dialog.CloseTrigger> 
          </header>
-            <Dialog.Description>
+            <Dialog.Description class=''>
                {@render content()}
             </Dialog.Description>
          </Dialog.Content>
