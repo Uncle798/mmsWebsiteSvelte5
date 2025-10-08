@@ -14,11 +14,14 @@
    import Revenue from '$lib/displayComponents/Revenue.svelte';  
    import Address from '$lib/displayComponents/AddressEmployee.svelte';
    import RefundForm from '$lib/forms/NewRefundForm.svelte'
-   import { Combobox, Modal, Progress, ProgressRing } from '@skeletonlabs/skeleton-svelte';
    import { goto, onNavigate } from '$app/navigation';
-	import { SearchIcon, PanelTopCloseIcon } from 'lucide-svelte';
+   import ProgressLine from '$lib/displayComponents/ProgressLine.svelte';
+   import ProgressRing from '$lib/displayComponents/ProgressRing.svelte';
+   import Combobox from '$lib/formComponents/Combobox.svelte';
+   import FormModal from '$lib/displayComponents/Modals/FormModal.svelte';
 	import EmailCustomer from '$lib/EmailCustomer.svelte';
 	import DownloadPdfButton from '$lib/DownloadPDFButton.svelte';
+	import SearchDrawer from '$lib/displayComponents/Modals/SearchDrawer.svelte';
 
    dayjs.extend(utc);
    
@@ -128,19 +131,13 @@
       navTimeout = false;
    })
 </script>
-<Modal
-   open={modalOpen}
-   onOpenChange={(e) => modalOpen = e.open}
-   contentBase="card bg-surface-400-600 p-4 space-y-4 shadow-xl"
-   backdropClasses=""
-   modal={true}
+<FormModal
+   modalOpen={modalOpen}
 >  
 {#snippet content()}
    <RefundForm data={data.refundForm} paymentRecord={currentPaymentRecord}/>
-   <button class="btn rounded-lg preset-filled-primary-50-950" onclick={()=>modalOpen = false}>Close</button>
 {/snippet}
-
-</Modal>
+</FormModal>
 <Header title='Payment Records' />
 {#if data.paymentRecordCount}
    {#await wrapper}
@@ -148,26 +145,21 @@
          Loading {numberFormatter.format(data.paymentRecordCount)} payment records
          {#if data.years}
             <div class="flex flex-row">
+               {#if yearComboboxData}                  
                <Combobox
                   data={yearComboboxData}
                   label='or select year'
                   placeholder='Select year ...'
-                  openOnClick={true}
                   onValueChange={(details) => {
                      setTimeout(() => {
                         navDelayed = true;
                      }, 300)
                      goto(`/paymentRecords/year/${details.value[0]}`)
                   }}
-                  zIndex='50'
                />
                {#if navDelayed}
                   <ProgressRing  
                      value={null} 
-                     size="size-8" 
-                     meterStroke="stroke-tertiary-600-400" 
-                     trackStroke="stroke-tertiary-50-950"
-                     classes='mt-6 mx-2'
                      {@attach () => {
                         setTimeout(() => {
                            navDelayed = false;
@@ -177,12 +169,10 @@
                   />
                {/if}
                {#if navTimeout}
-                  <Progress 
+                  <ProgressLine 
                      value={null}
-                     meterBg="bg-tertiary-500"
-                     width='w-12'
-                     classes='mt-9 mx-2'
                   />
+               {/if}
                {/if}
             </div>
          {/if}
@@ -212,24 +202,12 @@
                      classes='m-1 sm:m-2'
                   />
                </div>
-               <Modal
-                     open={searchDrawerOpen}
-                     onOpenChange={(event)=>(searchDrawerOpen = event.open)}
-                     triggerBase='btn preset-filled-primary-50-950 rounded-lg fixed top-0 right-0 z-50 h-12 sm:h-auto'
-                     contentBase='bg-surface-100-900 h-[200px] w-screen rounded-lg'
-                     positionerJustify=''
-                     positionerAlign=''
-                     positionerPadding=''
-                     transitionsPositionerIn={{y:-400, duration: 600}}
-                     transitionsPositionerOut={{y:-400, duration: 600}}
-                     modal={false}
+               <SearchDrawer
+                     modalOpen={searchDrawerOpen}
+                     height='h-[180px]'
                >
-               {#snippet trigger()}
-                  <SearchIcon aria-label='Search' />
-               {/snippet}
                {#snippet content()}
-                  <button onclick={()=>searchDrawerOpen=false} class='btn preset-filled-primary-50-950 rounded-lg m-1 absolute top-0 right-0'><PanelTopCloseIcon aria-label='Close'/></button>
-                  <div class="flex flex-col sm:flex-row mt-11 gap-2 mx-2" >
+               <div class="flex flex-col sm:flex-row mt-11 gap-2 mx-2" >
                   <Search 
                      bind:search={search} 
                      searchType='payment record number' 
@@ -257,7 +235,7 @@
                      class="btn preset-filled-primary-50-950 m-2"
                   >Sort by date {sortBy ? 'starting earliest' : 'starting latest'}</button>
                {/snippet}
-               </Modal>
+               </SearchDrawer>
                   <div class="mt-32 sm:mt-20 mb-20 sm:mb-12 lg:mb-8" in:fade={{duration:600}} out:fade={{duration:0}}>
                      {#each slicedSource(sortedByDate(dateSearchPayments(searchedPayments(searchByUser(paymentRecords, currentUsers(customers)))))) as paymentRecord}
                      {@const customer = customers.find((customer) => customer.id === paymentRecord.customerId) }

@@ -3,21 +3,20 @@
    import InvoiceEmployee from '$lib/displayComponents/InvoiceEmployee.svelte';
    import LeaseEmployee from '$lib/displayComponents/LeaseEmployee.svelte';
    import AddressForm from '$lib/forms/AddressForm.svelte';
-   import { Modal } from '@skeletonlabs/skeleton-svelte';
    import UserEmployee from '$lib/displayComponents/UserEmployee.svelte';
    import type { PageData } from './$types';
    import LeaseEndForm from '$lib/forms/LeaseEndForm.svelte';
    import PaymentRecordEmployee from '$lib/displayComponents/PaymentRecordEmployee.svelte';
    import Header from '$lib/Header.svelte';
    import type { Invoice, PaymentRecord, User } from '@prisma/client';
-   import { Prisma } from '@prisma/client';
 	import RefundRecordDisplay from '$lib/displayComponents/RefundRecordEmployee.svelte';
 	import Pagination from '$lib/displayComponents/Pagination.svelte';
 	import EmailChangeForm from '$lib/forms/EmailChangeForm.svelte';
 	import EmailVerificationForm from '$lib/forms/EmailVerificationForm.svelte';
 	import UserNotesForm from '$lib/forms/UserNotesForm.svelte';
-   let { data }: { data: PageData } = $props();
+	import FormModal from '$lib/displayComponents/Modals/FormModal.svelte';
 
+   let { data }: { data: PageData } = $props();
    let globalModalOpen = $state(false);
    let modalReason = $state('');
    let currentLeaseId = $state('');
@@ -71,13 +70,8 @@
       currentUser=user
    }
 </script>
-<Modal
-   open={globalModalOpen}
-   onOpenChange={(e) => globalModalOpen = e.open}
-   triggerBase="btn preset-filled-primary-50-950 rounded-lg m-2"
-   contentBase="card bg-surface-400-600 p-4 space-y-4 shadow-xl max-w-(--breakpoint-sm)"
-   backdropClasses="backdrop-blur-xl"
-   modal={true}
+<FormModal
+   modalOpen={globalModalOpen}
 >
    {#snippet content()}
       {#if modalReason === 'emailChange'}
@@ -104,7 +98,7 @@
       {/if}
       <button class="btn preset-filled-primary-50-950" onclick={()=>globalModalOpen=false}>Close</button>
    {/snippet}
-</Modal>
+</FormModal>
 
 {#if data.dbUser}
    <Header title='{data.dbUser.givenName} {data.dbUser.familyName}' />

@@ -13,12 +13,16 @@
    import utc from 'dayjs/plugin/utc'
    import Revenue from '$lib/displayComponents/Revenue.svelte';
    import Address from '$lib/displayComponents/AddressEmployee.svelte';
-   import { Combobox, Modal, Progress, ProgressRing } from '@skeletonlabs/skeleton-svelte';
    import { goto, onNavigate } from '$app/navigation';
    import { PanelTopClose, SearchIcon } from 'lucide-svelte';
 	import EmailCustomer from '$lib/EmailCustomer.svelte';
    import DownloadPdfButton from '$lib/DownloadPDFButton.svelte';
 	import { onMount } from 'svelte';
+   import Combobox from '$lib/formComponents/Combobox.svelte';
+   import ProgressRing from '$lib/displayComponents/ProgressRing.svelte';
+   import ProgressLine from '$lib/displayComponents/ProgressLine.svelte';
+	import SearchDrawer from '$lib/displayComponents/Modals/SearchDrawer.svelte';
+
    dayjs.extend(utc)
    let { data }: { data: PageData } = $props();
    let pageNum = $state(1);
@@ -124,10 +128,8 @@
       <div class="flex flex-row w-screen">
          <Combobox
             data={yearComboboxData}
-            value={yearSelect}
             label='or select year'
             placeholder='Select year...'
-            openOnClick={true}
             onValueChange={(details) => {
                setTimeout(() => {
                   navDelayed = false;
@@ -140,17 +142,10 @@
                   goto(`/invoices/year/${details.value[0]}`);
                }
             }}
-            classes='mx-1 sm:mx-2'
-            zIndex='40'
-            width='w-11/12'
          />
          {#if navDelayed}
             <ProgressRing  
                value={null} 
-               size="size-8" 
-               meterStroke="stroke-tertiary-600-400" 
-               trackStroke="stroke-tertiary-50-950"
-               classes='mt-6 mx-2'
                {@attach () => {
                   setTimeout(() => {
                      navDelayed = false;
@@ -160,11 +155,8 @@
             />
          {/if}
          {#if navTimeout}
-            <Progress 
+            <ProgressLine
                value={null}
-               meterBg="bg-tertiary-500"
-               width='w-12'
-               classes='mt-9 mx-2'
             />
          {/if}
       </div> 
@@ -192,36 +184,25 @@
                amount={totalRevenue(searchedInvoices(dateSearchedInvoices(invoices)))} 
                classes='bg-tertiary-50-950 w-full rounded-b-lg fixed top-11 sm:top-8 p-2 z-40'
             />
-            <Modal
-               open={searchDrawerOpen}
-               onOpenChange={(event)=>(searchDrawerOpen = event.open)}
-               triggerBase='btn preset-filled-primary-50-950 rounded-lg fixed top-0 right-0 z-50 h-12 sm:h-8'
-               contentBase='bg-surface-100-900 h-[385px] sm:h-[180px] w-screen rounded-lg'
-               positionerJustify=''
-               positionerAlign=''
-               positionerPadding=''
-               transitionsPositionerIn={{y:-390, duration: 600}}
-               transitionsPositionerOut={{y:-390, duration: 600}}
-               modal={false}
+
+            <SearchDrawer
+               bind:modalOpen={searchDrawerOpen}
+               height='h-[180px]'
             >
-               {#snippet trigger()}
-                  <SearchIcon aria-label='Search'/>
-               {/snippet}
-               {#snippet content()}  
-                  <button onclick={()=>searchDrawerOpen=false} class='btn preset-filled-primary-50-950 rounded-lg m-1 absolute top-0 right-0'><PanelTopClose aria-label='Close'/></button>
-                  <div class="mt-8 flex flex-col sm:flex-row gap-2 mx-2">
+               {#snippet content()}
+                  <div class="flex flex-row">
                      <Search data={data.searchForm} bind:search={search} searchType='invoice number' classes=''/>
                      <Search data={data.searchForm} bind:search={nameSearch} searchType='Customer' classes=''/>
                      <DateSearch data={data.dateSearchForm} bind:startDate={startDate} bind:endDate={endDate} {minDate} {maxDate} classes=''/>
                   </div>
-                  <button class="btn preset-filled-primary-50-950 m-1 sm:m-2 h-8" onclick={()=> {
-                     sortBy = !sortBy;
-                     searchDrawerOpen = false;
-                  }}>
-                     Sort by date {sortBy? 'starting earliest' : 'starting latest'}
-                  </button>
+                     <button class="btn preset-filled-primary-50-950 m-1 sm:m-2 h-8" onclick={()=> {
+                        sortBy = !sortBy;
+                        searchDrawerOpen = false;
+                     }}>
+                        Sort by date {sortBy? 'starting earliest' : 'starting latest'}
+                     </button>
                {/snippet}
-            </Modal>
+            </SearchDrawer>
             <div class="grid grid-cols-1 sm:m-2 m-1 gap-2 mt-28 sm:mt-20 mb-8 sm:mb-8" in:fade={{duration:600}} out:fade={{duration:0}}>
                {#each slicedInvoices(sortedByDate(dateSearchedInvoices(searchedInvoices(searchByUser(invoices, currentUsers(customers)))))) as invoice}  
                {@const customer = customers.find((customer) => customer.id === invoice.customerId)}

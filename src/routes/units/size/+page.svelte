@@ -1,5 +1,7 @@
 <script lang="ts">
-	import { Combobox, Modal, Progress, ProgressRing } from '@skeletonlabs/skeleton-svelte';
+   import Combobox from '$lib/formComponents/Combobox.svelte';
+   import ProgressLine from '$lib/displayComponents/ProgressLine.svelte';
+   import ProgressRing from '$lib/displayComponents/ProgressRing.svelte';
    import type { PageData } from './$types';
 	import { browser } from '$app/environment';
 	import { goto } from '$app/navigation';
@@ -35,15 +37,10 @@
          }
       }}
       placeholder='Select or type'
-      openOnClick={true}
    />
    {#if delayed}
       <ProgressRing  
          value={null} 
-         size="size-8" 
-         meterStroke="stroke-tertiary-600-400" 
-         trackStroke="stroke-tertiary-50-950"
-         classes='mt-6 mx-2'
          {@attach () => {
             setTimeout(() => {
                delayed = false;
@@ -53,11 +50,6 @@
       />
    {/if}
    {#if timeout}
-      <Progress 
-         value={null}
-         meterBg="bg-tertiary-500"
-         width='w-12'
-         classes='mt-9 mx-2'
-      />
+      <ProgressLine value={null} />
    {/if}
 </div>

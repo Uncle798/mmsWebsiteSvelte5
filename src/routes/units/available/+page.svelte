@@ -6,10 +6,11 @@
 	import UnitEmployee from '$lib/displayComponents/UnitEmployee.svelte';
 	import UnitNotesForm from '$lib/forms/UnitNotesForm.svelte';
 	import UnitCustomer from '$lib/displayComponents/customerViews/UnitCustomer.svelte';
-	import { Combobox, Modal } from '@skeletonlabs/skeleton-svelte';
+   import Combobox from '$lib/formComponents/Combobox.svelte';
 	import { SearchIcon, PanelTopClose } from 'lucide-svelte';
 	import { onMount } from 'svelte';
 	import { page } from '$app/state';
+	import SearchDrawer from '$lib/displayComponents/Modals/SearchDrawer.svelte';
    let { data }:{data:PageData} = $props();
    const currencyFormatter = new Intl.NumberFormat('en-US', {style: 'currency', currency:'USD'});
    let sizeFilter = $state('');
@@ -75,40 +76,24 @@
       ...loading available units
    </div>
 {:then availableUnits}   
-   <Modal
-      open={searchDrawerOpen}
-      onOpenChange={(event)=>(searchDrawerOpen = event.open)}
-      triggerBase='btn preset-filled-primary-50-950 rounded-lg fixed top-0 right-0 z-50 h-12 sm:h-auto'
-      contentBase='bg-surface-100-900 h-[120px] w-screen rounded-b-lg'
-      positionerJustify=''
-      positionerAlign=''
-      positionerPadding=''
-      transitionsPositionerIn={{y:-120, duration: 600}}
-      transitionsPositionerOut={{y:-120, duration: 600}}
-      modal={false}
+   <SearchDrawer
+      modalOpen={searchDrawerOpen}
+      height='h-[180]'
    >
-   {#snippet trigger()}
-      <SearchIcon aria-label='Search' />
-   {/snippet}
-
-   {#snippet content()}         
-      <button onclick={()=>searchDrawerOpen=false} class='btn preset-filled-primary-50-950 rounded-lg m-1 absolute top-0 right-0'><PanelTopClose aria-label='Close'/></button>
-      <div class="m-1 sm:m-2 mt-11 sm:mt-11">
-         <Combobox
-            data={comboboxData}
-            label='Filter by Size' 
-            value={selectedSize} 
-            positionerBase='overflow-auto small:h-44 tall:h-96 venti:h-auto'
-            placeholder='Select size...'
-            onValueChange={(details) => {
-               searchDrawerOpen = false
-               selectedSize=details.value
-            }}
-            openOnClick={true}
-         />
-      </div>
-   {/snippet}
-   </Modal>
+      {#snippet content()}         
+         <div class="m-1 sm:m-2 mt-11 sm:mt-11">
+            <Combobox
+               data={comboboxData}
+               label='Filter by Size' 
+               placeholder='Select size...'
+               onValueChange={(details) => {
+                  searchDrawerOpen = false
+                  selectedSize=details.value
+               }}
+            />
+         </div>
+      {/snippet}
+   </SearchDrawer>
    {#if data.user?.employee}
       <div class="flex fixed bg-tertiary-50-950 rounded-b-lg z-40 w-full top-11 sm:top-8">
          <span class="m-1">Available: {availableUnits.length} of {data.unitCount}</span>

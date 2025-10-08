@@ -1,5 +1,4 @@
 <script lang="ts">
-   import { Modal } from '@skeletonlabs/skeleton-svelte';
    import type { PageData } from './$types';
    import NewRefundForm from '$lib/forms/NewRefundForm.svelte';
    import type { PaymentRecord, User } from '@prisma/client';
@@ -7,10 +6,10 @@
 	import Pagination from '$lib/displayComponents/Pagination.svelte';
 	import Search from '$lib/forms/Search.svelte';
 	import Header from '$lib/Header.svelte';
-	import { PanelTopClose, SearchIcon } from 'lucide-svelte';
 	import UserEmployee from '$lib/displayComponents/UserEmployee.svelte';
 	import AddressEmployee from '$lib/displayComponents/AddressEmployee.svelte';
 	import DownloadPDFButton from '$lib/DownloadPDFButton.svelte';
+	import SearchDrawer from '$lib/displayComponents/Modals/SearchDrawer.svelte';
    let { data }: { data: PageData } = $props();
    let size = $state(25);
    let pageNum = $state(1);
@@ -81,23 +80,11 @@
                Loading addresses...
             </div>
             {:then addresses}
-            <Modal
-               open={searchDrawerOpen}
-               onOpenChange={(event)=>(searchDrawerOpen = event.open)}
-               triggerBase='btn preset-filled-primary-50-950 rounded-lg fixed top-0 right-0 z-50 h-12 sm:h-auto'
-               contentBase='bg-surface-100-900 h-[350px] w-screen rounded-lg'
-               positionerJustify=''
-               positionerAlign=''
-               positionerPadding=''
-               transitionsPositionerIn={{y:-350, duration: 600}}
-               transitionsPositionerOut={{y:-350, duration: 600}}
-               modal={false}
+            <SearchDrawer
+               modalOpen={searchDrawerOpen}
+               height='h-[180]'
             >
-               {#snippet trigger()}
-                  <SearchIcon aria-label='Search' />
-               {/snippet}
                {#snippet content()}
-                  <button onclick={()=>(searchDrawerOpen=false)} class='btn preset-filled-primary-50-950 rounded-lg m-1 absolute top-0 right-0'><PanelTopClose aria-label='Close'/></button>
                   <div class="flex flex-col sm:flex-row mt-11 gap-2 mx-2">
                      <Search
                         bind:search={nameSearch}
@@ -112,7 +99,7 @@
                   </div>
                   <button onclick={() => depositFilterOn = !depositFilterOn} class='btn preset-filled-primary-50-950 m-2'>{depositFilterOn ? 'All payments' : 'Deposits only'}</button>
                {/snippet}
-            </Modal>
+            </SearchDrawer>
             <div class="mt-14 sm:mt-10 mx-1 sm:mx-2 grid grid-cols-1 gap-y-2 mb-8">
                {#each slicedPayments(depositsFilter(searchedPayments(searchByUser(paymentRecords, currentUsers(customers))))) as paymentRecord}
                {@const customer = customers.find((customer) => customer.id === paymentRecord.customerId)}

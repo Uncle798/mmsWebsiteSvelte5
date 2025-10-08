@@ -3,7 +3,7 @@
 	import Header from "$lib/Header.svelte";
 	import { fade } from "svelte/transition";
 	import RegisterForm from "$lib/forms/RegisterForm.svelte";
-	import { toaster } from "../toaster";
+	import { toaster } from "../../lib/toaster";
 	import {  onMount } from "svelte";
    interface Props {
 		data: PageData;

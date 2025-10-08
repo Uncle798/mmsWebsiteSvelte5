@@ -9,13 +9,12 @@
    import Revenue from '$lib/displayComponents/Revenue.svelte';
    import type { Invoice, Lease, PaymentRecord, Unit, User } from '@prisma/client';
    import Address from '$lib/displayComponents/AddressEmployee.svelte';
-	import { PanelTopClose, SearchIcon } from 'lucide-svelte';
 	import UserNotesForm from '$lib/forms/UserNotesForm.svelte';
 	import LeaseEndForm from '$lib/forms/LeaseEndForm.svelte';
 	import UnitNotesForm from '$lib/forms/UnitNotesForm.svelte';
 	import { onNavigate } from '$app/navigation';
-   import InfoModal from '$lib/displayComponents/Modals/FormModal.svelte';
 	import SearchDrawer from '$lib/displayComponents/Modals/SearchDrawer.svelte';
+	import FormModal from '$lib/displayComponents/Modals/FormModal.svelte';
    let { data }: { data: PageData } = $props();
    let pageNum = $state(1);
    let size = $state(25);
@@ -105,11 +104,10 @@
                         height='h-[180px]'
                      >
                         {#snippet content()}
-                           <button onclick={()=>searchDrawerOpen=false} class='btn preset-filled-primary-50-950 rounded-lg m-1 absolute top-0 right-0'><PanelTopClose aria-label='Close'/></button>
                            <Search bind:search={search} searchType='customer name' data={data.userSearchForm} classes='mx-2 mt-11'/>
                         {/snippet}
                      </SearchDrawer>
-                     <Modal
+                     <FormModal
                         modalOpen={leaseEndModalOpen}
                      >
                         {#snippet content()}
@@ -117,9 +115,8 @@
                            {#if currentUnit}
                               <UnitNotesForm data={data.unitNotesForm} unit={currentUnit}/>
                            {/if}
-                           <button onclick={() => leaseEndModalOpen = false} class='btn preset-filled-primary-50-950'>Cancel</button>
                         {/snippet}
-                     </Modal>
+                  </FormModal>
                      <div class="grid grid-cols-1 mx-1 sm:mx-2 gap-y-2 gap-x-1 ">
                         {#each slicedSource(searchedSource(customers)) as customer}
                         {@const address = addresses.find((address) => address.userId === customer.id)}

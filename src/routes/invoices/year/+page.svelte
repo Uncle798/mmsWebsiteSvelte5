@@ -1,7 +1,9 @@
 <script lang="ts">
 	import { goto, onNavigate } from '$app/navigation';
    import type { PageData } from './$types';
-   import { Combobox, Progress, ProgressRing } from '@skeletonlabs/skeleton-svelte'
+   import Combobox from '$lib/formComponents/Combobox.svelte';
+   import ProgressLine from '$lib/displayComponents/ProgressLine.svelte';
+   import ProgressRing from '$lib/displayComponents/ProgressRing.svelte';
    let { data }: { data: PageData } = $props();
    interface ComboboxData {
       label: string;
@@ -24,20 +26,17 @@
          data={yearComboboxData}
          label='Select year'
          placeholder='Select year ...'
-         openOnClick={true}
          onValueChange={(details) => {
-            goto(`/paymentRecords/year/${details.value[0]}`)
+            setTimeout(() => {
+               navDelayed = true;
+            }, 300);
+            goto(`/paymentRecords/year/${details.value[0]}`);
          }}
-         zIndex='50'
       />
    {/if}
    {#if navDelayed}
       <ProgressRing  
          value={null} 
-         size="size-8" 
-         meterStroke="stroke-tertiary-600-400" 
-         trackStroke="stroke-tertiary-50-950"
-         classes='mt-6 mx-2'
          {@attach () => {
             setTimeout(() => {
                navDelayed = false;
@@ -47,11 +46,6 @@
       />
    {/if}
    {#if navTimeout}
-      <Progress 
-         value={null}
-         meterBg="bg-tertiary-500"
-         width='w-12'
-         classes='mt-9 mx-2'
-      />
+      <ProgressLine value={null} />
    {/if}
 </div>

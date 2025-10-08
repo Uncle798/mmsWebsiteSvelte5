@@ -2,7 +2,7 @@
    import { fade } from 'svelte/transition';
    import type { PageData } from './$types';
    import UserEmployee from '$lib/displayComponents/UserEmployee.svelte';
-   import type { Invoice, PaymentRecord, User } from '@prisma/client';
+   import type { Invoice, User } from '@prisma/client';
    import InvoiceEmployee from '$lib/displayComponents/InvoiceEmployee.svelte';
    import Header from '$lib/Header.svelte';
    import Pagination from '$lib/displayComponents/Pagination.svelte';
@@ -13,11 +13,10 @@
    import utc from 'dayjs/plugin/utc'
    import Revenue from '$lib/displayComponents/Revenue.svelte';
    import Address from '$lib/displayComponents/AddressEmployee.svelte';
-   import { PanelTopClose, SearchIcon } from 'lucide-svelte';
    import { onNavigate } from '$app/navigation';
-   import { Modal } from '@skeletonlabs/skeleton-svelte';
 	import EmailCustomer from '$lib/EmailCustomer.svelte';
    import DownloadPdfButton from '$lib/DownloadPDFButton.svelte';
+	import SearchDrawer from '$lib/displayComponents/Modals/SearchDrawer.svelte';
    dayjs.extend(utc)
    let { data }: { data: PageData } = $props();
    let pageNum = $state(1);
@@ -92,30 +91,19 @@
             {#if invoices.length >0}       
             <Header title='Past Due invoices' />
             <Revenue label="Current past due invoice total" amount={totalRevenue(invoices)} classes="bg-tertiary-50-950 w-screen rounded-b-lg fixed top-10 sm:top-9 p-2 left-0 z-40"/>
-            <Modal
-               open={searchDrawerOpen}
-               onOpenChange={(event)=>(searchDrawerOpen = event.open)}
-               triggerBase='btn preset-filled-primary-50-950 rounded-lg fixed top-0 right-0 z-50 h-12 sm:h-8'
-               contentBase='bg-surface-100-900 h-[360px] w-screen rounded-lg'
-               positionerJustify=''
-               positionerAlign=''
-               positionerPadding=''
-               transitionsPositionerIn={{y:-360, duration: 600}}
-               transitionsPositionerOut={{y:-360, duration: 600}}
-               modal={false}
+            <SearchDrawer
+               modalOpen={searchDrawerOpen}
+               height='h-[180px]'
             >
-               {#snippet trigger()}
-                  <SearchIcon aria-label='Search' />
-               {/snippet}
-               {#snippet content()}  
-                  <button onclick={()=>searchDrawerOpen=false} class='btn preset-filled-primary-50-950 rounded-lg m-1 absolute top-0 sm:right-0 right-0'><PanelTopClose aria-label='Close'/></button>
+
+               {#snippet content()}
                   <div class="mt-8">
                      <Search data={data.searchForm} bind:search={search} searchType='invoice number' classes='m-1 sm:m-2 '/>
                      <Search data={data.searchForm} bind:search={nameSearch} searchType='Customer' classes='m-1 sm:m-2 '/>
                      <DateSearch data={data.dateSearchForm} bind:startDate={startDate} bind:endDate={endDate} {minDate} {maxDate} classes='w-1/2 mb-1 sm:mb-2 mx-1 sm:mx-2'/>
                   </div>
                {/snippet}
-            </Modal>
+            </SearchDrawer>
             <div class="m-1 sm:m-2 sm:mt-20 mt-22 mb-20 sm:mb-12 lg:mb-8 z-30">
                <div class="grid grid-cols-1 gap-y-3 gap-x-1" in:fade={{duration:600}} out:fade={{duration:0}}>
                   {#each  slicedInvoices(searchedInvoices(searchByUser(invoices, currentUsers(customers)))) as invoice}  
