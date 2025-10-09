@@ -76,6 +76,7 @@
 		"@upstash/workflow": "^0.2.17",
 		"@zag-js/pin-input": "^1.21.6",
 		"@zag-js/svelte": "^1.21.6",
+		"@zag-js/tour": "^1.26.1",
 		"arctic": "^3.7.0",
 		"blob-stream": "^0.1.3",
 		"dayjs": "^1.11.13",
