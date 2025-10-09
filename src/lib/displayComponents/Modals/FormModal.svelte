@@ -15,13 +15,13 @@
 }}>
    <Portal>
       <Dialog.Backdrop />
-      <Dialog.Positioner class='card bg-surface-100-900 p-2 shadow-xl max-w-screen-sm'>
-         <Dialog.Content >
-            <Dialog.Title>{title}</Dialog.Title>
+      <Dialog.Positioner class='fixed inset-0 flex justify-center items-center'>
+         <Dialog.Content class='card bg-surface-100-900 p-2 shadow-xl max-w-screen-sm'>
+            <header class="flex justify-between">
+               <Dialog.Title class='font-bold text-xl'>{title}</Dialog.Title>
+               <Dialog.CloseTrigger><CircleX /></Dialog.CloseTrigger>
+            </header>
             <Dialog.Description>
-               <header >
-                  <Dialog.CloseTrigger><CircleX class='absolute right-1' /></Dialog.CloseTrigger>
-               </header>
                {@render content()}
             </Dialog.Description>
          </Dialog.Content>

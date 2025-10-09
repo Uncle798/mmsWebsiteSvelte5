@@ -4,25 +4,26 @@
 	import type { Snippet } from "svelte";
    interface Props {
       modalOpen: boolean;
-      copy: Snippet;
+      content: Snippet;
       title?: string;
    }
-   let { modalOpen=$bindable(), copy, title }:Props = $props()
+   let { modalOpen=$bindable(), content, title }:Props = $props()
 </script>
 
-<Dialog open={modalOpen}>
+<Dialog open={modalOpen} onOpenChange={(e) => {
+   modalOpen = e.open;
+}}>
    <Portal>
       <Dialog.Backdrop />
-      <Dialog.Positioner>
-         <Dialog.Content class='card bg-surface-100-900 p-2 space-y-4 shadow-xl max-w-screen-sm' >
-            <Dialog.Title>{title}</Dialog.Title>
+      <Dialog.Positioner class='fixed inset-0 flex justify-center items-center'>
+         <Dialog.Content class='card bg-success-300-700 p-2 space-y-4 shadow-xl max-w-screen-sm' >
+            <header class="flex justify-between">
+            <Dialog.Title class='font-bold text-xl'>{title}</Dialog.Title>
+               <Dialog.CloseTrigger><CircleX /></Dialog.CloseTrigger>
+            </header>
             <Dialog.Description>
-               <header >
-                  <Dialog.CloseTrigger><CircleX class='fixed right-1' /></Dialog.CloseTrigger>
-               </header>
-               {@render copy()}
+               {@render content()}
             </Dialog.Description>
-            <Dialog.CloseTrigger class='btn preset-filled-primary-50-950'>Close</Dialog.CloseTrigger>
          </Dialog.Content>
       </Dialog.Positioner>
    </Portal>
