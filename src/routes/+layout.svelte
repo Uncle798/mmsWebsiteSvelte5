@@ -59,7 +59,7 @@
 	const formattedPhone = PUBLIC_PHONE.substring(0,1) +'-'+ PUBLIC_PHONE.substring(1,4)+'-'+PUBLIC_PHONE.substring(4,7)+'-'+PUBLIC_PHONE.substring(7);
 	let tooltipOpenIdentifier = $state<string|null>(null);
 	let menuButtonElement = $state<HTMLElement>();
-	setContext('toaster', toaster)
+	setContext('menuButtonElement', menuButtonElement);
 </script>
 <Toast.Group {toaster}>
 	{#snippet children(toast)}
@@ -75,7 +75,7 @@
 {#if data.user?.employee}
 	<header>
 		<Dialog>
-			<Dialog.Trigger class='btn bg-primary-50-950 hover:shadow-xl hover:border-2 border-secondary-50-950 fixed top-0 left-0 z-40 h-12 sm:h-8 rounded-tl-none'><Menu aria-label='Main Menu'/></Dialog.Trigger>
+			<Dialog.Trigger class='btn bg-primary-50-950 hover:shadow-xl hover:border-2 border-secondary-50-950 fixed top-0 left-0 z-40 h-12 sm:h-8 rounded-tl-none mainMenu'><Menu aria-label='Main Menu'/></Dialog.Trigger>
 			<Portal>
 				<Dialog.Backdrop class="fixed inset-0 bg-surface-50-950/50 transition transition-discrete opacity-0 starting:data-[state=open]:opacity-0 data-[state=open]:opacity-100"/>
 				<Dialog.Positioner class='fixed inset-0 z-40 flex justify-start rounded-none'>
