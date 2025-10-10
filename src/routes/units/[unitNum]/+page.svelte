@@ -8,33 +8,26 @@
    import UnitNotesForm from '$lib/forms/UnitNotesForm.svelte';
    import UnitPricingForm from '$lib/forms/UnitPricingForm.svelte';
    import LeaseEndForm from '$lib/forms/LeaseEndForm.svelte';
-   import { Modal } from '@skeletonlabs/skeleton-svelte';
    import Revenue from '$lib/displayComponents/Revenue.svelte';
    import Address from '$lib/displayComponents/AddressEmployee.svelte';
-	import { page } from '$app/state';
+   import FormModal from '$lib/displayComponents/Modals/FormModal.svelte';
 
    let modalOpen = $state(false);
    let currentLeaseId = $state('')
    let { data }: { data: PageData } = $props();
-   const formattedCurrency = new Intl.NumberFormat('en-US', {style: 'currency', currency: 'USD'})
-   const url = page.url.pathname
 </script>
 
 {#await data.unit}
    <Header title='loading...' />
    ...loading unit
 {:then unit}
-   <Modal
-      open={modalOpen}
-      onOpenChange={(e) => modalOpen = e.open}
-      contentBase="card bg-surface-400-600 p-4 space-y-4 shadow-xl max-w-(--breakpoint-sm)"
-      backdropClasses="backdrop-blur-xs"
+   <FormModal
+      modalOpen={modalOpen}
    >
-   {#snippet content()}
-      <LeaseEndForm data={data.leaseEndForm} leaseId={currentLeaseId} />
-      <button type="button" class="btn preset-filled-primary-50-950" onclick={()=> modalOpen = false}>Close</button>
-   {/snippet}
-</Modal>
+      {#snippet content()}
+         <LeaseEndForm data={data.leaseEndForm} leaseId={currentLeaseId} />
+      {/snippet}
+   </FormModal>
    {#if unit}
       <Header title='Unit number: {unit.num}' />
       <Revenue label='Total revenue from this unit' amount={data.totalRevenue} classes="flex sticky top-9 bg-tertiary-50-950 rounded-b-lg w-full p-2"/>

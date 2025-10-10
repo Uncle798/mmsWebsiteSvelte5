@@ -10,9 +10,8 @@
 	import UserEmployee from '$lib/displayComponents/UserEmployee.svelte';
 	import Revenue from '$lib/displayComponents/Revenue.svelte';
 	import type { Lease } from '@prisma/client';
-	import { Modal } from '@skeletonlabs/skeleton-svelte';
 	import { onMount } from 'svelte';
-	import ExplainerModal from '$lib/demo/ExplainerModal.svelte';
+	import ExplainerModal from '$lib/displayComponents/Modals/ExplainerModal.svelte';
 
    let { data }: { data: PageData } = $props();
    const totalDiscounted = $derived((leases:Lease[]) => {

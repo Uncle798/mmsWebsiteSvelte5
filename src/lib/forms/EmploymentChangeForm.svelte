@@ -3,7 +3,7 @@
    import FormMessage from "$lib/formComponents/FormMessage.svelte";
    import FormSubmitWithProgress from "$lib/formComponents/FormSubmitWithProgress.svelte";
    import type { EmploymentFormSchema } from "$lib/formSchemas/schemas";
-	import { Switch } from "@skeletonlabs/skeleton-svelte";
+	import Switch from "$lib/formComponents/Switch.svelte"
 
    interface Props {
       data: SuperValidated<Infer<EmploymentFormSchema>>;
@@ -13,7 +13,7 @@
       classes?: string;
    }
    let { data,  employeeChecked=$bindable(false), adminChecked=$bindable(false), userId, classes }:Props = $props();
-   let { form, message, errors, constraints, enhance, delayed, timeout, } = superForm(data, {
+   let { message, enhance, delayed, timeout, } = superForm(data, {
 
       warnings:{
          duplicateId: false
@@ -23,8 +23,8 @@
 <div class="my-2 {classes}">
    <FormMessage message={$message} />
    <form action="/forms/employmentChangeForm" method="POST" use:enhance>
-      <Switch name='employee' checked={employeeChecked} onCheckedChange={(e)=>employeeChecked=e.checked}>Employee</Switch>
-      <Switch name='admin' checked={adminChecked} onCheckedChange={(e)=>adminChecked=e.checked}>Admin</Switch>
+      <Switch name='employee' checked={employeeChecked} label='Employee'/>
+      <Switch name='admin' checked={adminChecked} label='Admin'/>
       <input type="hidden" name='userId' value={userId} />
       <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} buttonText="Change employment status"/>
    </form>

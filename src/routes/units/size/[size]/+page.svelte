@@ -2,7 +2,6 @@
    import LeaseEmployee from '$lib/displayComponents/LeaseEmployee.svelte';
    import UnitEmployee from '$lib/displayComponents/UnitEmployee.svelte';
 	import Header from '$lib/Header.svelte';
-	import { Modal, Combobox, Progress, ProgressRing } from '@skeletonlabs/skeleton-svelte';
    import type { PageData } from './$types';
 	import UnitPricingForm from '$lib/forms/UnitPricingForm.svelte';
 	import UserEmployee from '$lib/displayComponents/UserEmployee.svelte';
@@ -12,6 +11,12 @@
 	import { goto, onNavigate } from '$app/navigation';
    import { browser } from '$app/environment';
 	import { PanelTopClose, SearchIcon } from 'lucide-svelte';
+	import FormModal from '$lib/displayComponents/Modals/FormModal.svelte';
+	import SearchDrawer from '$lib/displayComponents/Modals/SearchDrawer.svelte';
+	import ProgressLine from '$lib/displayComponents/ProgressLine.svelte';
+   import ProgressRing from '$lib/displayComponents/ProgressRing.svelte';
+   import Combobox from '$lib/formComponents/Combobox.svelte';
+
    let { data }: { data: PageData } = $props();
    const currencyFormatter = new Intl.NumberFormat('en-US', {style: 'currency', currency: 'USD'})
    let unitPricingModalOpen = $state(false);
@@ -64,17 +69,13 @@
 </script>
 <Header title='All {data.size.replace(/^0+/gm,'').replace(/0x/gm,'x')} units' />
 
-<Modal
-   open={unitPricingModalOpen}
-   onOpenChange={(e) => unitPricingModalOpen = e.open}
-   contentBase="card bg-surface-400-600 p-4 shadow-xl m-1 w-fit"
-   backdropClasses=""
+<FormModal
+   modalOpen={unitPricingModalOpen}
 >  
    {#snippet content()}
       <UnitPricingForm data={data.unitPricingForm} bind:unitPricingFormModalOpen={unitPricingModalOpen} size={data.size} oldPrice={currentOldPrice}/>
-      <button class="btn preset-filled-primary-50-950 rounded-lg" onclick={()=>unitPricingModalOpen = false}>Close</button>
    {/snippet}
-</Modal>
+</FormModal>
 
 
 {#await data.units}
@@ -87,21 +88,10 @@
       Loading leases...
    </div>
    {:then leases} 
-      <Modal 
-         open={searchDrawerOpen}
-         onOpenChange={(event)=>(searchDrawerOpen = event.open)}
-         triggerBase='btn preset-filled-primary-50-950 rounded-lg fixed top-0 right-0 z-50 h-12 sm:h-8'
-         contentBase='bg-surface-100-900 h-[170px] w-screen rounded-b-lg'
-         positionerJustify=''
-         positionerAlign=''
-         positionerPadding=''
-         transitionsPositionerIn={{y:-170, duration: 600}}
-         transitionsPositionerOut={{y:-170, duration: 600}}
-         modal={false}
+      <SearchDrawer 
+         modalOpen={searchDrawerOpen}
+         height='h-[180px]'
       >
-         {#snippet trigger()}
-            <SearchIcon aria-label='search' />
-         {/snippet}
          {#snippet content()}   
             <button onclick={()=>searchDrawerOpen=false} class='btn preset-filled-primary-50-950 rounded-lg m-1 absolute top-0 right-0'><PanelTopClose aria-label='Close'/></button>
             <div class="mx-2 mt-11 flex flex-row gap-2">
@@ -120,17 +110,10 @@
                         goto(`/units/size/${event.value[0]}`)
                      }
                   }}
-                  positionerBase=''
-                  positionerClasses='overflow-auto h-24 small:h-44 tall:h-96 grande:h-128 venti:h-auto'
-                  openOnClick={true}
                />
                {#if delayed}
                   <ProgressRing  
                      value={null} 
-                     size="size-8" 
-                     meterStroke="stroke-tertiary-600-400" 
-                     trackStroke="stroke-tertiary-50-950"
-                     classes='mt-6 mx-2'
                      {@attach () => {
                         setTimeout(() => {
                            delayed = false;
@@ -140,17 +123,12 @@
                   />
                {/if}
                {#if timeout}
-                  <Progress 
-                     value={null}
-                     meterBg="bg-tertiary-500"
-                     width='w-12'
-                     classes='mt-9 mx-2'
-                  />
+                  <ProgressLine value={null} />
                {/if}
                <button class="btn preset-filled-primary-50-950 rounded-lg mt-5" onclick={()=>openModal(units[0].advertisedPrice)}>Change All {data.size.replace(/^0+/gm, '').replace(/x0/gm,'x')} prices</button>
             </div>
          {/snippet}
-      </Modal>
+      </SearchDrawer>
       {#if units.length > 0 }
          <div class="flex fixed top-11 sm:top-8 p-1 bg-tertiary-50-950 rounded-b-lg w-screen">
             <Revenue amount={currentRevenue(units)} label='Current revenue from {data.size.replace(/^0+/gm, '').replace(/x0/gm,'x')} units' />

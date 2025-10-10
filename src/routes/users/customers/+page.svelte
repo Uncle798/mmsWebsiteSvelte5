@@ -9,12 +9,12 @@
    import Revenue from '$lib/displayComponents/Revenue.svelte';
    import type { Invoice, Lease, PaymentRecord, Unit, User } from '@prisma/client';
    import Address from '$lib/displayComponents/AddressEmployee.svelte';
-	import { Modal } from '@skeletonlabs/skeleton-svelte';
-	import { PanelTopClose, SearchIcon } from 'lucide-svelte';
 	import UserNotesForm from '$lib/forms/UserNotesForm.svelte';
 	import LeaseEndForm from '$lib/forms/LeaseEndForm.svelte';
 	import UnitNotesForm from '$lib/forms/UnitNotesForm.svelte';
 	import { onNavigate } from '$app/navigation';
+	import SearchDrawer from '$lib/displayComponents/Modals/SearchDrawer.svelte';
+	import FormModal from '$lib/displayComponents/Modals/FormModal.svelte';
    let { data }: { data: PageData } = $props();
    let pageNum = $state(1);
    let size = $state(25);
@@ -99,40 +99,24 @@
                {:then units}
                   <div in:fade={{duration:600}} class="mt-20 sm:mt-18 mb-8 sm:mb-8">
                      <Revenue label='Current monthly invoiced' amount={totalLeased(leases)} classes='fixed top-11 sm:top-9 p-1 w-screen left-0 bg-tertiary-50-950 rounded-b-lg'/>
-                     <Modal
-                        open={searchDrawerOpen}
-                        onOpenChange={(event)=>(searchDrawerOpen = event.open)}
-                        triggerBase='btn preset-filled-primary-50-950 rounded-lg fixed top-0 right-0 z-50 h-12 sm:h-8'
-                        contentBase='bg-surface-100-900 h-[140px] w-screen rounded-b-lg'
-                        positionerJustify=''
-                        positionerAlign=''
-                        positionerPadding=''
-                        transitionsPositionerIn={{y:-140, duration: 600}}
-                        transitionsPositionerOut={{y:-140, duration: 600}}
-                        modal={false}
+                     <SearchDrawer
+                        modalOpen={searchDrawerOpen}
+                        height='h-[180px]'
                      >
-                        {#snippet trigger()}
-                           <SearchIcon aria-label='search' />
-                        {/snippet}
                         {#snippet content()}
-                           <button onclick={()=>searchDrawerOpen=false} class='btn preset-filled-primary-50-950 rounded-lg m-1 absolute top-0 right-0'><PanelTopClose aria-label='Close'/></button>
                            <Search bind:search={search} searchType='customer name' data={data.userSearchForm} classes='mx-2 mt-11'/>
                         {/snippet}
-                     </Modal>
-                     <Modal
-                        open={leaseEndModalOpen}
-                        onOpenChange={(event) =>(leaseEndModalOpen = event.open)}
-                        contentBase='card bg-surface-100-900 p-2 shadow-xl max-w-screen-sm'
-                        backdropClasses='backdrop-blur-lg'
+                     </SearchDrawer>
+                     <FormModal
+                        modalOpen={leaseEndModalOpen}
                      >
                         {#snippet content()}
                            <LeaseEndForm data={data.leaseEndForm} {leaseEndModalOpen} leaseId={currentLeaseId} employee={true}/>
                            {#if currentUnit}
                               <UnitNotesForm data={data.unitNotesForm} unit={currentUnit}/>
                            {/if}
-                           <button onclick={() => leaseEndModalOpen = false} class='btn preset-filled-primary-50-950'>Cancel</button>
                         {/snippet}
-                     </Modal>
+                  </FormModal>
                      <div class="grid grid-cols-1 mx-1 sm:mx-2 gap-y-2 gap-x-1 ">
                         {#each slicedSource(searchedSource(customers)) as customer}
                         {@const address = addresses.find((address) => address.userId === customer.id)}

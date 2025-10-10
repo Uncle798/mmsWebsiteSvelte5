@@ -2,12 +2,12 @@
    import EmailInput from '$lib/formComponents/EmailInput.svelte';
    import { onMount } from 'svelte';
    import FormSubmitWithProgress from '$lib/formComponents/FormSubmitWithProgress.svelte';
-   import { toaster } from '../toaster';
 	import { superForm } from 'sveltekit-superforms';
    import type { PageData } from './$types';
 	import FormMessage from '$lib/formComponents/FormMessage.svelte';
 	import Header from '$lib/Header.svelte';
 	import { fade } from 'svelte/transition';
+   import { toaster } from '../../lib/toaster';
     
    export let data: PageData;
    let { form, message, errors, constraints, enhance, delayed, timeout } = superForm(data.magicLinkForm);

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import LeaseEmployee from '$lib/displayComponents/LeaseEmployee.svelte';
-	import { Combobox, Modal } from '@skeletonlabs/skeleton-svelte';
+	import Combobox from '$lib/formComponents/Combobox.svelte';
 	import Pagination from '$lib/displayComponents/Pagination.svelte';
 	import Placeholder from '$lib/displayComponents/Placeholder.svelte';
 	import UnitEmployee from '$lib/displayComponents/UnitEmployee.svelte';
@@ -17,6 +17,8 @@
 	import Revenue from '$lib/displayComponents/Revenue.svelte'
 	import { SearchIcon, PanelTopClose } from 'lucide-svelte';
 	import { onMount } from 'svelte';
+	import SearchDrawer from '$lib/displayComponents/Modals/SearchDrawer.svelte';
+	import FormModal from '$lib/displayComponents/Modals/FormModal.svelte';
 	let { data }: { data: PageData } = $props();
 	let modalOpen = $state(false);
 	let currentLeaseId = $state('');
@@ -104,31 +106,16 @@
 			{:then addresses} 
             {#if units}
 					<Revenue label='Current leased monthly revenue' amount={totalRevenue(leases)} classes='bg-tertiary-50-950 w-full rounded-b-lg fixed top-11 sm:top-8 z-40 p-1'/>
-					<Modal
-						open={searchDrawerOpen}
-						onOpenChange={(event)=>(searchDrawerOpen = event.open)}
-						triggerBase='btn preset-filled-primary-50-950 rounded-lg fixed top-0 right-0 z-50 h-12 sm:h-8'
-						contentBase='bg-surface-100-900 h-[230px] w-screen rounded-b-lg'
-						positionerJustify=''
-						positionerAlign=''
-						positionerPadding=''
-						transitionsPositionerIn={{y:-230, duration: 600}}
-						transitionsPositionerOut={{y:-230, duration: 600}}
-						modal={false}
+					<SearchDrawer
+						modalOpen={searchDrawerOpen}
+						height='h-[180]'
 					>
-						{#snippet trigger()}
-							<SearchIcon aria-label='Search' />
-						{/snippet}
 						{#snippet content()}
-							<button onclick={()=>searchDrawerOpen=false} class='btn preset-filled-primary-50-950 rounded-lg m-1 absolute top-0 right-0'><PanelTopClose aria-label='Close'/></button>
 							<div class="mx-2 mt-11">
 								<Search searchType='Unit number' data={data.searchForm} classes='' bind:search={search}/>
-								<Combobox data={comboboxData} 
+								<Combobox 
+									data={comboboxData} 
 									label='Select Size' 
-									value={selectedSize} 
-									positionerBase=''
-									positionerClasses='overflow-auto short:h-24 tall:h-48 grande:h-96 venti:h-auto'
-									labelBase=''
 									placeholder='Select size...'
 									onValueChange={(details) => {
 										searchDrawerOpen=false;
@@ -137,7 +124,7 @@
 								/> 
 								</div>
 						{/snippet}
-					</Modal>
+					</SearchDrawer>
             	<div class="sm:m-2 m-1 sm:mt-20 mt-22 mb-8" in:fade={{duration:1600}} out:fade={{duration:0}}>
                	{#each slicedUnits(filteredUnits(searchedUnits(units))) as unit}
                	{@const lease = leases?.find((lease) => lease.unitNum === unit.num)}
@@ -172,11 +159,8 @@
 						{/each}
 					</div>
             	<Pagination bind:pageNum={pageNum} bind:size={size} array={filteredUnits(searchedUnits(units))} label='units'/>
-					<Modal
-						open={modalOpen}
-						onOpenChange={(e) => modalOpen = e.open}
-						contentBase="card bg-surface-400-600 p-4 space-y-4 shadow-xl max-w-(--breakpoint-sm)"
-						backdropClasses="backdrop-blur-xs"
+					<FormModal
+						modalOpen={modalOpen}
 					>
 						{#snippet content()}
 							{#if globalModalType === 'lease'}
@@ -184,7 +168,7 @@
 									<LeaseEndForm
 										data={data.leaseEndForm}
 										leaseId={currentLeaseId}
-										customer={false}
+										employee={true}
 										bind:leaseEndModalOpen={modalOpen}
 									/>
 								{/if}
@@ -199,7 +183,7 @@
 							{/if}
 							<button class="btn" onclick={() => (modalOpen = false)}>Cancel</button>
 						{/snippet}
-					</Modal>
+					</FormModal>
             {/if}
 			{/await}
 		{/await}    

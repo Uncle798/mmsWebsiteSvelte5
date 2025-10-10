@@ -4,11 +4,12 @@
 	import type { Infer, SuperValidated } from "sveltekit-superforms";
 	import FormMessage from "$lib/formComponents/FormMessage.svelte";
 	import FormSubmitWithProgress from "$lib/formComponents/FormSubmitWithProgress.svelte";
-	import { Switch } from "@skeletonlabs/skeleton-svelte";
+	import Switch from "$lib/formComponents/Switch.svelte";
 	import { onMount } from "svelte";
 	import type { Unit } from "@prisma/client";
 	import TextArea from "$lib/formComponents/TextArea.svelte";
 	import { page } from "$app/state";
+	import Search from "./Search.svelte";
 
    interface Props {
       data: SuperValidated<Infer<UnitNotesFormSchema>>
@@ -73,16 +74,10 @@
       />
       <div class="flex flex-col sm:flex-row">
          <Switch 
-            checked={$form.unavailable}
-            onCheckedChange={(e)=> {
-               $form.unavailable = e.checked;
-               submit();
-            }}
-            name='unavailable'  
-            classes='m-2'
-         >
-            Unit is unavailable
-         </Switch>
+            bind:checked={$form.unavailable}
+            name='unavailable'
+            label='Unit is Unavailable'
+         />
          <input type="hidden" name="unitNum" id="unitNum" value={unit.num} />
          <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} buttonText='Update notes'/>
       </div>

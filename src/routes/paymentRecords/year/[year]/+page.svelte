@@ -14,11 +14,15 @@
    import Revenue from '$lib/displayComponents/Revenue.svelte';  
    import Address from '$lib/displayComponents/AddressEmployee.svelte';
    import RefundForm from '$lib/forms/NewRefundForm.svelte'
-   import { Combobox, Modal, Progress, ProgressRing } from '@skeletonlabs/skeleton-svelte';
+   import FormModal from '$lib/displayComponents/Modals/FormModal.svelte';
+   import Combobox from '$lib/formComponents/Combobox.svelte';
+   import ProgressLine from '$lib/displayComponents/ProgressLine.svelte';
+   import ProgressRing from '$lib/displayComponents/ProgressRing.svelte';
    import { goto, onNavigate } from '$app/navigation';
 	import { SearchIcon, PanelTopCloseIcon } from 'lucide-svelte';
 	import EmailCustomer from '$lib/EmailCustomer.svelte';
 	import DownloadPdfButton from '$lib/DownloadPDFButton.svelte';
+	import SearchDrawer from '$lib/displayComponents/Modals/SearchDrawer.svelte';
    dayjs.extend(utc)
    let { data }: { data: PageData } = $props();
    let pageNum = $state(1);
@@ -126,19 +130,13 @@
       navTimeout = false;
    })
 </script>
-<Modal
-   open={modalOpen}
-   onOpenChange={(e) => modalOpen = e.open}
-   contentBase="card bg-surface-400-600 p-4 space-y-4 shadow-xl"
-   backdropClasses=""
-   modal={true}
+<FormModal
+   modalOpen={modalOpen}
 >  
-{#snippet content()}
-   <RefundForm data={data.refundForm} paymentRecord={currentPaymentRecord}/>
-   <button class="btn rounded-lg preset-filled-primary-50-950" onclick={()=>modalOpen = false}>Close</button>
-{/snippet}
-
-</Modal>
+   {#snippet content()}
+      <RefundForm data={data.refundForm} paymentRecord={currentPaymentRecord}/>
+   {/snippet}
+</FormModal>
 <Header title='Payment Records' />
 {#await wrapper}
    <div class="mx-1 sm:mx-2 mt-14 sm:mt-10">
@@ -148,22 +146,16 @@
             data={monthComboboxData}
             label='or select month'
             placeholder='Select month...'
-            openOnChange={true}
             onValueChange={(details) => {
                setTimeout(() => {
                   navDelayed = true;
                }, 300);
                goto(`/paymentRecords/year/${data.year}/month/${details.value[0]}`);
             }}
-            zIndex='50'
          />
          {#if navDelayed}
             <ProgressRing  
                value={null} 
-               size="size-8" 
-               meterStroke="stroke-tertiary-600-400" 
-               trackStroke="stroke-tertiary-50-950"
-               classes='mt-6 mx-2'
                {@attach () => {
                   setTimeout(() => {
                      navDelayed = false;
@@ -173,12 +165,7 @@
             />
          {/if}
          {#if navTimeout}
-            <Progress 
-               value={null}
-               meterBg="bg-tertiary-500"
-               width='w-12'
-               classes='mt-9 mx-2'
-            />
+            <ProgressLine value={null} />
          {/if}
       {/if}
       <Placeholder numCols={1} numRows={size} heightClass='h-32' classes='z-0'/>
@@ -207,23 +194,11 @@
                   classes='m-1 sm:m-2'
                />
             </div>
-            <Modal
-                  open={searchDrawerOpen}
-                  onOpenChange={(event)=>(searchDrawerOpen = event.open)}
-                  triggerBase='btn preset-filled-primary-50-950 rounded-lg fixed top-0 right-0 z-50'
-                  contentBase='bg-surface-100-900 h-[180px] w-screen rounded-lg'
-                  positionerJustify=''
-                  positionerAlign=''
-                  positionerPadding=''
-                  transitionsPositionerIn={{y:-400, duration: 600}}
-                  transitionsPositionerOut={{y:-400, duration: 600}}
-                  modal={false}
+            <SearchDrawer
+               modalOpen={searchDrawerOpen}
+               height='h-[180]'
             >
-            {#snippet trigger()}
-               <SearchIcon />
-            {/snippet}
             {#snippet content()}
-               <button onclick={()=>searchDrawerOpen=false} class='btn preset-filled-primary-50-950 rounded-lg m-1 absolute top-0 right-0'><PanelTopCloseIcon/></button>
                <div class="flex flex-col sm:flex-row mt-7 w-screen gap-2 mx-2">
                   <Search 
                      bind:search={search} 
@@ -247,23 +222,16 @@
                         data={yearsComboboxData}
                         label='Select different year'
                         placeholder='Select year...'
-                        openOnClick={true}
                         onValueChange={(details) => {
                            setTimeout(() => {
                               navDelayed = true;
                            }, 300);
                            goto(`/paymentRecords/year/${details.value[0]}`)
                         }}
-                        labelBase=''
-                        width='w-11/12'
                      />
                      {#if navDelayed}
                         <ProgressRing  
                            value={null} 
-                           size="size-8" 
-                           meterStroke="stroke-tertiary-600-400" 
-                           trackStroke="stroke-tertiary-50-950"
-                           classes='mt-6 mx-2'
                            {@attach () => {
                               setTimeout(() => {
                                  navDelayed = false;
@@ -273,12 +241,7 @@
                         />
                      {/if}
                      {#if navTimeout}
-                        <Progress 
-                           value={null}
-                           meterBg="bg-tertiary-500"
-                           width='w-12'
-                           classes='mt-9 mx-2'
-                        />
+                        <ProgressLine value={null} />
                      {/if}
                   </div>
                </div>
@@ -292,7 +255,7 @@
                >Sort by date {sortBy ? 'starting earliest' : 'starting latest'}
                </button>
             {/snippet}
-            </Modal>
+            </SearchDrawer>
                <div class="mt-32 sm:mt-20 mb-8" in:fade={{duration:600}} out:fade={{duration:0}}>
                   {#each slicedSource(dateSearchPayments(searchedPayments(sortedByDate(searchByUser(paymentRecords, currentUsers(customers)))))) as paymentRecord}
                   {@const customer = customers.find((customer) => customer.id === paymentRecord.customerId) }

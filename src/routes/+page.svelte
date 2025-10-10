@@ -7,13 +7,17 @@
 	import UnitCustomer from "$lib/displayComponents/customerViews/UnitCustomer.svelte";
 	import { fade } from "svelte/transition";
 	import Placeholder from "$lib/displayComponents/Placeholder.svelte";
-	import { Tooltip } from "@skeletonlabs/skeleton-svelte";
+	import { Portal, Tooltip } from "@skeletonlabs/skeleton-svelte";
+   import { driver } from 'driver.js';
+   import 'driver.js/dist/driver.css'
+	import { getContext, onMount } from "svelte";
+	import { CircleX } from "lucide-svelte";
    
    interface Props {
       data: PageData;
    }
    let { data }: Props = $props();
-
+   const id = $props.id();
    let sizeFilter = $state('');
    const filterSize = $derived((units:Unit[]) => units.filter((unit) => unit.size.includes(sizeFilter)))
    function setSizeFilter(event:Event){
@@ -23,33 +27,41 @@
    }
    const formattedPhone = PUBLIC_PHONE.substring(0,1) +'-'+ PUBLIC_PHONE.substring(1,4)+'-'+PUBLIC_PHONE.substring(4,7)+'-'+PUBLIC_PHONE.substring(7)
    let copyTooltipOpen = $state(false);
-   let homeCopy = $state<HTMLElement>();
-   let firstUnit = $state<HTMLElement>();
+   onMount(() => {
+      const driverObj = driver({
+         showProgress: true,
+         showButtons: ['close', 'next', 'previous'],
+         steps: [
+            { popover: { title: 'Welcome', description: `Welcome to your homepage ${data.user?.givenName}` } },
+            { element: '.homeCopy', popover: { title: 'Here\'s where we tell your story', description: `Here's where we tell your story. All text on the site is customizable to your specifications` } },
+            { element: '.firstUnit', popover: { title: `Available units`, description: `This is the smallest unit available for rent ` } },
+            { element: '.mainMenu', popover: { title: `Main menu`, description: `This is the main menu` } },
+         ]
+      });
+      driverObj.drive();
+   })
 </script>
 <Header title='Home' />
 
 {#await data.availableUnits}
    <article class="m-2 mt-14 sm:mt-10">
       <div>
-         <Tooltip
-            open={copyTooltipOpen}
-            onOpenChange={(e) => copyTooltipOpen = e.open}
-            positioning={{placement: 'top'}}
-            openDelay={200}
-         >
-            {#snippet trigger()}
-               <div>
+         <Tooltip open={copyTooltipOpen}>
+            <Tooltip.Trigger>
                   Thank you for visiting {PUBLIC_COMPANY_NAME}!
                   Conveniently located, {PUBLIC_COMPANY_NAME} is the place to safely and securely store your belongings.
                   <p>Family owned and operated, you can contact us at 
                      <a href="tel:{PUBLIC_PHONE}" class="anchor">
                         { formattedPhone }</a>, or <a href="mailto:{PUBLIC_COMPANY_EMAIL}" class="anchor">{PUBLIC_COMPANY_EMAIL}</a> the office and gates are open 8:00 am to 8:00 pm.
                   </p>
-               </div>
-            {/snippet}
-            {#snippet content()}
-               Tell your story here. We can customize copy to your exact specifications.
-            {/snippet}
+            </Tooltip.Trigger>
+            <Portal>
+               <Tooltip.Positioner>
+                  <Tooltip.Content class='card bg-surface-300-700 p-2'>
+                     Tell your story here. We can customize copy to your exact specifications.
+                  </Tooltip.Content>
+               </Tooltip.Positioner>
+            </Portal>
          </Tooltip>
       </div>
    </article>
@@ -60,31 +72,28 @@
       <Placeholder numCols={3} numRows={4} heightClass='h-34' classes='z-0 hidden md:block lg:hidden' />
       <Placeholder numCols={4} numRows={4} heightClass='h-34' classes='z-0 hidden lg:block' />     
    </div>
-{:then units} 
-      <article class="m-2 mt-14 sm:mt-10">
-         <div>
-            <Tooltip
-            open={copyTooltipOpen}
-            onOpenChange={(e) => copyTooltipOpen = e.open}
-            positioning={{placement: 'top'}}
-            contentBase="card preset-filled p-2"
-            openDelay={200}
-            zIndex='40'
-         >
-            {#snippet trigger()}
-               <div bind:this={homeCopy}>                 
-                  Thank you for visiting {PUBLIC_COMPANY_NAME}!
-                  Conveniently located, {PUBLIC_COMPANY_NAME} is the place to safely and securely store your belongings.
-                  <p>Family owned and operated, you can contact us at 
-                     <a href="tel:{PUBLIC_PHONE}" class="anchor">
-                        { formattedPhone }</a>, or <a href="mailto:{PUBLIC_COMPANY_EMAIL}" class="anchor">{PUBLIC_COMPANY_EMAIL}</a> the office and gates are open 8:00 am to 8:00 pm.
-                  </p>
-               </div>
-            {/snippet}
-            {#snippet content()}
-               Tell your story here. We can customize copy to your exact specifications
-            {/snippet}
-         </Tooltip>
+   {:then units}
+   <article class="m-2 mt-14 sm:mt-10">
+      <div>
+            <Tooltip>
+               <Tooltip.Trigger>
+                  <div class="homeCopy">
+                     Thank you for visiting {PUBLIC_COMPANY_NAME}!
+                     Conveniently located, {PUBLIC_COMPANY_NAME} is the place to safely and securely store your belongings.
+                     <p>Family owned and operated, you can contact us at 
+                        <a href="tel:{PUBLIC_PHONE}" class="anchor">
+                           { formattedPhone }</a>, or <a href="mailto:{PUBLIC_COMPANY_EMAIL}" class="anchor">{PUBLIC_COMPANY_EMAIL}</a> the office and gates are open 8:00 am to 8:00 pm.
+                     </p>
+                  </div>
+               </Tooltip.Trigger>
+               <Portal>
+                  <Tooltip.Positioner>
+                     <Tooltip.Content class='card bg-surface-300-700 p-2'>
+                        Tell your story here. We can customize copy to your exact specifications.
+                     </Tooltip.Content>
+                  </Tooltip.Positioner>
+               </Portal>
+            </Tooltip>
          </div>
       </article>
    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-1 mx-2 mb-24 sm:mb-14 lg:mb-9" in:fade={{duration:600}}>
@@ -102,7 +111,7 @@
       {#each filterSize(units) as unit, i}
          <div class="flex flex-col border rounded-lg border-primary-50-950 justify-between" in:fade={{duration:600}}>
             {#if i === 0}
-               <div bind:this={firstUnit} >
+               <div class="firstUnit">
                   <UnitCustomer {unit}/>
                   {#if data.user?.employee}
                   <a class="btn preset-filled-primary-50-950 m-2 w-11/12 self-center" href="/employeeNewLease?unitNum={unit.num}">Rent this Unit</a>

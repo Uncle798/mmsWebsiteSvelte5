@@ -6,8 +6,6 @@ import { cuidIdFormSchema, employmentFormSchema, searchFormSchema } from '$lib/f
 import { redirect } from '@sveltejs/kit';
 import { ratelimit } from '$lib/server/rateLimit';
 
-
-
 export const load = (async (event) => {
    if(!event.locals.user?.admin){
       redirect(302, '/login?toast=admin')
@@ -23,8 +21,6 @@ export const load = (async (event) => {
    });
    return { users, userCount, employmentChangeForm, searchForm };
 }) satisfies PageServerLoad;
-
-
 
 export const actions: Actions = {
    search: async (event) => {

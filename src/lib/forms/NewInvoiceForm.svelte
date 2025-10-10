@@ -1,7 +1,6 @@
 <script lang="ts">
 	import type { EmailVerificationFormSchema, NewInvoiceFormSchema, RegisterFormSchema } from "$lib/formSchemas/schemas";
 	import type { Lease, User } from "@prisma/client";
-	import { Combobox, Modal, Tooltip, Switch, Progress, ProgressRing } from "@skeletonlabs/skeleton-svelte";
 	import { onMount } from "svelte";
 	import { superForm, type Infer, type SuperValidated } from "sveltekit-superforms";
 	import EmailVerificationForm from "./EmailVerificationForm.svelte";
@@ -15,6 +14,13 @@
 	import { Info } from "lucide-svelte";
 	import dayjs from "dayjs";
 	import { page } from "$app/state";
+   import FormModal from "$lib/displayComponents/Modals/FormModal.svelte";
+   import Combobox from "$lib/formComponents/Combobox.svelte";
+	import ProgressRing from "$lib/displayComponents/ProgressRing.svelte";
+	import ProgressLine from "$lib/displayComponents/ProgressLine.svelte";
+   import Switch from "$lib/formComponents/Switch.svelte";
+	import { Portal, Tooltip, useTooltip } from "@skeletonlabs/skeleton-svelte";
+	import TextArea from "$lib/formComponents/TextArea.svelte";
    
    interface Props {
       data: SuperValidated<Infer<NewInvoiceFormSchema>>;
@@ -62,7 +68,8 @@
       label: lease.unitNum.replace(/^0+/gm, ''),
       value: lease.leaseId
    })));
-   let invoiceNotesTooltipOpen = $state(false);
+   const id = $props.id();
+   const tooltip = useTooltip({id})
    let registerFormModalOpen = $state(false);
    onMount(()=>{
       for(const key in $form){
@@ -100,11 +107,8 @@
       navReason = '';
    })
 </script>
-<Modal
-   open={registerFormModalOpen}
-   onOpenChange={(e)=>registerFormModalOpen=e.open}
-   contentBase="card bg-surface-400-600 p-4 space-y-4 shadow-xl max-w-(--breakpoint-sm)"
-   backdropClasses="backdrop-blur-xs"
+<FormModal
+   bind:modalOpen={registerFormModalOpen}
 >
    {#snippet content()}
       {#if customer}
@@ -112,9 +116,9 @@
       {:else}
          <RegisterForm data={registerFormData} bind:registerFormModalOpen={registerFormModalOpen} formType='employee' redirectTo='invoices/new' />
       {/if}
-         <button class="btn preset-filled-primary-50-950 rounded-lg h-fit" onclick={()=>registerFormModalOpen=false}>Cancel</button>
    {/snippet}
-</Modal>
+</FormModal>
+
 <Header title='New Invoice' />
 <FormMessage message={$message} />
 <div class={classes}>
@@ -122,54 +126,41 @@
       <button class="btn preset-filled-primary-50-950 my-2" onclick={() => registerFormModalOpen = true}>Create new customer</button>
       or,
       <div class="flex flex-row">
-         <Combobox
-            data={customersComboboxData}
-            label='Select Customer'
-            placeholder='Type or select...'
-            openOnClick={true}
-            optionClasses='truncate'
-            onValueChange={(details) => {
-               navReason = 'customersComboBoxData'
-               setTimeout(() =>{
-                  navDelayed = true
-               }, 300)
-               goto(`/invoices/new?userId=${details.value}`);
-            }}
-            width='w-11/12'
-         />
-         {#if navDelayed && navReason === 'customersComboBoxData'}
-            <ProgressRing  
-               value={null} 
-               size="size-8" 
-               meterStroke="stroke-tertiary-600-400" 
-               trackStroke="stroke-tertiary-50-950"
-               classes='mt-6 mx-2'
-               {@attach () => {
+         {#if customersComboboxData}
+            <Combobox
+               data={customersComboboxData}
+               label='Select Customer'
+               placeholder='Type or select...'
+               onValueChange={(details) => {
+                  navReason = 'customersComboBoxData'
+                  setTimeout(() =>{
+                     navDelayed = true
+                  }, 300)
+                  goto(`/invoices/new?userId=${details.value}`);
+               }}
+            />
+            {#if navDelayed && navReason === 'customersComboBoxData'}
+               <ProgressRing value={null} {@attach () => {
                   setTimeout(() => {
                      navDelayed = false;
                      navTimeout = true;
                   }, 800)
-               }}
-            />
-         {/if}
-         {#if navTimeout && navReason === 'customersComboBoxData'}
-            <Progress 
-               value={null}
-               meterBg="bg-tertiary-500"
-               width='w-12'
-               classes='mt-9 mx-2'
-            />
+               }}/>
+            {/if}
+            {#if navTimeout && navReason === 'customersComboBoxData'}
+               <ProgressLine value={null} />
+            {/if}
          {/if}
       </div>
    {/if}
    {#if leases}
       {#if customer}
          <div class="flex flex-row">
+            {#if leasesComboboxData}               
             <Combobox
                data={leasesComboboxData}
                label='Select unit'
                placeholder='Type or select'
-               openOnClick={true}
                onValueChange={(details) => {
                   setTimeout(() => {
                      navReason = 'leasesComboboxData'
@@ -177,70 +168,47 @@
                   }, 300)
                   goto(`/invoices/new?leaseId=${details.value}&userId=${customer.id}`)
                }}
-               width='w-11/12'
             />
+            {/if}
             {#if navDelayed && navReason === 'leasesComboboxData'}
-               <ProgressRing  
-                  value={null} 
-                  size="size-8" 
-                  meterStroke="stroke-tertiary-600-400" 
-                  trackStroke="stroke-tertiary-50-950"
-                  classes='mt-6 mx-2'
-                  {@attach () => {
-                     setTimeout(() => {
-                        navDelayed = false;
-                        navTimeout = true;
-                     }, 800)
-                  }}
-               />
+               <ProgressRing value={null} {@attach () => {
+                  setTimeout(() => {
+                     navDelayed = false;
+                     navTimeout = true;
+                  }, 800)
+               }}/>
             {/if}
             {#if navTimeout && navReason === 'leasesComboboxData'}
-               <Progress 
-                  value={null}
-                  meterBg="bg-tertiary-500"
-                  width='w-12'
-                  classes='mt-9 mx-2'
-               />
+               <ProgressLine value={null} />
             {/if}
          </div>        
       {:else}
          <div class="flex flex-row">
-            <Combobox
-               data={leasesComboboxData}
-               label='Select unit'
-               placeholder='Type or select'
-               openOnClick={true}
-               onValueChange={(details) => {
-                  setTimeout(() => {
-                     navReason = 'leasesComboboxData'
-                     navDelayed = true;
-                  }, 300)
-                  goto(`/invoices/new?leaseId=${details.value}`)
-               }}
-               width='w-11/12'
-            />
-            {#if navDelayed && navReason === 'leasesComboboxData'}
-               <ProgressRing  
-                  value={null} 
-                  size="size-8" 
-                  meterStroke="stroke-tertiary-600-400" 
-                  trackStroke="stroke-tertiary-50-950"
-                  classes='mt-6 mx-2'
-                  {@attach () => {
+            {#if leasesComboboxData}   
+               <Combobox
+                  data={leasesComboboxData}
+                  label='Select unit'
+                  placeholder='Type or select'
+                  onValueChange={(details) => {
                      setTimeout(() => {
-                        navDelayed = false;
-                        navTimeout = true;
-                     }, 800)
+                        navReason = 'leasesComboboxData'
+                        navDelayed = true;
+                     }, 300)
+                     goto(`/invoices/new?leaseId=${details.value}`)
                   }}
                />
-            {/if}
-            {#if navTimeout && navReason === 'leasesComboboxData'}
-               <Progress 
-                  value={null}
-                  meterBg="bg-tertiary-500"
-                  width='w-12'
-                  classes='mt-9 mx-2'
-               />
+               {#if navDelayed && navReason === 'leasesComboboxData'}
+                  <ProgressRing value={null} {@attach () => {
+                        setTimeout(() => {
+                           navDelayed = false;
+                           navTimeout = true;
+                        }, 800)
+                     }}
+                  />
+               {/if}
+               {#if navTimeout && navReason === 'leasesComboboxData'}
+                  <ProgressLine value={null} />
+               {/if}
             {/if}
          </div>
       {/if}
@@ -253,48 +221,37 @@
          }
       }}>
          <div class="">
-            <label class="label ">
                <span class="label-text">Invoice notes
-                  <Tooltip
-                     open={invoiceNotesTooltipOpen}
-                     onOpenChange={(e) => invoiceNotesTooltipOpen = e.open}
-                     positioning={{placement: 'top-end'}}
-                     contentBase="card preset-filled p-2 wrap-word max-w-4xl"
-                     openDelay={200}
-                     closeDelay={200}
-                     zIndex='30'
-                     arrow={true}
-                     closeOnScroll={true}
-                  >
-                     {#snippet trigger()}
-                        <Info aria-label='Invoice Notes tooltip' size={15} />
-                     {/snippet}
-                     {#snippet content()}
-                        Invoice notes are the place to store information for you and your customer. MMS has defaults but those can be edited, and we can change the defaults.
-                     {/snippet}
-                  </Tooltip>
+                  <Tooltip.Provider value={tooltip}>
+                     <Tooltip.Trigger><Info aria-label='Invoice Notes tooltip' size={15} /></Tooltip.Trigger>
+                     <Portal>
+                        <Tooltip.Positioner>
+                           <Tooltip.Content class='card preset-filled p-2 wrap-word max-w-4xl'>
+                              Invoice notes are the place to store information for you and your customer. MMS has defaults but those can be edited, and we can change the defaults.
+                           </Tooltip.Content>
+                        </Tooltip.Positioner>
+                     </Portal>
+                  </Tooltip.Provider>
                   </span>
-               <textarea
-                  class="input rounded-none h-auto"
-                  rows=3
-                  name="invoiceNotes"
-                  {...$constraints.invoiceNotes}
-               >{$form.invoiceNotes}</textarea>
-               <!-- Above formatting required for proper display of notes in text area -->
-            </label>
+               <TextArea 
+                  rows={3} 
+                  name='invoiceNotes' 
+                  bind:value={$form.invoiceNotes}  
+                  errors={$errors.invoiceNotes}
+                  constraints={$constraints.invoiceNotes} 
+                  label=''  
+               />
             {#if $errors.invoiceNotes}<span class="invalid">{$errors.invoiceNotes}</span>{/if}
          </div>
          <NumberInput
             bind:value={$form.invoiceAmount}
             errors={$errors.invoiceAmount}
             constraints={$constraints.invoiceAmount}
-            label='Invoice amount: $'
+            label='Invoice amount $'
             name='invoiceAmount'
 
          />
-         <Switch name='deposit' checked={$form.deposit} onCheckedChange={(e)=> $form.deposit=e.checked} label='Deposit' classes='mt-2'>
-            Deposit
-         </Switch>
+         <Switch name='deposit' checked={$form.deposit} label='Deposit' classes='mt-2' />
          <DateInput
             bind:value={$form.invoiceDue}
             errors={$errors.invoiceDue}

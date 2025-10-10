@@ -12,10 +12,10 @@
 	import Placeholder from '$lib/displayComponents/Placeholder.svelte';
 	import Address from '$lib/displayComponents/AddressEmployee.svelte';
 	import { fade } from 'svelte/transition';
-	import { Combobox, Modal } from '@skeletonlabs/skeleton-svelte';
+	import Combobox from '$lib/formComponents/Combobox.svelte';
 	import EmailCustomer from '$lib/EmailCustomer.svelte';
-	import { SearchIcon, PanelTopClose } from 'lucide-svelte';
 	import { goto } from '$app/navigation';
+	import SearchDrawer from '$lib/displayComponents/Modals/SearchDrawer.svelte';
 	let { data }: { data: PageData } = $props();
 	let size = $state(25);
 	let pageNum = $state(1);
@@ -95,16 +95,14 @@
 {#await wrapper}
 	<div class="mt-14 sm:mt-10">
 		Loading {numberFormatter.format(data.refundCount)} refunds...
-		{#if data.years}
+		{#if yearComboboxData}
 			<Combobox
 				data={yearComboboxData}
 				label='Select year'
 				placeholder='Select year...'
-				openOnClick={true}
 				onValueChange={(details) => {
 					goto(`/refundRecords/year/${details.value[0]}`)
 				}}
-				zIndex='50'
 			/>
 		{/if}
 	</div>
@@ -122,45 +120,35 @@
 			</div>
 			<Placeholder numCols={2} numRows={size} heightClass='h-44'/>
 		{:then addresses}
-				<Modal
-			open={searchDrawerOpen}
-			onOpenChange={(event)=>(searchDrawerOpen = event.open)}
-			triggerBase='btn preset-filled-primary-50-950 rounded-lg fixed top-0 right-0 z-50 h-12 sm:h-auto'
-			contentBase='bg-surface-100-900 h-[400px] w-screen rounded-lg'
-			positionerJustify=''
-			positionerAlign=''
-			positionerPadding=''
-			transitionsPositionerIn={{y:-400, duration: 600}}
-			transitionsPositionerOut={{y:-400, duration: 600}}
-			modal={false}
-		>
-			{#snippet trigger()}
-				<SearchIcon aria-label='Search' />
-			{/snippet}
-			{#snippet content()}
-				<button onclick={()=>searchDrawerOpen=false} class='btn preset-filled-primary-50-950 rounded-lg m-1 absolute top-0 right-0'><PanelTopClose aria-label='Close'/></button>
-				<Search
-					bind:search={search}
-					searchType="refund records" 
-					data={data.searchForm} 
-					classes='p-2 '	
-				/>
-				<Search
-					bind:search={nameSearch} 
-					searchType="user name" 
-					data={data.searchForm} 
-					classes='p-2 '	
-				/>
-				<DateSearch 
-					bind:endDate 
-					bind:startDate 
-					data={data.dateSearchForm} 
-					{minDate} 
-					{maxDate} 
-					classes='p-2'	
-				/>
-			{/snippet}
-		</Modal>
+			<SearchDrawer
+				modalOpen={searchDrawerOpen}
+				height='h-[180]'
+			>
+				{#snippet content()}
+				<div class="flex flex-row">
+					<Search
+						bind:search={search}
+						searchType="refund records" 
+						data={data.searchForm} 
+						classes='p-2 '	
+					/>
+					<Search
+						bind:search={nameSearch} 
+						searchType="user name" 
+						data={data.searchForm} 
+						classes='p-2 '	
+					/>
+					<DateSearch 
+						bind:endDate 
+						bind:startDate 
+						data={data.dateSearchForm} 
+						{minDate} 
+						{maxDate} 
+						classes='p-2'	
+					/>
+				</div>
+				{/snippet}
+			</SearchDrawer>
 		<div class=" bg-tertiary-50-950 w-full rounded-b-lg fixed top-12 sm:top-9 left-0 flex flex-col sm:flex-row z-50">
 			<Revenue 
 				label="Total refunds" 

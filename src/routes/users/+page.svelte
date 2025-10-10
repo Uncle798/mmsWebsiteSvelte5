@@ -7,11 +7,11 @@
    import { fade } from 'svelte/transition';
 	import UserAdmin from '$lib/displayComponents/UserAdmin.svelte';
 	import Search from '$lib/forms/Search.svelte';
-	import { Modal, Switch } from '@skeletonlabs/skeleton-svelte';
-	import { SearchIcon, PanelTopClose, } from 'lucide-svelte';
+	import Switch from '$lib/formComponents/Switch.svelte';
 	import { onMount } from 'svelte';
-	import ExplainerModal from '$lib/demo/ExplainerModal.svelte';
+	import ExplainerModal from '$lib/displayComponents/Modals/ExplainerModal.svelte';
 	import { invalidateAll } from '$app/navigation';
+	import SearchDrawer from '$lib/displayComponents/Modals/SearchDrawer.svelte';
 
    let { data }: { data: PageData } = $props();
    let search = $state('')
@@ -66,47 +66,27 @@
       Loading {data.userCount} users...
    </div>
 {:then users }
-   <Modal
-      open={searchDrawerOpen}
-      onOpenChange={(event)=>(searchDrawerOpen = event.open)}
-      triggerBase='btn preset-filled-primary-50-950 rounded-lg fixed top-0 right-0 z-50 h-12 sm:h-9'
-      contentBase='bg-surface-100-900 h-[180px] w-screen rounded-b-lg '
-      positionerJustify=''
-      positionerAlign=''
-      positionerPadding=''
-      transitionsPositionerIn={{y:-180, duration: 600}}
-      transitionsPositionerOut={{y:-180, duration: 600}}
-      modal={false}
-   >
-      {#snippet trigger()}
-         <SearchIcon aria-label='Search' />
-      {/snippet}
+   <SearchDrawer modalOpen={searchDrawerOpen} height='h-[180px]'>
       {#snippet content()}
       <div class="mx-2 mt-11">
-         <button onclick={()=>searchDrawerOpen=false} class='btn preset-filled-primary-50-950 rounded-lg m-1 absolute top-0 right-0'><PanelTopClose aria-label='Close'/></button>
          <Search data={data.searchForm} bind:search={search} searchType='user' />
          <div>
             Filter by 
             <Switch
                checked={employeeFilter}
-               onCheckedChange={(e) => employeeFilter = e.checked}
                name='employeeFilter'
                label='Employee filter'
-            >
-               Employee
-            </Switch>
+            />
             <Switch
                checked={adminFilter}
-               onCheckedChange={(e) => adminFilter = e.checked}
                name='adminFilter'
                label='Admin filter'
-            >
-               Admin
-            </Switch>
+            />
          </div>
       </div>
       {/snippet}
-   </Modal>
+   </SearchDrawer>
+
    <ExplainerModal
       bind:modalOpen={explainerModalOpen}
    >
@@ -119,14 +99,16 @@
          {#each slicedSource(searchedUsers(filterAdmin(filterEmployee(users)))) as user (user.id)}
             <div class="rounded-lg border border-primary-50-950 flex flex-col sm:flex-row">
                <UserAdmin {user} classes=" p-2 w-1/2"/>
-               <EmploymentChangeForm 
-                  data={data.employmentChangeForm} 
-                  employeeChecked={user.employee} 
-                  adminChecked={user.admin}
-                  userId={user.id}
-                  classes=" p-2 flex flex-col sm:flex-row"
-               />
-               <button class="btn preset-filled-primary-50-950" onclick={()=> deleteUser(user.id)}>Delete User</button>
+               <div>
+                  <EmploymentChangeForm 
+                     data={data.employmentChangeForm} 
+                     employeeChecked={user.employee} 
+                     adminChecked={user.admin}
+                     userId={user.id}
+                     classes="flex flex-col sm:flex-row"
+                  />
+                  <button class="btn preset-filled-primary-50-950 h-8 mb-2" onclick={()=> deleteUser(user.id)}>Delete User</button>
+               </div>
             </div>
          {/each}
       </div>

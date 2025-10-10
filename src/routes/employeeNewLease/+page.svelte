@@ -1,6 +1,5 @@
 <script lang="ts">
    import UnitEmployee from '$lib/displayComponents/UnitEmployee.svelte';
-   import { Combobox, Modal } from '@skeletonlabs/skeleton-svelte';
    import { superForm } from 'sveltekit-superforms';
    import UserEmployee from '$lib/displayComponents/UserEmployee.svelte';
    import Address from '$lib/displayComponents/AddressEmployee.svelte';
@@ -16,7 +15,9 @@
 	import { onMount } from 'svelte';
 	import RegisterForm from '$lib/forms/RegisterForm.svelte';
 	import EmailVerificationForm from '$lib/forms/EmailVerificationForm.svelte';
-   import ExplainerModal from '$lib/demo/ExplainerModal.svelte';
+   import ExplainerModal from '$lib/displayComponents/Modals/ExplainerModal.svelte';
+   import Combobox from '$lib/formComponents/Combobox.svelte';
+	import FormModal from '$lib/displayComponents/Modals/FormModal.svelte';
 
    let { data }: { data: PageData } = $props();
    let addressModalOpen = $state(false);
@@ -71,12 +72,8 @@
 
 <Header title="Employee New Lease" />
 
-<Modal
-   open={registerModalOpen}
-   onOpenChange={(e)=> registerModalOpen = e.open}
-   triggerBase="btn preset-filled-primary-50-950"
-   contentBase="card bg-surface-400-600 p-4 space-y-4 shadow-xl max-w-(--breakpoint-sm) sm:min-w-lg"
-   backdropClasses="backdrop-blur-xs"
+<FormModal
+   modalOpen={registerModalOpen}
 >
    {#snippet content()}
    {#if !data.customer}
@@ -100,7 +97,7 @@
          <div {@attach ()=> {registerModalOpen=false}}></div>
       {/if}
    {/snippet}
-</Modal>
+</FormModal>
 <ExplainerModal
    bind:modalOpen={paymentExplainerModalOpen}
 >
@@ -139,7 +136,6 @@
          <form action="/employeeNewLease?/selectCustomer&unitNum={data.unitNum}" method="POST" use:enhance bind:this={customerSelectForm} >
             <Combobox
                data={customerComboBoxData}
-               value={selectedCustomer}
                label='Select a customer'
                placeholder='Type or select...'
                onValueChange={(details) => {
@@ -151,8 +147,6 @@
                      customerSelectForm.requestSubmit(customerSelectSubmit)
                   }
                }}
-               optionClasses='truncate'
-               openOnClick={true}
             />
             <input type="hidden" name="cuidId" value={selectedCustomer[0]} bind:this={customerCuidId}>
             <button class="hidden" bind:this={customerSelectSubmit}>Choose Customer</button>    
@@ -174,18 +168,12 @@
                label='This unit is being rented by an organization'
             />
          {/if}
-         <Modal
-            open={addressModalOpen}
-            onOpenChange={(e)=> addressModalOpen = e.open}
-            triggerBase="btn preset-filled-primary-50-950"
-            contentBase="card bg-surface-400-600 p-4 space-y-4 shadow-xl max-w-(--breakpoint-sm)"
-            backdropClasses="backdrop-blur-xs"
-         >
-         {#snippet content()}
-            <AddressForm data={data.addressForm} bind:addressModalOpen={addressModalOpen} userId={data.customer?.id}/>
-            <button class="btn preset-filled-primary-50-950" onclick={()=>addressModalOpen=false}>Close</button>
-         {/snippet}
-      </Modal>
+         <FormModal modalOpen={addressModalOpen}>
+            {#snippet content()}
+               <AddressForm data={data.addressForm} bind:addressModalOpen={addressModalOpen} userId={data.customer?.id}/>
+               <button class="btn preset-filled-primary-50-950" onclick={()=>addressModalOpen=false}>Close</button>
+            {/snippet}
+         </FormModal>
       {#if data.address}
          <Address address={data.address} />
          <button class="btn preset-filled-primary-50-950" onclick={()=> addressModalOpen=true} type='button'>Edit Address</button>

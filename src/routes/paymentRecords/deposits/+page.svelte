@@ -1,9 +1,8 @@
 <script lang="ts">
-    import PaymentRecordEmployee from '$lib/displayComponents/PaymentRecordEmployee.svelte';
+   import PaymentRecordEmployee from '$lib/displayComponents/PaymentRecordEmployee.svelte';
 	import Header from '$lib/Header.svelte';
-    import { Modal } from '@skeletonlabs/skeleton-svelte'
-    import type { PageData } from './$types';
-    import type { PaymentRecord, User } from '@prisma/client';
+   import type { PageData } from './$types';
+   import type { PaymentRecord, User } from '@prisma/client';
 	import RefundForm from '$lib/forms/NewRefundForm.svelte';
 	import Search from '$lib/forms/Search.svelte';
 	import Pagination from '$lib/displayComponents/Pagination.svelte';
@@ -14,7 +13,9 @@
 	import { fade } from 'svelte/transition';
 	import DownloadPdfButton from '$lib/DownloadPDFButton.svelte';
 	import EmailCustomer from '$lib/EmailCustomer.svelte';
-	import ExplainerModal from '$lib/demo/ExplainerModal.svelte';
+	import ExplainerModal from '$lib/displayComponents/Modals/ExplainerModal.svelte';
+   import FormModal from '$lib/displayComponents/Modals/FormModal.svelte';
+	import SearchDrawer from '$lib/displayComponents/Modals/SearchDrawer.svelte';
    interface Props {
       data: PageData;
    }
@@ -42,9 +43,7 @@
    let totalRevenue = $derived((paymentRecords:PaymentRecord[]) => {
       let totalRevenue = 0;
       paymentRecords.forEach((paymentRecord) => {
-         if(paymentRecord.paymentCompleted && !paymentRecord.refunded){
-               totalRevenue += paymentRecord.paymentAmount
-         }
+         totalRevenue += paymentRecord.paymentAmount - paymentRecord.refundedAmount
       })
       return totalRevenue;
    })
@@ -73,18 +72,15 @@
    let explainerModalOpen=$state(false);
 </script>
 <Header title='Deposits' />
-<Modal
-   open={refundModalOpen}
-   contentBase="card bg-surface-400-600 space-y-2 shadow-xl p-2"
-   backdropClasses='backdrop-blur-sm'
-   modal={true}
->  
-{#snippet content()}
-   <RefundForm data={data.refundForm} paymentRecord={paymentRecord}/>
-   <button class="btn rounded-lg preset-filled-primary-50-950" onclick={()=>refundModalOpen = false}>Close</button>
-{/snippet}
+<FormModal
+   modalOpen={refundModalOpen}
 
-</Modal>
+>
+   {#snippet content()}
+      <RefundForm data={data.refundForm} paymentRecord={paymentRecord}/>
+      <button class="btn rounded-lg preset-filled-primary-50-950" onclick={()=>refundModalOpen = false}>Close</button>
+   {/snippet}
+</FormModal>
 <ExplainerModal
    bind:modalOpen={explainerModalOpen}
 >
@@ -108,21 +104,10 @@
          </div>
       {:then addresses} 
          <Revenue amount={totalRevenue(searchedPaymentRecords(deposits))} label='Amount of deposits' classes='bg-tertiary-50-950 w-screen rounded-b-lg fixed top-10 sm:top-8 p-2 z-0' />
-         <Modal
-            open={searchDrawerOpen}
-            onOpenChange={(event)=>(searchDrawerOpen = event.open)}
-            triggerBase='btn preset-filled-primary-50-950 rounded-lg fixed top-0 right-0 z-50 h-12 sm:h-9'
-            contentBase='bg-surface-100-900 h-[340px] w-screen rounded-lg'
-            positionerJustify=''
-            positionerAlign=''
-            positionerPadding=''
-            transitionsPositionerIn={{y:-340, duration: 600}}
-            transitionsPositionerOut={{y:-340, duration: 600}}
-            modal={false}
+         <SearchDrawer
+            modalOpen={searchDrawerOpen}
+            height='h-[180px]'
          >
-            {#snippet trigger()}
-               <SearchIcon aria-label='Search'/>
-            {/snippet}
             {#snippet content()}
                <button onclick={()=>searchDrawerOpen=false} class='btn preset-filled-primary-50-950 rounded-lg m-1 absolute top-0 right-0'><PanelTopClose aria-label='Close'/></button>
                <div class="flex flex-col sm:flex-row mt-11 gap-2 mx-2" >
@@ -150,7 +135,7 @@
                   class="btn preset-filled-primary-50-950 m-2"
                >Sort by date {sortBy ? 'starting earliest' : 'starting latest'}</button>
             {/snippet}
-         </Modal>
+         </SearchDrawer>
          <div class="flex flex-col gap-2 mt-20 mb-8" in:fade={{duration:600}} out:fade={{duration:0}}>
             {#each slicedSource(searchedPaymentRecords(searchByNotes(searchByUser(deposits, customers)))) as deposit}
             {@const user = customers.find((customer) => customer.id === deposit.customerId)}
