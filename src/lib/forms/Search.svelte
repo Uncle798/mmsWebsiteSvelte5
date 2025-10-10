@@ -1,8 +1,8 @@
 <script lang="ts">
+	import { page } from '$app/state';
 	import type { SearchFormSchema } from '$lib/formSchemas/schemas';
 	import { onMount } from 'svelte';
 	import { superForm, type Infer, type SuperValidated } from 'sveltekit-superforms';
-
 	interface Props {
 		data: SuperValidated<Infer<SearchFormSchema>>;
 		search: string;
@@ -10,21 +10,24 @@
 		classes?: string;
 	}
 	let { data, search = $bindable(''), searchType, classes }: Props = $props();
+	const id = $props.id();
+	const url = page.url.pathname
 	let { form, enhance } = superForm(data, {
 		onChange(event) {
 			search = event.get('search');
 			if(event.target){
-            const formName = 'searchForm'
+            const formName = `${url}/searchForm/${id}:${event.path}`
             const value = event.get(event.path);
             if(value){
-               sessionStorage.setItem(`${formName}:${event.path}`, value);
+               sessionStorage.setItem(formName, value);
             }
          }
 		}
 	});
+
 	onMount(() => {
 		for(const key in $form){
-         let fullKey = `searchForm:${key}`;
+         let fullKey = `${url}/searchForm/${id}:${key}`;
          const storedValue = sessionStorage.getItem(fullKey)
          if(storedValue){
             $form[key as keyof typeof $form] = storedValue;
