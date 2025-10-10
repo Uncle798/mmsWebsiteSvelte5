@@ -52,14 +52,11 @@
 		{link: '/users', label:'All Users', toolTip: 'Change the employment status of a user here'},
 	]
 	let menuOpen = $state(false);
-
+	setContext('navMenuOpen', {getMenuOpen: ()=> menuOpen})
 	beforeNavigate(() =>{
 		menuOpen = false;
 	})
 	const formattedPhone = PUBLIC_PHONE.substring(0,1) +'-'+ PUBLIC_PHONE.substring(1,4)+'-'+PUBLIC_PHONE.substring(4,7)+'-'+PUBLIC_PHONE.substring(7);
-	let tooltipOpenIdentifier = $state<string|null>(null);
-	let menuButtonElement = $state<HTMLElement>();
-	setContext('menuButtonElement', menuButtonElement);
 </script>
 <Toast.Group {toaster}>
 	{#snippet children(toast)}
