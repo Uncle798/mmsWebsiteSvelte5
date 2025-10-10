@@ -1,6 +1,8 @@
 <script lang="ts">
    import { Combobox, Portal, useListCollection } from "@skeletonlabs/skeleton-svelte";
+   import Fuse from 'fuse.js'
    import type { ComboboxRootProps } from "@skeletonlabs/skeleton-svelte";
+	import { it } from "node:test";
 
    interface Props {
       data: {label:string, value:string}[];
@@ -32,9 +34,21 @@
    const onOpenChange = () => {
       items = data;
    }
+   const fuse = new Fuse(data, {
+      keys: ['label', 'value'],
+      threshold: 0.3
+   })
+   const onInputValueChange:ComboboxRootProps['onInputValueChange'] = (event) => {
+      const results = fuse.search(event.inputValue);
+      if(results.length > 0){
+         items = results.map((result) => result.item);
+      } else {
+         items = data;
+      }
+   }
 </script>
 <div class={classes}>
-   <Combobox {collection} {onOpenChange} {onValueChange} inputBehavior='autocomplete' {placeholder}>
+   <Combobox {collection} {onOpenChange} {onValueChange} inputBehavior='autocomplete' {placeholder} {onInputValueChange}>
       <Combobox.Label>{label}</Combobox.Label>
       <Combobox.Control>
          <Combobox.Input />
