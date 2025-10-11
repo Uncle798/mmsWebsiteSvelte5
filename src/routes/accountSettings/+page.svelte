@@ -1,5 +1,4 @@
 <script lang="ts">
-   import { Modal, ProgressRing } from '@skeletonlabs/skeleton-svelte';
    import type { PageData } from './$types';
    import AddressForm from '$lib/forms/AddressForm.svelte';
    import EmailVerification from '$lib/forms/EmailVerificationForm.svelte'
@@ -16,7 +15,9 @@
 	import { superForm } from 'sveltekit-superforms';
 	import NameChangeForm from '$lib/forms/NameChangeForm.svelte';
 	import EmailChangeForm from '$lib/forms/EmailChangeForm.svelte';
-    
+	import FormModal from '$lib/displayComponents/Modals/FormModal.svelte';
+   import ProgressRing from '$lib/displayComponents/ProgressRing.svelte';
+
    let {data}:{ data: PageData} = $props();
    let globalModalOpen = $state(false);
    let modalSelector = $state('')
@@ -43,11 +44,8 @@
    let { form, enhance, submit } = superForm(data.autoPayForm)
 </script>
 <Header title='Settings for {data.user?.givenName}' />
-<Modal
-   open={globalModalOpen}
-   onOpenChange={(e)=> globalModalOpen = e.open}
-   contentBase="card bg-surface-400-600 p-4 space-y-4 shadow-xl max-w-(--breakpoint-sm)"
-   backdropClasses="backdrop-blur-xs"
+<FormModal
+   modalOpen={globalModalOpen}
 >
    {#snippet content()}
       {#if modalSelector === 'emailVerification'}
@@ -64,17 +62,17 @@
          <NameChangeForm data={data.nameForm} bind:nameModalOpen={globalModalOpen} />
       {/if}
       {#if modalSelector === 'email'}
-         <EmailChangeForm data={data.emailForm} bind:emailModalOpen={globalModalOpen} />
+         <EmailChangeForm data={data.emailForm} bind:emailModalOpen={globalModalOpen} user={data.user!}/>
       {/if}
       {#if modalSelector === 'address'}
          <AddressForm data={data.addressForm} bind:addressModalOpen={globalModalOpen} userId={data.user?.id}/>
       {/if}
       {#if modalSelector === 'leaseEnd'}
-         <LeaseEndForm data={data.leaseEndForm} leaseId={currentLeaseId} customer={true} bind:leaseEndModalOpen={globalModalOpen}/>
+         <LeaseEndForm data={data.leaseEndForm} leaseId={currentLeaseId} employee={false} bind:leaseEndModalOpen={globalModalOpen}/>
       {/if}
          <button class="btn preset-filled-primary-50-950 rounded-lg" onclick={()=>globalModalOpen = false}>Cancel</button>
    {/snippet}
-</Modal>
+</FormModal>
 
 <div in:fade={{duration:600}} class="mx-2 mb-24 sm:mb-14 lg:mb-9 mt-14 sm:mt-10">
    <div class="flex flex-col sm:flex-row gap-2">
@@ -148,7 +146,7 @@
                            <div class="flex">
                               <button type="button" class='btn preset-filled-primary-50-950 rounded-lg m-1 sm:m-2' onclick={()=>autoPaySignUp(lease.leaseId)}>Sign up for auto pay</button>
                               {#if currentLeaseId === lease.leaseId && autoPaySpinner === true}                                
-                                    <ProgressRing value={null} size="size-8" strokeWidth="6px" meterStroke="stroke-secondary-600-400" trackStroke="stroke-secondary-50-950" classes='ml-2' />
+                                    <ProgressRing value={null} />
                               {/if}
                            </div>
                         </form>
@@ -158,7 +156,7 @@
                            <input type="hidden" name="cuid2Id" id="cuid2Id" value={lease.leaseId} />
                            <button class="btn preset-filled-primary-50-950 rounded-lg m-1 sm:m-2" onclick={()=>autoPayCancel(lease.leaseId)}>Cancel Auto-pay</button>
                            {#if currentLeaseId === lease.leaseId && autoPayCancelSpinner === true}
-                              <ProgressRing value={null} size='size-8' strokeWidth='6px' meterStroke="stroke-secondary-600-400" trackStroke="stroke-secondary-50-950" classes='ml-2' />
+                              <ProgressRing value={null} />
                            {/if}
                         </form>
                      {/if}

@@ -9,13 +9,15 @@
 	import { browser } from '$app/environment';;
 	import { goto } from '$app/navigation';
    import { fade } from "svelte/transition";
-	import { ProgressRing, Progress, Tooltip, Modal } from "@skeletonlabs/skeleton-svelte";
+	import { Tooltip, } from "@skeletonlabs/skeleton-svelte";
 	import { valibot, } from "sveltekit-superforms/adapters";
 	import type { Invoice } from "@prisma/client";
    import Payment from "payment";
 	import { onMount } from "svelte";
 	import { Info } from "lucide-svelte";
 	import ExplainerModal from "$lib/displayComponents/Modals/ExplainerModal.svelte";
+	import ProgressRing from "$lib/displayComponents/ProgressRing.svelte";
+	import ProgressLine from "$lib/displayComponents/ProgressLine.svelte";
 
    interface Props {
       data: SuperValidated<Infer<CreditCardFormSchema>>,
@@ -117,7 +119,7 @@
 <ExplainerModal
    modalOpen={explainerModalOpen}
 >
-   {#snippet copy()}
+   {#snippet content()}
       Please chose Cash or Check as there is currently no way of demoing credit card payments
    {/snippet}
 </ExplainerModal>
@@ -125,23 +127,13 @@
    <div class='{classes}'> 
       <div>        
          <label for="billingGivenName" class="label-text">Give name on credit card
-            <Tooltip
-               open={givenNameTooltipOpen}
-               onOpenChange={(e) => givenNameTooltipOpen = e.open}
-               positioning={{placement: 'top-end'}}
-               contentBase="card preset-filled p-2 max-w-screen text-wrap"
-               openDelay={200}
-               closeDelay={2000}
-               zIndex='30'
-            >
-               {#snippet trigger()}
-                  <button onclick={()=>givenNameTooltipOpen = true} class=''>
+            <Tooltip  open={givenNameTooltipOpen}>
+               <Tooltip.Trigger>
                      <Info aria-label='Given name number tool tip' size={15} />
-                  </button>
-               {/snippet}
-               {#snippet content()}
+               </Tooltip.Trigger>
+               <Tooltip.Content class='card bg-surface-300-700 p-2'>
                   Please use any name
-               {/snippet}
+               </Tooltip.Content>
             </Tooltip>
             <input 
                name="billingGivenName" 
@@ -160,23 +152,13 @@
       </div>
       <div>        
          <label for="billingFamilyName" class="label-text">Family name on credit card
-            <Tooltip
-               open={familyNameToolTipOpen}
-               onOpenChange={(e) => familyNameToolTipOpen = e.open}
-               positioning={{placement: 'top-end'}}
-               contentBase="card preset-filled p-2 max-w-screen text-wrap"
-               openDelay={200}
-               closeDelay={2000}
-               zIndex='30'
-            >
-               {#snippet trigger()}
-                  <button onclick={()=>familyNameToolTipOpen=true} class=''>
-                     <Info aria-label='Family name number tool tip' size={15} />
-                  </button>
-               {/snippet}
-               {#snippet content()}
+            <Tooltip open={familyNameToolTipOpen}>
+               <Tooltip.Trigger>
+                  <Info aria-label='Family name number tool tip' size={15} />
+               </Tooltip.Trigger>
+               <Tooltip.Content class='card bg-surface-300-700 p-2'>
                   Please use any name
-               {/snippet}
+               </Tooltip.Content>
             </Tooltip>
             <input 
             name="billingFamilyName" 
@@ -195,23 +177,13 @@
       </div>
       <div>        
          <label for="ccNum" class="label-text">Credit card number
-            <Tooltip
-               open={ccToolTipOpen}
-               onOpenChange={(e) => ccToolTipOpen = e.open}
-               positioning={{placement: 'top-end'}}
-               contentBase="card preset-filled p-2 max-w-screen text-wrap"
-               openDelay={200}
-               closeDelay={2000}
-               zIndex='30'
-            >
-               {#snippet trigger()}
-                  <button onclick={()=> ccToolTipOpen = true} class=''>
-                     <Info aria-label='Credit card number tool tip' size={15} />
-                  </button>
-               {/snippet}
-               {#snippet content()}
+            <Tooltip open={ccToolTipOpen}>
+               <Tooltip.Trigger>
+                  <Info aria-label='Credit card number tool tip' size={15} />
+               </Tooltip.Trigger>
+               <Tooltip.Content class='card bg-surface-300-700 p-2'>
                   Please use 4000000000000002 or any of the card numbers from <a href="https://developer.elavon.com/test-cards" class="anchor">https://developer.elavon.com/test-cards</a>
-               {/snippet}
+               </Tooltip.Content>
             </Tooltip>
             <input 
             name="ccNum" 
@@ -231,23 +203,13 @@
       <div class="flex gap-2 flex-row">
          <div>               
             <label for="ccExp" class="label-text">Expiration
-               <Tooltip
-                  open={expToolTipOpen}
-                  onOpenChange={(e) => expToolTipOpen = e.open}
-                  positioning={{placement: 'top-end'}}
-                  contentBase="card preset-filled p-2 max-w-screen text-wrap"
-                  openDelay={200}
-                  closeDelay={2000}
-                  zIndex='30'
-               >
-                  {#snippet trigger()}
-                     <button onclick={()=>expToolTipOpen=true} class="">
-                        <Info aria-label='Credit card expiration tool tip' size={15}/>
-                     </button>
-                  {/snippet}
-                  {#snippet content()}
+               <Tooltip open={expToolTipOpen}>
+                  <Tooltip.Trigger>
+                     <Info aria-label='Credit card expiration tool tip' size={15}/>
+                  </Tooltip.Trigger>
+                  <Tooltip.Content class='card bg-surface-300-700 p-2'>
                      Please use a future date, from <a href="https://developer.elavon.com/test-cards" class="anchor">https://developer.elavon.com/test-cards</a>
-                  {/snippet}
+                  </Tooltip.Content>
                </Tooltip>
                <input
                   name="ccExp"
@@ -266,23 +228,13 @@
          </div>
          <div>               
             <label for="cvv" class="label-text">CVV code
-               <Tooltip
-                  open={cvvToolTipOpen}
-                  onOpenChange={(e) => cvvToolTipOpen = e.open}
-                  positioning={{placement: 'top-end'}}
-                  contentBase="card preset-filled p-2 max-w-screen text-wrap"
-                  openDelay={200}
-                  closeDelay={2000}
-                  zIndex='30'
-               >
-                  {#snippet trigger()}
-                     <button onclick={()=> cvvToolTipOpen = true} class=''>
-                        <Info aria-label='CVV code tool tip' size={15}/>
-                     </button>
-                  {/snippet}
-                  {#snippet content()}
+               <Tooltip open={cvvToolTipOpen}>
+                  <Tooltip.Trigger>
+                     <Info aria-label='CVV code tool tip' size={15}/>
+                  </Tooltip.Trigger>
+                  <Tooltip.Content class='card bg-surface-300-700 p-2'>
                      Please use any valid cvv code, from <a href="https://developer.elavon.com/test-cards" class="anchor">https://developer.elavon.com/test-cards</a>
-                  {/snippet}
+                  </Tooltip.Content>
                </Tooltip>
                <input
                   name="cvv"
@@ -301,22 +253,13 @@
          </div>
          <div>
             <label for="postalCode" class="label-text">Postal code
-               <Tooltip
-                  open={zipcodeToolTipOpen}
-                  onOpenChange={(e) => zipcodeToolTipOpen = e.open}
-                  positioning={{placement: 'top-end'}}
-                  openDelay={200}
-                  closeDelay={2000}
-                  zIndex='30'
-               >
-                  {#snippet trigger()}
-                     <button onclick={()=>zipcodeToolTipOpen=true} class="">
-                        <Info aria-label='Postal code tool tip' size={15}/>
-                     </button>
-                  {/snippet}
-                  {#snippet content()}
+               <Tooltip open={zipcodeToolTipOpen}>
+                  <Tooltip.Trigger>
+                     <Info aria-label='Postal code tool tip' size={15}/>
+                  </Tooltip.Trigger>
+                  <Tooltip.Content class='card bg-surface-300-700 p-2'>
                      Please use any valid postal code.
-                  {/snippet}
+                  </Tooltip.Content>
                </Tooltip>
                <input
                   name="postalCode"
@@ -344,21 +287,12 @@
       {/if}
       {#if delayed && !timeout}
       <div transition:fade={{duration:600}}>
-         <Progress value={null} class='items-center w-fit'>
-            <Progress.Circle style='--size: 40px; --thickness: 6px'>
-               <Progress.CircleTrack class='stroke-secondary-50-950'/>
-               <Progress.CircleRange class='stroke-secondary-600-400'/>
-            </Progress.Circle>
-         </Progress>
+         <ProgressRing value={null} />
       </div>
       {/if}
       {#if timeout}
       <div transition:fade={{duration:600}}>
-         <Progress value={null} class='items-center w-fit'>
-            <Progress.Track class='stroke-secondary-50-950 h-4'> 
-               <Progress.Range class='stroke-secondary-600-400' />
-            </Progress.Track>
-         </Progress>
+         <ProgressLine value={null} />
       </div>
       {/if}
    {/if}
