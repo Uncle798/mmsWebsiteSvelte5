@@ -7,28 +7,23 @@
    import Header from '$lib/Header.svelte';
 	import { fade } from 'svelte/transition';
    import type { PageData } from './$types';
-	import { Modal } from '@skeletonlabs/skeleton-svelte';
    import LeaseEndForm from '$lib/forms/LeaseEndForm.svelte';
 	import InvoiceEmployee from '$lib/displayComponents/InvoiceEmployee.svelte';
+	import FormModal from '$lib/displayComponents/Modals/FormModal.svelte';
 
    let { data }: { data: PageData } = $props();
    let modalOpen = $state(false);
 </script>
 <Header title='Lease {data.lease?.leaseId}' />
 {#if  data.lease}   
-   <Modal
-      open={modalOpen}
-      onOpenChange={(event) => 
-         modalOpen = event.open
-      }
-      contentBase="card bg-surface-400-600 p-4 space-y-4 shadow-xl max-w-(--breakpoint-sm)"
-      backdropClasses="backdrop-blur-xs"
+   <FormModal
+      modalOpen={modalOpen}
    >
       {#snippet content()}
          <LeaseEndForm data={data.leaseEndForm} leaseId={data.lease!.leaseId} bind:leaseEndModalOpen={modalOpen}/>
          <button type="button" class="btn preset-filled-primary-50-950" onclick={()=> modalOpen = false}>Close</button>
       {/snippet}
-   </Modal>
+   </FormModal>
 {/if}
 {#if data.user?.employee}   
    <div class="mt-14 sm:mt-10 mb-8">
@@ -67,7 +62,7 @@
          {#each data.invoices as invoice}
             <div class="border border-primary-50-950 rounded-lg">
                <InvoiceEmployee invoice={invoice} classes='h-60 p-2'/>
-               {#if !invoice.paymentRecordNum}
+               {#if invoice.amountPaid < invoice.invoiceAmount}
                   <a href="/paymentRecord/new?invoiceNum={invoice.invoiceNum}" class="btn preset-filled-primary-50-950 h-8 m-2">Make a payment record for this invoice</a>
                {/if}
             </div>

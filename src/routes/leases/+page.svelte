@@ -7,8 +7,7 @@
 	import Search from '$lib/forms/Search.svelte';
 	import Pagination from '$lib/displayComponents/Pagination.svelte';
 	import AddressEmployee from '$lib/displayComponents/AddressEmployee.svelte';
-	import { Modal } from '@skeletonlabs/skeleton-svelte';
-	import { SearchIcon, PanelTopClose } from 'lucide-svelte';
+	import SearchDrawer from '$lib/displayComponents/Modals/SearchDrawer.svelte';
    let { data }: { data: PageData } = $props();
    let search = $state('');
    let pageNum = $state(1);
@@ -72,28 +71,16 @@
             Loading addresses...
          </div>
       {:then addresses}
-         <Modal
-            open={searchDrawerOpen}
-            onOpenChange={(event)=>(searchDrawerOpen = event.open)}
-            triggerBase='btn preset-filled-primary-50-950 rounded-lg fixed top-0 right-0 z-50 h-12 sm:h-8'
-            contentBase='bg-surface-100-900 h-[280px] w-screen rounded-lg'
-            positionerJustify=''
-            positionerAlign=''
-            positionerPadding=''
-            transitionsPositionerIn={{y:-280, duration: 600}}
-            transitionsPositionerOut={{y:-280, duration: 600}}
-            modal={false}
+         <SearchDrawer
+            modalOpen={searchDrawerOpen}
+            height='h-[180px]'
          >
-            {#snippet trigger()}
-               <SearchIcon aria-label='Close'/>
-            {/snippet}
             {#snippet content()}
-               <button onclick={()=>searchDrawerOpen=false} class='btn preset-filled-primary-50-950 rounded-lg m-1 absolute top-0 right-0'><PanelTopClose aria-label='Close'/></button>
                <Search bind:search={search} searchType='lease id' data={data.searchForm} classes='mt-10 mx-1'/>
                <Search bind:search={customerSearch} searchType='customer name' data={data.searchForm} classes='mx-1' />
                <button class="btn preset-filled-primary-50-950 " onclick={() => sortBy = !sortBy}>Sort by unit number {sortBy ? 'ascending' : 'descending'}</button>
             {/snippet}
-         </Modal>
+         </SearchDrawer>
          <div class="rounded-lg mt-14 sm:mt-10 mb-20 sm:mb-12 lg:mb-8">
             {#each slicedLeases(sortedByUnitNum(searchedLeases(searchByCustomer(leases, currentCustomers(customers))))) as lease}
             {@const customer = customers.find((customer) => customer.id === lease.customerId)}

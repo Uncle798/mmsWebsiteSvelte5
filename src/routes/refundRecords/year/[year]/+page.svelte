@@ -10,11 +10,13 @@
    import Revenue from '$lib/displayComponents/Revenue.svelte';
    import Header from '$lib/Header.svelte';
    import Address from '$lib/displayComponents/AddressEmployee.svelte';
-   import { Combobox, Modal, Progress, ProgressRing } from '@skeletonlabs/skeleton-svelte';
 	import { goto, onNavigate } from '$app/navigation';
-	import { SearchIcon, PanelTopClose } from 'lucide-svelte';
 	import EmailCustomer from '$lib/EmailCustomer.svelte';
 	import DownloadPdfButton from '$lib/DownloadPDFButton.svelte';
+	import SearchDrawer from '$lib/displayComponents/Modals/SearchDrawer.svelte';
+   import Combobox from '$lib/formComponents/Combobox.svelte';
+   import ProgressLine from '$lib/displayComponents/ProgressLine.svelte';
+   import ProgressRing from '$lib/displayComponents/ProgressRing.svelte';
    
    let { data }: { data: PageData } = $props();
    let size = $state(25)
@@ -69,23 +71,19 @@
 <Header title='Refund Records' />
 {#await wrapper}
    <div class="mt-18 sm:mt-16 mx-1 sm:mx-2 mb-8">
-      Loading {numberFormatter.format(data.refundCount)} refund records or select month:
+      
       <Combobox
          data={monthComboBoxData}
-         openOnClick={true}
          onValueChange={(details) => {
             const date = dayjs(parseInt(details.value[0]))
             goto(`/refundRecords/year/${date.format('YYYY')}/month/${(date.get('month'))+1}`)
          }}
          placeholder='Select Month'
+         label='Loading {numberFormatter.format(data.refundCount)} refund records or select month:'
       />
       {#if delayed}
          <ProgressRing  
-            value={null} 
-            size="size-8" 
-            meterStroke="stroke-tertiary-600-400" 
-            trackStroke="stroke-tertiary-50-950"
-            classes='mt-6 mx-2'
+            value={null}
             {@attach () => {
                setTimeout(() => {
                   delayed = false;
@@ -95,12 +93,7 @@
          />
       {/if}
       {#if timeout}
-         <Progress 
-            value={null}
-            meterBg="bg-tertiary-500"
-            width='w-12'
-            classes='mt-9 mx-2'
-         />
+         <ProgressLine value={null} />
       {/if}
    </div>
    {:then refunds}
@@ -111,23 +104,11 @@
             Loading addresses
          {:then addresses} 
             {#if refunds.length > 0}
-               <Modal
-                  open={searchDrawerOpen}
-                  onOpenChange={(e) => searchDrawerOpen = e.open}
-                  triggerBase='btn preset-filled-primary-50-950 rounded-lg fixed top-0 right-0 z-50 h-12 sm:h-auto'
-                  contentBase='bg-surface-100-900 h-[400px] w-screen rounded-lg'
-                  positionerJustify=''
-                  positionerAlign=''
-                  positionerPadding=''
-                  transitionsPositionerIn={{y:-400, duration: 600}}
-                  transitionsPositionerOut={{y:-400, duration: 600}}
-                  modal={false}
+               <SearchDrawer
+                  modalOpen={searchDrawerOpen}
+                  height='h-[180px]'
                >
-                  {#snippet trigger()}
-                     <SearchIcon aria-label='Search'/>
-                  {/snippet}
                   {#snippet content()}
-                     <button onclick={()=>searchDrawerOpen=false} class='btn preset-filled-primary-50-950 rounded-lg m-1 absolute top-0 right-0'><PanelTopClose aria-label='Close'/></button>
                      <Search
                         bind:search 
                         searchType="Refund records" 
@@ -143,7 +124,7 @@
                         classes='p-2'	
                      />
                   {/snippet}
-               </Modal>
+               </SearchDrawer>
                <Revenue 
                   label="Total refunds" 
                   amount={totalRevenue(searchRefunds(dateSearchRefunds(refunds)))}

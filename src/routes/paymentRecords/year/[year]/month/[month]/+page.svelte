@@ -14,10 +14,11 @@
    import Revenue from '$lib/displayComponents/Revenue.svelte';  
    import Address from '$lib/displayComponents/AddressEmployee.svelte';
    import RefundForm from '$lib/forms/NewRefundForm.svelte'
-   import { Modal } from '@skeletonlabs/skeleton-svelte';
 	import { SearchIcon, PanelTopCloseIcon } from 'lucide-svelte';
 	import EmailCustomer from '$lib/EmailCustomer.svelte';
 	import DownloadPdfButton from '$lib/DownloadPDFButton.svelte';
+	import FormModal from '$lib/displayComponents/Modals/FormModal.svelte';
+	import SearchDrawer from '$lib/displayComponents/Modals/SearchDrawer.svelte';
    dayjs.extend(utc)
    let { data }: { data: PageData } = $props();
    let pageNum = $state(1);
@@ -104,19 +105,14 @@
    }
    let searchDrawerOpen = $state(false);
 </script>
-<Modal
-   open={modalOpen}
-   onOpenChange={(e) => modalOpen = e.open}
-   contentBase="card bg-surface-400-600 p-4 space-y-4 shadow-xl"
-   backdropClasses=""
-   modal={true}
+<FormModal
+   modalOpen={modalOpen}
 >  
-{#snippet content()}
-   <RefundForm data={data.refundForm} paymentRecord={currentPaymentRecord}/>
-   <button class="btn rounded-lg preset-filled-primary-50-950" onclick={()=>modalOpen = false}>Close</button>
-{/snippet}
-
-</Modal>
+   {#snippet content()}
+      <RefundForm data={data.refundForm} paymentRecord={currentPaymentRecord}/>
+      <button class="btn rounded-lg preset-filled-primary-50-950" onclick={()=>modalOpen = false}>Close</button>
+   {/snippet}
+</FormModal>
 <Header title='Payment Records' />
 {#await wrapper}
    <div class="mx-1 sm:mx-2 mt-14 sm:mt-10">
@@ -147,56 +143,44 @@
                   classes='m-1 sm:m-2'
                />
             </div>
-            <Modal
-                  open={searchDrawerOpen}
-                  onOpenChange={(event)=>(searchDrawerOpen = event.open)}
-                  triggerBase='btn preset-filled-primary-50-950 rounded-lg fixed top-0 right-0 z-50'
-                  contentBase='bg-surface-100-900 h-[400px] w-screen rounded-lg'
-                  positionerJustify=''
-                  positionerAlign=''
-                  positionerPadding=''
-                  transitionsPositionerIn={{y:-400, duration: 600}}
-                  transitionsPositionerOut={{y:-400, duration: 600}}
-                  modal={false}
+            <SearchDrawer
+               modalOpen={searchDrawerOpen}
+               height='h-[180px]'
             >
-            {#snippet trigger()}
-               <SearchIcon />
-            {/snippet}
-            {#snippet content()}
-               <button onclick={()=>searchDrawerOpen=false} class='btn preset-filled-primary-50-950 rounded-lg m-1 absolute top-0 right-0'><PanelTopCloseIcon/></button>
-               <Search 
-                  bind:search={search} 
-                  searchType='payment record number' 
-                  data={data.searchForm}
-                  classes='m-1 sm:m-2 mt-11 sm:mt-11'
-               />
-               <Search
-                  bind:search={nameSearch}
-                  searchType='customer name'
-                  data={data.searchForm}
-                  classes='m-1 sm:m-2'
-               />
-               <DateSearch 
-                  bind:startDate={startDate} 
-                  bind:endDate={endDate} 
-                  {minDate} 
-                  {maxDate} 
-                  data={data.dateSearchForm}
-                  classes='flex flex-col md:grid md:grid-cols-2 m-1 sm:m-2'    
-               />
-               <button onclick={()=>{
-                  sortBy = !sortBy;
-                  searchDrawerOpen = false;
-                  }} class="anchor col-span-full mx-2">Sort by date {sortBy ? 'starting earliest' : 'starting latest'}</button>
-            {/snippet}
-            </Modal>
+               {#snippet content()}
+                  <Search 
+                     bind:search={search} 
+                     searchType='payment record number' 
+                     data={data.searchForm}
+                     classes='m-1 sm:m-2 mt-11 sm:mt-11'
+                  />
+                  <Search
+                     bind:search={nameSearch}
+                     searchType='customer name'
+                     data={data.searchForm}
+                     classes='m-1 sm:m-2'
+                  />
+                  <DateSearch 
+                     bind:startDate={startDate} 
+                     bind:endDate={endDate} 
+                     {minDate} 
+                     {maxDate} 
+                     data={data.dateSearchForm}
+                     classes='flex flex-col md:grid md:grid-cols-2 m-1 sm:m-2'    
+                  />
+                  <button onclick={()=>{
+                     sortBy = !sortBy;
+                     searchDrawerOpen = false;
+                     }} class="anchor col-span-full mx-2">Sort by date {sortBy ? 'starting earliest' : 'starting latest'}</button>
+               {/snippet}
+            </SearchDrawer>
                <div class="mt-26 sm:mt-20 mb-8" in:fade={{duration:600}} out:fade={{duration:0}}>
                   {#each slicedSource(dateSearchPayments(searchedPayments(sortedByDate(searchByUser(paymentRecords, currentUsers(customers)))))) as paymentRecord}
                   {@const customer = customers.find((customer) => customer.id === paymentRecord.customerId) }
                      <div class="rounded-lg border border-primary-50-950 grid sm:grid-cols-2 m-2">
                         <div>
                            <PaymentRecordEmployee paymentRecord={paymentRecord} classes="p-2" />
-                           {#if !paymentRecord.refunded}
+                           {#if paymentRecord.paymentAmount > paymentRecord.refundedAmount}
                                  <button type="button" class="btn rounded-lg preset-filled-primary-50-950 m-2" onclick={() => refundModal(paymentRecord)}>Refund this payment</button>
                            {/if}
                         </div>
