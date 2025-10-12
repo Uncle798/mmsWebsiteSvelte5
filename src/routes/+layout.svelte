@@ -8,7 +8,7 @@
 	import { enhance } from '$app/forms';
 	import { PUBLIC_ADDRESS1, PUBLIC_COMPANY_NAME, PUBLIC_PHONE } from '$env/static/public';
 	import { CircleX } from 'lucide-svelte';
-	import { setContext } from 'svelte';
+	import { mainMenuOpen } from '$lib/MainMenuOpen.svelte';
 
 	interface Props {
 		data: PageData,
@@ -51,10 +51,8 @@
 	let adminLinks:Link[] = [
 		{link: '/users', label:'All Users', toolTip: 'Change the employment status of a user here'},
 	]
-	let menuOpen = $state(false);
-	setContext('navMenuOpen', {getMenuOpen: ()=> menuOpen})
 	beforeNavigate(() =>{
-		menuOpen = false;
+		mainMenuOpen.open = false
 	})
 	const formattedPhone = PUBLIC_PHONE.substring(0,1) +'-'+ PUBLIC_PHONE.substring(1,4)+'-'+PUBLIC_PHONE.substring(4,7)+'-'+PUBLIC_PHONE.substring(7);
 </script>
@@ -71,13 +69,13 @@
 </Toast.Group>
 {#if data.user?.employee}
 	<header>
-		<Dialog>
-			<Dialog.Trigger class='btn bg-primary-50-950 hover:shadow-xl hover:border-2 border-secondary-50-950 fixed top-0 left-0 z-40 h-12 sm:h-8 rounded-tl-none mainMenu'><Menu aria-label='Main Menu'/></Dialog.Trigger>
+		<Dialog open={mainMenuOpen.open} onOpenChange={(e) => {mainMenuOpen.open = e.open}}>
+			<Dialog.Trigger class='btn bg-primary-50-950 hover:shadow-xl hover:border-2 border-secondary-50-950 fixed top-0 left-0 z-40 h-12 sm:h-8 rounded-tl-none mainMenuButton'><Menu aria-label='Main Menu'/></Dialog.Trigger>
 			<Portal>
 				<Dialog.Backdrop class="fixed inset-0 bg-surface-50-950/50 transition transition-discrete opacity-0 starting:data-[state=open]:opacity-0 data-[state=open]:opacity-100"/>
 				<Dialog.Positioner class='fixed inset-0 z-40 flex justify-start rounded-none'>
 					<Dialog.Content class="h-screen card bg-surface-100-900 w-[250px] p-4 space-y-4 shadow-xl transition transition-discrete opacity-0 -translate-x-full 
-						starting:data-[state=open]:opacity-0 starting:data-[state=open]:-translate-x-full data-[state=open]:opacity-100 data-[state=open]:translate-x-0 rounded-l-none">
+						starting:data-[state=open]:opacity-0 starting:data-[state=open]:-translate-x-full data-[state=open]:opacity-100 data-[state=open]:translate-x-0 rounded-l-none mainMenu">
 						<header class='flex justify-between items-center'>
 							<Dialog.Title class='font-bold text-2xl' >Main Menu</Dialog.Title>
 							<Dialog.CloseTrigger><CircleX aria-label='close'/></Dialog.CloseTrigger>

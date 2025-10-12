@@ -10,9 +10,9 @@
 	import { Portal, Tooltip } from "@skeletonlabs/skeleton-svelte";
    import { driver } from 'driver.js';
    import 'driver.js/dist/driver.css'
-	import { getContext, onMount } from "svelte";
-	import { CircleX } from "lucide-svelte";
-   
+	import { onMount } from "svelte";
+   import { mainMenuOpen } from '$lib/MainMenuOpen.svelte';
+
    interface Props {
       data: PageData;
    }
@@ -27,18 +27,27 @@
    }
    const formattedPhone = PUBLIC_PHONE.substring(0,1) +'-'+ PUBLIC_PHONE.substring(1,4)+'-'+PUBLIC_PHONE.substring(4,7)+'-'+PUBLIC_PHONE.substring(7)
    let copyTooltipOpen = $state(false);
+
    onMount(() => {
-      const driverObj = driver({
+      const mainPageTour = driver({
          showProgress: true,
          showButtons: ['close', 'next', 'previous'],
          steps: [
             { popover: { title: 'Welcome', description: `Welcome to your homepage ${data.user?.givenName}` } },
             { element: '.homeCopy', popover: { title: 'Here\'s where we tell your story', description: `Here's where we tell your story. All text on the site is customizable to your specifications` } },
             { element: '.firstUnit', popover: { title: `Available units`, description: `This is the smallest unit available for rent ` } },
-            { element: '.mainMenu', popover: { title: `Main menu`, description: `This is the main menu` } },
-         ]
+            { element: '.mainMenuButton', popover: { title: `Main menu`, description: `This is the main menu` } },
+            { element: '.mainMenu', popover: { title: `Main menu`, description: `Here you can find your customers, units, invoices, payment records, and refunds`}}
+         ],
+         onNextClick: (element, step, options) => {
+            if(step.element === '.mainMenuButton'){
+               mainMenuOpen.open = true;
+               console.log(mainMenuOpen.open)
+            }
+            mainPageTour.moveNext()
+         }
       });
-      driverObj.drive();
+      mainPageTour.drive();
    })
 </script>
 <Header title='Home' />
