@@ -2,7 +2,6 @@
    import { Combobox, Portal, useListCollection } from "@skeletonlabs/skeleton-svelte";
    import Fuse from 'fuse.js'
    import type { ComboboxRootProps } from "@skeletonlabs/skeleton-svelte";
-	import { it } from "node:test";
 
    interface Props {
       data: {label:string, value:string}[];
