@@ -27,6 +27,6 @@ export const load:PageServerLoad = (async (event) => {
          sizes.push(datum.size)
       }
    })
-   const demoCookie =  event.cookies.get('homeComplete');
+   const demoCookie =  event.cookies.get('home');
    return { availableUnits, sizes, demoCookie };
 })

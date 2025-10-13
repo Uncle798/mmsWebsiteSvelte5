@@ -8,7 +8,7 @@ export const GET: RequestHandler = async (event) => {
          path = '';
       }
       console.log(path)
-      event.cookies.set(`${demoPage}Complete`, 'true', {path:'/' + path?.toLowerCase(), maxAge:60*60*24})
+      event.cookies.set(`${demoPage}`, 'true', {path: '/', maxAge:60*60*24})
    }
    return new Response(null, {status: 200});
 };

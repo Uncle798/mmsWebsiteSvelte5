@@ -28,6 +28,7 @@ export const load = (async (event) => {
    const customerSelectForm = await superValidate(valibot(cuidIdFormSchema));
    const discountId = event.url.searchParams.get('discountId');
    const redirectTo = event.url.searchParams.get('redirectTo');
+   const demoCookie = event.cookies.get('employeeNewLease');
    const unit = await prisma.unit.findUnique({
       where: {
          num: unitNum
@@ -90,7 +91,8 @@ export const load = (async (event) => {
       address,
       discount,
       customers,
-      unitNum
+      unitNum,
+      demoCookie,
    };
 }) satisfies PageServerLoad;
 
@@ -100,6 +102,7 @@ export const actions: Actions = {
          redirect(302, '/login?toast=employee')
       }
       const leaseForm = await superValidate(event.request, valibot(newLeaseSchema));
+      console.log(leaseForm)
       if(!leaseForm.valid){
          return message(leaseForm, 'Not valid');
       }
