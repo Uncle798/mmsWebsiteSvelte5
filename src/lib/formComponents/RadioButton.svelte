@@ -7,9 +7,10 @@
       constraints: InputConstraint | undefined;
       groupName: string | null | undefined;
       id: string | undefined;
+      disabled?: boolean 
       classes?: string;
    }
-   let { value = $bindable(), label, errors, constraints, groupName, id, classes }:Props = $props();
+   let { value = $bindable(), label, errors, constraints, groupName, id, disabled, classes }:Props = $props();
 </script>
 <div class="flex mx-2 justify-items-center {classes}">
    <label for={id}><span class="label-text text-center">{label}</span>
@@ -20,6 +21,7 @@
       class="radio justify-self-center"
       bind:value={value}
       {...constraints}
+      {disabled}
    />
    </label>
    {#if errors}
