@@ -9,7 +9,7 @@
 	import Placeholder from "$lib/displayComponents/Placeholder.svelte";
 	import { Portal, Tooltip } from "@skeletonlabs/skeleton-svelte";
    import { driver } from 'driver.js';
-   import 'driver.js/dist/driver.css'
+   import 'driver.js/dist/driver.css';
 	import { onMount } from "svelte";
    import { mainMenuOpen } from '$lib/MainMenuOpen.svelte';
 
@@ -27,27 +27,31 @@
    }
    const formattedPhone = PUBLIC_PHONE.substring(0,1) +'-'+ PUBLIC_PHONE.substring(1,4)+'-'+PUBLIC_PHONE.substring(4,7)+'-'+PUBLIC_PHONE.substring(7)
    let copyTooltipOpen = $state(false);
-
-   onMount(() => {
-      const mainPageTour = driver({
-         showProgress: true,
-         showButtons: ['close', 'next', 'previous'],
-         steps: [
-            { popover: { title: 'Welcome', description: `Welcome to your homepage ${data.user?.givenName}` } },
-            { element: '.homeCopy', popover: { title: 'Here\'s where we tell your story', description: `Here's where we tell your story. All text on the site is customizable to your specifications` } },
-            { element: '.firstUnit', popover: { title: `Available units`, description: `This is the smallest unit available for rent ` } },
-            { element: '.mainMenuButton', popover: { title: `Main menu`, description: `This is the main menu` } },
-            { element: '.mainMenu', popover: { title: `Main menu`, description: `Here you can find your customers, units, invoices, payment records, and refunds`}}
-         ],
-         onNextClick: (element, step, options) => {
-            if(step.element === '.mainMenuButton'){
-               mainMenuOpen.open = true;
-               console.log(mainMenuOpen.open)
-            }
-            mainPageTour.moveNext()
+   const mainPageTour = driver({
+      showProgress: true,
+      showButtons: ['close', 'next', 'previous'],
+      steps: [
+         { popover: { title: 'Welcome', description: `Welcome to your homepage ${data.user?.givenName} though as an owner, you won't spend much time here. It's what a customer would see when first coming to your page.` } },
+         { element: '.homeCopy', popover: { title: 'Here\'s where we tell your story', description: `All text on the site is customizable to your specifications` } },
+         { element: '.firstUnit', popover: { title: `Available units`, description: `This is the smallest unit available for rent ` } },
+         { element: '.mainMenuButton', popover: { title: `Main menu`, description: `This is the main menu` } },
+         { element: '.mainMenu', popover: { title: `Main menu`, description: `Here you can find your customers, units, invoices, payment records, and refunds`}}
+      ],
+      onNextClick: (element, step, options) => {
+         if(step.element === '.mainMenuButton'){
+            mainMenuOpen.open = true;
+            console.log(mainMenuOpen.open)
          }
-      });
-      mainPageTour.drive();
+         mainPageTour.moveNext()
+      },
+      onDestroyed: () => {
+         fetch('/api/demoSetCookie?demoPage=home')
+      }
+   });
+   onMount(() => {
+      if(data.demoCookie !== 'true'){
+         mainPageTour.drive();
+      }
    })
 </script>
 <Header title='Home' />
@@ -82,8 +86,8 @@
       <Placeholder numCols={4} numRows={4} heightClass='h-34' classes='z-0 hidden lg:block' />     
    </div>
    {:then units}
-   <article class="m-2 mt-14 sm:mt-10">
-      <div>
+      <article class="m-2 mt-14 sm:mt-10">
+         <div>
             <Tooltip>
                <Tooltip.Trigger>
                   <div class="homeCopy">
@@ -139,4 +143,7 @@
          </div>
       {/each}
    </div>
+   {#if data.demoCookie}
+      <button class="btn preset-filled-primary-50-950 h-8 mx-2" onclick={()=>{mainPageTour.drive()}}>Restart tour</button>
+   {/if}
 {/await}

@@ -18,6 +18,8 @@
    import ExplainerModal from '$lib/displayComponents/Modals/ExplainerModal.svelte';
    import Combobox from '$lib/formComponents/Combobox.svelte';
 	import FormModal from '$lib/displayComponents/Modals/FormModal.svelte';
+   import { driver } from 'driver.js';
+   import 'driver.js/dist/driver.css';
 
    let { data }: { data: PageData } = $props();
    let addressModalOpen = $state(false);
@@ -35,25 +37,10 @@
       label: `${customer.givenName} ${customer.familyName} (${customer.email})`,
       value: customer.id
    })));
-   onMount(() => {
-      if(data.customer){
-         if(!data.customer.emailVerified){
-            registerModalOpen=true
-         }
-      }
-
-   })
-   const currencyFormatter = new Intl.NumberFormat('en-US', {style: 'currency', currency: 'USD'})
-   const paymentTypes = [ 'CASH', 'CHECK', 'CREDIT'];
-   let paymentExplainerModalOpen = $state(false);
-   let newCustomerExplainerModalOpen = $state(false);
-   let customerSelectForm:HTMLFormElement | undefined = $state();
-   let customerSelectSubmit:HTMLButtonElement | undefined = $state();
-   let customerCuidId:HTMLInputElement | undefined = $state();
    const userEmailAddress = data.user?.email?.toLowerCase();
    const userEmailName = userEmailAddress?.substring(0, userEmailAddress.indexOf('@')).toLowerCase();
    const userEmailDomain = userEmailAddress?.substring(userEmailAddress.indexOf('@')+1).toLowerCase();
-   let gmailName = $derived.by(() => {
+   let gmailName = () => {
       if(data.user?.givenName && data.user.familyName){
          const givenName = data.user.givenName.toLowerCase();
          const familyName = data.user.familyName.toLowerCase();
@@ -67,7 +54,49 @@
             return userEmailName?.substring(0, 2) + '.' + userEmailName?.substring(2);
          }
       }
+      return undefined
+   }
+   const tour = driver({
+      showProgress: true,
+      steps: [
+         {element: '.createCustomerButton', popover: {title: 'Create a customer', 
+            description: `Create a new customer here. You'll need to use a different email address than the one you registered for the demo with.\
+            If you use gmail you can add a period (.) in the name and it will work as a new email address. i.e. ${userEmailAddress} and ${gmailName() + '@' + userEmailDomain}\
+            will be received in the same inbox but are different in the database.
+         `}}
+      ],
+      onDestroyed: () => {
+         fetch('/api/demoSetCookie?demoPage=employeeNewLease');
+      }
    })
+   onMount(() => {
+      if(data.customer){
+         if(!data.customer.emailVerified){
+            registerModalOpen=true
+         }
+      }
+      console.log(data.demoCookie)
+      if(data.demoCookie !== 'true'){  
+         tour.drive();
+      }
+   })
+   const currencyFormatter = new Intl.NumberFormat('en-US', {style: 'currency', currency: 'USD'})
+   const paymentTypes = [ 'CASH', 'CHECK', 'CREDIT'];
+   let paymentExplainerModalOpen = $state(false);
+   let newCustomerExplainerModalOpen = $state(false);
+   let customerSelectForm:HTMLFormElement | undefined = $state();
+   let customerSelectSubmit:HTMLButtonElement | undefined = $state();
+   let customerCuidId:HTMLInputElement | undefined = $state();
+   function addressButtonTour () {
+      const addressButtonTour = driver({
+         showProgress: true,
+         steps: [
+            {element: '.addAddressButton', popover: {title: 'Add an address', description: `You'll need to add an address, Feel free to use
+            1700 Mill Rd Moscow ID 83843. All of this info will be destroyed when you leave the demo.`}}
+         ]
+      })
+      addressButtonTour.drive();
+   }
 </script>
 
 <Header title="Employee New Lease" />
@@ -84,7 +113,6 @@
          redirectTo='employeeNewLease' 
          unitNum={data.unitNum}
       />
-      <button class="btn preset-filled-primary-50-950" onclick={()=>registerModalOpen=false}>Close</button>
       {:else if !data.customer.emailVerified && data.customer} 
          <EmailVerificationForm 
             data={data.emailVerificationForm} 
@@ -92,7 +120,6 @@
             userId={userId ? userId : data.customer!.id}
             redirect='' 
          />
-         <button class="btn preset-filled-primary-50-950" onclick={()=>registerModalOpen=false}>Close</button>
       {:else}
          <div {@attach ()=> {registerModalOpen=false}}></div>
       {/if}
@@ -101,14 +128,16 @@
 <ExplainerModal
    bind:modalOpen={paymentExplainerModalOpen}
 >
-   {#snippet copy()}
+   {#snippet content()}
       Please select cash or check to complete the project as there is currently no way to demo a credit payment.
    {/snippet}
 </ExplainerModal>
 <ExplainerModal
    bind:modalOpen={newCustomerExplainerModalOpen}
+   title='New Customer'
 >
-   {#snippet copy()}
+   {#snippet content()}
+
       {#if userEmailAddress?.toLowerCase().includes('@gmail.com') && gmailName}      
          To create a new customer you'll need an email address that isn't the one you registered for the demo with. If you use gmail you can add a period (.) in the name and it will work as a new email address. 
          i.e. <b>{userEmailAddress}</b> and <b>{gmailName + '@' + userEmailDomain}</b> will both be received in the same inbox but do work as separate email addresses in the database.
@@ -116,7 +145,6 @@
          To create a new customer you'll need an email address that isn't the one you registered for the demo with. If you use gmail you can add a period (.) in the name and it will work as a new email address. 
          i.e. firstnamelastname@gmail.com and firstname.lastname@gmail.com will both be received in the same inbox but do work as separate email addresses in the database.
       {/if}
-
    {/snippet}
 </ExplainerModal>
 
@@ -124,12 +152,7 @@
 <div in:fade={{duration:600}} out:fade={{duration:0}} class="mx-2 mt-14 sm:mt-12">
    {#if !data.customer}
       <div class="m-2">
-         <button class="btn rounded-lg preset-filled-primary-50-950" onclick={()=>registerModalOpen=true} {@attach ()=>{ 
-            newCustomerExplainerModalOpen = true;
-            setTimeout(()=>{
-               newCustomerExplainerModalOpen = false;
-            }, 15000);
-         }}>Create new customer</button>
+         <button class="btn rounded-lg preset-filled-primary-50-950 createCustomerButton" onclick={()=>registerModalOpen=true}>Create new customer</button>
          {#if data.unit}
             <UnitEmployee unit={data.unit} />
          {/if}
@@ -171,14 +194,13 @@
          <FormModal modalOpen={addressModalOpen}>
             {#snippet content()}
                <AddressForm data={data.addressForm} bind:addressModalOpen={addressModalOpen} userId={data.customer?.id}/>
-               <button class="btn preset-filled-primary-50-950" onclick={()=>addressModalOpen=false}>Close</button>
             {/snippet}
          </FormModal>
       {#if data.address}
          <Address address={data.address} />
          <button class="btn preset-filled-primary-50-950" onclick={()=> addressModalOpen=true} type='button'>Edit Address</button>
       {:else}
-         <button class="btn preset-filled-primary-50-950" onclick={()=> addressModalOpen=true} type='button'>Add Address</button>   
+         <button class="btn preset-filled-primary-50-950 addAddressButton" onclick={()=> addressModalOpen=true} type='button' {@attach addressButtonTour}>Add Address</button>   
       {/if}
       {#if data.unit}
          <UnitEmployee unit={data.unit} classes="w-80" />
@@ -207,6 +229,17 @@
                   }, 4000);
                }}>
                   {#each paymentTypes as paymentType}
+                     {#if paymentType === 'CREDIT'}                        
+                     <RadioButton
+                        value={paymentType}
+                        errors={$errors.paymentType}
+                        constraints={$constraints.paymentType}
+                        groupName='paymentType'
+                        id={paymentType}
+                        label={paymentType.substring(0,1) + paymentType.substring(1).toLowerCase()}
+                        disabled={true}
+                     />
+                     {:else}
                      <RadioButton
                         value={paymentType}
                         errors={$errors.paymentType}
@@ -215,6 +248,7 @@
                         id={paymentType}
                         label={paymentType.substring(0,1) + paymentType.substring(1).toLowerCase()}
                      />
+                     {/if}
                   {/each}
                </div>
                <FormSubmitWithProgress 
