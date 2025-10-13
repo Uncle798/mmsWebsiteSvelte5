@@ -16,7 +16,7 @@
    <Portal>
       <Dialog.Backdrop />
       <Dialog.Positioner class='fixed inset-0 flex justify-center items-center'>
-         <Dialog.Content class='card bg-surface-100-900 p-2 shadow-xl max-w-screen-sm'>
+         <Dialog.Content class='card bg-surface-100-900 p-2 shadow-xl max-w-screen-md'>
             <header class="flex justify-between">
                <Dialog.Title class='font-bold text-xl'>{title}</Dialog.Title>
                <Dialog.CloseTrigger><CircleX /></Dialog.CloseTrigger>
