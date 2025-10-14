@@ -74,7 +74,6 @@ export const actions: Actions = {
             leasedPrice: null
          }
       })
-      console.log(lease)
       return { leaseEndForm }
    }
 };

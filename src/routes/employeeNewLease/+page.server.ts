@@ -102,7 +102,6 @@ export const actions: Actions = {
          redirect(302, '/login?toast=employee')
       }
       const leaseForm = await superValidate(event.request, valibot(newLeaseSchema));
-      console.log(leaseForm)
       if(!leaseForm.valid){
          return message(leaseForm, 'Not valid');
       }
