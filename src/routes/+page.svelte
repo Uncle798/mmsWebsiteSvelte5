@@ -37,6 +37,7 @@
          { element: '.mainMenuButton', popover: { title: `Main menu`, description: `This is the main menu` } },
          { element: '.mainMenu', popover: { title: `Main menu`, description: `Here you can find your customers, units, invoices, payment records, and refunds`}}
       ],
+      stagePadding: 2,
       onNextClick: (element, step, options) => {
          if(step.element === '.mainMenuButton'){
             mainMenuOpen.open = true;
@@ -45,7 +46,8 @@
          mainPageTour.moveNext()
       },
       onDestroyed: () => {
-         fetch('/api/demoSetCookie?demoPage=home')
+         fetch('/api/demoSetCookie?demoPage=home');
+         mainMenuOpen.open === false;
       }
    });
    onMount(() => {
@@ -125,7 +127,7 @@
          <div class="flex flex-col border rounded-lg border-primary-50-950 justify-between" in:fade={{duration:600}}>
             {#if i === 0}
                <div class="firstUnit">
-                  <UnitCustomer {unit}/>
+                  <UnitCustomer {unit} />
                   {#if data.user?.employee}
                   <a class="btn preset-filled-primary-50-950 m-2 w-11/12 self-center" href="/employeeNewLease?unitNum={unit.num}">Rent this Unit</a>
                   {:else}
