@@ -22,6 +22,7 @@
    import ProgressRing from '$lib/displayComponents/ProgressRing.svelte';
    import ProgressLine from '$lib/displayComponents/ProgressLine.svelte';
 	import SearchDrawer from '$lib/displayComponents/Modals/SearchDrawer.svelte';
+	import DateSearchForm from '$lib/forms/DateSearchForm.svelte';
 
    dayjs.extend(utc)
    let { data }: { data: PageData } = $props();
@@ -187,15 +188,15 @@
 
             <SearchDrawer
                bind:modalOpen={searchDrawerOpen}
-               height='h-[180px]'
+               height='h-[160px]'
             >
                {#snippet content()}
-                  <div class="flex flex-row">
+                  <div class="flex flex-row gap-2">
                      <Search data={data.searchForm} bind:search={search} searchType='invoice number' classes=''/>
                      <Search data={data.searchForm} bind:search={nameSearch} searchType='Customer' classes=''/>
-                     <DateSearch data={data.dateSearchForm} bind:startDate={startDate} bind:endDate={endDate} {minDate} {maxDate} classes=''/>
+                     <DateSearchForm data={data.dateSearchForm} bind:startDate={startDate} bind:endDate={endDate} {minDate} {maxDate} />
                   </div>
-                     <button class="btn preset-filled-primary-50-950 m-1 sm:m-2 h-8" onclick={()=> {
+                     <button class="btn preset-filled-primary-50-950 h-8" onclick={()=> {
                         sortBy = !sortBy;
                         searchDrawerOpen = false;
                      }}>
