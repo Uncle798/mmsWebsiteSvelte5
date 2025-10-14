@@ -156,7 +156,7 @@
 				</Dialog.Positioner>
 			</Portal>
 		</Dialog>
-		<div class="bg-tertiary-50-950 fixed w-screen top-0 left-0 h-12 sm:h-9 text-center font-bold z-30 rounded-b-lg">
+		<div class="bg-tertiary-50-950 fixed w-screen top-0 left-0 h-12 sm:h-8 text-center font-bold z-30 rounded-b-lg">
 			<div class="fixed top-0 left-[85px] w-[225px] sm:w-screen text-center sm:left-0 text-wrap">
 				<a href="/" class="anchor">{PUBLIC_COMPANY_NAME}</a>
 			</div>
@@ -165,7 +165,7 @@
 {:else}
 	<header>
 		<Dialog>
-			<Dialog.Trigger class='btn bg-primary-50-950 hover:shadow-xl hover:border-2 border-secondary-50-950 fixed top-0 left-0 z-50 h-12 sm:h-9'><Menu aria-label='Main Menu'/></Dialog.Trigger>
+			<Dialog.Trigger class='btn bg-primary-50-950 hover:shadow-xl hover:border-2 border-secondary-50-950 fixed top-0 left-0 z-50 h-12 sm:h-8'><Menu aria-label='Main Menu'/></Dialog.Trigger>
 			<Portal>
 				<Dialog.Backdrop class="fixed inset-0 bg-surface-50-950/50 transition transition-discrete opacity-0 starting:data-[state=open]:opacity-0 data-[state=open]:opacity-100"/>
 				<Dialog.Positioner class='fixed inset-0 z-40 flex justify-start'>
@@ -196,7 +196,7 @@
 				</Dialog.Positioner>
 			</Portal>
 		</Dialog>
-		<div class="bg-tertiary-50-950 fixed w-screen top-0 left-0 h-12 sm:h-9 text-center font-bold z-30 rounded-b-lg">
+		<div class="bg-tertiary-50-950 fixed w-screen top-0 left-0 h-12 sm:h-8 text-center font-bold z-30 rounded-br-lg">
 			<div class="fixed top-0 left-[85px] w-[225px] sm:w-screen text-center sm:left-0 text-wrap mt-0.5">
 				<a href="/" class="anchor">{PUBLIC_COMPANY_NAME}</a>
 			</div>
