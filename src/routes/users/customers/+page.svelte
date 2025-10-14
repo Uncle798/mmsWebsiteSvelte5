@@ -98,7 +98,7 @@
                   </div>
                {:then units}
                   <div in:fade={{duration:600}} class="mt-20 sm:mt-18 mb-8 sm:mb-8">
-                     <Revenue label='Current monthly invoiced' amount={totalLeased(leases)} classes='fixed top-11 sm:top-9 p-1 w-screen left-0 bg-tertiary-50-950 rounded-b-lg'/>
+                     <Revenue label='Current monthly invoiced' amount={totalLeased(leases)} classes='fixed top-11 sm:top-8 p-1 w-screen left-0 bg-tertiary-50-950 rounded-b-lg'/>
                      <SearchDrawer
                         modalOpen={searchDrawerOpen}
                         height='h-[180px]'
