@@ -24,7 +24,9 @@ const config = {
 		adapter: adapter(),
 		// for hosting on localhost via ngrok 
 		csrf: {
-			checkOrigin: false
+			trustedOrigins: [
+				'https://relative-oryx-endlessly.ngrok-free.app'
+			]
 		}
 	}
 };
