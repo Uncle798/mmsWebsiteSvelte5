@@ -12,7 +12,7 @@
 </script>
 
 <Dialog>
-   <Dialog.Trigger class='z-50 fixed right-0 top-0 btn preset-filled-primary-50-950 h-8'><Search class='z-51'/></Dialog.Trigger>
+   <Dialog.Trigger class='z-50 fixed right-1 top-0 btn preset-filled-primary-50-950 h-12 sm:h-8 rounded-tr-none'><Search class='z-51'/></Dialog.Trigger>
    <Portal>
       <Dialog.Backdrop class="fixed inset-0 z-50 bg-surface-50-950/50 
          transition transition-discrete opacity-0 
@@ -23,7 +23,7 @@
             bg-surface-100-900 p-4 shadow-xl 
             transition transition-discrete opacity-0 -translate-y-full 
             starting:data-[state=open]:opacity-0 starting:data-[state=open]:-translate-y-full 
-            data-[state=open]:opacity-100 data-[state=open]:translate-y-0'
+            data-[state=open]:opacity-100 data-[state=open]:translate-y-0 rounded-none rounded-b-2xl'
          >
          <header>
             <Dialog.CloseTrigger class='fixed right-2 top-2'><CircleX /></Dialog.CloseTrigger> 
