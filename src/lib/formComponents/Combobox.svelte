@@ -47,7 +47,7 @@
    }
 </script>
 <div class={classes}>
-   <Combobox {collection} {onOpenChange} {onValueChange} inputBehavior='autocomplete' {placeholder} {onInputValueChange}>
+   <Combobox {collection} {onOpenChange} {onValueChange} inputBehavior='autocomplete' {placeholder} {onInputValueChange} openOnClick={true}>
       <Combobox.Label>{label}</Combobox.Label>
       <Combobox.Control>
          <Combobox.Input />
