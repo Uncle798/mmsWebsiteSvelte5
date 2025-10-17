@@ -8,7 +8,6 @@
 	import Header from "$lib/Header.svelte";
 	import FormMessage from "$lib/formComponents/FormMessage.svelte";
    import NumberInput from "$lib/formComponents/NumberInput.svelte";
-   import DateInput from "$lib/formComponents/DateInput.svelte";
    import FormSubmitWithProgress from "$lib/formComponents/FormSubmitWithProgress.svelte";
 	import { goto, onNavigate } from "$app/navigation";
 	import { Info } from "lucide-svelte";
@@ -21,6 +20,7 @@
    import Switch from "$lib/formComponents/Switch.svelte";
 	import { Portal, Tooltip, useTooltip } from "@skeletonlabs/skeleton-svelte";
 	import TextArea from "$lib/formComponents/TextArea.svelte";
+	import DatePickerSingle from "$lib/formComponents/DatePickerSingle.svelte";
    
    interface Props {
       data: SuperValidated<Infer<NewInvoiceFormSchema>>;
@@ -72,6 +72,7 @@
    const tooltip = useTooltip({id})
    let registerFormModalOpen = $state(false);
    onMount(()=>{
+      $form.invoiceDue=new Date();
       for(const key in $form){
          const fullKey = `newInvoiceForm:${key}`;
          const storedValue = sessionStorage.getItem(fullKey);
@@ -90,12 +91,11 @@
          }
       }
       if(lease){
-         $form.invoiceNotes=`Rent for unit ${lease.unitNum.replace(/^0+/gm, '')} for ${dayjs().format('MMMM YYYY')}`;
          $form.invoiceAmount=lease.price;
-         $form.invoiceDue=new Date()
+         $form.invoiceNotes=`Rent for unit ${lease.unitNum.replace(/^0+/gm, '')} for ${dayjs().format('MMMM YYYY')}`;
       }
       if(customer){
-         $form.customerId=customer.id
+         $form.customerId=customer.id;
       }
    })
    let navDelayed = $state(false);
@@ -138,6 +138,7 @@
                   }, 300)
                   goto(`/invoices/new?userId=${details.value}`);
                }}
+               classes='w-lg'
             />
             {#if navDelayed && navReason === 'customersComboBoxData'}
                <ProgressRing value={null} {@attach () => {
@@ -166,8 +167,9 @@
                      navReason = 'leasesComboboxData'
                      navDelayed = true;
                   }, 300)
-                  goto(`/invoices/new?leaseId=${details.value}&userId=${customer.id}`)
+                  goto(`/invoices/new?leaseId=${details.value}&userId=${customer.id}`);
                }}
+               classes='w-lg'
             />
             {/if}
             {#if navDelayed && navReason === 'leasesComboboxData'}
@@ -221,26 +223,26 @@
          }
       }}>
          <div class="">
-               <span class="label-text">Invoice notes
-                  <Tooltip.Provider value={tooltip}>
-                     <Tooltip.Trigger><Info aria-label='Invoice Notes tooltip' size={15} /></Tooltip.Trigger>
-                     <Portal>
-                        <Tooltip.Positioner>
-                           <Tooltip.Content class='card preset-filled p-2 wrap-word max-w-4xl'>
-                              Invoice notes are the place to store information for you and your customer. MMS has defaults but those can be edited, and we can change the defaults.
-                           </Tooltip.Content>
-                        </Tooltip.Positioner>
-                     </Portal>
-                  </Tooltip.Provider>
-                  </span>
-               <TextArea 
-                  rows={3} 
-                  name='invoiceNotes' 
-                  bind:value={$form.invoiceNotes}  
-                  errors={$errors.invoiceNotes}
-                  constraints={$constraints.invoiceNotes} 
-                  label=''  
-               />
+            <span class="label-text">Invoice notes
+               <Tooltip.Provider value={tooltip}>
+                  <Tooltip.Trigger><Info aria-label='Invoice Notes tooltip' size={15} /></Tooltip.Trigger>
+                  <Portal>
+                     <Tooltip.Positioner>
+                        <Tooltip.Content class='card preset-filled p-2 wrap-word max-w-4xl'>
+                           Invoice notes are the place to store information for you and your customer. MMS has defaults but those can be edited, and we can change the defaults.
+                        </Tooltip.Content>
+                     </Tooltip.Positioner>
+                  </Portal>
+               </Tooltip.Provider>
+            </span>
+            <TextArea 
+               rows={3} 
+               name='invoiceNotes' 
+               bind:value={$form.invoiceNotes}  
+               errors={$errors.invoiceNotes}
+               constraints={$constraints.invoiceNotes} 
+               label=''  
+            />
             {#if $errors.invoiceNotes}<span class="invalid">{$errors.invoiceNotes}</span>{/if}
          </div>
          <NumberInput
@@ -252,15 +254,14 @@
 
          />
          <Switch name='deposit' checked={$form.deposit} label='Deposit' classes='mt-2' />
-         <DateInput
+         <DatePickerSingle 
             bind:value={$form.invoiceDue}
             errors={$errors.invoiceDue}
             constraints={$constraints.invoiceDue}
-            label='Invoice Due Date'
+            minDate={dayjs().subtract(1, 'year').toDate()}
+            maxDate={dayjs().add(1, 'year').toDate()}
             name='invoiceDue'
-            min={dayjs().subtract(1, 'year').toDate()}
-            max={dayjs().add(1, 'year').toDate()}
-            placeholder={dayjs().format('YYYY/MM/DD')}
+            label='Invoice Due Date'
          />
          <input type="hidden" name='employeeId' value={employeeId}/>
          <input type="hidden" name="customerId" value={customer?.id} />
