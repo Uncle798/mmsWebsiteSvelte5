@@ -192,9 +192,9 @@
             >
                {#snippet content()}
                   <div class="flex flex-row gap-2">
-                     <Search data={data.searchForm} bind:search={search} searchType='invoice number' classes=''/>
-                     <Search data={data.searchForm} bind:search={nameSearch} searchType='Customer' classes=''/>
-                     <DateSearchForm data={data.dateSearchForm} bind:startDate={startDate} bind:endDate={endDate} {minDate} {maxDate} />
+                     <Search data={data.searchForm} bind:search={search} searchType='invoice number' classes='w-1/3'/>
+                     <Search data={data.searchForm} bind:search={nameSearch} searchType='Customer' classes='w-1/3'/>
+                     <DateSearchForm data={data.dateSearchForm} bind:startDate={startDate} bind:endDate={endDate} {minDate} {maxDate}/>
                   </div>
                      <button class="btn preset-filled-primary-50-950 h-8" onclick={()=> {
                         sortBy = !sortBy;
@@ -208,6 +208,7 @@
                {#each slicedInvoices(sortedByDate(dateSearchedInvoices(searchedInvoices(searchByUser(invoices, currentUsers(customers)))))) as invoice}  
                {@const customer = customers.find((customer) => customer.id === invoice.customerId)}
                   <div class="sm:grid sm:grid-cols-2 border-2 border-primary-50-950 rounded-lg ">
+                     {#if customer}
                      <div>
                         <InvoiceEmployee {invoice} classes=' px-2' />
                         <div class="flex flex-col sm:flex-row">
@@ -226,11 +227,16 @@
                            <DownloadPdfButton
                               recordType='invoiceNum'
                               num={invoice.invoiceNum}
-                              classes='mx-2'
+                              classes='mx-2 mb-2'
+                           />
+                           <EmailCustomer
+                              recordNum={invoice.invoiceNum}
+                              apiEndPoint='/api/sendInvoice'
+                              emailAddress={customer.email!}
+                              buttonText='Email invoice to customer'
                            />
                         </div>
                      </div>
-                     {#if customer}
                      {@const address = addresses.find((address) => address.userId === customer.id)}
                         <div class="flex flex-col px-2 pt-2">
                            <UserEmployee user={customer} classes=''/>
