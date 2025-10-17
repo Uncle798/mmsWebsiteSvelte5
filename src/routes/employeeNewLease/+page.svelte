@@ -59,11 +59,12 @@
    const tour = driver({
       showProgress: true,
       steps: [
+         { popover: { title: 'New Lease', description: `Here's where you would create a lease in person or over the phone. It looks exactly like the customer version except for taking in person forms of payment.`}},
          {element: '.createCustomerButton', popover: {title: 'Create a customer', 
             description: `Create a new customer here. You'll need to use a different email address than the one you registered for the demo with.\
             If you use gmail you can add a period (.) in the name and it will work as a new email address. i.e. ${userEmailAddress} and ${gmailName() + '@' + userEmailDomain}\
             will be received in the same inbox but are different in the database.
-         `}}
+         `}},
       ],
       onDestroyed: () => {
          fetch('/api/demoSetCookie?demoPage=employeeNewLease');
@@ -82,8 +83,6 @@
    })
    const currencyFormatter = new Intl.NumberFormat('en-US', {style: 'currency', currency: 'USD'})
    const paymentTypes = [ 'CASH', 'CHECK', 'CREDIT'];
-   let paymentExplainerModalOpen = $state(false);
-   let newCustomerExplainerModalOpen = $state(false);
    let customerSelectForm:HTMLFormElement | undefined = $state();
    let customerSelectSubmit:HTMLButtonElement | undefined = $state();
    let customerCuidId:HTMLInputElement | undefined = $state();
@@ -91,8 +90,9 @@
       const addressButtonTour = driver({
          showProgress: true,
          steps: [
-            {element: '.addAddressButton', popover: {title: 'Add an address', description: `You'll need to add an address, Feel free to use
-            1700 Mill Rd Moscow ID 83843. All of this info will be destroyed when you leave the demo.`}}
+            { element: '.addAddressButton', popover: { title: 'Add an address', description: `You'll need to add an address, Feel free to use
+            1700 Mill Rd Moscow ID 83843. All of this info will be destroyed when you leave the demo.` } },
+            { element: '.discountForm', popover: { title:"Discounts", description: `MMS has discounts so you can offer specials or give non-profits or veterans a deal.` } }
          ]
       })
       addressButtonTour.drive();
@@ -105,14 +105,14 @@
    modalOpen={registerModalOpen}
 >
    {#snippet content()}
-   {#if !data.customer}
-      <RegisterForm 
-         data={data.registerForm} 
-         formType='employee' 
-         bind:registerFormModalOpen={registerModalOpen}
-         redirectTo='employeeNewLease' 
-         unitNum={data.unitNum}
-      />
+      {#if !data.customer}
+         <RegisterForm 
+            data={data.registerForm} 
+            formType='employee' 
+            bind:registerFormModalOpen={registerModalOpen}
+            redirectTo='employeeNewLease' 
+            unitNum={data.unitNum}
+         />
       {:else if !data.customer.emailVerified && data.customer} 
          <EmailVerificationForm 
             data={data.emailVerificationForm} 
@@ -125,29 +125,6 @@
       {/if}
    {/snippet}
 </FormModal>
-<ExplainerModal
-   bind:modalOpen={paymentExplainerModalOpen}
->
-   {#snippet content()}
-      Please select cash or check to complete the project as there is currently no way to demo a credit payment.
-   {/snippet}
-</ExplainerModal>
-<ExplainerModal
-   bind:modalOpen={newCustomerExplainerModalOpen}
-   title='New Customer'
->
-   {#snippet content()}
-
-      {#if userEmailAddress?.toLowerCase().includes('@gmail.com') && gmailName}      
-         To create a new customer you'll need an email address that isn't the one you registered for the demo with. If you use gmail you can add a period (.) in the name and it will work as a new email address. 
-         i.e. <b>{userEmailAddress}</b> and <b>{gmailName + '@' + userEmailDomain}</b> will both be received in the same inbox but do work as separate email addresses in the database.
-      {:else}
-         To create a new customer you'll need an email address that isn't the one you registered for the demo with. If you use gmail you can add a period (.) in the name and it will work as a new email address. 
-         i.e. firstnamelastname@gmail.com and firstname.lastname@gmail.com will both be received in the same inbox but do work as separate email addresses in the database.
-      {/if}
-   {/snippet}
-</ExplainerModal>
-
 
 <div in:fade={{duration:600}} out:fade={{duration:0}} class="mx-2 mt-14 sm:mt-12">
    {#if !data.customer}
@@ -222,12 +199,7 @@
       {/if}
          <div class="flex flex-col w-80">
             {#if data.unit && data.address}
-               <div class="flex bg-primary-50-950 mt-2 p-2 rounded-lg justify-between" {@attach ()=>{
-                  paymentExplainerModalOpen=true;
-                  setTimeout(()=>{
-                     paymentExplainerModalOpen = false
-                  }, 4000);
-               }}>
+               <div class="flex bg-primary-50-950 mt-2 p-2 rounded-lg justify-between" >
                   {#each paymentTypes as paymentType}
                      {#if paymentType === 'CREDIT'}                        
                      <RadioButton
@@ -258,7 +230,7 @@
                   classes=''  
                />
             {:else if data.unit}
-               <div class="font-bold">Please add address.</div>
+               <div class="font-bold text-2xl">Please add address.</div>
             {:else}
                Please select unit.
             {/if}
@@ -266,12 +238,12 @@
       </form>
       {#if !data.discount}
          <div transition:fade={{duration:600}}>
-               <LeaseDiscountForm 
+            <LeaseDiscountForm 
                data={data.leaseDiscountForm} 
                unitNum={data.unit?.num} 
                customerId={data.customer.id} 
-               classes='w-80'
-               />
+               classes='w-80 discountForm'
+            />
          </div>
       {/if}
    {/if}
