@@ -1,5 +1,5 @@
 <script lang='ts'>
-	import DatePicker from '$lib/formComponents/DatePicker.svelte';
+	import DatePicker from '$lib/formComponents/DatePickerDual.svelte';
    import type { DateSearchFormSchema } from '$lib/formSchemas/schemas';
 	import dayjs from 'dayjs';
 	import { parseDate } from '@skeletonlabs/skeleton-svelte';
