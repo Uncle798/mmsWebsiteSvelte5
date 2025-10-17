@@ -121,7 +121,7 @@
 <ExplainerModal
    bind:modalOpen={explainerModalOpen}
 >
-   {#snippet copy()}
+   {#snippet content()}
       Please choose Cash or Check for the demo. There is currently no way to demo credit card payments.
    {/snippet}
 </ExplainerModal>
