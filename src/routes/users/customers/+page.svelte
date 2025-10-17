@@ -15,6 +15,9 @@
 	import { onNavigate } from '$app/navigation';
 	import SearchDrawer from '$lib/displayComponents/Modals/SearchDrawer.svelte';
 	import FormModal from '$lib/displayComponents/Modals/FormModal.svelte';
+	import { driver } from 'driver.js';
+   import 'driver.js/dist/driver.css';
+	import { onMount } from 'svelte';
    let { data }: { data: PageData } = $props();
    let pageNum = $state(1);
    let size = $state(25);
@@ -59,12 +62,29 @@
       currentUnit = unit;
       leaseEndModalOpen = true;
    }
+   const customersTour = driver({
+      showProgress: true,
+      stagePadding: 2,
+      steps: [
+         { popover: { title: `Customers`, description: `Here are your current customers`}},
+         { element: '.firstCustomer', popover: { title: `First Customer`, description: `This is the first current customer alphabetized by last name. `}},
+         { element: '.firstCustomerNotes', popover: { title: `Customer Notes`, description: `Here you can keep notes about customers including not to rent to them in the future.`}},
+         { element: '.firstCustomerIncome', popover: { title: `Customer Profit and Loss`, description: `Quickly see how much a customer has paid you and if they own you money.`}}
+      ],
+      onDestroyed: () => {
+         fetch('/api/demoSetCookie?demoPage=customers')
+      }
+   })
    onNavigate(() => {
       leaseEndModalOpen = false;
       currentLeaseId = '';
       currentUnit = undefined;
    });
-
+   onMount(() => {
+      if(data.demoCookie !== 'true'){
+         customersTour.drive();
+      }
+   })
 </script>
 <Header title='Current Customers'/>
 {#await data.customers}
@@ -118,28 +138,47 @@
                         {/snippet}
                   </FormModal>
                      <div class="grid grid-cols-1 mx-1 sm:mx-2 gap-y-2 gap-x-1 ">
-                        {#each slicedSource(searchedSource(customers)) as customer}
+                        {#each slicedSource(searchedSource(customers)) as customer, i}
                         {@const address = addresses.find((address) => address.userId === customer.id)}
                         {@const customerLeases = leases.filter((lease) => lease.customerId === customer.id)}
                         {@const customerInvoices = invoices.filter((invoice) => invoice.customerId === customer.id)}
                         {@const customerPayments = paymentRecords.filter((payment) => payment.customerId === customer.id)}
                            <div class="border rounded-lg border-primary-50-950 sm:grid sm:grid-cols-2">
-                              <div class="p-2">
-                                 <UserEmployee user={customer} classes=''/>
-                                 {#if address}
-                                    <Address {address} />
-                                 {/if}
-                                 <UserNotesForm user={customer} data={data.userNotesForm} />
-                                 <div class="flex flex-col sm:flex-row gap-2 bg-primary-contrast-100-900 p-2 rounded-lg">
-                                    <p class="text-error-400-600">Total invoiced: {currencyFormatter.format(totalInvoiced(customerInvoices))}</p>
-                                    <p class="text-success-300-700">Total paid: {currencyFormatter.format(totalPaid(customerPayments))}</p>
-                                    {#if totalInvoiced(overdueInvoices(customerInvoices)) > 0 && overdueInvoices(customerInvoices).length > 1}
-                                       <p class="text-error-100-900">Overdue amount: <a href="/paymentRecords/new?userId={customer.id}">{currencyFormatter.format(totalInvoiced(overdueInvoices(customerInvoices)))}</a></p>
-                                    {:else if overdueInvoices(customerInvoices).length === 1}
-                                       <p class="text-error-100-900">Overdue amount: <a href="/paymentRecords/new?invoiceNum={overdueInvoices(customerInvoices)[0].invoiceNum}" class="">{currencyFormatter.format(totalInvoiced(overdueInvoices(customerInvoices)))}</a></p>
+                              {#if i === 0}
+                                 <div class="p-2 firstCustomer">
+                                    <UserEmployee user={customer} classes=''/>
+                                    {#if address}
+                                       <Address {address} />
                                     {/if}
+                                    <UserNotesForm user={customer} data={data.userNotesForm} classes='firstCustomerNotes'/>
+                                    <div class="flex flex-col sm:flex-row gap-2 bg-primary-contrast-100-900 p-2 rounded-lg firstCustomerIncome">
+                                       <p class="text-error-400-600">Total invoiced: {currencyFormatter.format(totalInvoiced(customerInvoices))}</p>
+                                       <p class="text-success-300-700">Total paid: {currencyFormatter.format(totalPaid(customerPayments))}</p>
+                                       {#if totalInvoiced(overdueInvoices(customerInvoices)) > 0 && overdueInvoices(customerInvoices).length > 1}
+                                          <p class="text-error-100-900">Overdue amount: <a href="/paymentRecords/new?userId={customer.id}">{currencyFormatter.format(totalInvoiced(overdueInvoices(customerInvoices)))}</a></p>
+                                       {:else if overdueInvoices(customerInvoices).length === 1}
+                                          <p class="text-error-100-900">Overdue amount: <a href="/paymentRecords/new?invoiceNum={overdueInvoices(customerInvoices)[0].invoiceNum}" class="">{currencyFormatter.format(totalInvoiced(overdueInvoices(customerInvoices)))}</a></p>
+                                       {/if}
+                                    </div>
                                  </div>
-                              </div>
+                              {:else}
+                                 <div class="p-2">
+                                    <UserEmployee user={customer} classes=''/>
+                                    {#if address}
+                                       <Address {address} />
+                                    {/if}
+                                    <UserNotesForm user={customer} data={data.userNotesForm} />
+                                    <div class="flex flex-col sm:flex-row gap-2 bg-primary-contrast-100-900 p-2 rounded-lg">
+                                       <p class="text-error-400-600">Total invoiced: {currencyFormatter.format(totalInvoiced(customerInvoices))}</p>
+                                       <p class="text-success-300-700">Total paid: {currencyFormatter.format(totalPaid(customerPayments))}</p>
+                                       {#if totalInvoiced(overdueInvoices(customerInvoices)) > 0 && overdueInvoices(customerInvoices).length > 1}
+                                          <p class="text-error-100-900">Overdue amount: <a href="/paymentRecords/new?userId={customer.id}">{currencyFormatter.format(totalInvoiced(overdueInvoices(customerInvoices)))}</a></p>
+                                       {:else if overdueInvoices(customerInvoices).length === 1}
+                                          <p class="text-error-100-900">Overdue amount: <a href="/paymentRecords/new?invoiceNum={overdueInvoices(customerInvoices)[0].invoiceNum}" class="">{currencyFormatter.format(totalInvoiced(overdueInvoices(customerInvoices)))}</a></p>
+                                       {/if}
+                                    </div>
+                                 </div>
+                              {/if}
                               {#if customerLeases}
                                  {#each customerLeases as lease}
                                  {@const unit = units.find((unit) => unit.num === lease.unitNum)}

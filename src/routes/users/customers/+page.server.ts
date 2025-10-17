@@ -100,7 +100,8 @@ export const load = (async (event) => {
          }
       }
    })
-   return { customers, leases, userSearchForm, customerCount, addresses, invoices, paymentRecords, userNotesForm, leaseEndForm, unitNotesForm, units };
+   const demoCookie = event.cookies.get('customers');
+   return { customers, leases, userSearchForm, customerCount, addresses, invoices, paymentRecords, userNotesForm, leaseEndForm, unitNotesForm, units, demoCookie };
 }) satisfies PageServerLoad;
 
 export const actions: Actions = {
