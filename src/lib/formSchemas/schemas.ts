@@ -169,7 +169,7 @@ export const newInvoiceFormSchema = v.object({
    invoiceAmount: v.pipe(v.number(), v.gtValue(1)),
    leaseId: v.optional(v.pipe(v.string(), v.cuid2())),
    deposit: v.boolean(),
-   invoiceDue: v.date(),
+   invoiceDue: v.pipe(v.date()),
 })
 export type NewInvoiceFormSchema = typeof newInvoiceFormSchema
 
