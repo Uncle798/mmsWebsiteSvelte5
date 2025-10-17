@@ -9,11 +9,9 @@
 	import Revenue from '$lib/displayComponents/Revenue.svelte';
 	import UserEmployee from '$lib/displayComponents/UserEmployee.svelte';
 	import AddressEmployee from '$lib/displayComponents/AddressEmployee.svelte';
-   import { PanelTopClose, SearchIcon } from 'lucide-svelte';
 	import { fade } from 'svelte/transition';
 	import DownloadPdfButton from '$lib/DownloadPDFButton.svelte';
 	import EmailCustomer from '$lib/EmailCustomer.svelte';
-	import ExplainerModal from '$lib/displayComponents/Modals/ExplainerModal.svelte';
    import FormModal from '$lib/displayComponents/Modals/FormModal.svelte';
 	import SearchDrawer from '$lib/displayComponents/Modals/SearchDrawer.svelte';
    interface Props {
@@ -29,16 +27,12 @@
    let noteSearch = $state('');
    const numberFormatter = new Intl.NumberFormat('en-US');
    const slicedSource = $derived((paymentRecords:PaymentRecord[]) => paymentRecords.slice((pageNum -1) * size, pageNum*size));
-   const searchedPaymentRecords = $derived((paymentRecords:PaymentRecord[]) => paymentRecords.filter((paymentRecord) => paymentRecord.paymentNumber.toString().includes(search) )) 
+   const searchedPaymentRecords = $derived((paymentRecords:PaymentRecord[]) => paymentRecords.filter((paymentRecord) => paymentRecord.paymentNumber.toString().includes(search))) 
    const searchByNotes = $derived((paymentRecords:PaymentRecord[]) => paymentRecords.filter((paymentRecord) => paymentRecord.paymentNotes?.includes(noteSearch)));
    let paymentRecord=$state<PaymentRecord>({} as PaymentRecord);
    function refundModal(deposit:PaymentRecord) {
-   paymentRecord = deposit;
-   explainerModalOpen = true;
-   setTimeout(()=> {
-      explainerModalOpen=false;
-      refundModalOpen = true;   
-   }, 4000)
+      paymentRecord = deposit;
+      refundModalOpen = true;
    }
    let totalRevenue = $derived((paymentRecords:PaymentRecord[]) => {
       let totalRevenue = 0;
@@ -70,24 +64,30 @@
    let searchDrawerOpen = $state(false);
    let sortBy = $state(false);
    let explainerModalOpen=$state(false);
+   let sortedByDate = $derived((paymentRecords:PaymentRecord[]) => paymentRecords.sort((a,b) => {
+      if(a.paymentCreated > b.paymentCreated){
+         if(sortBy){
+            return -1
+         }
+         return 1
+      }
+      if(a.paymentCreated < b.paymentCreated){
+         if(sortBy){
+            return 1
+         }
+         return -1
+      }
+      return 0
+   }))
 </script>
 <Header title='Deposits' />
 <FormModal
    modalOpen={refundModalOpen}
-
 >
    {#snippet content()}
       <RefundForm data={data.refundForm} paymentRecord={paymentRecord}/>
-      <button class="btn rounded-lg preset-filled-primary-50-950" onclick={()=>refundModalOpen = false}>Close</button>
    {/snippet}
 </FormModal>
-<ExplainerModal
-   bind:modalOpen={explainerModalOpen}
->
-   {#snippet copy()}
-      Please select Cash or Check as there is currently no way of demoing a credit payment. Thanks
-   {/snippet}
-</ExplainerModal>
 {#await data.deposits}
     <div class="mt-14 sm:mt-10 m-1 sm:m-2">
         Loading {numberFormatter.format(data.depositCount)} deposits
@@ -109,8 +109,7 @@
             height='h-[180px]'
          >
             {#snippet content()}
-               <button onclick={()=>searchDrawerOpen=false} class='btn preset-filled-primary-50-950 rounded-lg m-1 absolute top-0 right-0'><PanelTopClose aria-label='Close'/></button>
-               <div class="flex flex-col sm:flex-row mt-11 gap-2 mx-2" >
+               <div class="flex flex-col sm:flex-row gap-2" >
                   <Search 
                      bind:search={search} 
                      searchType='payment record number' 
@@ -137,12 +136,12 @@
             {/snippet}
          </SearchDrawer>
          <div class="flex flex-col gap-2 mt-20 mb-8" in:fade={{duration:600}} out:fade={{duration:0}}>
-            {#each slicedSource(searchedPaymentRecords(searchByNotes(searchByUser(deposits, customers)))) as deposit}
+            {#each slicedSource(sortedByDate(searchedPaymentRecords(searchByNotes(searchByUser(deposits, customers))))) as deposit}
             {@const user = customers.find((customer) => customer.id === deposit.customerId)}
-               <div class="flex flex-col sm:flex-row border-2 border-primary-50-950 rounded-lg mx-1 sm:mx-2">
-                  <div class="m-2">
+               <div class="flex flex-col sm:flex-row border-2 border-primary-50-950 rounded-lg mx-1 sm:mx-2 gap-2">
+                  <div class="w-2/3">
                      <PaymentRecordEmployee paymentRecord={deposit} classes=''/>
-                     <div class="flex flex-col sm:flex-row gap-2 mt-2">
+                     <div class="flex flex-col sm:flex-row gap-2 m-2">
                         <button type="button" class="btn rounded-lg preset-filled-primary-50-950 h-8" onclick={() => refundModal(deposit)}>Refund this deposit</button>
                         <DownloadPdfButton
                            recordType='paymentNum'
@@ -158,14 +157,14 @@
                         {/if}
                      </div>
                   </div>
-                  <div class="m-2">
-                        {#if user}
-                        {@const address = addresses.find((address) => address.userId === user.id)}
-                           <UserEmployee {user} />
-                           {#if address}
-                              <AddressEmployee {address} />
-                           {/if}
+                  <div>
+                     {#if user}
+                     {@const address = addresses.find((address) => address.userId === user.id)}
+                        <UserEmployee {user} />
+                        {#if address}
+                           <AddressEmployee {address} />
                         {/if}
+                     {/if}
                   </div>
                </div>
             {/each}
