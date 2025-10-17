@@ -3,8 +3,7 @@
    import IconArrowLeft from 'lucide-svelte/icons/arrow-left';
    import IconArrowRight from 'lucide-svelte/icons/arrow-right';
    import IconEllipsis from 'lucide-svelte/icons/ellipsis';
-   import IconFirst from 'lucide-svelte/icons/chevrons-left';
-   import IconLast from 'lucide-svelte/icons/chevron-right';
+   import { Combobox, Portal, useListCollection } from "@skeletonlabs/skeleton-svelte";
    interface Props {
       pageNum: number;
       size: number;
@@ -19,23 +18,66 @@
       label,
       classes
    }:Props = $props()
-   let slicedSource = $derived((source:[]) => source.slice((pageNum-1)*size, pageNum*size));
+   let comboboxData = [
+      {label: `Show 5 ${label}`, value: '5' },
+      {label: `Show 10 ${label}`, value: '10'},
+      {label: `Show 25 ${label}`, value: '25'},
+      {label: `Show 50 ${label}`, value: '50'},
+      {label: `Show all ${array.length} ${label}`, value: 'all'},
+   ]
+   let items = $state(comboboxData);
+   const onOpenChange = () => {
+      items = comboboxData
+   }
+   const collection = $derived(useListCollection({
+      items: items,
+      itemToString: (item) => item.label,
+      itemToValue: (item) => item.value,
+      isItemDisabled: (item) => item.value === size.toString()
+   }))
 </script>
 
-<div class="flex flex-col sm:flex-row m-2 gap-1 {classes}">
-   {#if array.length > size}  
-      <select name="size" id="size" class="select rounded-lg truncate sm:w-1/3" value={size} onchange={(event) => size = Number(event.currentTarget.value)}>
-         {#each [5,10,25,50] as v}
-         <option value={v}>Show {v} {label} per page</option>
-         {/each}
-         <option value={array.length}>Show all {array.length} {label}</option>
-      </select>
-   {/if}
-   <Pagination data={array} page={pageNum} pageSize={size} onPageChange={(e) => pageNum = e.page} onPageSizeChange={(e) => size = e.pageSize} showFirstLastButtons={true} alternative >
-      {#snippet labelEllipsis()}<IconEllipsis class="size-4" />{/snippet}
-      {#snippet labelNext()}<IconArrowRight class="size-4" />{/snippet}
-      {#snippet labelPrevious()}<IconArrowLeft class="size-4" />{/snippet}
-      {#snippet labelFirst()}<IconFirst class="size-4" />{/snippet}
-      {#snippet labelLast()}<IconLast class="size-4" />{/snippet}
+<div class="flex flex-col sm:flex-row m-2 gap-1 {classes} max-w-screen">
+   <Combobox {collection} {onOpenChange} onValueChange={(e) => {
+      size=parseInt(e.value[0], 10);
+   }}>
+      <Combobox.Label>Select page size</Combobox.Label>
+      <Combobox.Control>
+         <Combobox.Input />
+         <Combobox.Trigger />
+      </Combobox.Control>
+      <Portal>
+         <Combobox.Positioner class='z-[1]!'>
+            <Combobox.Content>
+               {#each items as item}
+                  <Combobox.Item {item}>
+                     <Combobox.ItemText class='truncate'>{item.label}</Combobox.ItemText>
+                     <Combobox.ItemIndicator />
+                  </Combobox.Item>
+               {/each}
+            </Combobox.Content>
+         </Combobox.Positioner>
+      </Portal>
+   </Combobox>
+   <Pagination count={array.length} pageSize={size} page={pageNum} onPageChange={(e) => (pageNum = e.page)} >
+      <Pagination.PrevTrigger>
+         <IconArrowLeft />
+      </Pagination.PrevTrigger>
+      <Pagination.Context>
+         {#snippet children(pagination)}
+            {#each pagination().pages as page, index (page)}
+               {#if page.type === 'page'}
+                  <Pagination.Item {...page}>
+                     {page.value}
+                  </Pagination.Item>
+               {:else}
+                  <Pagination.Ellipsis {index}><IconEllipsis /></Pagination.Ellipsis>
+               {/if}
+            {/each}
+         {/snippet}
+      </Pagination.Context>
+      <Pagination.NextTrigger>
+         <IconArrowRight />
+      </Pagination.NextTrigger>
    </Pagination>
 </div>
