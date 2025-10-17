@@ -35,7 +35,8 @@
          { element: '.homeCopy', popover: { title: 'Here\'s where we tell your story', description: `All text on the site is customizable to your specifications` } },
          { element: '.firstUnit', popover: { title: `Available units`, description: `This is the smallest unit available for rent ` } },
          { element: '.mainMenuButton', popover: { title: `Main menu`, description: `This is the main menu` } },
-         { element: '.mainMenu', popover: { title: `Main menu`, description: `Here you can find your customers, units, invoices, payment records, and refunds`}}
+         { element: '.mainMenu', popover: { title: `Main menu`, description: `Here you can find your customers, units, invoices, payment records, and refunds`}},
+         { element: '.firstUnitButton', popover: { title: 'Start here', description: `Start with renting a unit if you like.`}}
       ],
       stagePadding: 2,
       onNextClick: (element, step, options) => {
@@ -126,20 +127,18 @@
       {#each filterSize(units) as unit, i}
          <div class="flex flex-col border rounded-lg border-primary-50-950 justify-between" in:fade={{duration:600}}>
             {#if i === 0}
-               <div class="firstUnit">
-                  <UnitCustomer {unit} />
-                  {#if data.user?.employee}
-                  <a class="btn preset-filled-primary-50-950 m-2 w-11/12 self-center" href="/employeeNewLease?unitNum={unit.num}">Rent this Unit</a>
-                  {:else}
-                  <a class="btn preset-filled-primary-50-950 m-2" href="/newLease?unitNum={unit.num}">Rent this Unit</a>
-                  {/if}
-               </div>   
+               <UnitCustomer {unit} classes='firstUnit'/>
+               {#if data.user?.employee}
+                  <a class="btn preset-filled-primary-50-950 m-2 h-8 firstUnitButton" href="/employeeNewLease?unitNum={unit.num}">Rent this Unit</a>
+               {:else}
+                  <a class="btn preset-filled-primary-50-950 m-2 h-8" href="/newLease?unitNum={unit.num}">Rent this Unit</a>
+               {/if}
             {:else}
                <UnitCustomer {unit}/>
                {#if data.user?.employee}
-                  <a class="btn preset-filled-primary-50-950 m-2 w-11/12 self-center" href="/employeeNewLease?unitNum={unit.num}">Rent this Unit</a>
+                  <a class="btn preset-filled-primary-50-950 m-2 h-8 place-self-stretch" href="/employeeNewLease?unitNum={unit.num}">Rent this Unit</a>
                {:else}
-                  <a class="btn preset-filled-primary-50-950 m-2" href="/newLease?unitNum={unit.num}">Rent this Unit</a>
+                  <a class="btn preset-filled-primary-50-950 m-2 h-8 justify-end" href="/newLease?unitNum={unit.num}">Rent this Unit</a>
                {/if}
             {/if}
          </div>
