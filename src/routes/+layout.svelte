@@ -73,7 +73,7 @@
 			<Dialog.Trigger class='btn bg-primary-50-950 hover:shadow-xl hover:border-2 border-secondary-50-950 fixed top-0 left-0 z-40 h-12 sm:h-8 rounded-tl-none mainMenuButton'><Menu aria-label='Main Menu'/></Dialog.Trigger>
 			<Portal>
 				<Dialog.Backdrop class="fixed inset-0 bg-surface-50-950/50 transition transition-discrete opacity-0 starting:data-[state=open]:opacity-0 data-[state=open]:opacity-100"/>
-				<Dialog.Positioner class='fixed inset-0 z-40 flex justify-start rounded-none'>
+				<Dialog.Positioner class='fixed inset-0 z-41 flex justify-start rounded-none'>
 					<Dialog.Content class="h-screen card bg-surface-100-900 w-[250px] p-4 space-y-4 shadow-xl transition transition-discrete opacity-0 -translate-x-full 
 						starting:data-[state=open]:opacity-0 starting:data-[state=open]:-translate-x-full data-[state=open]:opacity-100 data-[state=open]:translate-x-0 rounded-l-none mainMenu">
 						<header class='flex justify-between items-center'>
@@ -129,7 +129,7 @@
 								<li>
 									<Tooltip>
 										<Tooltip.Trigger>
-											<a href="/accountSettings" class="anchor mx-1">Settings</a>
+											<a href="/accountSettings" class="anchor mx-1 settingsLink">Settings</a>
 										</Tooltip.Trigger>
 										<Portal>
 											<Tooltip.Positioner class='z-50'>
@@ -165,12 +165,12 @@
 {:else}
 	<header>
 		<Dialog>
-			<Dialog.Trigger class='btn bg-primary-50-950 hover:shadow-xl hover:border-2 border-secondary-50-950 fixed top-0 left-0 z-50 h-12 sm:h-8'><Menu aria-label='Main Menu'/></Dialog.Trigger>
+			<Dialog.Trigger class='btn bg-primary-50-950 hover:shadow-xl hover:border-2 border-secondary-50-950 fixed top-0 left-0 z-40 h-12 sm:h-8 rounded-tl-none'><Menu aria-label='Main Menu'/></Dialog.Trigger>
 			<Portal>
 				<Dialog.Backdrop class="fixed inset-0 bg-surface-50-950/50 transition transition-discrete opacity-0 starting:data-[state=open]:opacity-0 data-[state=open]:opacity-100"/>
 				<Dialog.Positioner class='fixed inset-0 z-40 flex justify-start'>
 					<Dialog.Content class="h-screen card bg-surface-100-900 w-[200px] p-4 space-y-4 shadow-xl transition transition-discrete opacity-0 -translate-x-full 
-						starting:data-[state=open]:opacity-0 starting:data-[state=open]:-translate-x-full data-[state=open]:opacity-100 data-[state=open]:translate-x-0">
+						starting:data-[state=open]:opacity-0 starting:data-[state=open]:-translate-x-full data-[state=open]:opacity-100 data-[state=open]:translate-x-0 rounded-l-none">
 						<header class="flex justify-between items-center">
 							<Dialog.Title class='text-2xl font-bold'>Main Menu</Dialog.Title>
 							<Dialog.CloseTrigger><CircleX aria-label='close'/></Dialog.CloseTrigger>
