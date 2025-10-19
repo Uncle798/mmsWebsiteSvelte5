@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Combobox } from '@skeletonlabs/skeleton-svelte';
+	import Combobox from '$lib/formComponents/Combobox.svelte';
 	import { onMount } from 'svelte';
    
    let currentTheme = $state(['']);
@@ -42,15 +42,10 @@
 
 
 </script>
-<div class="mx-1 sm:mx-2">
-
+<div class="mx-1 sm:mx-2 themeSelector">
    <Combobox
       data={themeComboboxData}
-      value={currentTheme}
       label='Select Theme:'
-      placeholder='Select Theme...'
-      openOnClick={true}
       onValueChange={(details) =>setTheme(details.value[0])}
    />
-   
 </div>
