@@ -90,7 +90,7 @@
          {:then addresses}
             {#if invoices.length >0}       
             <Header title='Past Due invoices' />
-            <Revenue label="Current past due invoice total" amount={totalRevenue(invoices)} classes="bg-tertiary-50-950 w-screen rounded-b-lg fixed top-10 sm:top-9 p-2 left-0 z-40"/>
+            <Revenue label="Current past due invoice total" amount={totalRevenue(invoices)} classes="bg-tertiary-50-950 w-screen rounded-b-lg fixed top-10 sm:top-7 p-2 left-0 z-30"/>
             <SearchDrawer
                modalOpen={searchDrawerOpen}
                height='h-[180px]'
