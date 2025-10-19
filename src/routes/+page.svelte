@@ -36,19 +36,22 @@
          { element: '.firstUnit', popover: { title: `Available units`, description: `This is the smallest unit available for rent ` } },
          { element: '.mainMenuButton', popover: { title: `Main menu`, description: `This is the main menu` } },
          { element: '.mainMenu', popover: { title: `Main menu`, description: `Here you can find your customers, units, invoices, payment records, and refunds`}},
+         { element: '.settingsLink', popover: { title: `Settings`, description: `Here you can look at the site with many different themes.` } },
          { element: '.firstUnitButton', popover: { title: 'Start here', description: `Start with renting a unit if you like.`}}
       ],
       stagePadding: 2,
       onNextClick: (element, step, options) => {
-         if(step.element === '.mainMenuButton'){
+         if(step.element === '.mainMenuButton' || step.element === '.mainMenu'){
             mainMenuOpen.open = true;
-            console.log(mainMenuOpen.open)
+         }
+         if(step.element === '.settingsLink'){
+            mainMenuOpen.open = false;
          }
          mainPageTour.moveNext()
       },
       onDestroyed: () => {
          fetch('/api/demoSetCookie?demoPage=home');
-         mainMenuOpen.open === false;
+         mainMenuOpen.open = false;
       }
    });
    onMount(() => {
