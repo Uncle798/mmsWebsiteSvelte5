@@ -118,13 +118,7 @@
    let navDelayed = $state(false);
    let navTimeout = $state(false);
 </script>
-<ExplainerModal
-   bind:modalOpen={explainerModalOpen}
->
-   {#snippet content()}
-      Please choose Cash or Check for the demo. There is currently no way to demo credit card payments.
-   {/snippet}
-</ExplainerModal>
+
 <FormModal
    modalOpen={invoiceModalOpen}
 >
@@ -185,14 +179,26 @@
          />
          <div class="flex">
             {#each paymentTypes as paymentType}
-               <RadioButton
-                  value={paymentType}
-                  groupName='paymentType'
-                  id={paymentType}
-                  errors={$errors.paymentType}
-                  constraints={$constraints.paymentType}
-                  label={paymentType.substring(0,1)+paymentType.substring(1).toLowerCase()}
-               />
+               {#if paymentType === 'CREDIT'}
+                  <RadioButton
+                     value={paymentType}
+                     groupName='paymentType'
+                     id={paymentType}
+                     errors={$errors.paymentType}
+                     constraints={$constraints.paymentType}
+                     label={paymentType.substring(0,1)+paymentType.substring(1).toLowerCase()}
+                     disabled={true}
+                  />
+               {:else}
+                  <RadioButton
+                     value={paymentType}
+                     groupName='paymentType'
+                     id={paymentType}
+                     errors={$errors.paymentType}
+                     constraints={$constraints.paymentType}
+                     label={paymentType.substring(0,1)+paymentType.substring(1).toLowerCase()}
+                  />
+               {/if}
             {/each}
          </div>
          <input type="hidden" name='employeeId' value={employeeId} />
