@@ -27,13 +27,13 @@
    })
 </script>
 <Header title="Discounts" />
-<div class="fixed top-12 sm:top-9 w-screen bg-tertiary-50-950 rounded-b-lg">
+<div class="fixed top-12 sm:top-8 w-screen bg-tertiary-50-950 rounded-b-lg">
    <Revenue amount={totalDiscounted(data.discountedLeases)} label='Total discounts' />
 </div>
 <ExplainerModal
    bind:modalOpen={explainerModalOpen}
 >
-   {#snippet copy()}
+   {#snippet content()}
       Want to give all non-profits $5 off? Want to give Terry down the street a good deal? Manage that here. Set discounts by percentage or a flat amount off.
    {/snippet}
 </ExplainerModal>
