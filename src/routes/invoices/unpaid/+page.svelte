@@ -23,21 +23,20 @@
    let pageNum = $state(1);
    let size = $state(25);
    let search = $state('');
-   let startDate = $state<Date>(new Date());
+   let startDate = $state(new Date());
    let endDate = $state<Date>(new Date());
    let maxDate = $state<Date>();
    let minDate = $state<Date>();
-   const numberFormatter = new Intl.NumberFormat('en-US');
-   const wrapper = new Promise<Invoice[]>(async res => {
-      const invoices = await data.invoices
-      if(invoices.length > 0){
-         startDate = dayjs.utc(invoices[0].invoiceCreated).startOf('year').toDate();
-         minDate = startDate;
-         endDate = new Date();
-         maxDate = endDate;
+   const earliestDate = $derived((invoices:Invoice[]) => {
+      let returnedDate = new Date();
+      for(const invoice of invoices){
+         if(invoice.invoiceCreated < returnedDate){
+            returnedDate = invoice.invoiceCreated
+         }
       }
-      res(invoices)
+      return returnedDate;
    })
+   const numberFormatter = new Intl.NumberFormat('en-US');
    let nameSearch = $state('');
    let currentUsers = $derived((users:User[]) => users.filter((user) => {
       return user.givenName?.toLowerCase().includes(nameSearch.toLowerCase()) || user.familyName?.toLowerCase().includes(nameSearch.toLowerCase())
@@ -74,7 +73,7 @@
    })
    let searchDrawerOpen=$state(false)
 </script>
-{#await wrapper}
+{#await data.invoices}
    <Header title='Loading invoices' />
    <div class="mt-14 sm:mt-10 ml-2">
       Loading {numberFormatter.format(data.invoiceCount)} invoices, 
@@ -96,7 +95,7 @@
       {:then addresses}
          {#if invoices.length >0}       
             <Header title='Unpaid invoices' />
-            <Revenue label="Current Unpaid Invoice total" amount={totalRevenue(searchedInvoices(dateSearchedInvoices(invoices)))} classes="bg-tertiary-50-950 w-screen rounded-b-lg fixed top-10 sm:top-9 p-2 left-0 z-40"/>
+            <Revenue label="Current Unpaid Invoice total" amount={totalRevenue(searchedInvoices(dateSearchedInvoices(invoices)))} classes="bg-tertiary-50-950 w-screen rounded-b-lg fixed top-10 sm:top-8 p-2 left-0 z-40"/>
             <SearchDrawer
                modalOpen={searchDrawerOpen}
                height='h-[180px]'
@@ -105,7 +104,18 @@
                   <div class="mt-8">
                      <Search data={data.searchForm} bind:search={search} searchType='invoice number' classes='m-1 sm:m-2 '/>
                      <Search data={data.searchForm} bind:search={nameSearch} searchType='Customer' classes='m-1 sm:m-2 '/>
-                     <DateSearch data={data.dateSearchForm} bind:startDate={startDate} bind:endDate={endDate} {minDate} {maxDate} classes='w-1/2 mb-1 sm:mb-2 mx-1 sm:mx-2'/>
+                     <DateSearch 
+                        data={data.dateSearchForm} 
+                        bind:startDate={startDate} 
+                        bind:endDate={endDate} 
+                        {minDate} 
+                        {maxDate} 
+                        classes='w-1/2 mb-1 sm:mb-2 mx-1 sm:mx-2'
+                        {@attach () => {
+                           startDate = earliestDate(invoices);
+                           minDate = startDate;
+                        }}
+                     />
                   </div>
                {/snippet}
             </SearchDrawer>

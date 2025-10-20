@@ -8,7 +8,6 @@
    import Pagination from '$lib/displayComponents/Pagination.svelte';
    import Placeholder from '$lib/displayComponents/Placeholder.svelte';
    import Search from '$lib/forms/Search.svelte';
-   import DateSearch from '$lib/forms/DateSearch.svelte';
    import dayjs from 'dayjs';
    import utc from 'dayjs/plugin/utc'
    import Revenue from '$lib/displayComponents/Revenue.svelte';
@@ -17,6 +16,7 @@
 	import EmailCustomer from '$lib/EmailCustomer.svelte';
    import DownloadPdfButton from '$lib/DownloadPDFButton.svelte';
 	import SearchDrawer from '$lib/displayComponents/Modals/SearchDrawer.svelte';
+	import DateSearchForm from '$lib/forms/DateSearchForm.svelte';
    dayjs.extend(utc)
    let { data }: { data: PageData } = $props();
    let pageNum = $state(1);
@@ -31,6 +31,15 @@
    let currentUsers = $derived((users:User[]) => users.filter((user) => {
       return user.givenName?.toLowerCase().includes(nameSearch.toLowerCase()) || user.familyName?.toLowerCase().includes(nameSearch.toLowerCase())
    }))
+   const earliestDate = $derived((invoices:Invoice[]) => {
+      let returnedDate = new Date();
+      for(const invoice of invoices){
+         if(invoice.invoiceCreated < returnedDate){
+            returnedDate = invoice.invoiceCreated;
+         }
+      }
+      return returnedDate;
+   })
    const searchByUser = $derived((invoices:Invoice[], customers:User[]) => {
       const users = currentUsers(customers);
       const customerInvoices:Invoice[] = [];
@@ -95,12 +104,22 @@
                modalOpen={searchDrawerOpen}
                height='h-[180px]'
             >
-
                {#snippet content()}
                   <div class="mt-8">
                      <Search data={data.searchForm} bind:search={search} searchType='invoice number' classes='m-1 sm:m-2 '/>
                      <Search data={data.searchForm} bind:search={nameSearch} searchType='Customer' classes='m-1 sm:m-2 '/>
-                     <DateSearch data={data.dateSearchForm} bind:startDate={startDate} bind:endDate={endDate} {minDate} {maxDate} classes='w-1/2 mb-1 sm:mb-2 mx-1 sm:mx-2'/>
+                     <DateSearchForm
+                        data={data.dateSearchForm} 
+                        bind:startDate={startDate} 
+                        bind:endDate={endDate} 
+                        {minDate} 
+                        {maxDate} 
+                        classes='w-1/2 mb-1 sm:mb-2 mx-1 sm:mx-2'
+                        {@attach () => {
+                           startDate = earliestDate(invoices);
+                           minDate = startDate;
+                        }}   
+                     />
                   </div>
                {/snippet}
             </SearchDrawer>

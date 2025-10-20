@@ -26,13 +26,14 @@
    let endDate = $state<Date>(new Date());
    let maxDate = $state<Date>();
    let minDate = $state<Date>();
-   let wrapper = new Promise<RefundRecord[]>(async res => {
-      const refunds = await data.refunds
-      res(refunds)
-      startDate = dayjs(refunds[0].refundCreated).startOf('year').toDate()
-      minDate = dayjs(refunds[0].refundCreated).startOf('year').toDate()
-      maxDate = dayjs(refunds[refunds.length-1].refundCreated).endOf('year').toDate()
-      endDate = dayjs(refunds[refunds.length-1].refundCreated).endOf('year').toDate()
+   const earliestDate = $derived((refunds:RefundRecord[]) => {
+      let returnedDate = new Date();
+      for(const refund of refunds){
+         if(refund.refundCreated < returnedDate){
+            returnedDate = refund.refundCreated;
+         }
+      }
+      return returnedDate;
    })
    const numberFormatter = new Intl.NumberFormat('en-US');
    let slicedRefunds = $derived((refunds:RefundRecord[]) => refunds.slice((pageNum-1)*size, pageNum*size))
@@ -69,7 +70,7 @@
 </script>
 
 <Header title='Refund Records' />
-{#await wrapper}
+{#await data.refunds}
    <div class="mt-18 sm:mt-16 mx-1 sm:mx-2 mb-8">
       
       <Combobox
@@ -122,13 +123,17 @@
                         {minDate} 
                         {maxDate} 
                         classes='p-2'	
+                        {@attach () => {
+                           startDate = earliestDate(refunds);
+                           minDate = startDate;
+                        }}
                      />
                   {/snippet}
                </SearchDrawer>
                <Revenue 
                   label="Total refunds" 
                   amount={totalRevenue(searchRefunds(dateSearchRefunds(refunds)))}
-                  classes='bg-tertiary-50-950 w-full rounded-b-lg fixed top-11 sm:top-9 p-0.5 z-40'	
+                  classes='bg-tertiary-50-950 w-full rounded-b-lg fixed top-11 sm:top-8 p-0.5 z-40'	
                />
             <div class="mt-22 sm:mt-20 mx-1 sm:mx-2 mb-20 sm:mb-12 lg:mb-8">
                {#each slicedRefunds(searchRefunds(dateSearchRefunds(refunds))) as refund (refund.refundNumber)}

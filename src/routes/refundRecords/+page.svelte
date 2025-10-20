@@ -24,14 +24,15 @@
 	let endDate = $state<Date>(new Date());
 	let maxDate = $state<Date>();
 	let minDate = $state<Date>();
-	let wrapper = new Promise<RefundRecord[]>(async (res) => {
-		const refunds = await data.refunds;
-		startDate = dayjs(refunds[refunds.length-1].refundCreated).startOf('year').toDate();
-		minDate = startDate;
-		maxDate = new Date();
-		endDate = maxDate;
-		res(refunds);
-	});
+   const earliestDate = $derived((refunds:RefundRecord[]) => {
+      let returnedDate = new Date();
+      for(const refund of refunds){
+         if(refund.refundCreated < returnedDate){
+            returnedDate = refund.refundCreated;
+         }
+      }
+      return returnedDate;
+   })
 	const numberFormatter = new Intl.NumberFormat('en-US');
 	let slicedRefunds = $derived((refunds: RefundRecord[]) =>
 		refunds.slice((pageNum - 1) * size, pageNum * size)
@@ -92,7 +93,7 @@
 </script>
 
 <Header title="All Refunds" />
-{#await wrapper}
+{#await data.refunds}
 	<div class="mt-14 sm:mt-10">
 		Loading {numberFormatter.format(data.refundCount)} refunds...
 		{#if yearComboboxData}
@@ -144,12 +145,16 @@
 						data={data.dateSearchForm} 
 						{minDate} 
 						{maxDate} 
-						classes='p-2'	
+						classes='p-2'
+						{@attach () => {
+							startDate = earliestDate(refunds);
+							minDate = startDate;
+						}}	
 					/>
 				</div>
 				{/snippet}
 			</SearchDrawer>
-		<div class=" bg-tertiary-50-950 w-full rounded-b-lg fixed top-12 sm:top-9 left-0 flex flex-col sm:flex-row z-50">
+		<div class=" bg-tertiary-50-950 w-full rounded-b-lg fixed top-12 sm:top-8 left-0 flex flex-col sm:flex-row z-50">
 			<Revenue 
 				label="Total refunds" 
 				amount={totalRevenue(searchRefunds(dateSearchRefunds(refunds)))}

@@ -30,7 +30,7 @@
    </FormModal>
    {#if unit}
       <Header title='Unit number: {unit.num}' />
-      <Revenue label='Total revenue from this unit' amount={data.totalRevenue} classes="flex sticky top-9 bg-tertiary-50-950 rounded-b-lg w-full p-2"/>
+      <Revenue label='Total revenue from this unit' amount={data.totalRevenue} classes="flex sticky top-8 bg-tertiary-50-950 rounded-b-lg w-full p-2"/>
       <div transition:fade={{duration:600}} class="m-1 sm:m-2 mt-12 sm:mt-12 mb-8 sm:mb-8">
          <div class="border-2 border-primary-50-950 rounded-lg">
             <UnitEmployee {unit} classes='mx-2'/>

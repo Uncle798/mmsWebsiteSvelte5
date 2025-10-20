@@ -21,27 +21,26 @@
 	import EmailCustomer from '$lib/EmailCustomer.svelte';
 	import DownloadPdfButton from '$lib/DownloadPDFButton.svelte';
 	import { onMount } from 'svelte';
+	import DateSearchForm from '$lib/forms/DateSearchForm.svelte';
    dayjs.extend(utc)
    let { data }: { data: PageData } = $props();
    let pageNum = $state(1);
    let size = $state(25);
    let search = $state('');
+   let earliestDate = $derived((invoices:Invoice[]) => {
+      let returnedDate = new Date();
+      for(const invoice of invoices){
+         if(invoice.invoiceCreated < returnedDate){
+            returnedDate = invoice.invoiceCreated;
+         }
+      }
+      return returnedDate;
+   });
    let startDate = $state<Date>(new Date());
    let endDate = $state<Date>(new Date());
-   let maxDate = $state<Date>();
-   let minDate = $state<Date>();
+   let maxDate = $state<Date>(new Date());
+   let minDate = $state(new Date())
    const numberFormatter = new Intl.NumberFormat('en-US');
-   const wrapper = new Promise<Invoice[]>(async res => {
-      const invoices = await data.invoices
-      if(invoices.length > 0){
-         startDate = dayjs.utc(invoices[0].invoiceCreated).startOf('year').toDate();
-         minDate = startDate;
-         endDate = new Date();
-         maxDate = endDate;
-      }
-      res(invoices)
-   })
-
    let nameSearch = $state('');
    let currentUsers = $derived((users:User[]) => users.filter((user) => {
       return user.givenName?.toLowerCase().includes(nameSearch.toLowerCase()) || user.familyName?.toLowerCase().includes(nameSearch.toLowerCase()) || user.organizationName?.toLowerCase().includes(nameSearch.toLowerCase())
@@ -97,10 +96,10 @@
       navTimeout = false;
    })
    onMount(() => {
-      monthComboboxData.unshift({label:'Unpaid Invoices', value: 'unpaid'})
+      monthComboboxData.unshift({label:'Unpaid Invoices', value: 'unpaid'});
    })
 </script>
-{#await wrapper}
+{#await data.invoices}
    <Header title='Loading invoices' />
    <div class="mx-1 sm:mx-2 mt-14 sm:mt-10" in:fade={{duration:600}}>
       Loading {numberFormatter.format(data.invoiceCount)} invoices, 
@@ -151,7 +150,7 @@
             <Revenue 
                label="Total invoiced (not including deposits)" 
                amount={totalRevenue(searchedInvoices(dateSearchedInvoices(invoices)))} 
-               classes='bg-tertiary-50-950 w-full rounded-b-lg fixed top-9 p-2 z-40'
+               classes='bg-tertiary-50-950 w-full rounded-b-lg fixed top-8 p-2 z-40'
             />
             <SearchDrawer
                modalOpen={searchDrawerOpen}
@@ -161,7 +160,18 @@
                   <div class="mt-8">
                      <Search data={data.searchForm} bind:search={search} searchType='invoice number' classes='m-1 sm:m-2 '/>
                      <Search data={data.searchForm} bind:search={nameSearch} searchType='Customer' classes='m-1 sm:m-2 '/>
-                     <DateSearch data={data.dateSearchForm} bind:startDate={startDate} bind:endDate={endDate} {minDate} {maxDate} classes='w-1/2 mb-1 sm:mb-2 mx-1 sm:mx-2'/>
+                     <DateSearchForm
+                        data={data.dateSearchForm} 
+                        bind:startDate={startDate} 
+                        bind:endDate={endDate} 
+                        {minDate} 
+                        {maxDate} 
+                        classes='w-1/2 mb-1 sm:mb-2 mx-1 sm:mx-2' 
+                        {@attach () => {
+                           startDate=earliestDate(invoices);
+                           minDate=earliestDate(invoices);
+                        }}   
+                     />
                      <div class="flex flex-row">
                         <Combobox
                            data={yearComboboxData}

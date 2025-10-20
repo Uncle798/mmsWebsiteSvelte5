@@ -45,17 +45,16 @@
       }
       return returnedPayments;
    });
-   let wrapper = new Promise<PaymentRecord[]>(async res => {
-      const paymentRecords = await data.paymentRecords
-      if(paymentRecords.length > 0){
-         startDate = dayjs.utc(paymentRecords[0].paymentCreated).startOf('year').toDate();
-         minDate = startDate;
-         endDate = new Date();
-         maxDate = endDate;
-      }
-      res(paymentRecords);
-   })
    const numberFormatter = new Intl.NumberFormat('en-US');
+   const earliestDate = $derived((paymentRecords:PaymentRecord[]) => {
+      let returnedDate = new Date();
+      for(const paymentRecord of paymentRecords){
+         if(paymentRecord.paymentCreated < returnedDate){
+            returnedDate = paymentRecord.paymentCreated;
+         }
+      }
+      return returnedDate
+   })
    let slicedSource = $derived((paymentRecords:PaymentRecord[]) => paymentRecords.slice((pageNum -1) * size, pageNum*size));
    let searchedPayments = $derived((paymentRecords:PaymentRecord[]) => {
       const returnedPayments = paymentRecords.filter((paymentRecord) => paymentRecord.paymentNumber.toString().includes(search))
@@ -140,7 +139,7 @@
 </FormModal>
 <Header title='Payment Records' />
 {#if data.paymentRecordCount}
-   {#await wrapper}
+   {#await data.paymentRecords}
       <div class="mx-1 sm:mx-2 mt-14 sm:mt-14 mb-20 sm:mb-12 lg:mb-8">
          Loading {numberFormatter.format(data.paymentRecordCount)} payment records
          {#if data.years}
@@ -225,6 +224,10 @@
                      {maxDate} 
                      data={data.dateSearchForm}
                      classes='flex flex-col sm:flex-row'    
+                     {@attach () => {
+                        startDate = earliestDate(paymentRecords);
+                        minDate = earliestDate(paymentRecords);
+                     }}
                   />
                   </div>
                   <button 

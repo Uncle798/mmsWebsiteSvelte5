@@ -34,15 +34,15 @@
    let maxDate = $state<Date>();
    let minDate = $state<Date>();
    const numberFormatter = new Intl.NumberFormat('en-US');
-   const wrapper = new Promise<Invoice[]>(async res => {
-      const invoices = await data.invoices
-      startDate = dayjs.utc(invoices[0].invoiceCreated).startOf('year').toDate();
-      minDate = startDate;
-      endDate = new Date();
-      maxDate = endDate;
-      res(invoices)
+   const earliestDate = $derived((invoices:Invoice[]) => {
+      let returnedDate = new Date();
+      for(const invoice of invoices){
+         if(invoice.invoiceCreated < returnedDate){
+            returnedDate = invoice.invoiceCreated;
+         }
+      }
+      return returnedDate;
    })
-
    let nameSearch = $state('');
    let currentUsers = $derived((users:User[]) => users.filter((user) => {
       return user.givenName?.toLowerCase().includes(nameSearch.toLowerCase()) || user.familyName?.toLowerCase().includes(nameSearch.toLowerCase()) || user.organizationName?.toLowerCase().includes(nameSearch.toLowerCase())
@@ -92,7 +92,6 @@
       }
       return 0
    }))
-   let yearSelect = $state(['']);
    interface ComboboxData {
       label: string;
       value: string;
@@ -122,7 +121,7 @@
       navTimeout = false;
    })
 </script>
-{#await wrapper}
+{#await data.invoices}
    <Header title='Loading invoices' />
    <div class="mx-1 sm:mx-2 mt-14 sm:mt-10" in:fade={{duration:600}}>
       Loading {numberFormatter.format(data.invoiceCount)} invoices,
@@ -194,7 +193,17 @@
                   <div class="flex flex-row gap-2">
                      <Search data={data.searchForm} bind:search={search} searchType='invoice number' classes='w-1/3'/>
                      <Search data={data.searchForm} bind:search={nameSearch} searchType='Customer' classes='w-1/3'/>
-                     <DateSearchForm data={data.dateSearchForm} bind:startDate={startDate} bind:endDate={endDate} {minDate} {maxDate}/>
+                     <DateSearchForm 
+                        data={data.dateSearchForm} 
+                        bind:startDate={startDate} 
+                        bind:endDate={endDate} 
+                        {minDate} 
+                        {maxDate}
+                        {@attach () => {
+                           startDate = earliestDate(invoices);
+                           minDate = startDate;
+                        }}
+                     />
                   </div>
                      <button class="btn preset-filled-primary-50-950 h-8" onclick={()=> {
                         sortBy = !sortBy;
