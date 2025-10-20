@@ -40,16 +40,15 @@
       }
       return returnedPayments;
    });
-   let wrapper = new Promise<PaymentRecord[]>(async res => {
-      const paymentRecords = await data.paymentRecords
-      if(paymentRecords.length > 0){
-          startDate = dayjs.utc(paymentRecords[0].paymentCreated).startOf('year').toDate();
-          minDate = startDate;
-          endDate = dayjs.utc(paymentRecords[paymentRecords.length-1].paymentCreated).endOf('year').toDate();
-          maxDate = endDate;
-        }
-        res(paymentRecords);
-    })
+   const earliestDate = $derived((paymentRecords:PaymentRecord[]) => {
+      let returnedDate = new Date();
+      for(const paymentRecord of paymentRecords){
+         if(paymentRecord.paymentCreated < returnedDate){
+            returnedDate = paymentRecord.paymentCreated;
+         }
+      }
+      return returnedDate
+   })
    const numberFormatter = new Intl.NumberFormat('en-US');
    let slicedSource = $derived((paymentRecords:PaymentRecord[]) => paymentRecords.slice((pageNum -1) * size, pageNum*size));
    let searchedPayments = $derived((paymentRecords:PaymentRecord[]) => {
@@ -114,7 +113,7 @@
    {/snippet}
 </FormModal>
 <Header title='Payment Records' />
-{#await wrapper}
+{#await data.paymentRecords}
    <div class="mx-1 sm:mx-2 mt-14 sm:mt-10">
       Loading {numberFormatter.format(data.paymentRecordCount)} payment records...
       <Placeholder numCols={1} numRows={size} heightClass='h-32' classes='z-0'/>
@@ -166,7 +165,11 @@
                      {minDate} 
                      {maxDate} 
                      data={data.dateSearchForm}
-                     classes='flex flex-col md:grid md:grid-cols-2 m-1 sm:m-2'    
+                     classes='flex flex-col md:grid md:grid-cols-2 m-1 sm:m-2'
+                     {@attach () => {
+                        startDate = earliestDate(paymentRecords);
+                        minDate = startDate;
+                     }}
                   />
                   <button onclick={()=>{
                      sortBy = !sortBy;

@@ -44,18 +44,15 @@
       }
       return returnedPayments;
    });
-   let wrapper = new Promise<PaymentRecord[]>(async res => {
-      const paymentRecords = await data.paymentRecords
-      if(paymentRecords.length > 0){
-         startDate = dayjs.utc(paymentRecords[0].paymentCreated).startOf('year').toDate();
-         console.log(startDate);
-         minDate = startDate;
-         endDate = dayjs.utc(paymentRecords[paymentRecords.length-1].paymentCreated).endOf('year').toDate();
-         maxDate = endDate;
+   const earliestDate = $derived((paymentRecords:PaymentRecord[]) => {
+      let returnedDate = new Date();
+      for(const payment of paymentRecords){
+         if(payment.paymentCreated < returnedDate){
+            returnedDate = payment.paymentCreated;
+         }
       }
-      res(paymentRecords);
+      return returnedDate;
    })
-
    const numberFormatter = new Intl.NumberFormat('en-US');
    let slicedSource = $derived((paymentRecords:PaymentRecord[]) => paymentRecords.slice((pageNum -1) * size, pageNum*size));
    let searchedPayments = $derived((paymentRecords:PaymentRecord[]) => {
@@ -138,7 +135,7 @@
    {/snippet}
 </FormModal>
 <Header title='Payment Records' />
-{#await wrapper}
+{#await data.paymentRecords}
    <div class="mx-1 sm:mx-2 mt-14 sm:mt-10">
       Loading {numberFormatter.format(data.paymentRecordCount)} payment records...
       {#if data.months}
@@ -216,6 +213,10 @@
                      {minDate} 
                      {maxDate} 
                      data={data.dateSearchForm}
+                     {@attach () => {
+                        startDate = earliestDate(paymentRecords);
+                        minDate = startDate;
+                     }}
                   />
                   <div class="flex flex-row w-1/4">
                      <Combobox
