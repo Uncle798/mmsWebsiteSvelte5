@@ -72,11 +72,15 @@
          label='Notes'
          name='notes'
       />
-      <div class="flex flex-col sm:flex-row">
+      <div class="flex flex-col sm:flex-row gap-2 mt-2 justify-center">
          <Switch 
             bind:checked={$form.unavailable}
             name='unavailable'
             label='Unit is Unavailable'
+            onCheckedChange = {(e) => {
+               $form.unavailable = e.checked;
+               submit()
+            }}
          />
          <input type="hidden" name="unitNum" id="unitNum" value={unit.num} />
          <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} buttonText='Update notes'/>
