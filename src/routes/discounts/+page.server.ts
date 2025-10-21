@@ -44,5 +44,6 @@ export const load = (async (event) => {
          ]
       }
    })
-   return { discounts, newDiscountForm, discountEndForm, discountedLeases, customers };
+   const demoCookie = event.cookies.get('discounts')
+   return { discounts, newDiscountForm, discountEndForm, discountedLeases, customers, demoCookie };
 }) satisfies PageServerLoad;
