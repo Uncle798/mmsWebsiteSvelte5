@@ -37,6 +37,7 @@
    })
    let totalInvoiced = $derived((invoices:Invoice[]) => {
       let total = 0;
+      console.log(invoices)
       for(const invoice of invoices){
          total += invoice.invoiceAmount;
       }
@@ -80,11 +81,6 @@
       currentLeaseId = '';
       currentUnit = undefined;
    });
-   onMount(() => {
-      if(data.demoCookie !== 'true'){
-         customersTour.drive();
-      }
-   })
 </script>
 <Header title='Current Customers'/>
 {#await data.customers}
@@ -117,7 +113,7 @@
                      Loading units...
                   </div>
                {:then units}
-                  <div in:fade={{duration:600}} class="mt-20 sm:mt-18 mb-8 sm:mb-8">
+                  <div in:fade={{duration:600}} class="mt-20 sm:mt-18 mb-8 sm:mb-8" {@attach () => {if(data.demoCookie !== 'true'){customersTour.drive()}}}>
                      <Revenue label='Current monthly invoiced' amount={totalLeased(leases)} classes='fixed top-11 sm:top-8 p-1 w-screen left-0 bg-tertiary-50-950 rounded-b-lg'/>
                      <SearchDrawer
                         modalOpen={searchDrawerOpen}
@@ -158,6 +154,8 @@
                                           <p class="text-error-100-900">Overdue amount: <a href="/paymentRecords/new?userId={customer.id}">{currencyFormatter.format(totalInvoiced(overdueInvoices(customerInvoices)))}</a></p>
                                        {:else if overdueInvoices(customerInvoices).length === 1}
                                           <p class="text-error-100-900">Overdue amount: <a href="/paymentRecords/new?invoiceNum={overdueInvoices(customerInvoices)[0].invoiceNum}" class="">{currencyFormatter.format(totalInvoiced(overdueInvoices(customerInvoices)))}</a></p>
+                                       {:else}
+                                        <p class="text-success-300-700">Overdue amount: {currencyFormatter.format(0.0)}</p>
                                        {/if}
                                     </div>
                                  </div>
@@ -175,6 +173,8 @@
                                           <p class="text-error-100-900">Overdue amount: <a href="/paymentRecords/new?userId={customer.id}">{currencyFormatter.format(totalInvoiced(overdueInvoices(customerInvoices)))}</a></p>
                                        {:else if overdueInvoices(customerInvoices).length === 1}
                                           <p class="text-error-100-900">Overdue amount: <a href="/paymentRecords/new?invoiceNum={overdueInvoices(customerInvoices)[0].invoiceNum}" class="">{currencyFormatter.format(totalInvoiced(overdueInvoices(customerInvoices)))}</a></p>
+                                       {:else}
+                                           <p class="text-success-300-700">Overdue amount: {currencyFormatter.format(0.0)}</p>
                                        {/if}
                                     </div>
                                  </div>
