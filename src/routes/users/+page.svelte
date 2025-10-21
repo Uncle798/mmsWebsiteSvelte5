@@ -9,9 +9,10 @@
 	import Search from '$lib/forms/Search.svelte';
 	import Switch from '$lib/formComponents/Switch.svelte';
 	import { onMount } from 'svelte';
-	import ExplainerModal from '$lib/displayComponents/Modals/ExplainerModal.svelte';
 	import { invalidateAll } from '$app/navigation';
 	import SearchDrawer from '$lib/displayComponents/Modals/SearchDrawer.svelte';
+   import { driver } from 'driver.js';
+   import 'driver.js/dist/driver.css';
 
    let { data }: { data: PageData } = $props();
    let search = $state('')
@@ -59,6 +60,22 @@
       })
       invalidateAll();
    }
+   const userTour = driver({
+      showProgress: true,
+      stagePadding: 2,
+      steps: [
+         { popover: { title: `Admin all user page`, description: `Welcome to the admin user page. Here is where you add or remove employees and other admins.`}},
+         { element: '.firstUserEmployment', popover:{ title: `Employee and admin`, description: `Admins can change employment status, employees can't, all admins should also be employees`}}
+      ],
+      onDestroyed: () => {
+         fetch('/api/demoSetCookie?demoPage=users')
+      }
+   })
+   onMount(() => {
+      if(data.demoCookie !== 'users'){
+         userTour.drive()
+      }
+   })
 </script>
 <Header title='All users' />
 {#await data.users}
@@ -86,32 +103,40 @@
       </div>
       {/snippet}
    </SearchDrawer>
-
-   <ExplainerModal
-      bind:modalOpen={explainerModalOpen}
-   >
-      {#snippet copy()}
-         Admins can change the employment status of a user, Employees can't, otherwise they're the same. All Admins should also be employees.
-      {/snippet}
-   </ExplainerModal>
    <div in:fade={{duration:600}} class="m-2 mt-14 sm:mt-10">
       <div class="grid grid-cols-1 gap-y-3 gap-x-1">
-         {#each slicedSource(searchedUsers(filterAdmin(filterEmployee(users)))) as user (user.id)}
-            <div class="rounded-lg border border-primary-50-950 flex flex-col sm:flex-row">
-               <UserAdmin {user} classes=" p-2 w-1/2"/>
-               <div>
-                  <EmploymentChangeForm 
+         {#each slicedSource(searchedUsers(filterAdmin(filterEmployee(users)))) as user, i (user.id)}
+            {#if i === 0}               
+               <div class="rounded-lg border border-primary-50-950 flex flex-col sm:flex-row firstUser">
+                  <UserAdmin {user} classes=" p-2 w-1/2"/>
+                  <div>
+                     <EmploymentChangeForm 
+                     data={data.employmentChangeForm} 
+                     employeeChecked={user.employee} 
+                     adminChecked={user.admin}
+                     userId={user.id}
+                     classes="flex flex-col sm:flex-row firstUserEmployment"
+                     />
+                     <button class="btn preset-filled-primary-50-950 h-8 mb-2" onclick={()=> deleteUser(user.id)}>Delete User</button>
+                  </div>
+               </div>
+            {:else}
+               <div class="rounded-lg border border-primary-50-950 flex flex-col sm:flex-row">
+                  <UserAdmin {user} classes=" p-2 w-1/2"/>
+                  <div>
+                     <EmploymentChangeForm 
                      data={data.employmentChangeForm} 
                      employeeChecked={user.employee} 
                      adminChecked={user.admin}
                      userId={user.id}
                      classes="flex flex-col sm:flex-row"
-                  />
-                  <button class="btn preset-filled-primary-50-950 h-8 mb-2" onclick={()=> deleteUser(user.id)}>Delete User</button>
+                     />
+                     <button class="btn preset-filled-primary-50-950 h-8 mb-2" onclick={()=> deleteUser(user.id)}>Delete User</button>
+                  </div>
                </div>
-            </div>
+            {/if}
          {/each}
-      </div>
+         </div>
       <Pagination bind:size={size} bind:pageNum={pageNum} array={searchedUsers(users)} label='users'/>
    </div>
 {/await}

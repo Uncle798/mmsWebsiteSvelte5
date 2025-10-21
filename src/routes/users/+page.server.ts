@@ -19,7 +19,8 @@ export const load = (async (event) => {
          {givenName: 'asc'}
       ],
    });
-   return { users, userCount, employmentChangeForm, searchForm };
+   const demoCookie = event.cookies.get('users')
+   return { users, userCount, employmentChangeForm, searchForm, demoCookie };
 }) satisfies PageServerLoad;
 
 export const actions: Actions = {
