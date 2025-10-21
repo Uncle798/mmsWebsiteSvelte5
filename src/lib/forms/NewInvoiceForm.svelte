@@ -169,7 +169,7 @@
                   }, 300)
                   goto(`/invoices/new?leaseId=${details.value}&userId=${customer.id}`);
                }}
-               classes='w-lg'
+               classes='mx-2'
             />
             {/if}
             {#if navDelayed && navReason === 'leasesComboboxData'}
