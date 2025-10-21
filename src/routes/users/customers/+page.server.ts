@@ -68,9 +68,34 @@ export const load = (async (event) => {
    })
    const invoices = prisma.invoice.findMany({
       where: {
-         invoiceAmount: {
-            gt: prisma.invoice.fields.amountPaid
-         }
+         OR: [
+            {AND: [
+               {
+                  customer: {
+                     customerLeases: {
+                        some: {
+                           leaseEnded: null
+                        }
+                     }
+                  }
+               },
+               {
+                  deposit: false
+               }
+            ]},
+            {
+               AND: [
+                  {
+                     invoiceAmount: {
+                        gt: prisma.invoice.fields.amountPaid
+                     }
+                  },
+                  {
+                     deposit: false
+                  }
+               ]
+            }
+         ]
       }
    })
    const paymentRecords = prisma.paymentRecord.findMany({
