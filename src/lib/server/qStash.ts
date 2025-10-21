@@ -1,4 +1,4 @@
-import { QSTASH_TOKEN } from "$env/static/private";
+import { QSTASH_TOKEN, } from "$env/static/private";
 import { Client } from "@upstash/workflow";
 
 export const qStash = new Client({
