@@ -22,6 +22,8 @@
 	import EmailCustomer from '$lib/EmailCustomer.svelte';
 	import DownloadPdfButton from '$lib/DownloadPDFButton.svelte';
 	import SearchDrawer from '$lib/displayComponents/Modals/SearchDrawer.svelte';
+	import { onMount } from 'svelte';
+	import DateSearchForm from '$lib/forms/DateSearchForm.svelte';
 
    dayjs.extend(utc);
    
@@ -129,6 +131,9 @@
       navDelayed = false;
       navTimeout = false;
    })
+   onMount(() => {
+      
+   })
 </script>
 <FormModal
    modalOpen={modalOpen}
@@ -140,41 +145,39 @@
 <Header title='Payment Records' />
 {#if data.paymentRecordCount}
    {#await data.paymentRecords}
-      <div class="mx-1 sm:mx-2 mt-14 sm:mt-14 mb-20 sm:mb-12 lg:mb-8">
-         Loading {numberFormatter.format(data.paymentRecordCount)} payment records
-         {#if data.years}
+      <div class="mx-1 sm:mx-2 mt-10 sm:mt-10 mb-8">
+         Loading {numberFormatter.format(data.paymentRecordCount)} payment records,
             <div class="flex flex-row">
                {#if yearComboboxData}                  
-               <Combobox
-                  data={yearComboboxData}
-                  label='or select year'
-                  placeholder='Select year ...'
-                  onValueChange={(details) => {
-                     setTimeout(() => {
-                        navDelayed = true;
-                     }, 300)
-                     goto(`/paymentRecords/year/${details.value[0]}`)
-                  }}
-               />
-               {#if navDelayed}
-                  <ProgressRing  
-                     value={null} 
-                     {@attach () => {
+                  <Combobox
+                     data={yearComboboxData}
+                     label='or select year'
+                     placeholder='Select year ...'
+                     onValueChange={(details) => {
                         setTimeout(() => {
-                           navDelayed = false;
-                           navTimeout = true;
-                        }, 800)
+                           navDelayed = true;
+                        }, 300)
+                        goto(`/paymentRecords/year/${details.value[0]}`)
                      }}
                   />
-               {/if}
-               {#if navTimeout}
-                  <ProgressLine 
-                     value={null}
-                  />
-               {/if}
+                  {#if navDelayed}
+                     <ProgressRing  
+                        value={null} 
+                        {@attach () => {
+                           setTimeout(() => {
+                              navDelayed = false;
+                              navTimeout = true;
+                           }, 800)
+                        }}
+                     />
+                  {/if}
+                  {#if navTimeout}
+                     <ProgressLine 
+                        value={null}
+                     />
+                  {/if}
                {/if}
             </div>
-         {/if}
          <Placeholder numCols={1} numRows={size} heightClass='h-64' classes='z-0'/>
       </div>
    {:then paymentRecords} 
@@ -206,41 +209,41 @@
                      height='h-[180px]'
                >
                {#snippet content()}
-               <div class="flex flex-col sm:flex-row mt-11 gap-2 mx-2" >
-                  <Search 
-                     bind:search={search} 
-                     searchType='payment record number' 
-                     data={data.searchForm}
-                  />
-                  <Search
-                     bind:search={nameSearch}
-                     searchType='customer name'
-                     data={data.searchForm}
-                  />
-                  <DateSearch 
-                     bind:startDate={startDate} 
-                     bind:endDate={endDate} 
-                     {minDate} 
-                     {maxDate} 
-                     data={data.dateSearchForm}
-                     classes='flex flex-col sm:flex-row'    
-                     {@attach () => {
-                        startDate = earliestDate(paymentRecords);
-                        minDate = earliestDate(paymentRecords);
-                     }}
-                  />
+                  <div class="flex flex-col sm:flex-row mt-11 gap-2 mx-2" >
+                     <Search 
+                        bind:search={search} 
+                        searchType='payment record number' 
+                        data={data.searchForm}
+                     />
+                     <Search
+                        bind:search={nameSearch}
+                        searchType='customer name'
+                        data={data.searchForm}
+                     />
+                     <DateSearchForm
+                        bind:startDate={startDate} 
+                        bind:endDate={endDate} 
+                        {minDate} 
+                        {maxDate} 
+                        data={data.dateSearchForm}
+                        classes='flex flex-col sm:flex-row'    
+                        {@attach () => {
+                           startDate = earliestDate(paymentRecords);
+                           minDate = earliestDate(paymentRecords);
+                        }}
+                     />
+                     <button 
+                        onclick={()=>{
+                           sortBy = !sortBy;
+                           searchDrawerOpen = false;
+                        }} 
+                        class="btn preset-filled-primary-50-950 m-2"
+                     >Sort by date {sortBy ? 'starting earliest' : 'starting latest'}</button>
                   </div>
-                  <button 
-                     onclick={()=>{
-                        sortBy = !sortBy;
-                        searchDrawerOpen = false;
-                     }} 
-                     class="btn preset-filled-primary-50-950 m-2"
-                  >Sort by date {sortBy ? 'starting earliest' : 'starting latest'}</button>
                {/snippet}
                </SearchDrawer>
                   <div class="mt-32 sm:mt-20 mb-20 sm:mb-12 lg:mb-8" in:fade={{duration:600}} out:fade={{duration:0}}>
-                     {#each slicedSource(sortedByDate(dateSearchPayments(searchedPayments(searchByUser(paymentRecords, currentUsers(customers)))))) as paymentRecord}
+                     {#each slicedSource(sortedByDate(searchedPayments(searchByUser(paymentRecords, currentUsers(customers))))) as paymentRecord}
                      {@const customer = customers.find((customer) => customer.id === paymentRecord.customerId) }
                         <div class="rounded-lg border border-primary-50-950 grid sm:grid-cols-2 m-2">
                            <div class="flex flex-col">
@@ -277,7 +280,7 @@
                            {/if}
                         </div>
                      {/each}
-                     <Pagination bind:size={size} bind:pageNum={pageNum} array={dateSearchPayments(searchedPayments(searchByUser(paymentRecords, currentUsers(customers))))} label='payment records'/>
+                     <Pagination bind:size={size} bind:pageNum={pageNum} array={searchedPayments(searchByUser(paymentRecords, currentUsers(customers)))} label='payment records'/>
                   </div>
             {:else}
                No payment records from that year
