@@ -8,8 +8,9 @@
 		search: string;
 		searchType: string;
 		classes?: string;
+		formId?: string;
 	}
-	let { data, search = $bindable(''), searchType, classes }: Props = $props();
+	let { data, search = $bindable(''), searchType, classes, formId }: Props = $props();
 	const id = $props.id();
 	const url = page.url.pathname
 	let { form, enhance } = superForm(data, {
@@ -22,7 +23,9 @@
                sessionStorage.setItem(formName, value);
             }
          }
-		}
+		},
+
+		id: formId ? formId : undefined
 	});
 
 	onMount(() => {
