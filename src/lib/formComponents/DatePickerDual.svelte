@@ -30,7 +30,7 @@
       min={minDate ? parseDate(minDate) : undefined}
       max={maxDate ? parseDate(maxDate) : undefined}
       selectionMode="range"
-      class='gap-0!'
+      class='gap-0! z-50'
       numOfMonths={2}
    > 
       <DatePicker.Label>{label}</DatePicker.Label>
@@ -45,15 +45,17 @@
                <DatePicker.YearSelect />
                <DatePicker.MonthSelect />
                <DatePicker.View view='day'>
-                     <DatePicker.Context>
-                        {#snippet children(date)}
-                           <DatePicker.ViewControl>
-                              <DatePicker.PrevTrigger />
-                              <DatePicker.ViewTrigger disabled>
-                                 <DatePicker.RangeText />
-                              </DatePicker.ViewTrigger>
-                              <DatePicker.NextTrigger />
-                           </DatePicker.ViewControl>
+                  <DatePicker.Context>
+                     {#snippet children(date)}
+                     {@const offset = date().getOffset({months: 1})}
+                        <DatePicker.ViewControl>
+                           <DatePicker.PrevTrigger />
+                           <DatePicker.ViewTrigger disabled>
+                              <DatePicker.RangeText />
+                           </DatePicker.ViewTrigger>
+                           <DatePicker.NextTrigger />
+                        </DatePicker.ViewControl>
+                           <div class="flex flex-row gap-2">
                               <DatePicker.Table>
                                  <DatePicker.TableHead>
                                     <DatePicker.TableRow>
@@ -78,37 +80,32 @@
                                     {/each}
                                  </DatePicker.TableBody>
                               </DatePicker.Table>
-                           {/snippet}
-                        </DatePicker.Context>
-                        <DatePicker.Context>
-                           {#snippet children(date)}
-                           {@const offset = date().getOffset({months: 1})}
-                              <DatePicker.Table>
-                                 <DatePicker.TableHead>
-                                    <DatePicker.TableRow>
-                                       {#each date().weekDays as weekDay, id (id)}
-                                          <DatePicker.TableHeader>
-                                             {weekDay.short}
-                                          </DatePicker.TableHeader>
-                                       {/each}
-                                    </DatePicker.TableRow>
-                                 </DatePicker.TableHead>
-                                 <DatePicker.TableBody>
-                                    {#each offset.weeks as week, id (id) }
-                                       <DatePicker.TableRow>
-                                          {#each week as day, id (id)}
-                                             <DatePicker.TableCell value={day} visibleRange={offset.visibleRange} >
-                                                <DatePicker.TableCellTrigger>
-                                                   {day.day}
-                                                </DatePicker.TableCellTrigger>
-                                             </DatePicker.TableCell>
-                                             {offset.visibleRangeText}
+                                 <DatePicker.Table>
+                                       <DatePicker.TableHead>
+                                          <DatePicker.TableRow>
+                                             {#each date().weekDays as weekDay, id (id)}
+                                                <DatePicker.TableHeader>
+                                                   {weekDay.short}
+                                                </DatePicker.TableHeader>
+                                             {/each}
+                                          </DatePicker.TableRow>
+                                       </DatePicker.TableHead>
+                                       <DatePicker.TableBody>
+                                          {#each offset.weeks as week, id (id) }
+                                             <DatePicker.TableRow>
+                                                {#each week as day, id (id)}
+                                                   <DatePicker.TableCell value={day} visibleRange={offset.visibleRange} >
+                                                      <DatePicker.TableCellTrigger>
+                                                         {day.day}
+                                                      </DatePicker.TableCellTrigger>
+                                                   </DatePicker.TableCell>
+                                                {/each}
+                                             </DatePicker.TableRow>
                                           {/each}
-                                       </DatePicker.TableRow>
-                                    {/each}
-                                 </DatePicker.TableBody>
-                              </DatePicker.Table>
-                        {/snippet}
+                                       </DatePicker.TableBody>
+                                    </DatePicker.Table>
+                           </div>
+                           {/snippet}
                      </DatePicker.Context>
                </DatePicker.View>
                <DatePicker.View view='year'>
