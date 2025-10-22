@@ -2,10 +2,8 @@
 	import RefundRecordEmployee from '$lib/displayComponents/RefundRecordEmployee.svelte';
 	import UserEmployee from '$lib/displayComponents/UserEmployee.svelte';
 	import Search from '$lib/forms/Search.svelte';
-	import dayjs from 'dayjs';
 	import type { PageData } from './$types';
 	import type { RefundRecord, User } from '@prisma/client';
-	import DateSearch from '$lib/forms/DateSearch.svelte';
 	import Pagination from '$lib/displayComponents/Pagination.svelte';
 	import Revenue from '$lib/displayComponents/Revenue.svelte';
 	import Header from '$lib/Header.svelte';
@@ -16,6 +14,7 @@
 	import EmailCustomer from '$lib/EmailCustomer.svelte';
 	import { goto } from '$app/navigation';
 	import SearchDrawer from '$lib/displayComponents/Modals/SearchDrawer.svelte';
+	import DateSearchForm from '$lib/forms/DateSearchForm.svelte';
 	let { data }: { data: PageData } = $props();
 	let size = $state(25);
 	let pageNum = $state(1);
@@ -132,14 +131,16 @@
 						searchType="refund records" 
 						data={data.searchForm} 
 						classes='p-2 '	
+						formId='refundSearch'
 					/>
 					<Search
 						bind:search={nameSearch} 
 						searchType="user name" 
 						data={data.searchForm} 
 						classes='p-2 '	
+						formId='usernameSearch'
 					/>
-					<DateSearch 
+					<DateSearchForm
 						bind:endDate 
 						bind:startDate 
 						data={data.dateSearchForm} 
@@ -167,9 +168,11 @@
 			/>
 		</div>
 			<div class="grid grid-cols-1 mx-2 mt-26 sm:mt-18 gap-3 mb-20 sm:mb-12 lg:mb-8" in:fade={{duration:600}}>
-				{#each slicedRefunds(searchRefunds(dateSearchRefunds(searchByUser(refunds, currentUsers(customers))))) as refund (refund.refundNumber)}
+				{#each slicedRefunds(searchRefunds(searchByUser(refunds, currentUsers(customers)))) as refund (refund.refundNumber)}
 				{@const customer = customers.find((customer) => customer.id === refund.customerId)}
-					<div class="border rounded-lg border-primary-50-950 sm:grid sm:grid-cols-2">
+					<div class="border rounded-lg border-primary-50-950 sm:grid sm:grid-cols-2" {@attach () => {
+						console.log(refunds)
+					}} >
 						<RefundRecordEmployee refundRecord={refund} classes='mx-2 mt-2 '/>
 						{#if customer}
 						{@const address = addresses.find((address) => address.userId === customer.id)}
@@ -191,7 +194,7 @@
 						{/if}
 					</div>
 				{/each}
-				<Pagination bind:size bind:pageNum label="refund records" array={searchRefunds(dateSearchRefunds(searchByUser(refunds, currentUsers(customers))))} />
+				<Pagination bind:size bind:pageNum label="refund records" array={searchRefunds(searchByUser(refunds, currentUsers(customers)))} />
 			</div>
 		{/await}
 	{/await}
