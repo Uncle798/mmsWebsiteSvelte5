@@ -47,7 +47,7 @@
          <Combobox.Trigger />
       </Combobox.Control>
       <Portal>
-         <Combobox.Positioner class='z-[1]!'>
+         <Combobox.Positioner class='z-1!'>
             <Combobox.Content>
                {#each items as item}
                   <Combobox.Item {item}>
@@ -59,7 +59,7 @@
          </Combobox.Positioner>
       </Portal>
    </Combobox>
-   <Pagination count={array.length} pageSize={size} page={pageNum} onPageChange={(e) => (pageNum = e.page)} >
+   <Pagination count={array.length} pageSize={size} page={pageNum} onPageChange={(e) => (pageNum = e.page)} siblingCount={0} >
       <Pagination.PrevTrigger>
          <IconArrowLeft />
       </Pagination.PrevTrigger>
