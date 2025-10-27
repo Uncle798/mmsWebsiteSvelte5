@@ -24,6 +24,7 @@
 	import SearchDrawer from '$lib/displayComponents/Modals/SearchDrawer.svelte';
 	import { onMount } from 'svelte';
 	import DateSearchForm from '$lib/forms/DateSearchForm.svelte';
+	import RevenueBar from '$lib/displayComponents/RevenueBar.svelte';
 
    dayjs.extend(utc);
    
@@ -192,7 +193,8 @@
             </div>
          {:then addresses}         
             {#if paymentRecords.length >0}
-               <div class="bg-tertiary-50-950 w-screen rounded-b-lg fixed top-10 sm:top-7 p-0.5 flex">
+               <RevenueBar>
+                  {#snippet content()}                     
                   <Revenue 
                      label="Total revenue" 
                      amount={totalRevenue(searchedPayments(searchByUser(paymentRecords, currentUsers(customers))))} 
@@ -203,13 +205,13 @@
                      amount={totalRevenue(nonDeposits(searchedPayments(searchByUser(paymentRecords, currentUsers(customers)))))}
                      classes='m-1 sm:m-2'
                   />
-               </div>
+                  {/snippet}
+               </RevenueBar>
                <SearchDrawer
-                     modalOpen={searchDrawerOpen}
-                     height='h-[180px]'
+                  modalOpen={searchDrawerOpen}
+                  height='h-[360px] lg:h-[130px]'
                >
                {#snippet content()}
-                  <div class="flex flex-col sm:flex-row mt-11 gap-2 mx-2" >
                      <Search 
                         bind:search={search} 
                         searchType='payment record number' 
@@ -237,9 +239,8 @@
                            sortBy = !sortBy;
                            searchDrawerOpen = false;
                         }} 
-                        class="btn preset-filled-primary-50-950 m-2"
+                        class="btn preset-filled-primary-50-950 m-2 h-8"
                      >Sort by date {sortBy ? 'starting earliest' : 'starting latest'}</button>
-                  </div>
                {/snippet}
                </SearchDrawer>
                   <div class="mt-32 sm:mt-20 mb-20 sm:mb-12 lg:mb-8" in:fade={{duration:600}} out:fade={{duration:0}}>

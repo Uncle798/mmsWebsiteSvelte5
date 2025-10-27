@@ -15,6 +15,7 @@
 	import { goto } from '$app/navigation';
 	import SearchDrawer from '$lib/displayComponents/Modals/SearchDrawer.svelte';
 	import DateSearchForm from '$lib/forms/DateSearchForm.svelte';
+	import RevenueBar from '$lib/displayComponents/RevenueBar.svelte';
 	let { data }: { data: PageData } = $props();
 	let size = $state(25);
 	let pageNum = $state(1);
@@ -62,7 +63,23 @@
 		});
 		return totalRevenue;
 	});
-	let nameSearch = $state('')
+	let nameSearch = $state('');
+	let dateSort = $state(false);
+	const dateSortedRefunds = $derived((refunds:RefundRecord[]) => refunds.sort((a, b) => {
+		if(a.refundCreated > b.refundCreated){
+			if(dateSort){
+				return -1;
+			}
+			return 1;
+		}
+		if(a.refundCreated < b.refundCreated){
+			if(dateSort){
+				return 1;
+			}
+			return -1;
+		}
+		return 0;
+	}))
 	const currentUsers = $derived((users:User[]) => users.filter((user) => {
 		return user.givenName?.toLowerCase().includes(nameSearch.toLowerCase()) 
 		|| user.familyName?.toLowerCase().includes(nameSearch.toLowerCase()) 
@@ -152,27 +169,29 @@
 							minDate = startDate;
 						}}	
 					/>
+					<button class="btn preset-filled-primary-50-950 h-8" onclick={() => {dateSort = !dateSort}}>Sort by date starting {dateSort ? 'earliest' : 'latest'}</button>
 				</div>
 				{/snippet}
 			</SearchDrawer>
-		<div class=" bg-tertiary-50-950 w-full rounded-b-lg fixed top-12 sm:top-8 left-0 flex flex-col sm:flex-row z-50">
-			<Revenue 
-				label="Total refunds" 
-				amount={totalRevenue(searchRefunds(dateSearchRefunds(refunds)))}
-				classes=''	
-			/>
-			<Revenue 
-				label="Refunds not deposits" 
-				amount={refundsNotDeposits(searchRefunds(dateSearchRefunds(refunds)))}
-				classes=''	
-			/>
-		</div>
+			<RevenueBar >
+				{#snippet content()}
+					
+				<Revenue 
+					label="Total refunds" 
+					amount={totalRevenue(searchRefunds(refunds))}
+					classes=''	
+				/>
+				<Revenue 
+					label="Refunds not deposits" 
+					amount={refundsNotDeposits(searchRefunds(refunds))}
+					classes=''	
+				/>
+				{/snippet}
+			</RevenueBar>
 			<div class="grid grid-cols-1 mx-2 mt-26 sm:mt-18 gap-3 mb-20 sm:mb-12 lg:mb-8" in:fade={{duration:600}}>
-				{#each slicedRefunds(searchRefunds(searchByUser(refunds, currentUsers(customers)))) as refund (refund.refundNumber)}
+				{#each slicedRefunds(dateSortedRefunds(searchRefunds(searchByUser(refunds, currentUsers(customers))))) as refund (refund.refundNumber)}
 				{@const customer = customers.find((customer) => customer.id === refund.customerId)}
-					<div class="border rounded-lg border-primary-50-950 sm:grid sm:grid-cols-2" {@attach () => {
-						console.log(refunds)
-					}} >
+					<div class="border rounded-lg border-primary-50-950 sm:grid sm:grid-cols-2" >
 						<RefundRecordEmployee refundRecord={refund} classes='mx-2 mt-2 '/>
 						{#if customer}
 						{@const address = addresses.find((address) => address.userId === customer.id)}
