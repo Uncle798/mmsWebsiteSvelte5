@@ -54,7 +54,7 @@
          <Combobox.Trigger />
       </Combobox.Control>
       <Portal>
-         <Combobox.Positioner class='z-[1]!'>
+         <Combobox.Positioner class='z-60!'>
             <Combobox.Content>
                {#each items as item}
                   <Combobox.Item {item}>
