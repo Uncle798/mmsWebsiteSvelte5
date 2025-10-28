@@ -18,6 +18,8 @@
 	import { driver } from 'driver.js';
    import 'driver.js/dist/driver.css';
 	import { onMount } from 'svelte';
+	import RevenueBar from '$lib/displayComponents/RevenueBar.svelte';
+	import UserRevenue from '$lib/displayComponents/UserRevenue.svelte';
    let { data }: { data: PageData } = $props();
    let pageNum = $state(1);
    let size = $state(25);
@@ -114,7 +116,11 @@
                   </div>
                {:then units}
                   <div in:fade={{duration:600}} class="mt-20 sm:mt-18 mb-8 sm:mb-8" {@attach () => {if(data.demoCookie !== 'true'){customersTour.drive()}}}>
-                     <Revenue label='Current monthly invoiced' amount={totalLeased(leases)} classes='fixed top-11 sm:top-8 p-1 w-screen left-0 bg-tertiary-50-950 rounded-b-lg'/>
+                     <RevenueBar>
+                        {#snippet content()}
+                           <Revenue label='Current monthly invoiced' amount={totalLeased(leases)} />
+                        {/snippet}
+                     </RevenueBar>
                      <SearchDrawer
                         modalOpen={searchDrawerOpen}
                         height='h-[180px]'
@@ -147,17 +153,12 @@
                                        <Address {address} />
                                     {/if}
                                     <UserNotesForm user={customer} data={data.userNotesForm} classes='firstCustomerNotes'/>
-                                    <div class="flex flex-col sm:flex-row gap-2 bg-primary-contrast-100-900 p-2 rounded-lg firstCustomerIncome">
-                                       <p class="text-error-400-600">Total invoiced: {currencyFormatter.format(totalInvoiced(customerInvoices))}</p>
-                                       <p class="text-success-300-700">Total paid: {currencyFormatter.format(totalPaid(customerPayments))}</p>
-                                       {#if totalInvoiced(overdueInvoices(customerInvoices)) > 0 && overdueInvoices(customerInvoices).length > 1}
-                                          <p class="text-error-100-900">Overdue amount: <a href="/paymentRecords/new?userId={customer.id}">{currencyFormatter.format(totalInvoiced(overdueInvoices(customerInvoices)))}</a></p>
-                                       {:else if overdueInvoices(customerInvoices).length === 1}
-                                          <p class="text-error-100-900">Overdue amount: <a href="/paymentRecords/new?invoiceNum={overdueInvoices(customerInvoices)[0].invoiceNum}" class="">{currencyFormatter.format(totalInvoiced(overdueInvoices(customerInvoices)))}</a></p>
-                                       {:else}
-                                        <p class="text-success-300-700">Overdue amount: {currencyFormatter.format(0.0)}</p>
-                                       {/if}
-                                    </div>
+                                    <UserRevenue 
+                                       totalInvoiced={totalInvoiced(customerInvoices)}
+                                       totalPaid={totalPaid(customerPayments)}
+                                       customer={customer}
+                                       overdueAmount={totalInvoiced(overdueInvoices(customerInvoices))}
+                                    />
                                  </div>
                               {:else}
                                  <div class="p-2">
@@ -166,6 +167,13 @@
                                        <Address {address} />
                                     {/if}
                                     <UserNotesForm user={customer} data={data.userNotesForm} />
+                                    <UserRevenue 
+                                       totalInvoiced={totalInvoiced(customerInvoices)}
+                                       totalPaid={totalPaid(customerPayments)}
+                                       {customer}
+                                       overdueAmount={totalInvoiced(overdueInvoices(customerInvoices  ))}
+                                    />
+
                                     <div class="flex flex-col sm:flex-row gap-2 bg-primary-contrast-100-900 p-2 rounded-lg">
                                        <p class="text-error-400-600">Total invoiced: {currencyFormatter.format(totalInvoiced(customerInvoices))}</p>
                                        <p class="text-success-300-700">Total paid: {currencyFormatter.format(totalPaid(customerPayments))}</p>

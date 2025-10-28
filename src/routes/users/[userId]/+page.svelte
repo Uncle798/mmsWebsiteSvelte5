@@ -15,6 +15,7 @@
 	import EmailVerificationForm from '$lib/forms/EmailVerificationForm.svelte';
 	import UserNotesForm from '$lib/forms/UserNotesForm.svelte';
 	import FormModal from '$lib/displayComponents/Modals/FormModal.svelte';
+	import UserRevenue from '$lib/displayComponents/UserRevenue.svelte';
 
    let { data }: { data: PageData } = $props();
    let globalModalOpen = $state(false);
@@ -103,9 +104,9 @@
 {#if data.dbUser}
    <Header title='{data.dbUser.givenName} {data.dbUser.familyName}' />
    <div class="grid grid-cols-1 sm:grid-cols-2 mt-14 sm:mt-10 mx-1 sm:mx-2">
-      <div>
+      <div class="gap-2">
          <UserEmployee user={data.dbUser} classes='mx-2' />
-         <button class="btn preset-filled-primary-50-950 mx-2" 
+         <button class="btn preset-filled-primary-50-950 m-2" 
             onclick={() => emailChangeModal(data.dbUser) }
             type='button'
             >
@@ -192,16 +193,14 @@
             Loading refunds...
          </div>
       {:then refunds}
-         <div class="flex ">
-            <span class="mx-1">Total invoiced (not including deposits): {currencyFormatter.format(derivedTotalInvoiced(invoices))}</span>
-            <span class="mx-1">Total paid (not including deposits): {currencyFormatter.format(derivedTotalPaid(paymentRecords))}</span>
-            {#if derivedTotalInvoiced(invoices) - derivedTotalPaid(paymentRecords) > 0}
-               <span class="mx-1 dark:text-red-500 text-red-700">Outstanding Balance: {currencyFormatter.format(derivedTotalInvoiced(invoices) - derivedTotalPaid(paymentRecords))}</span>
-               {#if overDueInvoices(invoices).length > 0}
-                  <span class="mx-1 dark:text-red-500 text-red-700">Overdue Balance: {currencyFormatter.format(derivedTotalInvoiced(overDueInvoices(invoices)))}</span>
-               {/if}
-            {/if}
-         </div>
+            <UserRevenue
+               totalInvoiced={derivedTotalInvoiced(invoices)}
+               totalPaid={derivedTotalPaid(paymentRecords)}
+               overdueAmount={derivedTotalInvoiced(overDueInvoices(invoices))}
+               customer={data.dbUser}
+               classes='m-2'
+            />
+
          {#if refunds.length > 0}
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-x-1 gap-y-3 mx-2 ">
                {#each slicedInvoices(invoices) as invoice}

@@ -23,6 +23,7 @@
 	import EmailCustomer from '$lib/EmailCustomer.svelte';
 	import DownloadPdfButton from '$lib/DownloadPDFButton.svelte';
 	import SearchDrawer from '$lib/displayComponents/Modals/SearchDrawer.svelte';
+	import RevenueBar from '$lib/displayComponents/RevenueBar.svelte';
    dayjs.extend(utc)
    let { data }: { data: PageData } = $props();
    let pageNum = $state(1);
@@ -179,24 +180,25 @@
          </div>
       {:then addresses}         
          {#if paymentRecords.length >0}
-            <div class="bg-tertiary-50-950 w-screen rounded-b-lg fixed sm:top-8 top-10 p-0.5 flex">
-               <Revenue 
-                  label="Total revenue in {data.year}" 
-                  amount={totalRevenue(searchedPayments(dateSearchPayments(paymentRecords)))} 
-                  classes='m-1 sm:m-2'    
-               />
-               <Revenue
-                  label='Non-deposit revenue'
-                  amount={totalRevenue(nonDeposits(paymentRecords))}
-                  classes='m-1 sm:m-2'
-               />
-            </div>
+            <RevenueBar>
+               {#snippet content()}
+                  <Revenue 
+                     label="Total revenue in {data.year}" 
+                     amount={totalRevenue(searchedPayments(dateSearchPayments(paymentRecords)))} 
+                     classes='m-1 sm:m-2'    
+                  />
+                  <Revenue
+                     label='Non-deposit revenue'
+                     amount={totalRevenue(nonDeposits(paymentRecords))}
+                     classes='m-1 sm:m-2'
+                  />
+               {/snippet}
+            </RevenueBar>
             <SearchDrawer
                modalOpen={searchDrawerOpen}
                height='h-[180]'
             >
             {#snippet content()}
-               <div class="flex flex-col sm:flex-row mt-7 w-screen gap-2 mx-2">
                   <Search 
                      bind:search={search} 
                      searchType='payment record number' 
@@ -218,7 +220,7 @@
                         minDate = startDate;
                      }}
                   />
-                  <div class="flex flex-row w-1/4">
+                  <div class="flex flex-row">
                      <Combobox
                         data={yearsComboboxData}
                         label='Select different year'
@@ -240,12 +242,12 @@
                               }, 800)
                            }}
                         />
-                     {/if}
-                     {#if navTimeout}
+                     {:else if navTimeout}
                         <ProgressLine value={null} />
+                     {:else}
+                        <div class="size-8"></div>
                      {/if}
                   </div>
-               </div>
                <button 
                   onclick={()=>{
                      sortBy = !sortBy;
@@ -258,7 +260,7 @@
             {/snippet}
             </SearchDrawer>
                <div class="mt-32 sm:mt-20 mb-8" in:fade={{duration:600}} out:fade={{duration:0}}>
-                  {#each slicedSource(dateSearchPayments(searchedPayments(sortedByDate(searchByUser(paymentRecords, currentUsers(customers)))))) as paymentRecord}
+                  {#each slicedSource(searchedPayments(sortedByDate(searchByUser(paymentRecords, currentUsers(customers))))) as paymentRecord}
                   {@const customer = customers.find((customer) => customer.id === paymentRecord.customerId) }
                      <div class="rounded-lg border border-primary-50-950 grid sm:grid-cols-2 m-2">
                         <div>
@@ -292,7 +294,7 @@
                         {/if}
                      </div>
                   {/each}
-                  <Pagination bind:size={size} bind:pageNum={pageNum} array={dateSearchPayments(searchedPayments(searchByUser(paymentRecords, currentUsers(customers))))} label='payment records'/>
+                  <Pagination bind:size={size} bind:pageNum={pageNum} array={searchedPayments(searchByUser(paymentRecords, currentUsers(customers)))} label='payment records'/>
                </div>
          {:else}
             No payment records from that year

@@ -14,6 +14,7 @@
 	import EmailCustomer from '$lib/EmailCustomer.svelte';
    import FormModal from '$lib/displayComponents/Modals/FormModal.svelte';
 	import SearchDrawer from '$lib/displayComponents/Modals/SearchDrawer.svelte';
+	import RevenueBar from '$lib/displayComponents/RevenueBar.svelte';
    interface Props {
       data: PageData;
    }
@@ -103,13 +104,16 @@
                Loading addresses...
          </div>
       {:then addresses} 
-         <Revenue amount={totalRevenue(searchedPaymentRecords(deposits))} label='Amount of deposits' classes='bg-tertiary-50-950 w-screen rounded-b-lg fixed top-10 sm:top-8 p-2 z-0' />
+         <RevenueBar>
+            {#snippet content()}     
+               <Revenue amount={totalRevenue(searchedPaymentRecords(deposits))} label='Amount of deposits' />
+            {/snippet}
+         </RevenueBar>
          <SearchDrawer
             modalOpen={searchDrawerOpen}
-            height='h-[180px]'
+            height='h-[360px] lg:h-[180px]'
          >
             {#snippet content()}
-               <div class="flex flex-col sm:flex-row gap-2" >
                   <Search 
                      bind:search={search} 
                      searchType='payment record number' 
@@ -125,7 +129,6 @@
                      searchType='payment notes'
                      data={data.searchForm}
                   />
-               </div>
                <button 
                   onclick={()=>{
                      sortBy = !sortBy;
@@ -139,7 +142,7 @@
             {#each slicedSource(sortedByDate(searchedPaymentRecords(searchByNotes(searchByUser(deposits, customers))))) as deposit}
             {@const user = customers.find((customer) => customer.id === deposit.customerId)}
                <div class="flex flex-col sm:flex-row border-2 border-primary-50-950 rounded-lg mx-1 sm:mx-2 gap-2">
-                  <div class="w-2/3">
+                  <div class="sm:w-2/3">
                      <PaymentRecordEmployee paymentRecord={deposit} classes=''/>
                      <div class="flex flex-col sm:flex-row gap-2 m-2">
                         <button type="button" class="btn rounded-lg preset-filled-primary-50-950 h-8" onclick={() => refundModal(deposit)}>Refund this deposit</button>
@@ -157,7 +160,7 @@
                         {/if}
                      </div>
                   </div>
-                  <div>
+                  <div class='mx-2'>
                      {#if user}
                      {@const address = addresses.find((address) => address.userId === user.id)}
                         <UserEmployee {user} />
