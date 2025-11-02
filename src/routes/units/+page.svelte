@@ -15,10 +15,11 @@
 	import Search from '$lib/forms/Search.svelte';
 	import Address from '$lib/displayComponents/AddressEmployee.svelte';
 	import Revenue from '$lib/displayComponents/Revenue.svelte'
-	import { SearchIcon, PanelTopClose } from 'lucide-svelte';
 	import { onMount } from 'svelte';
 	import SearchDrawer from '$lib/displayComponents/Modals/SearchDrawer.svelte';
 	import FormModal from '$lib/displayComponents/Modals/FormModal.svelte';
+	import RevenueBar from '$lib/displayComponents/RevenueBar.svelte';
+	
 	let { data }: { data: PageData } = $props();
 	let modalOpen = $state(false);
 	let currentLeaseId = $state('');
@@ -105,60 +106,6 @@
 			<Placeholder numCols={1} numRows={3} heightClass='h-96'/>
 			{:then addresses} 
             {#if units}
-					<Revenue label='Current leased monthly revenue' amount={totalRevenue(leases)} classes='bg-tertiary-50-950 w-full rounded-b-lg fixed top-11 sm:top-8 z-40 p-1'/>
-					<SearchDrawer
-						modalOpen={searchDrawerOpen}
-						height='h-[180]'
-					>
-						{#snippet content()}
-							<div class="mx-2 mt-11">
-								<Search searchType='Unit number' data={data.searchForm} classes='' bind:search={search}/>
-								<Combobox 
-									data={comboboxData} 
-									label='Select Size' 
-									placeholder='Select size...'
-									onValueChange={(details) => {
-										searchDrawerOpen=false;
-										selectedSize=details.value
-									}}
-								/> 
-								</div>
-						{/snippet}
-					</SearchDrawer>
-            	<div class="sm:m-2 m-1 sm:mt-20 mt-22 mb-8" in:fade={{duration:1600}} out:fade={{duration:0}}>
-               	{#each slicedUnits(filteredUnits(searchedUnits(units))) as unit}
-               	{@const lease = leases?.find((lease) => lease.unitNum === unit.num)}
-							<div class="border-2 border-primary-50-950 rounded-lg grid grid-cols-1 sm:grid-cols-2 my-2 gap-2">
-								<div class="flex flex-col">
-									<UnitEmployee {unit} classes=''/>
-									<button class="btn preset-filled-primary-50-950 rounded-lg mx-2 mb-2" onclick={()=> openModal('unitPricing', unit.advertisedPrice, '', unit.size)}>Change all {unit.size.replace(/^0+/gm,'').replace(/x0/gm,'x')} pricing</button>
-									{#if data.unitNotesForm}
-										<UnitNotesForm data={data.unitNotesForm} {unit} classes='mx-1 sm:mx-2'/>
-									{/if}
-								</div>
-								{#if lease}
-								{@const customer = customers?.find((customer) => customer.id === lease.customerId)}
-									<div class="flex flex-col border rounded-lg border-primary-50-950 sm:flex-row m-2">
-										<div>
-											<LeaseEmployee {lease} classes=''/>
-											<button class="btn preset-filled-primary-50-950 rounded-lg m-1 sm:m-2 h-8" onclick={()=>openModal('lease', 0, lease.leaseId)}>End Lease</button>
-										</div>
-										<div class="flex flex-col">
-											{#if customer}
-											{@const address = addresses.find((address) => address.userId === customer.id)}
-												<UserEmployee user={customer} classes='truncate mx-1 sm:mx-2'/>
-												{#if address}
-													<Address {address} classes='truncate mx-1 sm:mx-2' />
-												{/if}
-											{/if}
-										</div>
-									</div>
-
-								{/if}
-							</div>
-						{/each}
-					</div>
-            	<Pagination bind:pageNum={pageNum} bind:size={size} array={filteredUnits(searchedUnits(units))} label='units'/>
 					<FormModal
 						modalOpen={modalOpen}
 					>
@@ -181,9 +128,65 @@
 									classes='m-1 sm:m-2'
 								/>
 							{/if}
-							<button class="btn" onclick={() => (modalOpen = false)}>Cancel</button>
 						{/snippet}
 					</FormModal>
+					<RevenueBar>
+						{#snippet content()}
+							<Revenue label='Current leased monthly revenue' amount={totalRevenue(leases)} classes=''/>
+						{/snippet}
+					</RevenueBar>
+					<SearchDrawer
+						modalOpen={searchDrawerOpen}
+						height='h-[180]'
+					>
+						{#snippet content()}
+							<div class="mx-2 mt-11">
+								<Search searchType='Unit number' data={data.searchForm} classes='' bind:search={search}/>
+								<Combobox 
+									data={comboboxData} 
+									label='Select Size' 
+									placeholder='Select size...'
+									onValueChange={(details) => {
+										searchDrawerOpen=false;
+										selectedSize=details.value
+									}}
+								/> 
+								</div>
+						{/snippet}
+					</SearchDrawer>
+            	<div class="sm:m-2 m-1 sm:mt-20 mt-22 mb-8 sm:mb-8" in:fade={{duration:1600}} out:fade={{duration:0}}>
+               	{#each slicedUnits(filteredUnits(searchedUnits(units))) as unit}
+               	{@const lease = leases?.find((lease) => lease.unitNum === unit.num)}
+							<div class="border-2 border-primary-50-950 rounded-lg grid grid-cols-1 sm:grid-cols-2 my-2 gap-2">
+								<div class="flex flex-col">
+									<UnitEmployee {unit} classes=''/>
+									<button class="btn preset-filled-primary-50-950 rounded-lg mx-2 mb-2" onclick={()=> openModal('unitPricing', unit.advertisedPrice, '', unit.size)}>Change all {unit.size.replace(/^0+/gm,'').replace(/x0/gm,'x')} pricing</button>
+									{#if data.unitNotesForm}
+										<UnitNotesForm data={data.unitNotesForm} {unit} classes='mx-1 sm:mx-2'/>
+									{/if}
+								</div>
+								{#if lease}
+								{@const customer = customers?.find((customer) => customer.id === lease.customerId)}
+									<div class="grid grid-cols-2 border rounded-lg border-primary-50-950 sm:flex-row m-2">
+										<div>
+											<LeaseEmployee {lease} classes=''/>
+											<button class="btn preset-filled-primary-50-950 rounded-lg m-1 sm:m-2 h-8" onclick={()=>openModal('lease', 0, lease.leaseId)}>End Lease</button>
+										</div>
+										<div class="flex flex-col">
+											{#if customer}
+											{@const address = addresses.find((address) => address.userId === customer.id)}
+												<UserEmployee user={customer} classes='truncate mx-1 sm:mx-2'/>
+												{#if address}
+													<Address {address} classes='truncate mx-1 sm:mx-2' />
+												{/if}
+											{/if}
+										</div>
+									</div>
+								{/if}
+							</div>
+						{/each}
+						<Pagination bind:pageNum={pageNum} bind:size={size} array={filteredUnits(searchedUnits(units))} label='units'/>
+					</div>
             {/if}
 			{/await}
 		{/await}    
