@@ -386,6 +386,30 @@ async function  main (){
          }
       })
    }
+   const availableUnits = await prisma.unit.findMany({
+      where: {
+         lease: {
+            some: {
+               leaseEnded: null
+            }
+         }
+      }
+   })
+   let index = 0;
+   for(const unit of availableUnits){
+      if(index % 7 === 0){
+         await prisma.unit.update({
+            where: {
+               num: unit.num
+            },
+            data: {
+               unavailable: true,
+               notes: `Need to fix the door`
+            }
+         })
+      }
+      index ++;
+   }
    const leaseEndTime = dayjs();
    console.log(`🎫 ${leases.length} leases created in ${leaseEndTime.diff(unitEndTime, 'second')} seconds`);
    const invoices: PartialInvoice[] = [];
