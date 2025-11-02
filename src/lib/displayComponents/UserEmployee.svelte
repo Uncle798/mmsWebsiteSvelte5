@@ -19,7 +19,7 @@
 	{:else}
 		<span><a href="/users/{user.id}" class="anchor">{user.givenName} {user.familyName}</a></span>
 	{/if}
-	<span class="flex"><a href="mailto:{user.email}" class="anchor">{user.email}</a>
+	<span class="flex"><a href="mailto:{user.email}" class="anchor truncate">{user.email}</a>
 	{#if user.emailVerified}
 		<Check aria-label='Email verified' color='green' />
 	{/if}
