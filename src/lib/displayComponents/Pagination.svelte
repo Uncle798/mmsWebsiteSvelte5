@@ -37,7 +37,7 @@
    }))
 </script>
 
-<div class="flex flex-col sm:flex-row m-2 gap-1 {classes} max-w-screen">
+<div class="flex flex-col sm:flex-row m-2 gap-2 {classes} justify-center">
    <Combobox {collection} {onOpenChange} onValueChange={(e) => {
       size=parseInt(e.value[0], 10);
    }}>
