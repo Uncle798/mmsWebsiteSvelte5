@@ -4,10 +4,8 @@
 	import UnitNotesForm from '$lib/forms/UnitNotesForm.svelte';
    import type { PageData } from './$types';
    import type { Unit } from '@prisma/client';
-	import { SearchIcon, PanelTopClose, } from 'lucide-svelte';
 	import { onMount } from 'svelte';
 	import Header from '$lib/Header.svelte';
-	import ExplainerModal from '$lib/displayComponents/Modals/ExplainerModal.svelte';
    import SearchDrawer from '$lib/displayComponents/Modals/SearchDrawer.svelte';
    import Combobox from '$lib/formComponents/Combobox.svelte';
 
@@ -71,16 +69,9 @@
                sizeFilter=details.value[0];
             }}
          />
-   </div>
+      </div>
    {/snippet}
 </SearchDrawer>
-<ExplainerModal
-   modalOpen={descriptionModalOpen}
->
-   {#snippet copy()}
-      Need to clean a unit? Unit have a broken door? Mark it unavailable on its page or, <a href="/units" class="anchor">all units</a> and it will show up here. This is a todo list.
-   {/snippet}
-</ExplainerModal>
 <Header title='Unavailable Units' />
 <div class="grid grid-cols-1 gap-3 m-1 sm:m-2 sm:mt-20 mt-32 mb-8 sm:mb-8">
    {#each filterSize(data.units) as unit}
