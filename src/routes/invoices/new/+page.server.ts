@@ -4,7 +4,6 @@ import { valibot } from 'sveltekit-superforms/adapters';
 import { addressFormSchema, emailVerificationFormSchema, newInvoiceFormSchema, registerFormSchema } from '$lib/formSchemas/schemas';
 import { redirect } from '@sveltejs/kit';
 import { prisma } from '$lib/server/prisma';
-import type { Address } from '@prisma/client';
 
 export const load = (async (event) => {
    if(!event.locals.user?.employee){
