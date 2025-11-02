@@ -43,13 +43,8 @@ export const POST: RequestHandler = async (event) => {
                if(!lease){
                   error(404)
                }
-               const customer = await prisma.user.findUnique({
-                  where: {
-                     id: lease!.customerId
-                  }
-               })
                const date = dayjs(lease?.leaseEffectiveDate).format('M/D/YYYY')
-               const invoice = await prisma.invoice.create({
+               await prisma.invoice.create({
                   data: {
                      customerId: lease!.customerId,
                      invoiceAmount: lease!.price,
