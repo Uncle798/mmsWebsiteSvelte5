@@ -6,7 +6,7 @@
 	import TextInput from "$lib/formComponents/TextInput.svelte";
 	import NumberInput from "$lib/formComponents/NumberInput.svelte";
    import FormSubmitWithProgress from "$lib/formComponents/FormSubmitWithProgress.svelte";
-	import { Switch } from "@skeletonlabs/skeleton-svelte";
+	import Switch from "$lib/formComponents/Switch.svelte";
 	import { onMount } from "svelte";
    interface Props {
       data: SuperValidated<Infer<NewDiscountFormSchema>>;
@@ -66,10 +66,8 @@
          checked={$form.percentage}
          onCheckedChange={(e)=>$form.percentage=e.checked}
          name='percentage'
-         classes='mt-2'
-      >
-         Percentage
-      </Switch>
+         label='Percentage'
+      />
       <TextInput
          bind:value={$form.notes}
          errors={$errors.notes}
