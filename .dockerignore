@@ -1,0 +1,31 @@
+node_modules
+
+# Output
+.output
+.vercel
+/.svelte-kit
+/build
+/generated
+# OS
+.DS_Store
+Thumbs.db
+
+# Env
+.env
+
+!.env.example
+!.env.test
+
+# Vite
+vite.config.js.timestamp-*
+vite.config.ts.timestamp-*
+app.log
+<<<<<<< HEAD
+.vscode/settings.json
+seed.log
+=======
+>>>>>>> origin/main
+# prisma/migrations/0_init/migration.sql
+log.txt
+app2.log
+.env*.local
