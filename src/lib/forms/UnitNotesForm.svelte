@@ -9,7 +9,6 @@
 	import type { Unit } from "@prisma/client";
 	import TextArea from "$lib/formComponents/TextArea.svelte";
 	import { page } from "$app/state";
-	import Search from "./Search.svelte";
 
    interface Props {
       data: SuperValidated<Infer<UnitNotesFormSchema>>
@@ -18,16 +17,19 @@
       classes?: string;
    }
    let { data, unitNotesFormModalOpen, unit, classes }:Props = $props();
+   const id = $props.id();
    const url = page.url.pathname;
    let { form, message, errors, constraints, enhance, delayed, timeout, submit } = superForm(data, {
       onChange(event) {
          console.log(event);
          if(event.target){
             if(event.path === 'notes'){
-               const formName = `${url}/unitNotesForm${this.id}`
+               const formName = `${url}/unitNotesForm${unit.num.toString()}`
                const value = event.get(event.path);
                if(value){
                   sessionStorage.setItem(`${formName}:${event.path}`, value.toString());
+               } else {
+                  sessionStorage.removeItem(`${formName}:${event.path}`)
                }
             }
          }
