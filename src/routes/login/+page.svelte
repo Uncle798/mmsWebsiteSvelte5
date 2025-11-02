@@ -9,7 +9,7 @@
 	import { fade } from 'svelte/transition';
    import { toaster } from '../../lib/toaster';
     
-   export let data: PageData;
+   let { data }: { data: PageData } = $props();
    let { form, message, errors, constraints, enhance, delayed, timeout } = superForm(data.magicLinkForm);
    
    const toastReason = data.toastReason;
