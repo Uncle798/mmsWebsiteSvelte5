@@ -1,14 +1,13 @@
 import Anvil from "@anvilco/anvil";
 import { PUBLIC_COMPANY_NAME } from '$env/static/public';
 import { ANVIL_API_KEY } from "$env/static/private";
-import type { PartialUser } from "./partialTypes";
-import type { Address, Lease, Unit } from "@prisma/client/edge";
+import type { Address, Lease, Unit, User } from "@prisma/client/edge";
 
 export const anvilClient = new Anvil({apiKey:ANVIL_API_KEY});
 
 export const leaseTemplateId = '3ABabYkvU2ySORZ7RKrw'
 
-export function getPersonalPacketVariables(customer:PartialUser, lease:Lease, unit:Unit, employee:PartialUser, address:Address){
+export function getPersonalPacketVariables(customer:User, lease:Lease, unit:Unit, employee:User, address:Address){
    return {
       isDraft: false,
       isTest: true,
@@ -80,7 +79,7 @@ export function getPersonalPacketVariables(customer:PartialUser, lease:Lease, un
       ]
    }
 }
-export function getOrganizationalPacketVariables(customer:PartialUser, lease:Lease, unit:Unit, employee:PartialUser, address:Address){
+export function getOrganizationalPacketVariables(customer:User, lease:Lease, unit:Unit, employee:User, address:Address){
    return {
       isDraft: false,
       isTest: true,
