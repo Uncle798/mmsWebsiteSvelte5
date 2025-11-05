@@ -13,6 +13,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: superfly/flyctl-actions/setup-flyctl@master
-      - run: flyctl deploy --remote-only
+      - run: |
+          flyctl deploy --remote-only \
+          --build-secret ANVIL_API_KEY=${{secrets.ANVIL_API_KEY}}
+          --build-secret ANVIL_ORG_EID=${{secrets.ANVIL_ORG_EID}}
+          --build-secret ANVIL_RSA_PRIVATE_KEY_BASE64=${{secrets.ANVIL_RSA_PRIVATE_KEY_BASE64}}
+          --build-secret ANVIL_WEBHOOK_TOKEN=${{secrets.ANVIL_WEBHOOK_TOKEN}}
+          --build-secret CRON_SECRET=${{secrets.CRON_SECRET}}
+          --build-secret CONVERGE_ACCOUNT_ID=${{secrets.CONVERGE_ACCOUNT_ID}}
+          --build-secret CONVERGE_SSL_PIN=${{secrets.CONVERGE_SSL_PIN}}
+          --build-secret CONVERGE_USER_ID=${{secrets.CONVERGE_USER_ID}}
+          --build-secret CRON_SECRET=${{secrets.CRON_SECRET}}
+          --build-secret GOOGLE_OAUTH_CLIENT_ID=${{secrets.GOOGLE_OAUTH_CLIENT_ID}}
+          --build-secret GOOGLE_OAUTH_CLIENT_SECRET=${{secrets.GOOGLE_OAUTH_CLIENT_SECRET}} 
+          --build-secret MAILTRAP_TOKEN=${{secrets.MAILTRAP_TOKEN}}
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+        
