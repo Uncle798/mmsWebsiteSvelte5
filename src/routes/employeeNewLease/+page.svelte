@@ -97,6 +97,16 @@
       })
       addressButtonTour.drive();
    }
+   function paymentMethodTour () {
+      const paymentMethodTour = driver({
+         showProgress: true,
+         stagePadding: 2,
+         steps: [
+            {element: '.paymentTypes', popover: { title: `Payment Types`, description: `Currently there is no way to demo credit payments. Please choose cash or check to pay the deposit.`}}
+         ]
+      });
+      paymentMethodTour.drive();
+   }
 </script>
 
 <Header title="Employee New Lease" />
@@ -199,7 +209,7 @@
       {/if}
          <div class="flex flex-col w-80">
             {#if data.unit && data.address}
-               <div class="flex bg-primary-50-950 mt-2 p-2 rounded-lg justify-between" >
+               <div class="flex bg-primary-50-950 mt-2 p-2 rounded-lg justify-between paymentTypes" {@attach () => paymentMethodTour()}>
                   {#each paymentTypes as paymentType}
                      {#if paymentType === 'CREDIT'}                        
                      <RadioButton
