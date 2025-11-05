@@ -2,11 +2,11 @@ import { EventSchemas } from "inngest";
 import * as v from 'valibot';
 
 const UnitUnavailableWhileRenting = {
-   "leaseProcessStarted": v.object({
-      unitNum: v.string()
-   }),
-   "leaseFinalized": v.object({
+   "leaseCreated": v.object({
       leaseId: v.pipe(v.string(), v.cuid2())
+   }),
+   "depositPaid": v.object({
+      leaseId: v.pipe(v.string(), v.cuid2()),
    })
 }
 

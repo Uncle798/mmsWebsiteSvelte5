@@ -4,34 +4,33 @@ import { schemas } from './types';
 
 export const inngest = new Inngest({id: 'ministorageManagementSoftware', schemas});
 
-
-const unitUnavailableWhileRenting = inngest.createFunction({id: 'setUnitUnavailableWhileRenting'}, {event: 'leaseProcessStarted'}, async({event, step}) => {
-   const unit = await step.run('getUnit', async () => {
-      return prisma.unit.findFirstOrThrow({
+const unitUnavailableWhileRenting = inngest.createFunction({id: 'setUnitUnavailableWhileRenting'}, {event: 'leaseCreated'}, async({event, step}) => {
+   const lease = await step.run('getLease', async () => {
+      const lease = await prisma.lease.findFirstOrThrow({
          where: {
-            num: event.data.unitNum
+            leaseId: event.data.leaseId
          }
       })
+      return lease;
    })
-   if(unit){
+   if(lease){
       await step.run('setUnitUnavailable', async () => {
          prisma.unit.update({
             where: {
-               num: unit.num
+               num: lease.unitNum
             },
             data: {
                unavailable: true,
-               notes: 'Being rented'
             }
          })
          return;
       })
-      const event = await step.waitForEvent('waitForLeaseFinalized', {event: 'leaseFinalized', timeout: '15m'});
-      if(event?.data.leaseId){         
+      const event = await step.waitForEvent('waitForLeaseFinalized', {event: 'depositPaid', timeout: '15m'});
+      if(event?.data.leaseId === lease.leaseId){         
          await step.run('setUnitAvailable', async () => {
             await prisma.unit.update({
                where: {
-                  num: unit.num,
+                  num: lease.unitNum,
                },
                data: {
                   unavailable: false,
@@ -40,7 +39,27 @@ const unitUnavailableWhileRenting = inngest.createFunction({id: 'setUnitUnavaila
             })
             return;
          })
+      } else if (event === null){
+         await step.run('setUnitAvailable', async () => {
+            await prisma.unit.update({
+               where: {
+                  num: lease.unitNum,
+               },
+               data: {
+                  unavailable: false,
+               }
+            })
+         })
+         await step.run('deleteLease', async () => {
+            await prisma.lease.delete({
+               where: {
+                  leaseId: lease.leaseId
+               }
+            })
+         })
+         return;
       }
+      return { message: `leaseId doesn't match`}
    }
    return { message: 'Unit not found' }
 })
