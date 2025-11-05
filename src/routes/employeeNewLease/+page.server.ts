@@ -1,5 +1,5 @@
 
-import { error, redirect } from '@sveltejs/kit';
+import { redirect } from '@sveltejs/kit';
 import { message, superValidate} from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import { newLeaseSchema, registerFormSchema, addressFormSchema, leaseDiscountFormSchema, emailVerificationFormSchema, cuidIdFormSchema  } from '$lib/formSchemas/schemas'
@@ -7,9 +7,8 @@ import type { PageServerLoad, Actions } from './$types';
 import { prisma } from '$lib/server/prisma'; 
 import type { Address, DiscountCode, User } from '@prisma/client';
 import { ratelimit } from '$lib/server/rateLimit';
-import { qStash } from '$lib/server/qStash';
-import { PUBLIC_URL } from '$env/static/public';
 import { sendPaymentReceipt } from '$lib/server/mailtrap';
+import { inngest } from '$lib/server/inngest/inngest';
 
 export const load = (async (event) => {
    if(!event.locals.user?.employee){
@@ -194,11 +193,7 @@ export const actions: Actions = {
             leasedPrice: lease.price
          }
       });
-      await qStash.trigger({
-         url: `https://${PUBLIC_URL}/api/upstash/workflow`,
-         body:  {leaseId:lease.leaseId},
-         workflowRunId: lease.leaseId
-      })
+      inngest.send({name: 'leaseCreated', data: { leaseId: lease.leaseId }})
       const invoice = await prisma.invoice.create({
          data:{
             invoiceAmount: unit!.deposit,
@@ -222,7 +217,7 @@ export const actions: Actions = {
                paymentCompleted: new Date()
             }
          })
-         const dbInvoice = await prisma.invoice.update({
+         await prisma.invoice.update({
             where: {
                invoiceNum: invoice.invoiceNum
             },
@@ -230,7 +225,7 @@ export const actions: Actions = {
                amountPaid: invoice.amountPaid + paymentRecord.paymentAmount
             }
          });
-         const emailResponse = await sendPaymentReceipt(customer, paymentRecord, address);  
+         await sendPaymentReceipt(customer, paymentRecord, address);  
          redirect(302, `/employeeNewLease/leaseSent?leaseId=${lease.leaseId}`);
       }
       redirect(303, `/makePayment?invoiceNum=${invoice.invoiceNum}&newLease=true`);

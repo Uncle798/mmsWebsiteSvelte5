@@ -1,8 +1,8 @@
-import { redirect, fail, error } from '@sveltejs/kit';
+import { redirect, error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { prisma } from '$lib/server/prisma';
 import { anvilClient, getOrganizationalPacketVariables, getPersonalPacketVariables } from '$lib/server/anvil';
-import { qStash } from '$lib/server/qStash';
+import { inngest } from '$lib/server/inngest/inngest';
 
 export const load = (async (event) => {
    if(!event.locals.user?.employee){
@@ -62,7 +62,7 @@ export const load = (async (event) => {
                anvilEID 
             }
          })
-         const notification = await qStash.notify({eventId:lease.leaseId, eventData:lease.leaseId});
+         await inngest.send({name:'depositPaid', data: { leaseId: lease.leaseId }})
          const invoice = await prisma.invoice.findFirst({
             where: {
                leaseId: lease.leaseId
