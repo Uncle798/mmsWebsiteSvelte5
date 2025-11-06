@@ -30,7 +30,10 @@ export const POST:RequestHandler = async (event) =>{
    if(!user.email){
       return new Response(JSON.stringify('user does not have an email address'));
    }
-   const code = await generateEmailVerificationRequest(user.id, user.email);
-   const response = await sendVerificationEmail(code, user.email);
+   if(!user.emailVerified){
+      const code = await generateEmailVerificationRequest(user.id, user.email);
+      await sendVerificationEmail(code, user.email);
+      return new Response(JSON.stringify({email: user.email}), {status:200});
+   }
    return new Response(JSON.stringify({email: user.email}), {status:200});
 }
