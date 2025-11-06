@@ -158,6 +158,8 @@
                                        totalPaid={totalPaid(customerPayments)}
                                        customer={customer}
                                        overdueAmount={totalInvoiced(overdueInvoices(customerInvoices))}
+                                       invoices={overdueInvoices(customerInvoices)}
+                                       classes='firstCustomerIncome'
                                     />
                                  </div>
                               {:else}
@@ -171,20 +173,9 @@
                                        totalInvoiced={totalInvoiced(customerInvoices)}
                                        totalPaid={totalPaid(customerPayments)}
                                        {customer}
+                                       invoices={overdueInvoices(customerInvoices)}
                                        overdueAmount={totalInvoiced(overdueInvoices(customerInvoices  ))}
                                     />
-
-                                    <div class="flex flex-col sm:flex-row gap-2 bg-primary-contrast-100-900 p-2 rounded-lg">
-                                       <p class="text-error-400-600">Total invoiced: {currencyFormatter.format(totalInvoiced(customerInvoices))}</p>
-                                       <p class="text-success-300-700">Total paid: {currencyFormatter.format(totalPaid(customerPayments))}</p>
-                                       {#if totalInvoiced(overdueInvoices(customerInvoices)) > 0 && overdueInvoices(customerInvoices).length > 1}
-                                          <p class="text-error-100-900">Overdue amount: <a href="/paymentRecords/new?userId={customer.id}">{currencyFormatter.format(totalInvoiced(overdueInvoices(customerInvoices)))}</a></p>
-                                       {:else if overdueInvoices(customerInvoices).length === 1}
-                                          <p class="text-error-100-900">Overdue amount: <a href="/paymentRecords/new?invoiceNum={overdueInvoices(customerInvoices)[0].invoiceNum}" class="">{currencyFormatter.format(totalInvoiced(overdueInvoices(customerInvoices)))}</a></p>
-                                       {:else}
-                                           <p class="text-success-300-700">Overdue amount: {currencyFormatter.format(0.0)}</p>
-                                       {/if}
-                                    </div>
                                  </div>
                               {/if}
                               {#if customerLeases}
