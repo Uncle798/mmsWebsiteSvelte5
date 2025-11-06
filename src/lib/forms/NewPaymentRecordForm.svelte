@@ -1,5 +1,4 @@
 <script lang='ts'>
-	import ExplainerModal from "$lib/displayComponents/Modals/ExplainerModal.svelte";
 	import type { EmailVerificationFormSchema, NewInvoiceFormSchema, NewPaymentRecordFormSchema, RegisterFormSchema } from "$lib/formSchemas/schemas";
 	import type { Invoice, Lease, User } from "@prisma/client";
 	import { onMount } from "svelte";
@@ -93,7 +92,6 @@
       }
    }));
    let invoiceModalOpen = $state(false);
-   let explainerModalOpen = $state(false);
    onNavigate(() => {
       navDelayed = false;
       navTimeout = false;
@@ -184,6 +182,7 @@
                }, 300);
                goto(`/paymentRecords/new?invoiceNum=${details.value}`)
             }}
+            classes='w-11/12'
          />
          {#if navDelayed}
             <ProgressRing value={null} />
@@ -197,7 +196,6 @@
    {/if}
    {#if invoice}  
       <form action="/forms/newPaymentRecordForm" method="POST" use:enhance {@attach ()=> {
-         explainerModalOpen=true;
          $form.invoiceNum=invoice.invoiceNum;
          $form.paymentNotes=`Payment for Invoice ${invoice.invoiceNum} ${invoice.invoiceNotes}`
          $form.paymentAmount=invoice.invoiceAmount - invoice.amountPaid;
