@@ -92,11 +92,25 @@
       }
    }));
    let invoiceModalOpen = $state(false);
+   const paymentTypes = [ 'CASH', 'CHECK', 'CREDIT'];
+   let navDelayed = $state(false);
+   let navTimeout = $state(false);
+   let formTour = driver({
+      showProgress: true,
+      stagePadding: 2,
+      steps: [
+         { popover: { title: `Take a payment`, description: `Here's where you take in person or over the phone payments. To take a payment you'll need an invoice first.`}},
+         { element: '.paymentNotes', popover: { title: `Payment Notes`, description: `Here is where to enter any notes for the payment, they will be visible to the customer. MMS has defaults that we can customize for you, and you can edit the notes before making the payment record.`}}
+      ],
+      onDestroyed: () => {
+         fetch('/api/demoSetCookie?demoPage=newPayment');
+      }
+   });
    onNavigate(() => {
       navDelayed = false;
       navTimeout = false;
    })
-   onMount(() => {
+   onMount(() =>{
       for(const key in $form){
          const fullKey = `newPaymentRecordForm/invoiceNum=${invoice?.invoiceNum}:${key}`;
          const storedValue = sessionStorage.getItem(fullKey);
@@ -117,22 +131,6 @@
       if(invoice){
          $form.paymentAmount = invoice.invoiceAmount - invoice?.amountPaid;
       }
-   })
-   const paymentTypes = [ 'CASH', 'CHECK', 'CREDIT'];
-   let navDelayed = $state(false);
-   let navTimeout = $state(false);
-   let formTour = driver({
-      showProgress: true,
-      stagePadding: 2,
-      steps: [
-         { popover: { title: `Take a payment`, description: `Here's where you take in person or over the phone payments. To take a payment you'll need an invoice first.`}},
-         { element: '.paymentNotes', popover: { title: `Payment Notes`, description: `Here is where to enter any notes for the payment, they will be visible to the customer. MMS has defaults that we can customize for you, and you can edit the notes before making the payment record.`}}
-      ],
-      onDestroyed: () => {
-         fetch('/api/demoSetCookie?demoPage=newPayment');
-      }
-   });
-   onMount(() =>{
       console.log('paymentTypesCookie', paymentTypesCookie)
       if(paymentTypesCookie !== 'true'){
          formTour = driver({
