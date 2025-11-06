@@ -17,6 +17,7 @@
    import DownloadPdfButton from '$lib/DownloadPDFButton.svelte';
 	import SearchDrawer from '$lib/displayComponents/Modals/SearchDrawer.svelte';
 	import DateSearchForm from '$lib/forms/DateSearchForm.svelte';
+	import RevenueBar from '$lib/displayComponents/RevenueBar.svelte';
    dayjs.extend(utc)
    let { data }: { data: PageData } = $props();
    let pageNum = $state(1);
@@ -99,7 +100,11 @@
          {:then addresses}
             {#if invoices.length >0}       
             <Header title='Past Due invoices' />
-            <Revenue label="Current past due invoice total" amount={totalRevenue(invoices)} classes="bg-tertiary-50-950 w-screen rounded-b-lg fixed top-10 sm:top-7 p-2 left-0 z-30"/>
+            <RevenueBar>
+               {#snippet content()}
+                  <Revenue label="Current past due invoice total" amount={totalRevenue(invoices)} />
+               {/snippet}
+            </RevenueBar>
             <SearchDrawer
                modalOpen={searchDrawerOpen}
                height='h-[180px]'
