@@ -196,7 +196,7 @@
 				</Dialog.Positioner>
 			</Portal>
 		</Dialog>
-		<div class="bg-tertiary-50-950 fixed w-screen top-0 left-0 h-12 sm:h-8 text-center font-bold z-30 rounded-br-lg">
+		<div class="bg-tertiary-50-950 fixed w-screen top-0 left-0 h-12 sm:h-8 text-center font-bold z-30 rounded-b-lg">
 			<div class="fixed top-0 left-[85px] w-[225px] sm:w-screen text-center sm:left-0 text-wrap mt-0.5">
 				<a href="/" class="anchor">{PUBLIC_COMPANY_NAME}</a>
 			</div>
