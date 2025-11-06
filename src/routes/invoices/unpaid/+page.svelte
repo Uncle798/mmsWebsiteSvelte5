@@ -16,6 +16,7 @@
 	import EmailCustomer from '$lib/EmailCustomer.svelte';
    import DownloadPdfButton from '$lib/DownloadPDFButton.svelte';
 	import SearchDrawer from '$lib/displayComponents/Modals/SearchDrawer.svelte';
+	import RevenueBar from '$lib/displayComponents/RevenueBar.svelte';
 
    dayjs.extend(utc)
 
@@ -95,7 +96,11 @@
       {:then addresses}
          {#if invoices.length >0}       
             <Header title='Unpaid invoices' />
-            <Revenue label="Current Unpaid Invoice total" amount={totalRevenue(searchedInvoices(dateSearchedInvoices(invoices)))} classes="bg-tertiary-50-950 w-screen rounded-b-lg fixed top-10 sm:top-8 p-2 left-0 z-40"/>
+            <RevenueBar>
+               {#snippet content()}
+                  <Revenue label="Current Unpaid Invoice total" amount={totalRevenue(searchedInvoices(invoices))}/>
+               {/snippet}
+            </RevenueBar>
             <SearchDrawer
                modalOpen={searchDrawerOpen}
                height='h-[180px]'
