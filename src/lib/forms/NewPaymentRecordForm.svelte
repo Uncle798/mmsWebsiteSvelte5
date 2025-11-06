@@ -17,6 +17,8 @@
 	import ProgressRing from "$lib/displayComponents/ProgressRing.svelte";
 	import ProgressLine from "$lib/displayComponents/ProgressLine.svelte";
    import Switch from "$lib/formComponents/Switch.svelte";
+	import { driver } from "driver.js";
+   import 'driver.js/dist/driver.css';
 
    interface Props {
       data: SuperValidated<Infer<NewPaymentRecordFormSchema>>;
@@ -30,6 +32,8 @@
       invoice?: Invoice;
       leases?: Lease[];
       classes?: string;
+      paymentTypesCookie?: string;
+      newPaymentsCookie?: string;
    }
    let { 
       data, 
@@ -42,6 +46,8 @@
       invoices, 
       invoice, 
       leases, 
+      paymentTypesCookie,
+      newPaymentsCookie,
       classes
    }:Props = $props();
    let { form, enhance, errors, message, constraints, delayed, timeout, capture, restore} = superForm(data, {
@@ -117,6 +123,34 @@
    const paymentTypes = [ 'CASH', 'CHECK', 'CREDIT'];
    let navDelayed = $state(false);
    let navTimeout = $state(false);
+   let formTour = driver({
+      showProgress: true,
+      stagePadding: 2,
+      steps: [
+         { popover: { title: `Take a payment`, description: `Here's where you take in person or over the phone payments. To take a payment you'll need an invoice first.`}},
+         { element: '.paymentNotes', popover: { title: `Payment Notes`, description: `Here is where to enter any notes for the payment, they will be visible to the customer. MMS has defaults that we can customize for you, and you can edit the notes before making the payment record.`}}
+      ],
+      onDestroyed: () => {
+         fetch('/api/demoSetCookie?demoPage=newPayment');
+      }
+   });
+   onMount(() =>{
+      console.log('paymentTypesCookie', paymentTypesCookie)
+      if(paymentTypesCookie !== 'true'){
+         formTour = driver({
+            showProgress: true,
+            stagePadding: 2,
+            steps: [
+               { popover: { title: `Take a payment`, description: `Here's where you take in person or over the phone payments. To take a payment you'll need an invoice first.`}},
+               { element: '.paymentNotes', popover: { title: `Payment Notes`, description: `Here is where to enter any notes for the payment, they will be visible to the customer. MMS has defaults that we can customize for you, and you can edit the notes before making the payment record.`}},
+               { element: '.paymentTypes', popover: { title: `Payment Types`, description: `Please chose cash or check as there is currently no way to demo a credit card payment.`}}
+            ],
+            onDestroyed: () => {
+               fetch('/api/demoSetCookie?demoPage=paymentTypes');
+            }
+         });
+      }
+   })
 </script>
 
 <FormModal
@@ -168,7 +202,9 @@
          $form.paymentNotes=`Payment for Invoice ${invoice.invoiceNum} ${invoice.invoiceNotes}`
          $form.paymentAmount=invoice.invoiceAmount - invoice.amountPaid;
          $form.deposit=invoice.deposit;
-         setTimeout(()=>{explainerModalOpen=false}, 5000);
+         if(newPaymentsCookie !== 'true'){
+            formTour.drive()
+         }
       }}>
          <NumberInput
             bind:value={$form.paymentAmount}
@@ -177,7 +213,7 @@
             label='Payment amount: $'
             name='paymentAmount'
          />
-         <div class="flex">
+         <div class="flex paymentTypes">
             {#each paymentTypes as paymentType}
                {#if paymentType === 'CREDIT'}
                   <RadioButton
@@ -209,6 +245,7 @@
             label='Payment Notes'
             name='paymentNotes'
             rows={2}
+            classes='paymentNotes'
          />
          <div class="card p-4">
             <Switch bind:checked={$form.deposit} name='deposit' label='Deposit' />

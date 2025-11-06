@@ -13,8 +13,10 @@ export const load = (async (event) => {
    const registerForm = await superValidate(valibot(registerFormSchema));
    const invoiceForm = await superValidate(valibot(newInvoiceFormSchema));
    const emailVerificationForm = await superValidate(valibot(emailVerificationFormSchema));
-   const invoiceNum = event.url.searchParams.get('invoiceNum')
+   const invoiceNum = event.url.searchParams.get('invoiceNum');
    const userId = event.url.searchParams.get('userId');
+   const paymentTypesCookie = event.cookies.get('paymentTypes');
+   const newPaymentCookie = event.cookies.get('newPayment');
    if(invoiceNum){
       const invoice = await prisma.invoice.findUnique({
          where: {
@@ -38,7 +40,17 @@ export const load = (async (event) => {
                ]
             }
          })
-         return { invoice, customer, address, newPaymentRecordForm, registerForm, invoiceForm, emailVerificationForm }
+         return { 
+            invoice, 
+            customer, 
+            address, 
+            newPaymentRecordForm, 
+            registerForm, 
+            invoiceForm, 
+            emailVerificationForm, 
+            paymentTypesCookie, 
+            newPaymentCookie 
+         }
       } catch (error) {
          console.error(error);
          return {newPaymentRecordForm, registerForm, invoiceForm, emailVerificationForm}
@@ -65,7 +77,18 @@ export const load = (async (event) => {
             customerId: userId
          }
       })
-      return {newPaymentRecordForm, registerForm, invoiceForm, emailVerificationForm, customer, invoices, leases, invoiceNum}
+      return {
+         newPaymentRecordForm, 
+         registerForm, 
+         invoiceForm, 
+         emailVerificationForm, 
+         customer, 
+         invoices, 
+         leases, 
+         invoiceNum, 
+         paymentTypesCookie, 
+         newPaymentCookie
+      }
    }
    const invoices = await prisma.invoice.findMany({
       where: {
@@ -120,6 +143,8 @@ export const load = (async (event) => {
       leases, 
       invoiceForm, 
       invoiceNum, 
-      emailVerificationForm 
+      emailVerificationForm,
+      paymentTypesCookie,
+      newPaymentCookie
    };
 }) satisfies PageServerLoad;

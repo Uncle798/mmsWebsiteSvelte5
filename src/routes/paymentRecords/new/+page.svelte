@@ -36,5 +36,7 @@
       invoice={data.invoice}
       emailVerificationFormData={data.emailVerificationForm}
       customers={data.customers}
+      paymentTypesCookie={data.paymentTypesCookie}
+      newPaymentsCookie={data.newPaymentCookie}
    />
 </div>
