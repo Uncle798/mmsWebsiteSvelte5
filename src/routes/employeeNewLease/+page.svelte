@@ -15,7 +15,6 @@
 	import { onMount } from 'svelte';
 	import RegisterForm from '$lib/forms/RegisterForm.svelte';
 	import EmailVerificationForm from '$lib/forms/EmailVerificationForm.svelte';
-   import ExplainerModal from '$lib/displayComponents/Modals/ExplainerModal.svelte';
    import Combobox from '$lib/formComponents/Combobox.svelte';
 	import FormModal from '$lib/displayComponents/Modals/FormModal.svelte';
    import { driver } from 'driver.js';
