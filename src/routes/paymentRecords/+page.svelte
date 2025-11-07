@@ -243,7 +243,7 @@
                      >Sort by date {sortBy ? 'starting earliest' : 'starting latest'}</button>
                {/snippet}
                </SearchDrawer>
-                  <div class="mt-32 sm:mt-20 mb-20 sm:mb-12 lg:mb-8" in:fade={{duration:600}} out:fade={{duration:0}}>
+                  <div class="mt-34 sm:mt-22 mb-8" in:fade={{duration:600}} out:fade={{duration:0}}>
                      {#each slicedSource(sortedByDate(searchedPayments(searchByUser(paymentRecords, currentUsers(customers))))) as paymentRecord}
                      {@const customer = customers.find((customer) => customer.id === paymentRecord.customerId) }
                         <div class="rounded-lg border border-primary-50-950 grid sm:grid-cols-2 m-2">
@@ -251,7 +251,7 @@
                               <PaymentRecordEmployee paymentRecord={paymentRecord} classes="p-2" />
                               <div class="flex flex-col sm:flex-row">
                                  {#if paymentRecord.refundedAmount < paymentRecord.paymentAmount}
-                                       <button type="button" class="btn rounded-lg preset-filled-primary-50-950 h-8 w-50 m-2 sm:mx-2" onclick={() => refundModal(paymentRecord)}>Refund this payment</button>
+                                    <button type="button" class="btn rounded-lg preset-filled-primary-50-950 h-8 w-50 m-2 sm:mx-2" onclick={() => refundModal(paymentRecord)}>Refund this payment</button>
                                  {/if}
                                  {#if customer?.email && customer.emailVerified}
                                     <EmailCustomer
