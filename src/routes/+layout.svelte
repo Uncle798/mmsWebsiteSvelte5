@@ -74,19 +74,19 @@
 			<Portal>
 				<Dialog.Backdrop class="fixed inset-0 bg-surface-50-950/50 transition transition-discrete opacity-0 starting:data-[state=open]:opacity-0 data-[state=open]:opacity-100"/>
 				<Dialog.Positioner class='fixed inset-0 z-41 flex justify-start rounded-none'>
-					<Dialog.Content class="h-screen card bg-surface-100-900 w-[250px] p-4 space-y-4 shadow-xl transition transition-discrete opacity-0 -translate-x-full 
+					<Dialog.Content class="h-screen card bg-surface-100-900 w-[250px] space-y-4 shadow-xl transition transition-discrete opacity-0 -translate-x-full 
 						starting:data-[state=open]:opacity-0 starting:data-[state=open]:-translate-x-full data-[state=open]:opacity-100 data-[state=open]:translate-x-0 rounded-l-none mainMenu">
-						<header class='flex justify-between items-center'>
+						<header class='flex justify-between items-center m-2'>
 							<Dialog.Title class='font-bold text-2xl' >Main Menu</Dialog.Title>
 							<Dialog.CloseTrigger><CircleX aria-label='close'/></Dialog.CloseTrigger>
 						</header>
-						<ul>
+						<ul class="list-none">
 							{#if data.user.employee}
 								{#each employeeLinks as employeeLink}
-									<li>
+									<li class="">
 										<Tooltip>
 											<Tooltip.Trigger>
-												<a href={employeeLink.link} class='anchor'>{employeeLink.label}</a>
+												<a href={employeeLink.link} class='anchor mx-2'>{employeeLink.label}</a>
 											</Tooltip.Trigger>
 											<Portal>
 												<Tooltip.Positioner class='z-50!'>
@@ -107,7 +107,7 @@
 									<li>
 										<Tooltip>
 											<Tooltip.Trigger>
-												<a href={adminLink.link} class="anchor">{adminLink.label}</a>
+												<a href={adminLink.link} class="anchor mx-2">{adminLink.label}</a>
 											</Tooltip.Trigger>
 											<Portal>
 												<Tooltip.Positioner class='z-50!'>
@@ -123,33 +123,33 @@
 									</li>	
 								{/each}
 							{/if}
+							<li>
+								<Tooltip>
+									<Tooltip.Trigger>
+										<a href="/accountSettings" class="anchor mx-2 settingsLink">Settings</a>
+									</Tooltip.Trigger>
+									<Portal>
+										<Tooltip.Positioner class='z-50'>
+											<Tooltip.Content class='card max-w-md p-2 bg-surface-100-900 shadow-xl'>
+												Change your name or address here. View all invoices, payment receipts, and refund records. Best of all, sign up for Auto-pay here.
+												<Tooltip.Arrow style='--arrow-size: calc(var(--spacing) * 2); --arrow-background: var(--color-surface-100-900);'>
+													<Tooltip.ArrowTip />
+												</Tooltip.Arrow>
+											</Tooltip.Content>
+										</Tooltip.Positioner>
+									</Portal>
+								</Tooltip>
+							</li>
+						{#if data.user}
+							<form action="/logout" method="post" use:enhance>
+								<li><button class="anchor mx-2" type="submit">Logout</button></li>
+							</form>
+						{:else}
+							<li><a class="anchor mx-2" href="/login">Login</a></li>
+						{/if}
 						</ul>
 						<div class="fixed bottom-2">
 							<ul>
-								<li>
-									<Tooltip>
-										<Tooltip.Trigger>
-											<a href="/accountSettings" class="anchor mx-1 settingsLink">Settings</a>
-										</Tooltip.Trigger>
-										<Portal>
-											<Tooltip.Positioner class='z-50'>
-												<Tooltip.Content class='card max-w-md p-2 bg-surface-100-900 shadow-xl'>
-													Change your name or address here. View all invoices, payment receipts, and refund records. Best of all, sign up for Auto-pay here.
-													<Tooltip.Arrow style='--arrow-size: calc(var(--spacing) * 2); --arrow-background: var(--color-surface-100-900);'>
-														<Tooltip.ArrowTip />
-													</Tooltip.Arrow>
-												</Tooltip.Content>
-											</Tooltip.Positioner>
-										</Portal>
-									</Tooltip>
-								</li>
-							{#if data.user}
-								<form action="/logout" method="post" use:enhance>
-									<li><button class="anchor mx-1" type="submit">Logout</button></li>
-								</form>
-							{:else}
-								<li><a class="anchor mx-1" href="/login">Login</a></li>
-							{/if}
 							</ul>
 						</div>
 					</Dialog.Content>
