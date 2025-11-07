@@ -151,7 +151,7 @@
                                  recordType='invoiceNum'
                                  num={invoice.invoiceNum}
                               />
-                        </div>
+                           </div>
                         </div>                       
                         {#if customer}
                         {@const address = addresses.find((address) => address.userId === customer.id)}

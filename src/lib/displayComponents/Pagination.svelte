@@ -1,8 +1,10 @@
 <script lang='ts'>
-   import { Pagination } from "@skeletonlabs/skeleton-svelte";
+   import { Pagination, } from "@skeletonlabs/skeleton-svelte";
    import IconArrowLeft from 'lucide-svelte/icons/arrow-left';
    import IconArrowRight from 'lucide-svelte/icons/arrow-right';
    import IconEllipsis from 'lucide-svelte/icons/ellipsis';
+   import IconArrowLeftFromLine from 'lucide-svelte/icons/arrow-left-from-line';
+   import IconArrowRightFromLine from 'lucide-svelte/icons/arrow-right-from-line';
    import { Combobox, Portal, useListCollection } from "@skeletonlabs/skeleton-svelte";
    interface Props {
       pageNum: number;
@@ -59,25 +61,31 @@
          </Combobox.Positioner>
       </Portal>
    </Combobox>
-   <Pagination count={array.length} pageSize={size} page={pageNum} onPageChange={(e) => (pageNum = e.page)} siblingCount={0} >
-      <Pagination.PrevTrigger>
-         <IconArrowLeft />
-      </Pagination.PrevTrigger>
-      <Pagination.Context>
-         {#snippet children(pagination)}
-            {#each pagination().pages as page, index (page)}
-               {#if page.type === 'page'}
-                  <Pagination.Item {...page}>
-                     {page.value}
-                  </Pagination.Item>
-               {:else}
-                  <Pagination.Ellipsis {index}><IconEllipsis /></Pagination.Ellipsis>
-               {/if}
-            {/each}
-         {/snippet}
-      </Pagination.Context>
-      <Pagination.NextTrigger>
-         <IconArrowRight />
-      </Pagination.NextTrigger>
+   <Pagination count={array.length} pageSize={size} page={pageNum} onPageChange={(e) => {pageNum = e.page;}} siblingCount={ pageNum > 3 ? 1 : 0 } >
+         <Pagination.Context>
+            {#snippet children(pages)}
+               <Pagination.FirstTrigger class='hidden sm:block' disabled={ pageNum === 1 ? true : undefined }>
+                  <IconArrowLeftFromLine />
+               </Pagination.FirstTrigger>
+               <Pagination.PrevTrigger>
+                  <IconArrowLeft />
+               </Pagination.PrevTrigger>
+               {#each pages().pages as page, index (page)}
+                  {#if page.type === 'page'}
+                     <Pagination.Item {...page}>
+                        {page.value}
+                     </Pagination.Item>
+                  {:else}
+                     <Pagination.Ellipsis {index}><IconEllipsis /></Pagination.Ellipsis>
+                  {/if}
+               {/each}
+               <Pagination.NextTrigger disabled={ pages().totalPages === pageNum ? true : undefined}>
+                  <IconArrowRight />
+               </Pagination.NextTrigger>
+               <Pagination.LastTrigger class='hidden sm:block' disabled={ pages().totalPages === pageNum ? true : undefined }>
+                  <IconArrowRightFromLine />
+               </Pagination.LastTrigger>
+            {/snippet}
+         </Pagination.Context>
    </Pagination>
 </div>
