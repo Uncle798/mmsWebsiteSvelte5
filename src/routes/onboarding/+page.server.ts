@@ -6,11 +6,13 @@ import { onboardingExistingLeaseSchema } from '$lib/formSchemas/onboardingExisti
 import { registerFormSchema } from '$lib/formSchemas/registerFormSchema';
 import { addressFormSchema } from '$lib/formSchemas/addressFormSchema';
 import type { Address, User, Lease } from '@prisma/client';
+import { propertySubjectToLienSchema } from '$lib/formSchemas/propertySubjectToLienSchema';
 
 export const load = (async (event) => {
    const userId = event.url.searchParams.get('userId');
    const addressId = event.url.searchParams.get('addressId');
    const leaseId = event.url.searchParams.get('leaseId');
+   const lien = event.url.searchParams.get('lien');
    const units = await prisma.unit.findMany({
       where: {
          AND: [
@@ -53,8 +55,22 @@ export const load = (async (event) => {
          }
       })
    }
+   let propertySubjectToLienForm = null;
+   console.log(lien);
+   if(lien === 'true'){
+      propertySubjectToLienForm = await superValidate(valibot(propertySubjectToLienSchema));
+   }
    const registerForm = await superValidate(valibot(registerFormSchema));
    const addressForm = await superValidate(valibot(addressFormSchema));
    const onboardingExistingLeaseForm = await superValidate(valibot(onboardingExistingLeaseSchema));
-   return { units, customer, address, lease, registerForm, addressForm, onboardingExistingLeaseForm};
+   return { 
+      units, 
+      customer, 
+      address, 
+      lease, 
+      registerForm, 
+      addressForm, 
+      onboardingExistingLeaseForm, 
+      propertySubjectToLienForm
+   };
 }) satisfies PageServerLoad;
