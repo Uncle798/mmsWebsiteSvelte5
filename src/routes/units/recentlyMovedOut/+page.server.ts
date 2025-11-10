@@ -3,7 +3,7 @@ import dayjs from 'dayjs';
 import type { PageServerLoad } from './$types';
 import { superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
-import { unitNotesFormSchema } from '$lib/formSchemas/schemas';
+import { unitNotesFormSchema } from '$lib/formSchemas/unitNotesFormSchema';
 
 export const load = (async () => {
    const units = prisma.unit.findMany({
@@ -16,7 +16,7 @@ export const load = (async () => {
             }
          }
       }
-   })
+   });
    const leases = prisma.lease.findMany({
       where: {
          leaseEnded:{
@@ -26,7 +26,7 @@ export const load = (async () => {
       orderBy: {
          leaseEnded: 'desc'
       }
-   })
+   });
    const customers = prisma.user.findMany({
       where: {
          customerLeases: {
@@ -37,7 +37,7 @@ export const load = (async () => {
             }
          }
       }
-   })
+   });
    const addresses = prisma.address.findMany({
       where: {
          leases: {
@@ -48,7 +48,7 @@ export const load = (async () => {
             }
          }
       }
-   })
-   const unitNotesForm = await superValidate(valibot(unitNotesFormSchema))
+   });
+   const unitNotesForm = await superValidate(valibot(unitNotesFormSchema));
    return { units, leases, unitNotesForm, customers, addresses };
 }) satisfies PageServerLoad;
