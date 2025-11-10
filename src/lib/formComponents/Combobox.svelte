@@ -7,12 +7,14 @@
       data: {label:string, value:string}[];
       label: string;
       placeholder?: string;
+      name?: string;
       classes?: string;
       onValueChange?: ComboboxRootProps['onValueChange'];
    }
    let { 
       data,
       label,
+      name,
       classes,
       placeholder = 'Search...',
       onValueChange = (event) => {
@@ -47,7 +49,7 @@
    }
 </script>
 <div class={classes}>
-   <Combobox {collection} {onOpenChange} {onValueChange} inputBehavior='autocomplete' {placeholder} {onInputValueChange} openOnClick={true}>
+   <Combobox {collection} {onOpenChange} {onValueChange} inputBehavior='autocomplete' {placeholder} {onInputValueChange} openOnClick={true} {name}>
       <Combobox.Label>{label}</Combobox.Label>
       <Combobox.Control>
          <Combobox.Input />
