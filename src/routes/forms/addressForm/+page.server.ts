@@ -18,10 +18,6 @@ export const actions: Actions = {
       if(!event.locals.user){
          redirect(302, '/login?toast=unauthorized')
       }
-      const userId = event.url.searchParams.get('userId');
-      if(!userId){
-         error(400, {message: 'User not specified'})
-      }
       const formData = await event.request.formData();
       const addressForm = await superValidate(formData, valibot(addressFormSchema));
       const { success, reset } = await ratelimit.customerForm.limit(event.locals.user.id)
@@ -76,7 +72,7 @@ export const actions: Actions = {
             })
          const redirectTo = event.url.searchParams.get('redirectTo');
          if(redirectTo){
-            redirect(303, `/${redirectTo}?addressId=${dbAddress.addressId}&userId=${userId}`)
+            redirect(303, `/${redirectTo}?addressId=${dbAddress.addressId}&userId=${data.userId}`)
          }
       }
       return {addressForm}
