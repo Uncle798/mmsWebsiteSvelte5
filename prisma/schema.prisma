@@ -50,11 +50,11 @@ model PropertyWithLien {
   id                    String  @id @unique @default(cuid(2))
   descriptionOfProperty String
   lienHolder            User    @relation(fields: [userId], references: [id])
-  lienHolderAddress     Address @relation(fields: [addressAddressId], references: [addressId])
-  lease                 Lease   @relation(fields: [leaseLeaseId], references: [leaseId])
+  lienHolderAddress     Address @relation(fields: [addressId], references: [addressId])
+  lease                 Lease   @relation(fields: [leaseId], references: [leaseId])
   userId                String
-  addressAddressId      String
-  leaseLeaseId          String
+  addressId             String
+  leaseId               String
 }
 
 model Address {
