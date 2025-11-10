@@ -81,6 +81,14 @@
             name='organization'
             checked={$form.organization}
          />
+         <Switch
+            label='Property subject to lien'
+            onCheckedChange={(e) => {
+               $form.propertySubjectToLien = e.checked;
+            }}
+            name='propertySubjectToLien'
+            checked={$form.propertySubjectToLien}
+         />
          <input type="hidden" name='customerId' value={customer.id} />
          <input type="hidden" name='addressId' value={address.addressId} />
          <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} />
