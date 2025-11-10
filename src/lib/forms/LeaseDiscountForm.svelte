@@ -2,7 +2,7 @@
 	import FormMessage from "$lib/formComponents/FormMessage.svelte";
 	import FormSubmitWithProgress from "$lib/formComponents/FormSubmitWithProgress.svelte";
 	import TextInput from "$lib/formComponents/TextInput.svelte";
-   import type { LeaseDiscountFormSchema } from "$lib/formSchemas/schemas";
+   	import type { LeaseDiscountFormSchema } from '$lib/formSchemas/leaseDiscountFormSchema';
 	import { onMount } from "svelte";
 	import type { Infer, SuperValidated } from "sveltekit-superforms";
    import { superForm } from "sveltekit-superforms";

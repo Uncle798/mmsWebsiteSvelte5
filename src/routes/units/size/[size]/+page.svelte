@@ -16,6 +16,7 @@
 	import ProgressLine from '$lib/displayComponents/ProgressLine.svelte';
    import ProgressRing from '$lib/displayComponents/ProgressRing.svelte';
    import Combobox from '$lib/formComponents/Combobox.svelte';
+	import RevenueBar from '$lib/displayComponents/RevenueBar.svelte';
 
    let { data }: { data: PageData } = $props();
    const currencyFormatter = new Intl.NumberFormat('en-US', {style: 'currency', currency: 'USD'})
@@ -92,8 +93,7 @@
          modalOpen={searchDrawerOpen}
          height='h-[180px]'
       >
-         {#snippet content()}   
-            <button onclick={()=>searchDrawerOpen=false} class='btn preset-filled-primary-50-950 rounded-lg m-1 absolute top-0 right-0'><PanelTopClose aria-label='Close'/></button>
+         {#snippet content()}
             <div class="mx-2 mt-11 flex flex-row gap-2">
                <Combobox
                   data={comboboxData}
@@ -130,11 +130,13 @@
          {/snippet}
       </SearchDrawer>
       {#if units.length > 0 }
-         <div class="flex fixed top-11 sm:top-8 p-1 bg-tertiary-50-950 rounded-b-lg w-screen">
-            <Revenue amount={currentRevenue(units)} label='Current revenue from {data.size.replace(/^0+/gm, '').replace(/x0/gm,'x')} units' />
+         <RevenueBar>
+            {#snippet content()}               
+               <Revenue amount={currentRevenue(units)} label='Current revenue from {data.size.replace(/^0+/gm, '').replace(/x0/gm,'x')} units' />
                <span class="mx-1 sm:mx-2 w-1/3">Available: {availableUnits(units, leases).length} of {units.length} ({Math.round((availableUnits(units, leases).length*100)/units.length)}%)</span>
                <span class="mx-1 sm:mx-2 w-1/3">Open revenue: {currencyFormatter.format(lostRevenue(availableUnits(units, leases)))}</span>
-         </div>
+            {/snippet}
+         </RevenueBar>
       {:else}
          <div class="top-16 mx-2">
             Unit size not found
@@ -155,15 +157,15 @@
                {@const lease = leases.find((lease) => lease.unitNum === unit.num)}
                {@const customer = customers.find((customer)=> customer.id === lease?.customerId)}
                   <div class="border-2 border-tertiary-50-950 rounded-lg sm:grid sm:grid-cols-3">
-                     <UnitEmployee {unit} classes="border-1 border-primary-50-950 rounded-md m-2" />
+                     <UnitEmployee {unit} classes="border border-primary-50-950 rounded-md m-2" />
                      {#if lease}
-                        <LeaseEmployee {lease} classes="border-1 border-primary-50-950 rounded-md m-2"/>
+                        <LeaseEmployee {lease} classes="border border-primary-50-950 rounded-md m-2"/>
                      {:else}
                         <div class="col-span-2 m-2"><span>Open Unit</span></div>
                      {/if}
                      {#if customer}
                      {@const address = addresses.find((address) => address.userId === customer.id)}
-                        <div class="border-1 border-primary-50-950 rounded-md m-2">
+                        <div class="border border-primary-50-950 rounded-md m-2">
                            <UserEmployee user={customer} classes="mx-2 truncate" />
                            {#if address}
                               <Address {address} classes='mx-2'/>

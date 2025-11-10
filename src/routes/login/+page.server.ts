@@ -1,7 +1,7 @@
 import { message, superValidate } from 'sveltekit-superforms';
 import { valibot, } from 'sveltekit-superforms/adapters';
 import type { PageServerLoad, Actions } from './$types';
-import { magicLinkFormSchema } from '$lib/formSchemas/schemas';
+import { magicLinkFormSchema } from '$lib/formSchemas/magicLinkFormSchema';
 import { ratelimit } from '$lib/server/rateLimit';
 import { generateMagicLink } from '$lib/server/authUtils';
 import { prisma } from '$lib/server/prisma';

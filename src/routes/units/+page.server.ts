@@ -3,14 +3,13 @@ import { redirect, error } from "@sveltejs/kit";
 import { superValidate, message } from 'sveltekit-superforms'
 import { ratelimit } from "$lib/server/rateLimit";
 import { valibot } from 'sveltekit-superforms/adapters'
-import { unitNotesFormSchema, unitPricingFormSchema, leaseEndFormSchema, searchFormSchema } from "$lib/formSchemas/schemas";
-
+import { searchFormSchema } from '$lib/formSchemas/searchFormSchema';
+import { unitPricingFormSchema } from "$lib/formSchemas/unitPricingFormSchema";
+import { unitNotesFormSchema } from "$lib/formSchemas/unitNotesFormSchema";
+import { leaseEndFormSchema } from "$lib/formSchemas/leaseEndFormSchema";
 import type { PageServerLoad, Actions } from "./$types";
-import type { Address, Lease, Unit } from "@prisma/client";
-import type { PartialUser } from "$lib/server/partialTypes";
-import pricingData from "$lib/server/pricingData";
 
-export type UnitCustomer = Unit & PartialUser & Lease & Address;
+import pricingData from "$lib/server/pricingData";
 
 export const load:PageServerLoad = async (event) =>{ 
    if(!event.locals.user){

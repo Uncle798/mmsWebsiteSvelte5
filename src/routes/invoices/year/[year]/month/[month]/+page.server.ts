@@ -5,7 +5,8 @@ import utc from 'dayjs/plugin/utc'
 import { prisma } from '$lib/server/prisma';
 import { superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
-import { dateSearchFormSchema, searchFormSchema } from '$lib/formSchemas/schemas';
+import { dateSearchFormSchema } from '$lib/formSchemas/dateSearchFormSchema';
+import { searchFormSchema } from '$lib/formSchemas/searchFormSchema';
 
 dayjs.extend(utc)
 

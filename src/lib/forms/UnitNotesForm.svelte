@@ -1,6 +1,6 @@
 <script lang='ts'>
    import { superForm } from "sveltekit-superforms";
-	import type { UnitNotesFormSchema } from "$lib/formSchemas/schemas";
+	import type { UnitNotesFormSchema } from "$lib/formSchemas/unitNotesFormSchema";
 	import type { Infer, SuperValidated } from "sveltekit-superforms";
 	import FormMessage from "$lib/formComponents/FormMessage.svelte";
 	import FormSubmitWithProgress from "$lib/formComponents/FormSubmitWithProgress.svelte";

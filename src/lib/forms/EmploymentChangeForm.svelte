@@ -2,7 +2,7 @@
    import { superForm, type SuperValidated, type Infer } from "sveltekit-superforms";
    import FormMessage from "$lib/formComponents/FormMessage.svelte";
    import FormSubmitWithProgress from "$lib/formComponents/FormSubmitWithProgress.svelte";
-   import type { EmploymentFormSchema } from "$lib/formSchemas/schemas";
+   import type { EmploymentFormSchema } from "$lib/formSchemas/employmentFormSchema";
 	import Switch from "$lib/formComponents/Switch.svelte"
 
    interface Props {

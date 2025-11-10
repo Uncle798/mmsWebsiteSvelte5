@@ -2,7 +2,9 @@ import { prisma } from '$lib/server/prisma';
 import {  message, superValidate } from 'sveltekit-superforms';
 import type { PageServerLoad, Actions } from './$types';
 import { valibot } from 'sveltekit-superforms/adapters';
-import { cuidIdFormSchema, employmentFormSchema, searchFormSchema } from '$lib/formSchemas/schemas';
+import { cuidIdFormSchema } from '$lib/formSchemas/cuidIdFormSchema';
+import { searchFormSchema } from '$lib/formSchemas/searchFormSchema';
+import { employmentFormSchema } from '$lib/formSchemas/employmentFormSchema';
 import { redirect } from '@sveltejs/kit';
 import { ratelimit } from '$lib/server/rateLimit';
 

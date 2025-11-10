@@ -60,6 +60,23 @@
 		})
 		return totalRevenue;
 	})
+	const openUnits = $derived((units:Unit[], leases:Lease[]) => {
+		const returnedUnits:Unit[] = [];
+		for(const unit of units){
+			const lease = leases.find((lease) => lease.unitNum === unit.num);
+			if(lease === undefined){
+				returnedUnits.push(unit);
+			}
+		}
+		return returnedUnits;
+	})
+	const openRevenue = $derived((units:Unit[]) => {
+		let total = 0;
+		for(const unit of units){
+			total += unit.advertisedPrice
+		}
+		return total;
+	})
 	const searchedUnits = $derived((units:Unit[]) => 
 		units.filter((unit) => {
 			return unit.num.toString().toLowerCase().includes(search.toLowerCase())
@@ -133,6 +150,8 @@
 					<RevenueBar>
 						{#snippet content()}
 							<Revenue label='Current leased monthly revenue' amount={totalRevenue(leases)} classes=''/>
+							<Revenue label='Currently open monthly advertised total' amount={openRevenue(openUnits(units, leases))} />
+							<span>Open percentage: {Math.round((openUnits(units, leases).length*100)/units.length)}%</span>
 						{/snippet}
 					</RevenueBar>
 					<SearchDrawer

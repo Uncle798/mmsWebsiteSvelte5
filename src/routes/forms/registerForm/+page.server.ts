@@ -3,7 +3,7 @@ import type { PageServerLoad, Actions } from './$types';
 import { message, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import { createSession, generateEmailVerificationRequest, generateSessionToken, setSessionTokenCookie } from "$lib/server/authUtils";
-import { registerFormSchema } from '$lib/formSchemas/schemas';
+import { registerFormSchema } from '$lib/formSchemas/registerFormSchema';
 import { ratelimit } from '$lib/server/rateLimit';
 import { prisma } from '$lib/server/prisma';
 import { sendVerificationEmail } from "$lib/server/mailtrap";

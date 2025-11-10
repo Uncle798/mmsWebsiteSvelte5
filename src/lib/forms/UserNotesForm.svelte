@@ -3,7 +3,7 @@
 	import FormMessage from "$lib/formComponents/FormMessage.svelte";
 	import FormSubmitWithProgress from "$lib/formComponents/FormSubmitWithProgress.svelte";
 	import TextArea from "$lib/formComponents/TextArea.svelte";
-	import type { UserNotesFormSchema } from "$lib/formSchemas/schemas";
+	import type { UserNotesFormSchema } from "$lib/formSchemas/userNotesFormSchema";
 	import type { User } from "@prisma/client";
 	import Switch from "$lib/formComponents/Switch.svelte";
 	import { onMount } from "svelte";

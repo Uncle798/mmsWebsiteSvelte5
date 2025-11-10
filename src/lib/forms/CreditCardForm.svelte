@@ -4,7 +4,7 @@
 </svelte:head>
 <script lang="ts">
 	import { superForm, type Infer, type SuperValidated } from "sveltekit-superforms";
-   import { creditCardFormSchema, type CreditCardFormSchema } from "$lib/formSchemas/schemas";
+   	import { creditCardFormSchema, type CreditCardFormSchema } from '$lib/formSchemas/creditCardFormSchema';
 	import FormMessage from "$lib/formComponents/FormMessage.svelte";
 	import { browser } from '$app/environment';;
 	import { goto } from '$app/navigation';

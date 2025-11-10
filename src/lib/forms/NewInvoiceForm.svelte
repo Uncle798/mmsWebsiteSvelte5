@@ -1,5 +1,7 @@
 <script lang="ts">
-	import type { EmailVerificationFormSchema, NewInvoiceFormSchema, RegisterFormSchema } from "$lib/formSchemas/schemas";
+	import type { NewInvoiceFormSchema } from "$lib/formSchemas/schemas";
+	import type { EmailVerificationFormSchema } from '$lib/formSchemas/emailVerificationFormSchema';
+	import type { RegisterFormSchema } from '$lib/formSchemas/registerFormSchema';
 	import type { Lease, User } from "@prisma/client";
 	import { onMount } from "svelte";
 	import { superForm, type Infer, type SuperValidated } from "sveltekit-superforms";

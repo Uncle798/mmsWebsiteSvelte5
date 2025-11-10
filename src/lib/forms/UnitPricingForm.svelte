@@ -1,6 +1,6 @@
 <script lang='ts'>
 	import type { Infer, SuperValidated } from "sveltekit-superforms";
-   import type { UnitPricingFormSchema } from '$lib/formSchemas/schemas'
+   import type { UnitPricingFormSchema } from '$lib/formSchemas/unitPricingFormSchema'
    import { superForm } from "sveltekit-superforms";
    import { invalidateAll } from "$app/navigation";
 	import FormMessage from "$lib/formComponents/FormMessage.svelte";

@@ -1,7 +1,7 @@
 import { fail as superFormFail, superValidate, message } from 'sveltekit-superforms';
 import type { PageServerLoad, Actions } from './$types';
 import { valibot } from 'sveltekit-superforms/adapters';
-import { emailVerificationFormSchema } from '$lib/formSchemas/schemas';
+import { emailVerificationFormSchema } from '$lib/formSchemas/emailVerificationFormSchema';
 import { error, redirect, } from '@sveltejs/kit';
 import { ratelimit } from '$lib/server/rateLimit';
 import { generateEmailVerificationRequest } from '$lib/server/authUtils';

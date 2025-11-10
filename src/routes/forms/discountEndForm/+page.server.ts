@@ -1,4 +1,4 @@
-import { cuidIdFormSchema } from "$lib/formSchemas/schemas";
+import { cuidIdFormSchema } from '$lib/formSchemas/cuidIdFormSchema';
 import { prisma } from "$lib/server/prisma";
 import { ratelimit } from "$lib/server/rateLimit";
 import { error, redirect, type Actions } from "@sveltejs/kit";

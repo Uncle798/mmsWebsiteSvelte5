@@ -3,7 +3,7 @@ import { redirect, error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { superValidate } from 'sveltekit-superforms';
 import { valibot, } from 'sveltekit-superforms/adapters';
-import { creditCardFormSchema } from '$lib/formSchemas/schemas';
+import { creditCardFormSchema } from '$lib/formSchemas/creditCardFormSchema';
 
 export const load = (async (event) => {
    if(!event.locals.user){

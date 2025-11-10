@@ -1,7 +1,7 @@
 
 import { valibot } from 'sveltekit-superforms/adapters';
 
-import { registerFormSchema } from "$lib/formSchemas/schemas";
+import { registerFormSchema } from '$lib/formSchemas/registerFormSchema';
 import { superValidate, } from 'sveltekit-superforms';
 
 

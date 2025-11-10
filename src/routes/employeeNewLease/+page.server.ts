@@ -2,7 +2,12 @@
 import { redirect } from '@sveltejs/kit';
 import { message, superValidate} from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
-import { newLeaseSchema, registerFormSchema, addressFormSchema, leaseDiscountFormSchema, emailVerificationFormSchema, cuidIdFormSchema  } from '$lib/formSchemas/schemas'
+import { newLeaseSchema  } from '$lib/formSchemas/schemas'
+import { cuidIdFormSchema } from '$lib/formSchemas/cuidIdFormSchema';
+import { leaseDiscountFormSchema } from '$lib/formSchemas/leaseDiscountFormSchema';
+import { emailVerificationFormSchema } from '$lib/formSchemas/emailVerificationFormSchema';
+import { registerFormSchema } from '$lib/formSchemas/registerFormSchema';
+import { addressFormSchema } from '$lib/formSchemas/addressFormSchema';
 import type { PageServerLoad, Actions } from './$types';
 import { prisma } from '$lib/server/prisma'; 
 import type { Address, DiscountCode, User } from '@prisma/client';

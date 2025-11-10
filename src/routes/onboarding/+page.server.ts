@@ -2,7 +2,9 @@ import { prisma } from '$lib/server/prisma';
 import { superValidate } from 'sveltekit-superforms';
 import type { PageServerLoad } from './$types';
 import { valibot } from 'sveltekit-superforms/adapters';
-import { addressFormSchema,  onboardingExistingLeaseSchema, registerFormSchema } from '$lib/formSchemas/schemas';
+import { onboardingExistingLeaseSchema } from '$lib/formSchemas/schemas';
+import { registerFormSchema } from '$lib/formSchemas/registerFormSchema';
+import { addressFormSchema } from '$lib/formSchemas/addressFormSchema';
 import type { Address, User, Lease } from '@prisma/client';
 
 export const load = (async (event) => {

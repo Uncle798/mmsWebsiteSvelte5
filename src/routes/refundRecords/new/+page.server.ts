@@ -3,7 +3,8 @@ import { error, redirect } from '@sveltejs/kit';
 import { prisma } from '$lib/server/prisma'
 import { message, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
-import { refundFormSchema, searchFormSchema } from '$lib/formSchemas/schemas';
+import { refundFormSchema } from '$lib/formSchemas/refundFormSchema';
+import { searchFormSchema } from '$lib/formSchemas/searchFormSchema';
 import { ratelimit } from '$lib/server/rateLimit';
 
 

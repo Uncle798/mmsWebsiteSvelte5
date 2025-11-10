@@ -72,7 +72,7 @@
       }
    })
    onMount(() => {
-      if(data.demoCookie !== 'users'){
+      if(data.demoCookie !== 'true'){
          userTour.drive()
       }
    })
@@ -85,7 +85,6 @@
 {:then users }
    <SearchDrawer modalOpen={searchDrawerOpen} height='h-[180px]'>
       {#snippet content()}
-      <div class="mx-2 mt-11">
          <Search data={data.searchForm} bind:search={search} searchType='user' />
          <div>
             Filter by 
@@ -100,7 +99,6 @@
                label='Admin filter'
             />
          </div>
-      </div>
       {/snippet}
    </SearchDrawer>
    <div in:fade={{duration:600}} class="m-2 mt-14 sm:mt-10">

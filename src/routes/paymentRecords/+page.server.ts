@@ -2,7 +2,9 @@ import { prisma } from '$lib/server/prisma';
 import { superValidate } from 'sveltekit-superforms';
 import type { PageServerLoad } from './$types';
 import { valibot } from 'sveltekit-superforms/adapters';
-import { dateSearchFormSchema, refundFormSchema, searchFormSchema } from '$lib/formSchemas/schemas';
+import { dateSearchFormSchema } from '$lib/formSchemas/dateSearchFormSchema';
+import { refundFormSchema } from '$lib/formSchemas/refundFormSchema';
+import { searchFormSchema } from '$lib/formSchemas/searchFormSchema';
 import { redirect } from '@sveltejs/kit';
 import { arrayOfYears } from '$lib/server/utils';
 

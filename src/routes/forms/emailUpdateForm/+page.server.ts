@@ -3,7 +3,7 @@ import { superValidate, message } from 'sveltekit-superforms';
 import { ratelimit } from "$lib/server/rateLimit";
 import { valibot } from 'sveltekit-superforms/adapters';
 import type { PageServerLoad, Actions } from './$types';
-import { emailFormSchema } from '$lib/formSchemas/schemas';
+import { emailFormSchema } from '$lib/formSchemas/emailFormSchema';
 import { prisma } from '$lib/server/prisma';
 import { generateEmailVerificationRequest } from '$lib/server/authUtils';
 import { sendVerificationEmail } from '$lib/server/mailtrap';

@@ -2,7 +2,7 @@ import { prisma } from '$lib/server/prisma';
 import { superValidate } from 'sveltekit-superforms';
 import type { PageServerLoad } from './$types';
 import { valibot } from 'sveltekit-superforms/adapters';
-import { searchFormSchema } from '$lib/formSchemas/schemas';
+import { searchFormSchema } from '$lib/formSchemas/searchFormSchema';
 import { redirect } from '@sveltejs/kit';
 
 export const load = (async (event) => {

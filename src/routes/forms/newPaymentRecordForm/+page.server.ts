@@ -4,8 +4,8 @@ import { superValidate, message,} from 'sveltekit-superforms';
 import { prisma } from '$lib/server/prisma';
 import { ratelimit } from '$lib/server/rateLimit';
 import { valibot } from 'sveltekit-superforms/adapters';
-import { newPaymentRecordFormSchema } from '$lib/formSchemas/schemas';
-import { Prisma, type Invoice } from '@prisma/client';
+import { newPaymentRecordFormSchema } from '$lib/formSchemas/newPaymentRecordFormSchema';
+import { type Invoice } from '@prisma/client';
 
 
 export const actions:Actions = {

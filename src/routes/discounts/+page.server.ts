@@ -3,7 +3,8 @@ import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
-import { cuidIdFormSchema, newDiscountFormSchema } from '$lib/formSchemas/schemas';
+import { cuidIdFormSchema } from '$lib/formSchemas/cuidIdFormSchema';
+import { newDiscountFormSchema } from '$lib/formSchemas/newDiscountFormSchema';
 
 export const load = (async (event) => {
    if(!event.locals.user?.employee){

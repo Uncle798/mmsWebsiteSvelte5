@@ -5,7 +5,7 @@
 	import FormSubmitWithProgress from "$lib/formComponents/FormSubmitWithProgress.svelte";
 	import NumberInput from "$lib/formComponents/NumberInput.svelte";
 	import Switch from "$lib/formComponents/Switch.svelte";
-	import type { OnboardingExistingLeaseSchema } from "$lib/formSchemas/schemas";
+	import type { OnboardingExistingLeaseSchema } from "$lib/formSchemas/onboardingExistingLeaseSchema";
 	import type { Unit, User, Address } from "@prisma/client";
 	import dayjs from "dayjs";
 	import { superForm, type Infer, type SuperValidated } from "sveltekit-superforms";

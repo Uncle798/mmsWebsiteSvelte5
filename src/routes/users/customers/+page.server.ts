@@ -3,7 +3,8 @@ import type { Actions, PageServerLoad } from './$types';
 import { prisma } from '$lib/server/prisma';
 import { superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
-import { leaseEndFormSchema, searchFormSchema, unitNotesFormSchema, userNotesFormSchema } from '$lib/formSchemas/schemas';
+import { leaseEndFormSchema, unitNotesFormSchema, userNotesFormSchema } from '$lib/formSchemas/schemas';
+import { searchFormSchema } from '$lib/formSchemas/searchFormSchema';
 
 export const load = (async (event) => {
    if(!event.locals.user?.employee){

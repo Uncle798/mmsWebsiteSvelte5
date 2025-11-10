@@ -1,7 +1,7 @@
 import { superValidate, message } from 'sveltekit-superforms';
 import type { Actions } from './$types';
 import { valibot } from 'sveltekit-superforms/adapters';
-import { newDiscountFormSchema } from '$lib/formSchemas/schemas';
+import { newDiscountFormSchema } from '$lib/formSchemas/newDiscountFormSchema';
 import { error, redirect } from '@sveltejs/kit';
 import { ratelimit } from '$lib/server/rateLimit';
 import { prisma } from '$lib/server/prisma';

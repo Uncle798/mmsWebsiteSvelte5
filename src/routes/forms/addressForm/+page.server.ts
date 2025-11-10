@@ -2,7 +2,7 @@ import { superValidate, message } from 'sveltekit-superforms';
 import { ratelimit } from "$lib/server/rateLimit";
 import type { PageServerLoad, Actions } from './$types';
 import { valibot } from 'sveltekit-superforms/adapters';
-import { addressFormSchema } from '$lib/formSchemas/schemas';
+import { addressFormSchema } from '$lib/formSchemas/addressFormSchema';
 import { prisma } from '$lib/server/prisma';
 import { error, redirect } from '@sveltejs/kit';
 import { DEV_ME_KEY } from '$env/static/private';
@@ -72,13 +72,13 @@ export const actions: Actions = {
                phoneNum1Country: phoneValid.callingCode,
                ...rest
             }
-            await prisma.address.create({
+            const dbAddress = await prisma.address.create({
                data: newAddress
             })
-         // }
-         // if(data.result.verificationStatus === 'unverified'){
-         //    return message(addressForm, 'Unable to verify address, please contact the office');
-         // }
+         const redirectTo = event.url.searchParams.get('redirectTo');
+         if(redirectTo){
+            redirect(303, `/${redirectTo}?addressId=${dbAddress.addressId}&userId=${userId}`)
+         }
       }
       return {addressForm}
    }

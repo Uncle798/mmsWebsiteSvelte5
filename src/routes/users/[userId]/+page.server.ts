@@ -3,7 +3,10 @@ import type { PageServerLoad, } from "./$types";
 import { prisma } from "$lib/server/prisma";;
 import { superValidate } from "sveltekit-superforms";
 import { valibot } from "sveltekit-superforms/adapters";
-import { addressFormSchema, emailFormSchema, emailVerificationFormSchema, leaseEndFormSchema, userNotesFormSchema } from "$lib/formSchemas/schemas";
+import { leaseEndFormSchema, userNotesFormSchema } from "$lib/formSchemas/schemas";
+import { emailVerificationFormSchema } from '$lib/formSchemas/emailVerificationFormSchema';
+import { addressFormSchema } from '$lib/formSchemas/addressFormSchema';
+import { emailFormSchema } from '$lib/formSchemas/emailFormSchema';
 export const load: PageServerLoad = async (event) => {
    if(!event.locals.user?.employee){
       redirect(302, '/login?toast=employee')

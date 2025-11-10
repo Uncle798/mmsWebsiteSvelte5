@@ -3,7 +3,11 @@ import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
 import { superValidate,  } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
-import { addressFormSchema, cuidIdFormSchema, emailFormSchema, emailVerificationFormSchema, leaseEndFormSchema, nameFormSchema, } from '$lib/formSchemas/schemas';
+import { leaseEndFormSchema, nameFormSchema, } from '$lib/formSchemas/schemas';
+import { cuidIdFormSchema } from '$lib/formSchemas/cuidIdFormSchema';
+import { emailVerificationFormSchema } from '$lib/formSchemas/emailVerificationFormSchema';
+import { addressFormSchema } from '$lib/formSchemas/addressFormSchema';
+import { emailFormSchema } from '$lib/formSchemas/emailFormSchema';
 import dayjs from 'dayjs';
 
 export const load:PageServerLoad = (async (event) => {

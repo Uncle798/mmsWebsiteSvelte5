@@ -2,7 +2,8 @@ import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
-import { dateSearchFormSchema, searchFormSchema } from '$lib/formSchemas/schemas';
+import { dateSearchFormSchema } from '$lib/formSchemas/dateSearchFormSchema';
+import { searchFormSchema } from '$lib/formSchemas/searchFormSchema';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc'
 import { prisma } from '$lib/server/prisma';

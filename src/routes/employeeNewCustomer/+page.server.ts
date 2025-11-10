@@ -1,7 +1,8 @@
 import { superValidate } from 'sveltekit-superforms';
 import type { PageServerLoad } from './$types';
 import { valibot } from 'sveltekit-superforms/adapters';
-import { emailVerificationFormSchema, registerFormSchema } from '$lib/formSchemas/schemas';
+import { emailVerificationFormSchema } from '$lib/formSchemas/emailVerificationFormSchema';
+import { registerFormSchema } from '$lib/formSchemas/registerFormSchema';
 import { prisma } from '$lib/server/prisma';
 import { newLeaseSchema } from '$lib/formSchemas/schemas'
 import type { User } from '@prisma/client';

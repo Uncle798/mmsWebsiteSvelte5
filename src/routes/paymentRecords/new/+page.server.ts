@@ -3,7 +3,10 @@ import {error, redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
-import { emailVerificationFormSchema, newInvoiceFormSchema, newPaymentRecordFormSchema, registerFormSchema } from '$lib/formSchemas/schemas';
+import { newInvoiceFormSchema } from '$lib/formSchemas/schemas';
+import { newPaymentRecordFormSchema } from '$lib/formSchemas/newPaymentRecordFormSchema';
+import { emailVerificationFormSchema } from '$lib/formSchemas/emailVerificationFormSchema';
+import { registerFormSchema } from '$lib/formSchemas/registerFormSchema';
 
 export const load = (async (event) => {
    if(!event.locals.user?.employee){

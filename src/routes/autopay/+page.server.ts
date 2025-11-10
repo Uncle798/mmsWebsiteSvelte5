@@ -3,7 +3,7 @@ import type { PageServerLoad } from './$types';
 import { prisma } from '$lib/server/prisma';
 import { superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
-import { creditCardFormSchema } from '$lib/formSchemas/schemas';
+import { creditCardFormSchema } from '$lib/formSchemas/creditCardFormSchema';
 
 export const load = (async (event) => {
    const redirectTo = event.url.searchParams.get('redirectTo');

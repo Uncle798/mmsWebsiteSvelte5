@@ -2,7 +2,7 @@ import { redirect } from '@sveltejs/kit';
 import type { Actions } from './$types';
 import { message, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
-import { leaseDiscountFormSchema } from '$lib/formSchemas/schemas';
+import { leaseDiscountFormSchema } from '$lib/formSchemas/leaseDiscountFormSchema';
 import { ratelimit } from '$lib/server/rateLimit';
 import { prisma } from '$lib/server/prisma';
 

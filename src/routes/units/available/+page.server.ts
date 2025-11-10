@@ -2,7 +2,7 @@ import { prisma } from '$lib/server/prisma';
 import { superValidate } from 'sveltekit-superforms';
 import type { PageServerLoad } from './$types';
 import { valibot, } from 'sveltekit-superforms/adapters';
-import { unitNotesFormSchema } from '$lib/formSchemas/schemas';
+import { unitNotesFormSchema } from '$lib/formSchemas/unitNotesFormSchema';
 import pricingData from '$lib/server/pricingData';
 import type { Unit } from '@prisma/client';
 
