@@ -12,13 +12,14 @@
 	import { page } from '$app/state';
 
    interface Props {
-      data:SuperValidated<Infer<AddressFormSchema>>, 
-      addressModalOpen:boolean,
+      data: SuperValidated<Infer<AddressFormSchema>>, 
+      addressModalOpen?: boolean,
       userId: string | undefined,
+      redirectTo?: string,
       classes?: string
    }
 
-   let {data, addressModalOpen=$bindable(false), userId, classes }:Props = $props();
+   let {data, addressModalOpen=$bindable(false), userId, redirectTo, classes }:Props = $props();
    let { form, message, errors, constraints, enhance, delayed, timeout, capture, restore, } = superForm(data, {
       onChange(event) {
          if(event.target){
@@ -58,7 +59,7 @@
 </script>
 <div class={classes}>
    <FormMessage message={$message} />
-   <form action='/forms/addressForm?userId={userId}' method='POST' use:enhance>
+   <form action='/forms/addressForm?userId={userId}&redirectTo={redirectTo}' method='POST' use:enhance>
       <TextInput
          bind:value={$form.address1}
          errors={$errors.address1}
