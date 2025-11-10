@@ -3,7 +3,7 @@
    import TextInput from '$lib/formComponents/TextInput.svelte';
    import countries from '$lib/countryCodes.json'
    import dialCodes from '$lib/dialCodes.json'
-	   import { type AddressFormSchema } from '$lib/formSchemas/addressFormSchema';
+   import { type AddressFormSchema } from '$lib/formSchemas/addressFormSchema';
 	import { invalidateAll } from '$app/navigation';
 	import FormProgress from '$lib/formComponents/FormSubmitWithProgress.svelte';
 	import FormMessage from '$lib/formComponents/FormMessage.svelte';
@@ -14,7 +14,7 @@
    interface Props {
       data: SuperValidated<Infer<AddressFormSchema>>, 
       addressModalOpen?: boolean,
-      userId: string | undefined,
+      userId?: string,
       redirectTo?: string,
       classes?: string
    }
@@ -59,7 +59,7 @@
 </script>
 <div class={classes}>
    <FormMessage message={$message} />
-   <form action='/forms/addressForm?userId={userId}&redirectTo={redirectTo}' method='POST' use:enhance>
+   <form action='/forms/addressForm?redirectTo={redirectTo}' method='POST' use:enhance>
       <TextInput
          bind:value={$form.address1}
          errors={$errors.address1}
@@ -143,6 +143,7 @@
             />
          </div>
       </div>
+      <input type="hidden" value={userId} name="userId"/>
       <FormProgress delayed={$delayed} timeout={$timeout}/>
    </form>
 </div>
