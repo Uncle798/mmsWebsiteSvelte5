@@ -38,6 +38,7 @@
 
          registerFormModalOpen=false;
          emailVerificationModalOpen=true;
+         
       }
    });
    export const snapshot = {
