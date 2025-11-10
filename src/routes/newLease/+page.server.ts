@@ -1,7 +1,8 @@
 import  {prisma} from "$lib/server/prisma";
 import type { Actions, PageServerLoad } from './$types';
 import {superValidate, message } from 'sveltekit-superforms';
-import { nameFormSchema, newLeaseSchema } from "$lib/formSchemas/schemas";
+import { nameFormSchema } from "$lib/formSchemas/nameFormSchema";
+import { newLeaseSchema } from "$lib/formSchemas/newLeaseSchema";
 import { leaseDiscountFormSchema } from '$lib/formSchemas/leaseDiscountFormSchema';
 import { addressFormSchema } from '$lib/formSchemas/addressFormSchema';
 import { valibot } from 'sveltekit-superforms/adapters';
@@ -126,9 +127,9 @@ export const actions:Actions = {
       let discountedAmount = 0;
       if(discount){
          if(discount.percentage){
-            discountedAmount = unit.advertisedPrice * (discount.amountOff / 100)
+            discountedAmount = price * (discount.amountOff / 100)
          } else {
-            discountedAmount - discount.amountOff
+            discountedAmount = price - discount.amountOff;
          }
       }
       price -= discountedAmount;

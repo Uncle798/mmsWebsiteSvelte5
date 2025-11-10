@@ -3,7 +3,8 @@ import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
 import { superValidate,  } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
-import { leaseEndFormSchema, nameFormSchema, } from '$lib/formSchemas/schemas';
+import { nameFormSchema, } from '$lib/formSchemas/nameFormSchema';
+import { leaseEndFormSchema } from '$lib/formSchemas/leaseEndFormSchema';
 import { cuidIdFormSchema } from '$lib/formSchemas/cuidIdFormSchema';
 import { emailVerificationFormSchema } from '$lib/formSchemas/emailVerificationFormSchema';
 import { addressFormSchema } from '$lib/formSchemas/addressFormSchema';
@@ -115,7 +116,7 @@ export const actions: Actions = {
          }
       });
       if(lease){
-         const response = event.fetch('/api/elavon/cancelRecurring', {
+         event.fetch('/api/elavon/cancelRecurring', {
             method: 'POST', 
             body: JSON.stringify({leaseId:form.data.cuid2Id})
          })
