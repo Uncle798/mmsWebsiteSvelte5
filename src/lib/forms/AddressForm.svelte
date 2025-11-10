@@ -3,11 +3,11 @@
    import TextInput from '$lib/formComponents/TextInput.svelte';
    import countries from '$lib/countryCodes.json'
    import dialCodes from '$lib/dialCodes.json'
+	import PhoneInput from '$lib/formComponents/PhoneInput.svelte';
    import { type AddressFormSchema } from '$lib/formSchemas/addressFormSchema';
 	import { invalidateAll } from '$app/navigation';
 	import FormProgress from '$lib/formComponents/FormSubmitWithProgress.svelte';
 	import FormMessage from '$lib/formComponents/FormMessage.svelte';
-	import PhoneInput from '$lib/formComponents/PhoneInput.svelte';
 	import { onMount } from 'svelte';
 	import { page } from '$app/state';
 
