@@ -1,7 +1,7 @@
 import { message, superValidate } from 'sveltekit-superforms';
 import type { Actions } from './$types';
 import { valibot } from 'sveltekit-superforms/adapters';
-import { onboardingExistingLeaseSchema } from '$lib/formSchemas/schemas';
+import { onboardingExistingLeaseSchema } from '$lib/formSchemas/onboardingExistingLeaseSchema';
 import { ratelimit } from '$lib/server/rateLimit';
 import { redirect } from '@sveltejs/kit';
 import { prisma } from '$lib/server/prisma';
@@ -35,6 +35,6 @@ export const actions: Actions = {
             keysProvided: data.numKeys ? data.numKeys : undefined,
          }
       })
-      redirect(303, `/onboarding?leaseId=${lease.leaseId}&userId=${data.customerId}&addressId=${data.addressId}`);
+      redirect(303, `/onboarding?leaseId=${lease.leaseId}&userId=${data.customerId}&addressId=${data.addressId}&lien=${data.propertySubjectToLien}`);
    }
 };
