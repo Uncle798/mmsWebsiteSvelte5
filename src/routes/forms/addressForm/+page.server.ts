@@ -29,15 +29,15 @@ export const actions: Actions = {
          const timeRemaining = Math.floor((reset - Date.now()) /1000);
 			return message(addressForm, `Please wait ${timeRemaining}s before trying again.`)
 		}
-      if( !event.locals.user.employee && userId !== event.locals.user.id){
+      const { data } = addressForm;
+      if( !event.locals.user.employee && data.userId !== event.locals.user.id){
          error(403, {message: 'Not your address to change'});
       }
       if(addressForm.valid){
-
          let oldAddress = await prisma.address.findFirst({
             where: {
                AND: [
-                  {userId: userId},
+                  {userId: data.userId},
                   {softDelete: false},
                ]
             }
@@ -67,7 +67,6 @@ export const actions: Actions = {
          // eslint-disable-next-line @typescript-eslint/no-unused-vars
          const {phoneNum1, phoneNum1Country, ...rest} = addressForm.data
             const newAddress = {
-               userId,
                phoneNum1:phoneValid.nationalNumber,
                phoneNum1Country: phoneValid.callingCode,
                ...rest
