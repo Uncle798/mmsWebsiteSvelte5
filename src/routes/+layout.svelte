@@ -50,6 +50,7 @@
 	]
 	let adminLinks:Link[] = [
 		{link: '/users', label:'All Users', toolTip: 'Change the employment status of a user here'},
+		{link: '/onboarding', label: 'Onboarding', toolTip: 'This is for onboarding existing leases'},
 	]
 	beforeNavigate(() =>{
 		mainMenuOpen.open = false
