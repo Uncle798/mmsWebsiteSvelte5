@@ -2,7 +2,7 @@
 import { redirect } from '@sveltejs/kit';
 import { message, superValidate} from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
-import { newLeaseSchema  } from '$lib/formSchemas/schemas'
+import { newLeaseSchema  } from '$lib/formSchemas/newLeaseSchema'
 import { cuidIdFormSchema } from '$lib/formSchemas/cuidIdFormSchema';
 import { leaseDiscountFormSchema } from '$lib/formSchemas/leaseDiscountFormSchema';
 import { emailVerificationFormSchema } from '$lib/formSchemas/emailVerificationFormSchema';
