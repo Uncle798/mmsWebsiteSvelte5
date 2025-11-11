@@ -55,7 +55,7 @@
       }
    });
    onMount(() => {
-      if(data.demoCookie !== 'true'){
+      if(data.demoCookie !== 'true' && data.user?.employee){
          mainPageTour.drive();
       }
    })
