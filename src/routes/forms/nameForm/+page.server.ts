@@ -2,7 +2,7 @@ import { message, superValidate } from 'sveltekit-superforms';
 import { ratelimit } from "$lib/server/rateLimit";
 import type { PageServerLoad, Actions } from './$types';
 import { valibot } from 'sveltekit-superforms/adapters';
-import { nameFormSchema } from '$lib/formSchemas/schemas';
+import { nameFormSchema } from '$lib/formSchemas/nameFormSchema';
 import { prisma } from '$lib/server/prisma';
 import { error, redirect } from '@sveltejs/kit';
 

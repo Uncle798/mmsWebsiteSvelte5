@@ -4,7 +4,7 @@ import { valibot } from 'sveltekit-superforms/adapters';
 import { ratelimit } from '$lib/server/rateLimit';
 import { prisma } from '$lib/server/prisma';
 import { error, redirect } from '@sveltejs/kit';
-import { unitPricingFormSchema } from '$lib/formSchemas/schemas';
+import { unitPricingFormSchema } from '$lib/formSchemas/unitPricingFormSchema';
 
 export const actions: Actions = {
    default: async (event) => {

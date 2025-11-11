@@ -3,7 +3,7 @@ import type { PageServerLoad } from './$types';
 import { superValidate, message } from 'sveltekit-superforms';
 import { ratelimit } from "$lib/server/rateLimit";
 import { valibot } from 'sveltekit-superforms/adapters';
-import { employmentFormSchema } from '$lib/formSchemas/schemas';
+import { employmentFormSchema } from '$lib/formSchemas/employmentFormSchema';
 import { prisma } from '$lib/server/prisma';
 
 export const load = (async () => {
