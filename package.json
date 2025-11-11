@@ -14,8 +14,7 @@
 		"format": "prettier --write .",
 		"lint": "prettier --check . && eslint .",
 		"prepare": "svelte-kit sync",
-		"price": "tsx stripe/prices.ts",
-		"postinstall": "prisma db seed"
+		"price": "tsx stripe/prices.ts"
 	},
 	"pnpm": {
 		"neverBuiltDependencies": []
