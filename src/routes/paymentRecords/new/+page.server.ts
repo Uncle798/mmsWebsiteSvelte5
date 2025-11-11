@@ -3,7 +3,7 @@ import {error, redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
-import { newInvoiceFormSchema } from '$lib/formSchemas/schemas';
+import { newInvoiceFormSchema } from '$lib/formSchemas/newInvoiceFormSchema';
 import { newPaymentRecordFormSchema } from '$lib/formSchemas/newPaymentRecordFormSchema';
 import { emailVerificationFormSchema } from '$lib/formSchemas/emailVerificationFormSchema';
 import { registerFormSchema } from '$lib/formSchemas/registerFormSchema';
