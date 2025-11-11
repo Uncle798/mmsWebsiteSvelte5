@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/state';
-		import type { SearchFormSchema } from '$lib/formSchemas/searchFormSchema';
+	import type { SearchFormSchema } from '$lib/formSchemas/searchFormSchema';
 	import { onMount } from 'svelte';
 	import { superForm, type Infer, type SuperValidated } from 'sveltekit-superforms';
 	interface Props {

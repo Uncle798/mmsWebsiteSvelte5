@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { NewInvoiceFormSchema } from "$lib/formSchemas/schemas";
+	import type { NewInvoiceFormSchema } from "$lib/formSchemas/newInvoiceFormSchema";
 	import type { EmailVerificationFormSchema } from '$lib/formSchemas/emailVerificationFormSchema';
 	import type { RegisterFormSchema } from '$lib/formSchemas/registerFormSchema';
 	import type { Lease, User } from "@prisma/client";

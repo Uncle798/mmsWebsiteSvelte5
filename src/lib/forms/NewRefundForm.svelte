@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { Infer, SuperValidated } from "sveltekit-superforms";
-   	import type { RefundFormSchema } from '$lib/formSchemas/refundFormSchema';
+   import type { RefundFormSchema } from '$lib/formSchemas/refundFormSchema';
    import { superForm } from "sveltekit-superforms";
 	import FormMessage from "$lib/formComponents/FormMessage.svelte";
 	import FormSubmitWithProgress from "$lib/formComponents/FormSubmitWithProgress.svelte";

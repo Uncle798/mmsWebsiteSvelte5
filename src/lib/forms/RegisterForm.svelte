@@ -4,7 +4,7 @@
    import EmailInput from "$lib/formComponents/EmailInput.svelte";
    import FormSubmitWithProgress from "$lib/formComponents/FormSubmitWithProgress.svelte";
    import { superForm, type Infer, type SuperValidated } from "sveltekit-superforms";
-	   import type { RegisterFormSchema } from '$lib/formSchemas/registerFormSchema';
+   import type { RegisterFormSchema } from '$lib/formSchemas/registerFormSchema';
 	import { onMount } from "svelte";
    
    interface Props {

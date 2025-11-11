@@ -1,7 +1,7 @@
 <script lang="ts">
    import EmailInput from '$lib/formComponents/EmailInput.svelte';
 	import { superForm, type Infer, type SuperValidated } from 'sveltekit-superforms';
-	   import type { EmailFormSchema } from '$lib/formSchemas/emailFormSchema';
+   import type { EmailFormSchema } from '$lib/formSchemas/emailFormSchema';
 	import FormProgress from '$lib/formComponents/FormSubmitWithProgress.svelte';
 	import FormMessage from '$lib/formComponents/FormMessage.svelte';
    import { onMount } from 'svelte';

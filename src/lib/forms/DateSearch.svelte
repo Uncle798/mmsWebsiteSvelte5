@@ -1,6 +1,6 @@
 <script lang="ts">
 	import DateInput from '$lib/formComponents/DateInput.svelte';
-		import type { DateSearchFormSchema } from '$lib/formSchemas/dateSearchFormSchema';
+	import type { DateSearchFormSchema } from '$lib/formSchemas/dateSearchFormSchema';
 	import dayjs from 'dayjs';
 	import { onMount } from 'svelte';
 	import { superForm, type Infer, type SuperValidated } from 'sveltekit-superforms';

@@ -2,7 +2,7 @@
 	import { invalidateAll } from "$app/navigation";
 	import FormMessage from "$lib/formComponents/FormMessage.svelte";
 	import FormSubmitWithProgress from "$lib/formComponents/FormSubmitWithProgress.svelte";
-   	import type { CuidIdFormSchema } from '$lib/formSchemas/cuidIdFormSchema';
+   import type { CuidIdFormSchema } from '$lib/formSchemas/cuidIdFormSchema';
 	import type { Infer, SuperValidated } from "sveltekit-superforms";
    import { superForm } from "sveltekit-superforms";
 

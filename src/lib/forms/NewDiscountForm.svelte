@@ -1,5 +1,5 @@
 <script lang="ts">
-		import type { NewDiscountFormSchema } from '$lib/formSchemas/newDiscountFormSchema';
+   import type { NewDiscountFormSchema } from '$lib/formSchemas/newDiscountFormSchema';
 	import type { Infer, SuperValidated } from "sveltekit-superforms";
    import { superForm } from "sveltekit-superforms";
    import FormMessage from "$lib/formComponents/FormMessage.svelte";

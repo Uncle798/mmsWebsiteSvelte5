@@ -1,5 +1,4 @@
 <script lang="ts">
-   import type { AddressFormSchema } from '$lib/formSchemas/addressFormSchema';
 	import { superForm, type Infer, type SuperValidated } from "sveltekit-superforms";
 	import TextArea from "$lib/formComponents/TextArea.svelte";
 	import type { PropertySubjectToLienSchema } from '$lib/formSchemas/propertySubjectToLienSchema';
