@@ -14,6 +14,7 @@ import type { Address, DiscountCode, User } from '@prisma/client';
 import { ratelimit } from '$lib/server/rateLimit';
 import { sendPaymentReceipt } from '$lib/server/mailtrap';
 import { inngest } from '$lib/server/inngest/inngest';
+import { alternativeContactFormSchema } from '$lib/formSchemas/alternativeContactFormSchema';
 
 export const load = (async (event) => {
    if(!event.locals.user?.employee){
@@ -30,8 +31,10 @@ export const load = (async (event) => {
    const addressForm = await superValidate(valibot(addressFormSchema));
    const leaseDiscountForm = await superValidate(valibot(leaseDiscountFormSchema));
    const customerSelectForm = await superValidate(valibot(cuidIdFormSchema));
+   const alternativeContactForm = await superValidate(valibot(alternativeContactFormSchema));
    const discountId = event.url.searchParams.get('discountId');
    const redirectTo = event.url.searchParams.get('redirectTo');
+   const alternativeContactId = event.url.searchParams.get('alternativeContactId');
    const demoCookie = event.cookies.get('employeeNewLease');
    const unit = await prisma.unit.findUnique({
       where: {
@@ -42,6 +45,7 @@ export const load = (async (event) => {
    let customers:User[] = [];
    let address:Address | null = null;
    let discount:DiscountCode | null = null;
+   let alternativeContact:User | null = null;
    if(userId && userId !== 'null'){
       customer = await prisma.user.findUnique({
          where: {
@@ -61,6 +65,13 @@ export const load = (async (event) => {
       discount = await prisma.discountCode.findUnique({
          where: {
             discountId
+         }
+      })
+   }
+   if(alternativeContactId){
+      alternativeContact = await prisma.user.findUnique({
+         where: {
+            id: alternativeContactId
          }
       })
    }
@@ -84,16 +95,19 @@ export const load = (async (event) => {
    return {
       leaseDiscountForm,
       customerSelectForm, 
+      emailVerificationForm,
+      alternativeContactForm,
       leaseForm,
       registerForm, 
-      emailVerificationForm,
       addressForm, 
       discountId,
+      alternativeContactId,
       redirectTo,
       customer,
       unit,
       address,
       discount,
+      alternativeContact,
       customers,
       unitNum,
       demoCookie,
@@ -177,11 +191,20 @@ export const actions: Actions = {
             discountAmount = discount.amountOff
          }
       }
-      price = unit.advertisedPrice - discountAmount
+      price = unit.advertisedPrice - discountAmount;
+      const alternativeContact = await prisma.user.findUnique({
+         where: {
+            id: leaseForm.data.alternativeContactId
+         }
+      })
+      if(!alternativeContact){
+         return message(leaseForm, 'Alternative Contact needed')
+      }
       const lease = await prisma.lease.create({
          data:{
             customerId: customer!.id,
             employeeId: employee!.id,
+            alternativeContactId: alternativeContact.id,
             unitNum: leaseForm.data.unitNum,
             price: price,
             addressId:address!.addressId,

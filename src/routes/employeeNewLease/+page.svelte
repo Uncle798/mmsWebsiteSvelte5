@@ -134,6 +134,11 @@
       {/if}
    {/snippet}
 </FormModal>
+<FormModal modalOpen={addressModalOpen}>
+   {#snippet content()}
+      <AddressForm data={data.addressForm} bind:addressModalOpen={addressModalOpen} userId={data.customer?.id}/>
+   {/snippet}
+</FormModal>
 
 <div in:fade={{duration:600}} out:fade={{duration:0}} class="mx-2 mt-14 sm:mt-12">
    {#if !data.customer}
@@ -177,11 +182,6 @@
                label='This unit is being rented by an organization'
             />
          {/if}
-         <FormModal modalOpen={addressModalOpen}>
-            {#snippet content()}
-               <AddressForm data={data.addressForm} bind:addressModalOpen={addressModalOpen} userId={data.customer?.id}/>
-            {/snippet}
-         </FormModal>
       {#if data.address}
          <Address address={data.address} />
          <button class="btn preset-filled-primary-50-950" onclick={()=> addressModalOpen=true} type='button'>Edit Address</button>
