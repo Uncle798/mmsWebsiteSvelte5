@@ -4,7 +4,7 @@ import { prisma } from '$lib/server/prisma';
 import type { Address } from '@prisma/client';
 import { superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
-import { leaseEndFormSchema } from '$lib/formSchemas/schemas';
+import { leaseEndFormSchema } from '$lib/formSchemas/leaseEndFormSchema';
 
 export const load = (async (event) => {
    if(!event.locals.user){

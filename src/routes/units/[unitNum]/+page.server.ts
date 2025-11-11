@@ -5,7 +5,9 @@ import { prisma } from '$lib/server/prisma';
 import { superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import type { Address, User } from '@prisma/client';
-import { leaseEndFormSchema, unitNotesFormSchema, unitPricingFormSchema } from '$lib/formSchemas/schemas';
+import { unitNotesFormSchema } from '$lib/formSchemas/unitNotesFormSchema';
+import { unitPricingFormSchema } from '$lib/formSchemas/unitPricingFormSchema';
+import { leaseEndFormSchema } from '$lib/formSchemas/leaseEndFormSchema';
 import dayjs from 'dayjs';
 
 
