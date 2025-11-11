@@ -4,20 +4,13 @@
    import Header from "$lib/Header.svelte";
    import type { PageData } from "./$types";
    import type { Unit } from '@prisma/client'
-	import UnitCustomer from "$lib/displayComponents/customerViews/UnitCustomer.svelte";
 	import { fade } from "svelte/transition";
 	import Placeholder from "$lib/displayComponents/Placeholder.svelte";
-	import { Portal, Tooltip } from "@skeletonlabs/skeleton-svelte";
-   import { driver } from 'driver.js';
-   import 'driver.js/dist/driver.css';
-	import { onMount } from "svelte";
-   import { mainMenuOpen } from '$lib/MainMenuOpen.svelte';
 
    interface Props {
       data: PageData;
    }
    let { data }: Props = $props();
-   const id = $props.id();
    let sizeFilter = $state('');
    const filterSize = $derived((units:Unit[]) => units.filter((unit) => unit.size.includes(sizeFilter)))
    function setSizeFilter(event:Event){
@@ -25,40 +18,7 @@
       const size = select.value
       sizeFilter = size;
    }
-   const formattedPhone = PUBLIC_PHONE.substring(0,1) +'-'+ PUBLIC_PHONE.substring(1,4)+'-'+PUBLIC_PHONE.substring(4,7)+'-'+PUBLIC_PHONE.substring(7)
-   let copyTooltipOpen = $state(false);
-   const mainPageTour = driver({
-      showProgress: true,
-      showButtons: ['close', 'next', 'previous'],
-      steps: [
-         { popover: { title: 'Welcome', description: `Welcome to your homepage ${data.user?.givenName} though as an owner, you won't spend much time here. It's what a customer would see when first coming to your page.` } },
-         { element: '.homeCopy', popover: { title: 'Here\'s where we tell your story', description: `All text on the site is customizable to your specifications` } },
-         { element: '.firstUnit', popover: { title: `Available units`, description: `This is the smallest unit available for rent ` } },
-         { element: '.mainMenuButton', popover: { title: `Main menu`, description: `This is the main menu` } },
-         { element: '.mainMenu', popover: { title: `Main menu`, description: `Here you can find your customers, units, invoices, payment records, and refunds`}},
-         { element: '.settingsLink', popover: { title: `Settings`, description: `Here you can look at the site with many different themes.` } },
-         { element: '.firstUnitButton', popover: { title: 'Start here', description: `Start with renting a unit if you like.`}}
-      ],
-      stagePadding: 2,
-      onNextClick: (element, step, options) => {
-         if(step.element === '.mainMenuButton' || step.element === '.mainMenu'){
-            mainMenuOpen.open = true;
-         }
-         if(step.element === '.settingsLink'){
-            mainMenuOpen.open = false;
-         }
-         mainPageTour.moveNext()
-      },
-      onDestroyed: () => {
-         fetch('/api/demoSetCookie?demoPage=home');
-         mainMenuOpen.open = false;
-      }
-   });
-   onMount(() => {
-      if(data.demoCookie !== 'true' && data.user?.employee){
-         mainPageTour.drive();
-      }
-   })
+   const formattedPhone = PUBLIC_PHONE.substring(0,1) +'-'+ PUBLIC_PHONE.substring(1,4)+'-'+PUBLIC_PHONE.substring(4,7)+'-'+PUBLIC_PHONE.substring(7);
 </script>
 <Header title='Home' />
 
