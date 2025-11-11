@@ -214,33 +214,33 @@ async function createLease(unit: Unit, leaseStart:Date, leaseEnd: Date | null, r
    return addresses;
  }
 
- type PartialUnit = Pick<Unit, 'size' | 'num' | 'building'>
+type PartialUnit = Pick<Unit, 'size' | 'num' | 'building'>
 
- function makeUnit(unit:PartialUnit){
-    const sD = sizeDescription.find((description) => description.size === unit.size);
-    const price = pricingData.find((p) => p.size === unit.size);
-    const newUnit:Unit= {} as Unit;
-    if(unit.size === 'ours'){
-         newUnit.building=unit.building;
-         newUnit.num = unit.num;
-         newUnit.size = unit.size;
-         newUnit.leasedPrice =  0;
-         newUnit.advertisedPrice = price?.price || 0;
-         newUnit.deposit = price?.price || 5;
-         newUnit.description = sD?.description ? sD.description : '';
-         newUnit.unavailable = true;
-      } else {
-         newUnit.building=unit.building;
-         newUnit.num = unit.num;
-         newUnit.size = unit.size;
-         newUnit.leasedPrice =  0;
-         newUnit.advertisedPrice = price?.price || 0;
-         newUnit.deposit = price?.price || 5;
-         newUnit.description = sD?.description ? sD.description : '' 
-         newUnit.unavailable = false;
-    }
-   return newUnit
- }
+function makeUnit(unit:PartialUnit){
+   const sD = sizeDescription.find((description) => description.size === unit.size);
+   const price = pricingData.find((p) => p.size === unit.size);
+   const newUnit:Unit= {} as Unit;
+   if(unit.size === 'ours'){
+      newUnit.building=unit.building;
+      newUnit.num = unit.num;
+      newUnit.size = unit.size;
+      newUnit.leasedPrice =  0;
+      newUnit.advertisedPrice = price?.price || 0;
+      newUnit.deposit = price?.price || 5;
+      newUnit.description = sD?.description ? sD.description : '';
+      newUnit.unavailable = true;
+   } else {
+      newUnit.building=unit.building;
+      newUnit.num = unit.num;
+      newUnit.size = unit.size;
+      newUnit.leasedPrice =  0;
+      newUnit.advertisedPrice = price?.price || 0;
+      newUnit.deposit = price?.price || 5;
+      newUnit.description = sD?.description ? sD.description : '' 
+      newUnit.unavailable = false;
+   }
+return newUnit
+}
 
 type PartialInvoice = Omit<Invoice, 'invoiceNum'>
 
