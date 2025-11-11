@@ -1,13 +1,12 @@
 import {  PrismaClient, PaymentType } from '@prisma/client';
-import type { User,  Unit, Address, Lease, PaymentRecord, RefundRecord, DiscountCode,} from '@prisma/client'
+import type { User,  Unit, Address, Lease, PaymentRecord, RefundRecord, DiscountCode, Invoice } from '@prisma/client'
 import { faker } from '@faker-js/faker';
 import dayjs  from 'dayjs';
 import  unitData from './unitData'
 import pricingData  from './pricingData'
 import sizeDescription  from './sizeDescription'
-import { PartialAddress, PartialLease, PartialInvoice, PartialPaymentRecord, PartialUnit,  PartialDiscount } from '../src/lib/server/partialTypes'
 
-const numUsers=unitData.length + 1500;
+const numUsers=unitData.length + 2000;
 const earliestStarting = new Date('2020-01-01');
 
 const prisma = new PrismaClient({
@@ -161,16 +160,6 @@ async function createEmployees() {
    return employees
 }
 
-// async function randomEmployee() {
-//    const employees = await prisma.user.findMany({
-//       where:{
-//          employee: true
-//       },
-//       select: { id: true }
-//    });
-//    const employee = employees[Math.floor(Math.random() * employees.length)];
-//    return employee;
-// }
 function arrayOfMonths(startDate:Date, endDate:Date){
    const dateArray:Date[]=[];
    let currentDate = startDate;
@@ -182,12 +171,15 @@ function arrayOfMonths(startDate:Date, endDate:Date){
    return dateArray;
 }
 
-async function createLease(unit: Unit, leaseStart:Date, leaseEnd: Date | null, randEmployee: User, customer: User, address:Address, discount?:DiscountCode) {
+type PartialLease = Omit<Lease, 'leaseId' | 'leaseCreatedAt' | 'dropboxURL' | 'subscriptionId' | 'anvilEID'>
+
+async function createLease(unit: Unit, leaseStart:Date, leaseEnd: Date | null, randEmployee: User, customer: User, address:Address, alternativeContact:User, discount?:DiscountCode, ) {
    const leaseEnded:Date | null = leaseEnd;
    const lease:PartialLease = {
       customerId: customer.id,
       employeeId: randEmployee.id,
       addressId: address.addressId,
+      alternativeContactId: alternativeContact.id,
       unitNum: unit.num,
       price: discount ? unit.advertisedPrice-discount.amountOff : unit.advertisedPrice ,
       leaseEffectiveDate: leaseStart,
@@ -195,9 +187,12 @@ async function createLease(unit: Unit, leaseStart:Date, leaseEnd: Date | null, r
       leaseEnded,
       discountId: discount?.discountId ? discount.discountId : null,
       discountedAmount: discount?.amountOff ? discount.amountOff : null,
+      keysProvided: 0,
    };
    return lease;
  }
+
+ type PartialAddress = Omit<Address, 'addressId' | 'address2'>
 
  function makeAddresses(users:User[]){
    const addresses:PartialAddress[]=[]
@@ -210,12 +205,16 @@ async function createLease(unit: Unit, leaseStart:Date, leaseEnd: Date | null, r
          postalCode: faker.location.zipCode(),
          country: faker.location.countryCode(),
          phoneNum1: faker.helpers.fromRegExp('[0-9]{10}'),
-         phoneNum1Country: '1'
+         phoneNum1Country: '1',
+         phoneNum1Validated: false,
+         softDelete: false
       }
       addresses.push(address);
    }
    return addresses;
  }
+
+ type PartialUnit = Pick<Unit, 'size' | 'num' | 'building'>
 
  function makeUnit(unit:PartialUnit){
     const sD = sizeDescription.find((description) => description.size === unit.size);
@@ -243,6 +242,7 @@ async function createLease(unit: Unit, leaseStart:Date, leaseEnd: Date | null, r
    return newUnit
  }
 
+type PartialInvoice = Omit<Invoice, 'invoiceNum'>
 
 function makeInvoice(lease:Lease, month:Date, deposit:boolean){
    let invoiceNotes:string ='';
@@ -253,12 +253,14 @@ function makeInvoice(lease:Lease, month:Date, deposit:boolean){
    }
    const invoice:PartialInvoice = {
       customerId: lease.customerId,
+      employeeId: lease.employeeId,
       leaseId: lease.leaseId,
       invoiceAmount: lease.price,
       invoiceCreated: month,
       invoiceNotes,
       deposit,
-      invoiceDue: dayjs(month).add(1, 'month').toDate()
+      invoiceDue: dayjs(month).add(1, 'month').toDate(),
+      amountPaid: 0,
    };
    return invoice;
 }
@@ -278,6 +280,7 @@ function makeLocalRefund(paymentRecord:PaymentRecord){
    return refund;
 }
 
+type PartialDiscount = Omit<DiscountCode, 'discountId' | 'discountCreated'>;
 
 function makeDiscount(employee:User){
    const discount:PartialDiscount ={
@@ -285,10 +288,13 @@ function makeDiscount(employee:User){
       notes: 'This is a test amount off discount',
       amountOff: 5,
       userId: employee.id,
-      percentage: false
+      percentage: false,
+      discountEnded: null,
    }
    return discount
 }
+
+type PartialPaymentRecord = Omit<PaymentRecord, 'payee' | 'paymentNumber' | 'transactionId'>
 
 async function  main (){
    const deleteStartTime = dayjs();
@@ -334,22 +340,30 @@ async function  main (){
       const randEmployee = employees[Math.floor(Math.random()*employees.length)];
       let leaseEnd = leaseStart.add(lengthOfLease, 'months');
       let customer = users.pop();
+      let alternativeContact = users.pop();
+      if(!alternativeContact){
+         break;
+      }
       numMonthsLeft = today.diff(leaseStart, 'months');
       const discounted = Math.floor(Math.random()*100) >= 95
       if(!customer){
-         break
+         break;
       }
       let contact = dbContacts.find((c) => c.userId === customer!.id);
       while(numMonthsLeft > 3 ){
          let lease:PartialLease;
          if(discounted){
-            lease = await createLease(unit, leaseStart.toDate(), leaseEnd.toDate(), randEmployee, customer!, contact!, discount);
+            lease = await createLease(unit, leaseStart.toDate(), leaseEnd.toDate(), randEmployee, customer!, contact!, alternativeContact, discount);
          } else {
-            lease = await createLease(unit, leaseStart.toDate(), leaseEnd.toDate(), randEmployee, customer!, contact!)
+            lease = await createLease(unit, leaseStart.toDate(), leaseEnd.toDate(), randEmployee, customer!, contact!, alternativeContact)
          }
          leases.push(lease);
          customer = users.pop();
+         alternativeContact = users.pop()
          if(!customer){
+            break;
+         }
+         if(!alternativeContact){
             break;
          }
          contact = dbContacts.find((c) => c.userId === customer?.id);
@@ -450,7 +464,8 @@ async function  main (){
             paymentCompleted: paymentDate.toDate(), 
             invoiceNum: invoice.invoiceNum, 
             paymentNotes: `Payment for invoice ${invoice.invoiceNum}\n ${invoice.invoiceNotes}`,
-            deposit: invoice.deposit
+            deposit: invoice.deposit,
+            refundedAmount: 0, 
          }      
       paymentRecords.push(record);
    }                              
