@@ -5,6 +5,6 @@ import type { PrismaConfig, } from 'prisma';
 export default {
    schema: path.join('prisma', 'schema.prisma'),
    migrations: {
-      seed: 'tsx prisma/demoSeed.ts'
+      seed: 'tsx prisma/seed.ts'
    },
 } satisfies PrismaConfig
