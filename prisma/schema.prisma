@@ -97,7 +97,7 @@ model Lease {
   leaseId              String             @id @unique @default(cuid(2))
   customerId           String
   employeeId           String
-  alternativeContactId String
+  alternativeContactId String?
   addressId            String
   unitNum              String
   price                Float
@@ -115,7 +115,7 @@ model Lease {
   Address              Address            @relation(fields: [addressId], references: [addressId], onDelete: NoAction, onUpdate: NoAction)
   customer             User               @relation("customer", fields: [customerId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   employee             User               @relation("employee", fields: [employeeId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  alternativeContact   User               @relation("alternativeContact", fields: [alternativeContactId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  alternativeContact   User?              @relation("alternativeContact", fields: [alternativeContactId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   unit                 Unit               @relation(fields: [unitNum], references: [num])
   discountCode         DiscountCode?      @relation(fields: [discountId], references: [discountId])
   PropertyWithLien     PropertyWithLien[]
