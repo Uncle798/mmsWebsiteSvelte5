@@ -1,5 +1,5 @@
 <script lang="ts">
-   import type { Unit, Lease } from '@prisma/client';
+   import type { Unit } from '@prisma/client';
 	import HorizontalDivider from './HorizontalDivider.svelte';
    interface Props {
       unit: Unit,
