@@ -20,6 +20,7 @@
    let { data, units, customer, address, classes}:Props = $props();
    let { form, message, errors, constraints, enhance, delayed, timeout } = superForm(data,{
       onSubmit(input) {
+         input.formData.set('unitNum', $form.unitNum)
          console.log(input.formData)
       },
    });
@@ -48,7 +49,6 @@
             onValueChange={(e) => {
                $form.unitNum = e.value[0];
             }}
-            name='unitNum'
          />
          <DateInput
             value={$form.leaseEffectiveDate}
