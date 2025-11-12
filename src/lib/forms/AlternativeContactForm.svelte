@@ -10,10 +10,10 @@
 
    interface Props {
       data: SuperValidated<Infer<AlternativeContactFormSchema>>;
-      
+      leaseId: string;
       classes?: string;
    }
-   let { data, classes }:Props = $props();
+   let { data, leaseId, classes }:Props = $props();
    let { form, message, errors, constraints, enhance, delayed, timeout } = superForm(data)
 </script>
 
@@ -125,6 +125,7 @@
             </div>
          </div>
       </div>
+      <input type="hidden" value={leaseId} name="leaseId"/>
       <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} />
    </form>
 </div>
