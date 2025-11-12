@@ -8,8 +8,12 @@ import { addressFormSchema } from '$lib/formSchemas/addressFormSchema';
 import type { Address, User, Lease, PropertyWithLien } from '@prisma/client';
 import { propertySubjectToLienSchema } from '$lib/formSchemas/propertySubjectToLienSchema';
 import { alternativeContactFormSchema } from '$lib/formSchemas/alternativeContactFormSchema';
+import { redirect } from '@sveltejs/kit';
 
 export const load = (async (event) => {
+   if(!event.locals.user?.admin){
+      redirect(302, '/login?toast=admin');
+   }
    const userId = event.url.searchParams.get('userId');
    const addressId = event.url.searchParams.get('addressId');
    const leaseId = event.url.searchParams.get('leaseId');
