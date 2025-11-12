@@ -80,8 +80,8 @@ export async function invalidateSession(sessionId:string):Promise<void> {
 
 export function setSessionTokenCookie(event: RequestEvent, token:string, expiresAt: Date):void {
    if(process.env.VERCEL){
-      event.cookies.set('demoSession', token, {
-         domain: 'ministoragemanagementsoftware.com',
+      event.cookies.set('session', token, {
+         domain: 'moscowministorage.com',
          httpOnly: true,
          path: '/',
          secure: true,
@@ -89,7 +89,7 @@ export function setSessionTokenCookie(event: RequestEvent, token:string, expires
          expires: expiresAt
       })
    } else {
-      event.cookies.set('demoSession', token, {
+      event.cookies.set('session', token, {
          httpOnly: true,
          path: '/',
          secure: true,
@@ -101,8 +101,8 @@ export function setSessionTokenCookie(event: RequestEvent, token:string, expires
 
 export function deleteSessionTokenCookie(event: RequestEvent):void {
    if(process.env.VERCEL){
-      event.cookies.set('demoSession', '', {
-         domain: 'ministoragemanagementsoftware.com',
+      event.cookies.set('session', '', {
+         domain: 'moscowministorage.com',
          httpOnly: true,
          path: '/',
          secure: true,
@@ -110,7 +110,7 @@ export function deleteSessionTokenCookie(event: RequestEvent):void {
          maxAge: 0
       })
    } else {
-      event.cookies.set('demoSession', '', {
+      event.cookies.set('session', '', {
          httpOnly: true,
          path: '/',
          secure: true,
