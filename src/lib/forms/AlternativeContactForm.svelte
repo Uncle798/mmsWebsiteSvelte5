@@ -7,20 +7,30 @@
    import countries from '$lib/countryCodes.json'
    import dialCodes from '$lib/dialCodes.json'
 	import PhoneInput from '$lib/formComponents/PhoneInput.svelte';
+	import EmailInput from "$lib/formComponents/EmailInput.svelte";
 
    interface Props {
       data: SuperValidated<Infer<AlternativeContactFormSchema>>;
       leaseId: string;
+      addressId?: string;
+      redirectTo?: string;
+      userId?: string;
       classes?: string;
    }
-   let { data, leaseId, classes }:Props = $props();
-   let { form, message, errors, constraints, enhance, delayed, timeout } = superForm(data)
+   let { data, leaseId, addressId, redirectTo, userId, classes }:Props = $props();
+   let { form, message, errors, constraints, enhance, delayed, timeout } = superForm(data, {
+      onSubmit({formData}) {
+         if($form.phoneNum1){
+            formData.set('phoneNum1', $form.phoneNum1.replace(/\D/g, ''));
+         }
+      },
+   })
 </script>
 
 <div class={classes}>
    <FormMessage message={$message} />
-   <form action="/forms/alternativeContactForm" method="POST" use:enhance>
-      <div>
+   <form action="/forms/alternativeContactForm?leaseId={leaseId}&addressId={addressId}&redirectTo={redirectTo}&userId={userId}" method="POST" use:enhance>
+      <div class="flex flex-col sm:flex-row gap-2">
          <TextInput
             bind:value={$form.givenName}
             errors={$errors.givenName}
@@ -28,7 +38,7 @@
             label='Contact given name'
             name='givenName'
             placeholder='Smokey'
-            autocomplete='given-name'
+            classes=''
          />
          <TextInput
             bind:value={$form.familyName}
@@ -37,7 +47,13 @@
             label='Contact family name'
             name='familyName'
             placeholder='Bear'
-            autocomplete='family-name'
+         />
+         <EmailInput
+            bind:value={$form.email}
+            errors={$errors.email}
+            constraints={$constraints.email}
+            label='Email'
+            name='email'
          />
       </div>
       <div>
@@ -48,7 +64,6 @@
             label='Line 1'
             name='address1'
             placeholder='1700 Mill Road'
-            autocomplete='address-line1'
          />
          <TextInput
             bind:value={$form.address2}
@@ -57,7 +72,6 @@
             name='address2'
             label='Line 2'
             placeholder='Unit 1'  
-            autocomplete='address-line2'
          />
          <div class="flex flex-col sm:flex-row gap-x-2">
          <TextInput
@@ -67,7 +81,6 @@
             errors={$errors.city}
             constraints={$constraints.city}
             placeholder='Moscow'
-            autocomplete='address-level2'
          />
          <TextInput
             label='State'
@@ -76,7 +89,6 @@
             errors={$errors.state}
             constraints={$constraints.state}
             placeholder='ID'
-            autocomplete='address-level1'
          />
          <TextInput
             label='Zip Code'
@@ -85,7 +97,6 @@
             errors={$errors.postalCode}
             constraints={$constraints.postalCode}
             placeholder='83843'
-            autocomplete='postal-code'
          />
          </div>
          <label for="country" class="label">Country
