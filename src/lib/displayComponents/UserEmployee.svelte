@@ -20,12 +20,14 @@
 		<span><a href="/users/{user.id}" class="anchor">{user.givenName} {user.familyName}</a></span>
 	{/if}
 	<span class="flex"><a href="mailto:{user.email}" class="anchor truncate">{user.email}</a>
-	{#if user.emailVerified}
-		<Check aria-label='Email verified' color='green' />
-	{/if}
+		{#if user.emailVerified}
+			<Check aria-label='Email verified' color='green' />
+		{/if}
 	</span>
+	{#if user.alternative}
+		<div class="font-bold">Alternative contact</div>
+	{/if}
 	{#if user.customerNotes}
 		<span>{user.customerNotes}</span>
 	{/if}
-
 </div>
