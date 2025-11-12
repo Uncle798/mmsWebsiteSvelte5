@@ -38,7 +38,7 @@
                <div>
                   <h3 class="h3">Enter the alternative contact info</h3>
                </div>
-               <AlternativeContactForm data={data.alternativeContactForm} />
+               <AlternativeContactForm data={data.alternativeContactForm} leaseId={data.lease.leaseId} />
             {/if}
             {#if data.propertySubjectToLienForm}
                <PropertySubjectToLienForm 
