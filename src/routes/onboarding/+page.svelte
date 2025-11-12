@@ -33,12 +33,28 @@
                address={data.address} 
             />
          {:else}
-            <LeaseEmployee lease={data.lease} />
-            {#if data.alternativeContactForm}
+            <div>
+               <LeaseEmployee lease={data.lease} />
+               {#if data.alternativeContact}
+                  <UserEmployee user={data.alternativeContact} />
+                  {#if data.alternativeAddress}
+                     <AddressEmployee address={data.alternativeAddress} />
+                  {/if}
+               {/if}
+               <a href="/onboarding" class="btn preset-filled-primary-50-950">Create another lease</a>
+            </div>
+            {#if data.alternativeContactForm && !data.alternativeContact}
                <div>
                   <h3 class="h3">Enter the alternative contact info</h3>
                </div>
-               <AlternativeContactForm data={data.alternativeContactForm} leaseId={data.lease.leaseId} />
+               <AlternativeContactForm
+                  data={data.alternativeContactForm} 
+                  leaseId={data.lease.leaseId} 
+                  addressId={data.address.addressId}
+                  userId={data.customer.id}
+                  redirectTo='onboarding'
+
+               />
             {/if}
             {#if data.propertySubjectToLienForm}
                <PropertySubjectToLienForm 

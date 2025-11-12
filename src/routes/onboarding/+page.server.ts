@@ -55,6 +55,8 @@ export const load = (async (event) => {
    let lease:Lease | null = null;
    let properties:PropertyWithLien[] | null = null;
    let lienHolderAddresses:Address[] = [];
+   let alternativeContact:User | null = null; 
+   let alternativeAddress:Address | null = null;
    const lienHolderContacts:User[] = [];
    if(leaseId){
       lease = await prisma.lease.findUnique({
@@ -64,9 +66,28 @@ export const load = (async (event) => {
       })
       properties = await prisma.propertyWithLien.findMany({
          where: {
-         leaseId,
+            leaseId,
          },
       });
+      alternativeContact = await prisma.user.findUnique({
+         where: {
+            id: lease?.alternativeContactId ? lease.alternativeContactId : undefined
+         }
+      })
+      if(alternativeContact){
+         alternativeAddress = await prisma.address.findFirst({
+            where: {
+               AND: [
+                  { 
+                     userId: alternativeContact.id,
+                  },
+                  {
+                     softDelete: false,
+                  }
+               ]
+            }
+         })
+      }
       if(properties){
          for(const property of properties){
             const address = await prisma.address.findUnique({
@@ -105,6 +126,8 @@ export const load = (async (event) => {
       properties,
       lienHolderAddresses,
       lienHolderContacts,
+      alternativeContact,
+      alternativeAddress,
       registerForm, 
       addressForm, 
       onboardingExistingLeaseForm, 
