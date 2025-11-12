@@ -1,6 +1,7 @@
 <script lang='ts'>
 	import Combobox from "$lib/formComponents/Combobox.svelte";
 	import DateInput from "$lib/formComponents/DateInput.svelte";
+	import DatePickerSingle from "$lib/formComponents/DatePickerSingle.svelte";
 	import FormMessage from "$lib/formComponents/FormMessage.svelte";
 	import FormSubmitWithProgress from "$lib/formComponents/FormSubmitWithProgress.svelte";
 	import NumberInput from "$lib/formComponents/NumberInput.svelte";
@@ -34,14 +35,14 @@
    <FormMessage message={$message} />
    <form action="/forms/onboardingExistingLease" method="POST" use:enhance >
       <div class="flex flex-col gap-2">
-         <DateInput
+         <DatePickerSingle
             value={$form.createdDate}
             errors={$errors.createdDate}
             constraints={$constraints.createdDate}
             label='Lease created date'
             name='createdDate'
-            min={dayjs('jan 1 1970').toDate()}
-            max={new Date()}
+            minDate={dayjs('jan 1 1970').toDate()}
+            maxDate={new Date()}
          />
          <Combobox
             label='Select Unit'
@@ -50,14 +51,14 @@
                $form.unitNum = e.value[0];
             }}
          />
-         <DateInput
+         <DatePickerSingle
             value={$form.leaseEffectiveDate}
             errors={$errors.leaseEffectiveDate}
             constraints={$constraints.leaseEffectiveDate}
             label='Lease effective date'
             name='leaseEffectiveDate'
-            min={dayjs('jan 1 1970').toDate()}
-            max={new Date()}
+            minDate={dayjs('jan 1 1970').toDate()}
+            maxDate={new Date()}
          />
          <NumberInput
             value={$form.price}
