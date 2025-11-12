@@ -61,14 +61,14 @@ model PropertyWithLien {
 model Address {
   addressId          String             @id @unique @default(cuid(2))
   userId             String
-  address1           String
+  address1           String?
   address2           String?
-  city               String
-  state              String
-  postalCode         String
-  country            String
-  phoneNum1          String
-  phoneNum1Country   String
+  city               String?
+  state              String?
+  postalCode         String?
+  country            String?
+  phoneNum1          String?
+  phoneNum1Country   String?
   phoneNum1Validated Boolean            @default(false)
   softDelete         Boolean            @default(false)
   user               User               @relation(fields: [userId], references: [id], onUpdate: NoAction)
