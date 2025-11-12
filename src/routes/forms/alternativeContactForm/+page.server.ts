@@ -32,13 +32,30 @@ export const actions:Actions = {
          if(!lease){
             return message(alternativeContactForm, `lease not found`);
          }
-         const contact = await prisma.user.create({
-            data: {
-               givenName: data.givenName,
-               familyName: data.familyName,
-               email: data.email,
+         let contact = await prisma.user.findUnique({
+            where: {
+               email: data.email
             }
-         });
+         })
+         if(!contact){
+            contact = await prisma.user.create({
+               data: {
+                  givenName: data.givenName,
+                  familyName: data.familyName,
+                  email: data.email,
+                  alternative: true,
+               }
+            });
+         } else {
+            contact = await prisma.user.update({
+               where: {
+                  id: contact.id,
+               },
+               data: {
+                  alternative: true,
+               }
+            })
+         }
          await prisma.address.create({
             data: {
                address1: data.address1,
@@ -59,7 +76,14 @@ export const actions:Actions = {
             data: {
                alternativeContactId: contact.id
             }
-         })
+         });
+         const redirectTo = event.url.searchParams.get('redirectTo');
+         const userId = event.url.searchParams.get('userId');
+         const leaseId = event.url.searchParams.get('leaseId');
+         const addressId = event.url.searchParams.get('addressId');
+         if(redirectTo){
+            redirect(302, `/${redirectTo}?userId=${userId}&leaseId=${leaseId}&addressId=${addressId}&contactId=`)
+         }
       }
    }
 }
