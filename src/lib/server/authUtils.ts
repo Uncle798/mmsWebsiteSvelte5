@@ -79,45 +79,23 @@ export async function invalidateSession(sessionId:string):Promise<void> {
 }
 
 export function setSessionTokenCookie(event: RequestEvent, token:string, expiresAt: Date):void {
-   if(process.env.VERCEL){
-      event.cookies.set('session', token, {
-         domain: 'moscowministorage.com',
-         httpOnly: true,
-         path: '/',
-         secure: true,
-         sameSite: 'lax',
-         expires: expiresAt
-      })
-   } else {
-      event.cookies.set('session', token, {
-         httpOnly: true,
-         path: '/',
-         secure: true,
-         sameSite: 'lax',
-         expires: expiresAt
-      })
-   }
+   event.cookies.set('session', token, {
+      httpOnly: true,
+      path: '/',
+      secure: true,
+      sameSite: 'lax',
+      expires: expiresAt
+   })
 }
 
 export function deleteSessionTokenCookie(event: RequestEvent):void {
-   if(process.env.VERCEL){
-      event.cookies.set('session', '', {
-         domain: 'moscowministorage.com',
-         httpOnly: true,
-         path: '/',
-         secure: true,
-         sameSite: 'lax',
-         maxAge: 0
-      })
-   } else {
-      event.cookies.set('session', '', {
-         httpOnly: true,
-         path: '/',
-         secure: true,
-         sameSite: 'lax',
-         maxAge: 0
-      })
-   }
+   event.cookies.set('session', '', {
+      httpOnly: true,
+      path: '/',
+      secure: true,
+      sameSite: 'lax',
+      maxAge: 0
+   })
 }
 
 export function generateRandomOTP():string {
