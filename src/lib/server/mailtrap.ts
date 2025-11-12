@@ -10,8 +10,8 @@ const currencyFormatter = new Intl.NumberFormat('en-us', {style: 'currency', cur
 export const mailtrap = new MailtrapClient({token})
 
 const sender = {
-   name: 'computer@ministoragemanagementsoftware.com',
-   email: 'computer@ministoragemanagementsoftware.com',
+   name: 'info@moscowministorage.com',
+   email: 'info@moscowministorage.com',
 }
 export async function sendVerificationEmail(verificationCode:string, email:string) {
    if(email.includes('veryFakeEmail.com'.toLowerCase()) || email.includes('yetAnotherFakeEmail.com'.toLowerCase())){

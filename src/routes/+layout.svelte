@@ -53,7 +53,7 @@
 		{link: '/onboarding', label: 'Onboarding', toolTip: 'This is for onboarding existing leases'},
 	]
 	beforeNavigate(() =>{
-		mainMenuOpen.open = false
+		mainMenuOpen.open = false;
 	})
 	const formattedPhone = PUBLIC_PHONE.substring(0,1) +'-'+ PUBLIC_PHONE.substring(1,4)+'-'+PUBLIC_PHONE.substring(4,7)+'-'+PUBLIC_PHONE.substring(7);
 </script>
