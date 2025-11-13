@@ -35,8 +35,8 @@ export const GET:RequestHandler = async (event) => {
       where: {
          lease: {
             some: {
-               NOT: {
-                  leaseEnded: null
+               leaseEnded: {
+                  not: null
                }
             }
          }
