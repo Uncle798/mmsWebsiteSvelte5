@@ -8,13 +8,11 @@
    import Pagination from '$lib/displayComponents/Pagination.svelte';
    import Placeholder from '$lib/displayComponents/Placeholder.svelte';
    import Search from '$lib/forms/Search.svelte';
-   import DateSearch from '$lib/forms/DateSearch.svelte';
    import dayjs from 'dayjs';
    import utc from 'dayjs/plugin/utc'
    import Revenue from '$lib/displayComponents/Revenue.svelte';
    import Address from '$lib/displayComponents/AddressEmployee.svelte';
    import { goto, onNavigate } from '$app/navigation';
-   import { PanelTopClose, SearchIcon } from 'lucide-svelte';
 	import EmailCustomer from '$lib/EmailCustomer.svelte';
    import DownloadPdfButton from '$lib/DownloadPDFButton.svelte';
 	import { onMount } from 'svelte';
