@@ -24,19 +24,20 @@ export const GET:RequestHandler = async (event) => {
             invoiceAmount: lease.price,
             customerId: lease.customerId,
             invoiceDue: today.add(1, 'month').toDate(),
+            invoiceNotes: `Rent for unit ${lease.unitNum.replace(/^0/gm, '')} for ${today.format('MMMM YYYY')}`
          }
       }))
    }
    let totalInvoiced = 0;
    for(const invoice of todaysInvoices){
-      totalInvoiced += invoice.invoiceAmount
+      totalInvoiced += invoice.invoiceAmount;
    }
    const unitCount = await prisma.unit.count();
    const leasedCount = await prisma.lease.count({
       where: {
          leaseEnded: null
       }
-   })
+   });
    const admins = await prisma.user.findMany({
       where: {
          admin: true
