@@ -35,6 +35,7 @@
 		{link: '/leases', label: 'All Leases', toolTip: 'Find every lease old and new here'},
 		{link: '/invoices', label: 'Invoices', toolTip: 'All invoices, may take a second to load'},
 		{link: '/invoices/new', label: 'New Invoice', toolTip: 'Create a new invoice, the first step in getting paid'},
+		{link: '/invoices/createdToday', label: 'Invoices created today'},
 		{link: '/invoices/unpaid', label: 'Unpaid invoices', toolTip: 'Open invoices'},
 		{link: '/invoices/pastDue', label: 'Past due invoices', toolTip: 'Invoices that are unpaid and past due'},
 		{link: '/invoices/year', label: 'Invoices by year', toolTip: 'If you know what year you\'re looking for this will load faster'},
