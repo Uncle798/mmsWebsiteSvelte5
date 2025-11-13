@@ -31,15 +31,10 @@ export const GET:RequestHandler = async (event) => {
    for(const invoice of todaysInvoices){
       totalInvoiced += invoice.invoiceAmount
    }
-   const emptyUnits = await prisma.unit.count({
+   const unitCount = await prisma.unit.count();
+   const leasedCount = await prisma.lease.count({
       where: {
-         lease: {
-            some: {
-               leaseEnded: {
-                  not: null
-               }
-            }
-         }
+         leaseEnded: null
       }
    })
    const admins = await prisma.user.findMany({
@@ -48,7 +43,7 @@ export const GET:RequestHandler = async (event) => {
       }
    });
    for(const admin of admins){
-      await sendStatusEmail(admin, todaysInvoices.length, totalInvoiced, emptyUnits)
+      await sendStatusEmail(admin, todaysInvoices.length, totalInvoiced, unitCount - leasedCount)
    }
    return new Response(JSON.stringify({success:true}), { status: 200 })
 }
