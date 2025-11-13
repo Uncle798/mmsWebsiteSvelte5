@@ -1,11 +1,11 @@
 <script lang="ts">
    import type { InputConstraint } from "sveltekit-superforms";
    interface Props {
-      value:boolean | undefined;
-      label: string | undefined;
-      errors: string[] | undefined;
-      constraints: InputConstraint | undefined;
-      name: string | null | undefined
+      value?:boolean;
+      label?: string;
+      errors?: string[];
+      constraints?: InputConstraint;
+      name?: string | null;
    }
    let { value = $bindable(), label, errors, constraints, name, ...others }:Props = $props()
 </script>
