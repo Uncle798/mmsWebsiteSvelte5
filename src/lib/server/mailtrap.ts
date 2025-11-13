@@ -55,7 +55,7 @@ export async function sendMagicLinkEmail(magicLink:string, email:string) {
 }
 
 export async function  sendPaymentReceipt(customer:User, paymentRecord:PaymentRecord, address:Address){
-   if(customer.email?.includes('veryFakeEmail.com'.toLowerCase()) || customer.email?.includes('yetAnotherFakeEmail.com'.toLowerCase())){
+   if(!customer.emailVerified){
       return null;
    }
    const pdf = await makeReceiptPdf(paymentRecord, customer, address) as PDFKit.PDFDocument;
@@ -82,7 +82,7 @@ export async function  sendPaymentReceipt(customer:User, paymentRecord:PaymentRe
 }
 
 export async function sendInvoice(invoice:Invoice, customer:User, address:Address) {
-   if(customer.email?.includes('veryFakeEmail.com'.toLowerCase()) || customer.email?.includes('yetAnotherFakeEmail.com'.toLowerCase())){
+   if(!customer.emailVerified){
       return null;
    }
    const pdf = await makeInvoicePdf(invoice, customer, address) as PDFKit.PDFDocument;
@@ -131,7 +131,7 @@ export async function sendStatusEmail(admin:User, invoiceCount:number, totalInvo
 }
 
 export async function sendRefundEmail(refund:RefundRecord, customer:User, address:Address) {
-   if(customer.email?.includes('veryFakeEmail.com'.toLowerCase()) || customer.email?.includes('yetAnotherFakeEmail.com'.toLowerCase())){
+   if(!customer.emailVerified){
       return null;
    }
    const pdf = await makeRefundPdf(refund, customer, address) as PDFKit.PDFDocument;
