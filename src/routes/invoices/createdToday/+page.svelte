@@ -23,12 +23,12 @@
    }
 </script>
 <div class="mt-12 mb-8">
-   <label for="selectAll" class="label-text">Select all invoices
+   <label for="selectAll" class="label-text m-2">Select all invoices
       <input 
          type="checkbox" 
          name="selectAll" 
          id="selectAll" 
-         class="input checkbox m-2"
+         class="input checkbox"
          onchange={(e) => {
             if(e.currentTarget.checked){
                for(const invoice of data.invoices){
@@ -46,14 +46,15 @@
    {#each data.invoices as invoice}
    {@const customer = data.customers.find((customer) => customer.id === invoice.customerId)}
    {@const address = data.addresses.find((address) => address.userId === customer?.id)}
-      <div class="grid grid-cols-3">
-         <div class="justify-center">
+      <div class="grid grid-cols-[100px_1fr_1fr]">
+         <label for={invoice.invoiceNum.toString()} class="label-text mx-2 self-center">
+            Select {invoice.invoiceNum}
             <input 
                type="checkbox" 
                group={selectedInvoices}
                name={invoice.invoiceNum.toString()}
                value={invoice.invoiceNum.toString()} 
-               class='input checkbox mx-2'
+               class='input checkbox justify-self-center self-center'
                onchange={(e) => {
                   if(e.currentTarget.checked){
                      selectedInvoices.push(invoice)
@@ -67,9 +68,9 @@
                }}
                checked={ selectedInvoices.find((i) => i.invoiceNum === invoice.invoiceNum) ? true : undefined }
             />
-         </div>
+         </label>
          <InvoiceEmployee {invoice} />
-         <div class="flex flex-col">
+         <div class="flex flex-col m-2">
             {#if customer}
                <UserEmployee user={customer} />
                {#if address}
@@ -79,7 +80,7 @@
          </div>
       </div>
    {/each}
-   <button onclick={sendSelectedInvoices} class="btn preset-filled-primary-50-950" >Email selected invoices out.</button>
+   <button onclick={sendSelectedInvoices} class="btn preset-filled-primary-50-950 m-2" >Email selected invoices to customers.</button>
 </div>
 {#each selectedInvoices as invoice}
    {invoice.invoiceNum},
