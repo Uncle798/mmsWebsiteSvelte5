@@ -82,7 +82,7 @@
 							<Dialog.Title class='font-bold text-2xl' >Main Menu</Dialog.Title>
 							<Dialog.CloseTrigger><CircleX aria-label='close'/></Dialog.CloseTrigger>
 						</header>
-						<ul class="list-none">
+						<ul class="list-none overflow-auto max-h-[90vh] mb-8">
 							{#if data.user.employee}
 								{#each employeeLinks as employeeLink}
 									<li class="">
@@ -167,7 +167,7 @@
 {:else}
 	<header>
 		<Dialog>
-			<Dialog.Trigger class='btn bg-primary-50-950 hover:shadow-xl hover:border-2 border-secondary-50-950 fixed top-0 left-0 z-40 h-12 sm:h-8 rounded-tl-none'><Menu aria-label='Main Menu'/></Dialog.Trigger>
+			<Dialog.Trigger class='btn bg-primary-50-950 hover:shadow-xl hover:border-2 border-secondary-50-950 fixed top-0 left-0 z-40 h-8 rounded-tl-none'><Menu aria-label='Main Menu'/></Dialog.Trigger>
 			<Portal>
 				<Dialog.Backdrop class="fixed inset-0 bg-surface-50-950/50 transition transition-discrete opacity-0 starting:data-[state=open]:opacity-0 data-[state=open]:opacity-100"/>
 				<Dialog.Positioner class='fixed inset-0 z-40 flex justify-start'>
@@ -177,23 +177,25 @@
 							<Dialog.Title class='text-2xl font-bold'>Main Menu</Dialog.Title>
 							<Dialog.CloseTrigger><CircleX aria-label='close'/></Dialog.CloseTrigger>
 						</header>
-						<ul>
-							{#each customerLinks as link}
-								<li>
-									<a href={link.link}>{link.label}</a>
-								</li>
-							{/each}
-							<div class="absolute bottom-0 m-1 sm:m-2 mb-2  bg-surface-100-900">
-								{#if data.user}
-								<li><a href="/accountSettings" class="anchor">Settings</a></li>
-									<form action="/logout" method="post" use:enhance>
-										<li><button class="anchor mx-1" type="submit">Logout</button></li>
-									</form>
-								{:else}
-									<li><a class="anchor mx-1" href="/login">Login</a></li>
-								{/if}
-							</div>
-						</ul>
+						<div>
+							<ul class="overflow-y-scroll max-h-screen">
+								{#each customerLinks as link}
+									<li>
+										<a href={link.link}>{link.label}</a>
+									</li>
+								{/each}
+								<div class="absolute bottom-0 m-1 sm:m-2 mb-2  bg-surface-100-900">
+									{#if data.user}
+									<li><a href="/accountSettings" class="anchor">Settings</a></li>
+										<form action="/logout" method="post" use:enhance>
+											<li><button class="anchor mx-1" type="submit">Logout</button></li>
+										</form>
+									{:else}
+										<li><a class="anchor mx-1" href="/login">Login</a></li>
+									{/if}
+								</div>
+							</ul>
+						</div>
 					</Dialog.Content>
 				</Dialog.Positioner>
 			</Portal>
