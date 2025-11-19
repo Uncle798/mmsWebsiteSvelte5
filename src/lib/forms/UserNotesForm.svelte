@@ -4,7 +4,7 @@
 	import FormSubmitWithProgress from "$lib/formComponents/FormSubmitWithProgress.svelte";
 	import TextArea from "$lib/formComponents/TextArea.svelte";
 	import type { UserNotesFormSchema } from "$lib/formSchemas/userNotesFormSchema";
-	import type { User } from "@prisma/client";
+	import type { User } from "../../generated/prisma/browser";
 	import Switch from "$lib/formComponents/Switch.svelte";
 	import { onMount } from "svelte";
 	import { superForm, type SuperValidated, type Infer } from "sveltekit-superforms";
@@ -20,40 +20,11 @@
       onUpdated(){
          userNotesFormModalOpen = false;
       },
-      onChange(event){
-         console.log(event);
-         if(event.target){
-            if(event.path === 'notes'){
-               const fullKey = `${url}/userNotesForm/${user.id}:${event.path}`;
-               const value = event.get(event.path);
-               if(value){
-                  sessionStorage.setItem(fullKey, value);
-               }
-            }
-         }
-      },
       id: user.id,
       invalidateAll:'force'
    })
    const url = page.url.pathname
    onMount(() => {
-      for(const key in $form){
-         let fullKey = `${url}/userNotesForm/${user.id}:${key}`;
-         const storedValue = sessionStorage.getItem(fullKey)
-         if(storedValue){
-            if(isNaN(parseInt(storedValue, 10))){
-               if(storedValue === 'true'){
-                  $form[key as keyof typeof $form] = true as never;
-               } else if(storedValue === 'false'){
-                  $form[key as keyof typeof $form] = false as never;
-               } else {
-                  $form[key as keyof typeof $form] = storedValue as never;
-               }
-            } else {
-               $form[key as keyof typeof $form] = parseInt(storedValue, 10) as never;
-            }
-         }
-      }
       $form.doNotRent = user.doNotRent;
       $form.notes = user.customerNotes;
    })

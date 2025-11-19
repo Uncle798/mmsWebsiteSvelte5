@@ -43,25 +43,25 @@
    onMount(()=>{
       $form.unavailable = unit.unavailable;
       $form.notes = unit.notes;
-      for(const key in $form){
-         if(key === 'notes'){
-            let fullKey = `${url}/unitNotesForm${unit.num.toString()}:${key}`;
-            const storedValue = sessionStorage.getItem(fullKey)
-            if(storedValue){
-               if(isNaN(parseInt(storedValue, 10))){
-                  if(storedValue === 'true'){
-                     $form[key as keyof typeof $form] = true as never;
-                  } else if(storedValue === 'false'){
-                     $form[key as keyof typeof $form] = false as never;
-                  } else {
-                     $form[key as keyof typeof $form] = storedValue as never;
-                  }
-               } else {
-                  $form[key as keyof typeof $form] = parseInt(storedValue, 10) as never;
-               }
-            }
-         }
-         }
+      // for(const key in $form){
+      //    if(key === 'notes'){
+      //       let fullKey = `${url}/unitNotesForm${unit.num.toString()}:${key}`;
+      //       const storedValue = sessionStorage.getItem(fullKey)
+      //       if(storedValue){
+      //          if(isNaN(parseInt(storedValue, 10))){
+      //             if(storedValue === 'true'){
+      //                $form[key as keyof typeof $form] = true as never;
+      //             } else if(storedValue === 'false'){
+      //                $form[key as keyof typeof $form] = false as never;
+      //             } else {
+      //                $form[key as keyof typeof $form] = storedValue as never;
+      //             }
+      //          } else {
+      //             $form[key as keyof typeof $form] = parseInt(storedValue, 10) as never;
+      //          }
+      //       }
+      //    }
+      // }
    })
 </script>
 <div class="{classes} flex flex-col">
