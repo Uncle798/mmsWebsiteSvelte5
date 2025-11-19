@@ -10,7 +10,7 @@ import { registerFormSchema } from '$lib/formSchemas/registerFormSchema';
 import { addressFormSchema } from '$lib/formSchemas/addressFormSchema';
 import type { PageServerLoad, Actions } from './$types';
 import { prisma } from '$lib/server/prisma'; 
-import type { Address, DiscountCode, User } from '@prisma/client';
+import type { Address, DiscountCode, User } from '../../generated/prisma/client';
 import { ratelimit } from '$lib/server/rateLimit';
 import { sendPaymentReceipt } from '$lib/server/mailtrap';
 import { inngest } from '$lib/server/inngest/inngest';

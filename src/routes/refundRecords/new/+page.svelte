@@ -1,7 +1,7 @@
 <script lang="ts">
    import type { PageData } from './$types';
    import NewRefundForm from '$lib/forms/NewRefundForm.svelte';
-   import type { PaymentRecord, User } from '@prisma/client';
+   import type { PaymentRecord, User } from '../../../generated/prisma/browser';
    import PaymentRecordEmployee from '$lib/displayComponents/PaymentRecordEmployee.svelte';
 	import Pagination from '$lib/displayComponents/Pagination.svelte';
 	import Search from '$lib/forms/Search.svelte';

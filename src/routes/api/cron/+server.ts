@@ -3,7 +3,7 @@ import { sendStatusEmail } from '$lib/server/mailtrap';
 import { prisma } from '$lib/server/prisma';
 import dayjs from 'dayjs';
 import type { RequestHandler} from './$types';
-import type { Invoice } from '@prisma/client';
+import type { Invoice } from '../../../generated/prisma/client';
 export const GET:RequestHandler = async (event) => {
    const authHeader = event.request.headers.get('authorization');
    if(authHeader !== `Bearer ${CRON_SECRET}`){

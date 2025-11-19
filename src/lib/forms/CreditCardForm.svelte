@@ -4,14 +4,14 @@
 </svelte:head>
 <script lang="ts">
 	import { superForm, type Infer, type SuperValidated } from "sveltekit-superforms";
-   	import { creditCardFormSchema, type CreditCardFormSchema } from '$lib/formSchemas/creditCardFormSchema';
+   import { creditCardFormSchema, type CreditCardFormSchema } from '$lib/formSchemas/creditCardFormSchema';
 	import FormMessage from "$lib/formComponents/FormMessage.svelte";
 	import { browser } from '$app/environment';;
 	import { goto } from '$app/navigation';
    import { fade } from "svelte/transition";
 	import { Tooltip, } from "@skeletonlabs/skeleton-svelte";
 	import { valibot, } from "sveltekit-superforms/adapters";
-	import type { Invoice } from "@prisma/client";
+	import type { Invoice } from "../../generated/prisma/browser";
    import Payment from "payment";
 	import { onMount } from "svelte";
 	import { Info } from "lucide-svelte";

@@ -1,6 +1,6 @@
 <script lang="ts">
    import Header from '$lib/Header.svelte';
-	import type { User, Lease } from '@prisma/client';
+	import type { User, Lease } from "../../generated/prisma/browser"
    import type { PageData } from './$types';
 	import LeaseEmployee from '$lib/displayComponents/LeaseEmployee.svelte';
    import UserEmployee from '$lib/displayComponents/UserEmployee.svelte';

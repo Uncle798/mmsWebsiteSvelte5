@@ -3,7 +3,7 @@
 	import EmploymentChangeForm from '$lib/forms/EmploymentChangeForm.svelte';
 	import Header from '$lib/Header.svelte';
    import type { PageData } from './$types';
-   import type { User } from '@prisma/client';
+   import type { User } from '../../generated/prisma/browser';
    import { fade } from 'svelte/transition';
 	import UserAdmin from '$lib/displayComponents/UserAdmin.svelte';
 	import Search from '$lib/forms/Search.svelte';

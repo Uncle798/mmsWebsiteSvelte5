@@ -5,7 +5,7 @@ import { valibot } from 'sveltekit-superforms/adapters';
 import { onboardingExistingLeaseSchema } from '$lib/formSchemas/onboardingExistingLeaseSchema';
 import { registerFormSchema } from '$lib/formSchemas/registerFormSchema';
 import { addressFormSchema } from '$lib/formSchemas/addressFormSchema';
-import type { Address, User, Lease, PropertyWithLien } from '@prisma/client';
+import type { Address, User, Lease, PropertyWithLien } from '../../generated/prisma/client';
 import { propertySubjectToLienSchema } from '$lib/formSchemas/propertySubjectToLienSchema';
 import { alternativeContactFormSchema } from '$lib/formSchemas/alternativeContactFormSchema';
 import { redirect } from '@sveltejs/kit';

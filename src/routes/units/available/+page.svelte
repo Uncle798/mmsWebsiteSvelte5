@@ -2,7 +2,7 @@
    import Header from '$lib/Header.svelte';
    import { fade } from 'svelte/transition';
    import type { PageData } from './$types';
-   import type { Unit } from '@prisma/client';
+   import type { Unit } from '../../../generated/prisma/browser';
 	import UnitEmployee from '$lib/displayComponents/UnitEmployee.svelte';
 	import UnitNotesForm from '$lib/forms/UnitNotesForm.svelte';
 	import UnitCustomer from '$lib/displayComponents/customerViews/UnitCustomer.svelte';

@@ -1,7 +1,7 @@
 import { prisma } from '$lib/server/prisma';
 import { error, redirect } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
-import type { RefundRecord } from '@prisma/client';
+import type { RefundRecord } from '../../../generated/prisma/client';
 import { message, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import { paymentRecordDeleteSchema } from '$lib/formSchemas/paymentRecordDeleteSchema';

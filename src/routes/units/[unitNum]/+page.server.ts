@@ -4,7 +4,7 @@ import type { PageServerLoad } from './$types';
 import { prisma } from '$lib/server/prisma';
 import { superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
-import type { Address, User } from '@prisma/client';
+import type { Address, User } from '../../../generated/prisma/client';
 import { unitNotesFormSchema } from '$lib/formSchemas/unitNotesFormSchema';
 import { unitPricingFormSchema } from '$lib/formSchemas/unitPricingFormSchema';
 import { leaseEndFormSchema } from '$lib/formSchemas/leaseEndFormSchema';

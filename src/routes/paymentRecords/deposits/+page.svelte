@@ -2,7 +2,7 @@
    import PaymentRecordEmployee from '$lib/displayComponents/PaymentRecordEmployee.svelte';
 	import Header from '$lib/Header.svelte';
    import type { PageData } from './$types';
-   import type { PaymentRecord, User } from '@prisma/client';
+   import type { PaymentRecord, User } from '../../../generated/prisma/browser';
 	import RefundForm from '$lib/forms/NewRefundForm.svelte';
 	import Search from '$lib/forms/Search.svelte';
 	import Pagination from '$lib/displayComponents/Pagination.svelte';

@@ -8,7 +8,7 @@
    import LeaseEndForm from '$lib/forms/LeaseEndForm.svelte';
    import PaymentRecordEmployee from '$lib/displayComponents/PaymentRecordEmployee.svelte';
    import Header from '$lib/Header.svelte';
-   import type { Invoice, PaymentRecord, User } from '@prisma/client';
+   import type { Invoice, PaymentRecord, User } from '../../../generated/prisma/browser';
 	import RefundRecordDisplay from '$lib/displayComponents/RefundRecordEmployee.svelte';
 	import Pagination from '$lib/displayComponents/Pagination.svelte';
 	import EmailChangeForm from '$lib/forms/EmailChangeForm.svelte';

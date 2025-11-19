@@ -1,4 +1,4 @@
-import { PaymentType } from '@prisma/client';
+import { PaymentType } from '../../generated/prisma/client';
 import * as v from 'valibot';
 
 

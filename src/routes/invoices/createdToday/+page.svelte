@@ -2,7 +2,7 @@
 	import AddressEmployee from '$lib/displayComponents/AddressEmployee.svelte';
 	import InvoiceEmployee from '$lib/displayComponents/InvoiceEmployee.svelte';
 	import UserEmployee from '$lib/displayComponents/UserEmployee.svelte';
-	import type { Invoice } from '@prisma/client';
+	import type { Invoice } from '../../../generated/prisma/browser';
    import type { PageProps } from './$types';
 
    let { data }: PageProps = $props();

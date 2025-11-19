@@ -9,7 +9,7 @@
 	import LeaseEmployee from '$lib/displayComponents/LeaseEmployee.svelte';
 	import UserEmployee from '$lib/displayComponents/UserEmployee.svelte';
 	import Revenue from '$lib/displayComponents/Revenue.svelte';
-	import type { Lease } from '@prisma/client';
+	import type { Lease } from '../../generated/prisma/browser';
 	import { onMount } from 'svelte';
    import { driver } from 'driver.js';
    import 'driver.js/dist/driver.css';

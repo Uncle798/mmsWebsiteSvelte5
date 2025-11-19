@@ -1,5 +1,5 @@
 import * as v from 'valibot'
-import { PaymentType } from "@prisma/client";
+import { PaymentType } from "../../generated/prisma/client";
 
 export const newLeaseSchema = v.object({
    unitNum: v.pipe(v.string(), v.minLength(3), v.maxLength(9)),

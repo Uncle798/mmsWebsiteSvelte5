@@ -3,7 +3,7 @@
 	import { PUBLIC_COMPANY_EMAIL, PUBLIC_COMPANY_NAME, PUBLIC_PHONE } from "$env/static/public";
    import Header from "$lib/Header.svelte";
    import type { PageData } from "./$types";
-   import type { Unit } from '@prisma/client'
+   import type { Unit } from '../generated/prisma/client'
 	import { fade } from "svelte/transition";
 	import Placeholder from "$lib/displayComponents/Placeholder.svelte";
 

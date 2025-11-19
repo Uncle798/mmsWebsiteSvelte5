@@ -6,7 +6,7 @@
 	import FormMessage from '$lib/formComponents/FormMessage.svelte';
    import { onMount } from 'svelte';
 	import { page } from '$app/state';
-	import type { User } from '@prisma/client';
+	import type { User } from '../../generated/prisma/browser';
    interface Props {
       data: SuperValidated<Infer<EmailFormSchema>>;
       emailModalOpen: boolean;

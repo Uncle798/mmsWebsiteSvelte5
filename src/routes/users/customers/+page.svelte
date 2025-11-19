@@ -7,7 +7,7 @@
    import { fade } from 'svelte/transition';
    import Search from '$lib/forms/Search.svelte';
    import Revenue from '$lib/displayComponents/Revenue.svelte';
-   import type { Invoice, Lease, PaymentRecord, Unit, User } from '@prisma/client';
+   import type { Invoice, Lease, PaymentRecord, Unit, User } from '../../../generated/prisma/browser';
    import Address from '$lib/displayComponents/AddressEmployee.svelte';
 	import UserNotesForm from '$lib/forms/UserNotesForm.svelte';
 	import LeaseEndForm from '$lib/forms/LeaseEndForm.svelte';

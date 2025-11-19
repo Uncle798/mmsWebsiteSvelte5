@@ -4,7 +4,7 @@ import type { PageServerLoad } from './$types';
 import { valibot, } from 'sveltekit-superforms/adapters';
 import { unitNotesFormSchema } from '$lib/formSchemas/unitNotesFormSchema';
 import pricingData from '$lib/server/pricingData';
-import type { Unit } from '@prisma/client';
+import type { Unit } from '../../../generated/prisma/client';
 
 export const load:PageServerLoad = (async (event) => {
    const userId = event.url.searchParams.get('userId');

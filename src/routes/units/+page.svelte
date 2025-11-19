@@ -11,7 +11,7 @@
 	import UnitPricingForm from '$lib/forms/UnitPricingForm.svelte';
 	import Header from '$lib/Header.svelte';
 	import { fade } from 'svelte/transition';
-	import type { Lease, Unit } from '@prisma/client';
+	import type { Lease, Unit } from '../../generated/prisma/browser';
 	import Search from '$lib/forms/Search.svelte';
 	import Address from '$lib/displayComponents/AddressEmployee.svelte';
 	import Revenue from '$lib/displayComponents/Revenue.svelte'

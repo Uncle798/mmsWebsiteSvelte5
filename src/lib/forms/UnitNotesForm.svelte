@@ -6,7 +6,7 @@
 	import FormSubmitWithProgress from "$lib/formComponents/FormSubmitWithProgress.svelte";
 	import Switch from "$lib/formComponents/Switch.svelte";
 	import { onMount } from "svelte";
-	import type { Unit } from "@prisma/client";
+	import type { Unit } from "../../generated/prisma/browser";
 	import TextArea from "$lib/formComponents/TextArea.svelte";
 	import { page } from "$app/state";
 

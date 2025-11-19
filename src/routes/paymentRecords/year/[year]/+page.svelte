@@ -1,6 +1,6 @@
 <script lang="ts">
    import type { PageData } from './$types';
-   import type { PaymentRecord, User } from '@prisma/client';
+   import type { PaymentRecord, User } from '../../../../generated/prisma/browser';
    import Header from '$lib/Header.svelte';
    import PaymentRecordEmployee from '$lib/displayComponents/PaymentRecordEmployee.svelte';
    import Pagination from '$lib/displayComponents/Pagination.svelte';
@@ -19,7 +19,6 @@
    import ProgressLine from '$lib/displayComponents/ProgressLine.svelte';
    import ProgressRing from '$lib/displayComponents/ProgressRing.svelte';
    import { goto, onNavigate } from '$app/navigation';
-	import { SearchIcon, PanelTopCloseIcon } from 'lucide-svelte';
 	import EmailCustomer from '$lib/EmailCustomer.svelte';
 	import DownloadPdfButton from '$lib/DownloadPDFButton.svelte';
 	import SearchDrawer from '$lib/displayComponents/Modals/SearchDrawer.svelte';

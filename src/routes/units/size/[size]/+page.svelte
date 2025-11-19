@@ -6,7 +6,7 @@
 	import UnitPricingForm from '$lib/forms/UnitPricingForm.svelte';
 	import UserEmployee from '$lib/displayComponents/UserEmployee.svelte';
 	import Revenue from '$lib/displayComponents/Revenue.svelte';
-	import type  { Lease, Unit } from '@prisma/client';
+	import type  { Lease, Unit } from '../../../../generated/prisma/browser';
 	import Address from '$lib/displayComponents/AddressEmployee.svelte';
 	import { goto, onNavigate } from '$app/navigation';
    import { browser } from '$app/environment';

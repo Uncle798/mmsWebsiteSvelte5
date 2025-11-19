@@ -1,7 +1,7 @@
 import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { prisma } from '$lib/server/prisma';
-import type { Address } from '@prisma/client';
+import type { Address } from '../../../generated/prisma/client';
 import { superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import { leaseEndFormSchema } from '$lib/formSchemas/leaseEndFormSchema';

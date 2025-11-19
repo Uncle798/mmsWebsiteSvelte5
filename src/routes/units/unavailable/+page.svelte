@@ -3,7 +3,7 @@
    import { fade } from 'svelte/transition';
 	import UnitNotesForm from '$lib/forms/UnitNotesForm.svelte';
    import type { PageData } from './$types';
-   import type { Unit } from '@prisma/client';
+   import type { Unit } from '../../../generated/prisma/browser';
 	import { onMount } from 'svelte';
 	import Header from '$lib/Header.svelte';
    import SearchDrawer from '$lib/displayComponents/Modals/SearchDrawer.svelte';
