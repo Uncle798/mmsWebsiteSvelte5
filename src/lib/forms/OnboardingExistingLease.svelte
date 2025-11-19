@@ -1,13 +1,12 @@
 <script lang='ts'>
 	import Combobox from "$lib/formComponents/Combobox.svelte";
-	import DateInput from "$lib/formComponents/DateInput.svelte";
 	import DatePickerSingle from "$lib/formComponents/DatePickerSingle.svelte";
 	import FormMessage from "$lib/formComponents/FormMessage.svelte";
 	import FormSubmitWithProgress from "$lib/formComponents/FormSubmitWithProgress.svelte";
 	import NumberInput from "$lib/formComponents/NumberInput.svelte";
 	import Switch from "$lib/formComponents/Switch.svelte";
 	import type { OnboardingExistingLeaseSchema } from "$lib/formSchemas/onboardingExistingLeaseSchema";
-	import type { Unit, User, Address } from "@prisma/client";
+	import type { Unit, User, Address } from "../../generated/prisma/browser";
 	import dayjs from "dayjs";
 	import { superForm, type Infer, type SuperValidated } from "sveltekit-superforms";
 
