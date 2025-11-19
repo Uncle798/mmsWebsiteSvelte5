@@ -1,5 +1,5 @@
 <script lang='ts'>
-	import type { User, Invoice } from "@prisma/client";
+	import type { User, Invoice } from "../../generated/prisma/browser";
 
    interface Props {
       totalInvoiced: number;

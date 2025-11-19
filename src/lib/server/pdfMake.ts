@@ -1,5 +1,5 @@
 import { PUBLIC_COMPANY_NAME } from "$env/static/public";
-import type { Address, Invoice, PaymentRecord, RefundRecord, User } from "@prisma/client";
+import type { Address, Invoice, PaymentRecord, RefundRecord, User } from "../../generated/prisma/client";
 import BlobStream, { type IBlobStream } from "blob-stream";
 import dayjs from "dayjs";
 import PdfPrinter from "pdfmake"

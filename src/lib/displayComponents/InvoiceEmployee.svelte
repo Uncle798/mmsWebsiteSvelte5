@@ -1,5 +1,5 @@
 <script lang="ts">
-   import type { Invoice } from "@prisma/client";
+   import type { Invoice } from "../../generated/prisma/browser";
    import dayjs from "dayjs";
 	import HorizontalDivider from "./HorizontalDivider.svelte";
 	import { page } from "$app/state";

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { RefundRecord } from '@prisma/client';
+	import type { RefundRecord } from '../../../generated/prisma/browser';
 	import dayjs from 'dayjs';
 	import HorizontalDivider from '../HorizontalDivider.svelte';
 

@@ -1,5 +1,5 @@
 <script lang='ts'>
-   import type { Lease } from "@prisma/client";
+   import type { Lease } from "../../generated/prisma/browser";
 	import dayjs from "dayjs";
 	import HorizontalDivider from "./HorizontalDivider.svelte";
    interface Props {

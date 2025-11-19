@@ -1,5 +1,5 @@
 <script lang='ts'>
-	import type { PaymentRecord } from "@prisma/client";
+	import type { PaymentRecord } from "../../generated/prisma/browser";
 	import dayjs from "dayjs";
 	import HorizontalDivider from "./HorizontalDivider.svelte";
 	import { page } from "$app/state";

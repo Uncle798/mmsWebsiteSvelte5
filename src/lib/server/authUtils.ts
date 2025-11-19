@@ -3,7 +3,7 @@ import { generateRandomString } from '@oslojs/crypto/random';
 import type { RandomReader } from '@oslojs/crypto/random';
 import { sha256 } from '@oslojs/crypto/sha2';
 import { prisma } from './prisma';
-import type { Session, User } from "@prisma/client";
+import type { Session, User } from "../../generated/prisma/client";
 import dayjs from 'dayjs';
 import type { RequestEvent } from '@sveltejs/kit';
 
@@ -36,11 +36,13 @@ export async function validateSessionToken(token:string):Promise<SessionValidati
          id: sessionId,
       },
    });
+   console.log(sessionId);
    const user = await prisma.user.findFirst({
       where: {
          id: session?.userId
       },
    });
+   console.log(user)
    if(!session){
       return {session: null, user: null};
    }

@@ -1,5 +1,5 @@
 <script lang='ts'>
-	import type { PaymentRecord } from "@prisma/client";
+	import type { PaymentRecord } from '../../../generated/prisma/browser';
 	import dayjs from "dayjs";
 	import HorizontalDivider from "../HorizontalDivider.svelte";
 
@@ -43,8 +43,9 @@
       <HorizontalDivider classes='col-span-2' />
       <div class="col-span-2 text-center font-medium">Deposit</div>
    {/if}
-   {#if paymentRecord.refunded}
+   {#if paymentRecord.refundedAmount > 0}
       <HorizontalDivider classes='col-span-2' />
-      <div class="col-span-2 text-center font-medium">Refunded</div>
+            <div class="text-right">Amount Refunded</div>
+      <div class="font-medium"> <a class="anchor" href="/invoices/{paymentRecord.invoiceNum}">{paymentRecord.refundedAmount}</a></div>
    {/if}
 </div>

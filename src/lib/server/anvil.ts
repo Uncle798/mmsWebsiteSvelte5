@@ -1,7 +1,7 @@
 import Anvil from "@anvilco/anvil";
 import { PUBLIC_COMPANY_NAME } from '$env/static/public';
 import { ANVIL_API_KEY } from "$env/static/private";
-import type { Address, Lease, Unit, User } from "@prisma/client/edge";
+import type { Address, Lease, Unit, User } from "../../generated/prisma/client";
 
 export const anvilClient = new Anvil({apiKey:ANVIL_API_KEY});
 

@@ -1,5 +1,5 @@
 import {  PUBLIC_COMPANY_NAME, PUBLIC_URL } from "$env/static/public";
-import type { Address, Invoice, PaymentRecord, RefundRecord, User } from "@prisma/client";
+import type { Address, Invoice, PaymentRecord, RefundRecord, User } from "../../generated/prisma/client";
 import { MailtrapClient } from "mailtrap";
 import dayjs from "dayjs";
 import { makeInvoicePdf, makeReceiptPdf, makeRefundPdf } from "./pdfMake";

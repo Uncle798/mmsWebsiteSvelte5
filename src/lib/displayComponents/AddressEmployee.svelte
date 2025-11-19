@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Address } from "@prisma/client";
+	import type { Address } from "../../generated/prisma/browser";
    interface Props {
       address: Address;
       classes?: string;

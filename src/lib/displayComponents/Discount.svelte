@@ -1,5 +1,5 @@
 <script lang='ts'>
-	import type { DiscountCode } from "@prisma/client";
+	import type { DiscountCode } from "../../generated/prisma/browser";
 	import dayjs from "dayjs";
 
    interface Props {

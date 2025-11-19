@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { User } from '@prisma/client';
+	import type { User } from "../../generated/prisma/browser";
 	import { Check } from 'lucide-svelte';
 
 	interface Props {

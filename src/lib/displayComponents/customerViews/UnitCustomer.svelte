@@ -1,5 +1,5 @@
 <script lang="ts">
-   import type { Unit } from '@prisma/client';
+   import type { Unit } from '../../../generated/prisma/browser';
 	import HorizontalDivider from '../HorizontalDivider.svelte';
    interface Props {
       unit: Unit,

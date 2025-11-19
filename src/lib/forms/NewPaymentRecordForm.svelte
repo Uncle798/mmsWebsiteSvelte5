@@ -3,7 +3,7 @@
 	import type { NewPaymentRecordFormSchema } from '$lib/formSchemas/newPaymentRecordFormSchema';
 	import type { EmailVerificationFormSchema } from '$lib/formSchemas/emailVerificationFormSchema';
 	import type { RegisterFormSchema } from '$lib/formSchemas/registerFormSchema';
-	import type { Invoice, Lease, User } from "@prisma/client";
+	import type { Invoice, Lease, User } from '../../generated/prisma/browser';
 	import { onMount } from "svelte";
 	import { superForm, type Infer, type SuperValidated } from "sveltekit-superforms";
    import NewInvoiceForm from "./NewInvoiceForm.svelte";
