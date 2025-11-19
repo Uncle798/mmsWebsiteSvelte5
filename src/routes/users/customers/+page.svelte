@@ -17,9 +17,9 @@
 	import FormModal from '$lib/displayComponents/Modals/FormModal.svelte';
 	import { driver } from 'driver.js';
    import 'driver.js/dist/driver.css';
-	import { onMount } from 'svelte';
 	import RevenueBar from '$lib/displayComponents/RevenueBar.svelte';
 	import UserRevenue from '$lib/displayComponents/UserRevenue.svelte';
+	import { form } from '$app/server';
    let { data }: { data: PageData } = $props();
    let pageNum = $state(1);
    let size = $state(25);
@@ -140,7 +140,7 @@
                         {/snippet}
                   </FormModal>
                      <div class="grid grid-cols-1 mx-1 sm:mx-2 gap-y-2 gap-x-1 ">
-                        {#each slicedSource(searchedSource(customers)) as customer, i}
+                        {#each slicedSource(searchedSource(customers)) as customer, i (customer.id)}
                         {@const address = addresses.find((address) => address.userId === customer.id)}
                         {@const customerLeases = leases.filter((lease) => lease.customerId === customer.id)}
                         {@const customerInvoices = invoices.filter((invoice) => invoice.customerId === customer.id)}

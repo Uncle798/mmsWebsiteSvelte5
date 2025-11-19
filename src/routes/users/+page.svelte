@@ -134,7 +134,7 @@
                </div>
             {/if}
          {/each}
-         </div>
+      </div>
       <Pagination bind:size={size} bind:pageNum={pageNum} array={searchedUsers(users)} label='users'/>
    </div>
 {/await}
