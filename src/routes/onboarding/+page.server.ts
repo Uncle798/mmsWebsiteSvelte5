@@ -4,7 +4,7 @@ import type { PageServerLoad } from './$types';
 import { valibot } from 'sveltekit-superforms/adapters';
 import { onboardingExistingLeaseSchema } from '$lib/formSchemas/onboardingExistingLeaseSchema';
 import { registerFormSchema } from '$lib/formSchemas/registerFormSchema';
-import { addressFormSchema } from '$lib/formSchemas/addressFormSchema';
+import { onboardingAddressFormSchema } from '$lib/formSchemas/onboardingAddressFormSchema';
 import type { Address, User, Lease, PropertyWithLien } from '../../generated/prisma/client';
 import { propertySubjectToLienSchema } from '$lib/formSchemas/propertySubjectToLienSchema';
 import { alternativeContactFormSchema } from '$lib/formSchemas/alternativeContactFormSchema';
@@ -118,7 +118,7 @@ export const load = (async (event) => {
       propertySubjectToLienForm = await superValidate(valibot(propertySubjectToLienSchema));
    }
    const registerForm = await superValidate(valibot(registerFormSchema));
-   const addressForm = await superValidate(valibot(addressFormSchema));
+   const addressForm = await superValidate(valibot(onboardingAddressFormSchema));
    const onboardingExistingLeaseForm = await superValidate(valibot(onboardingExistingLeaseSchema));
    return { 
       units, 
