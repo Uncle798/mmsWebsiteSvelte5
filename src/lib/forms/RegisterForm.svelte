@@ -38,7 +38,7 @@
 
          registerFormModalOpen=false;
          emailVerificationModalOpen=true;
-         
+         sessionStorage.clear();
       }
    });
    export const snapshot = {
