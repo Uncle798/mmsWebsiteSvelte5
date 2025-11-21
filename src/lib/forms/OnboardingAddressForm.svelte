@@ -61,7 +61,7 @@
 </script>
 <div class={classes}>
    <FormMessage message={$message} />
-   <form action='/forms/addressForm?redirectTo={redirectTo}' method='POST' use:enhance>
+   <form action='/forms/onboardingAddressForm?redirectTo={redirectTo}' method='POST' use:enhance>
       <TextInput
          bind:value={$form.address1}
          errors={$errors.address1}
