@@ -66,7 +66,7 @@
    }
    let currentUser = $state<User>(data.dbUser);
    function emailChangeModal(user:User){
-      modalReason='emailVerification'
+      modalReason='emailChange'
       globalModalOpen=true
       currentUser=user
    }
