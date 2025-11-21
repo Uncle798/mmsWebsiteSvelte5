@@ -35,7 +35,6 @@
          }
       }, 
       onUpdated(){
-
          registerFormModalOpen=false;
          emailVerificationModalOpen=true;
          sessionStorage.clear();
