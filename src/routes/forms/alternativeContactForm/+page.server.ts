@@ -5,6 +5,7 @@ import { valibot } from "sveltekit-superforms/adapters";
 import { alternativeContactFormSchema } from "$lib/formSchemas/alternativeContactFormSchema";
 import { ratelimit } from "$lib/server/rateLimit";
 import { prisma } from "$lib/server/prisma";
+import type { User } from "../../../generated/prisma/client";
 
 export const actions:Actions = {
    default: async (event) => {
@@ -32,11 +33,14 @@ export const actions:Actions = {
          if(!lease){
             return message(alternativeContactForm, `lease not found`);
          }
-         let contact = await prisma.user.findUnique({
-            where: {
-               email: data.email
-            }
-         })
+         let contact:User | null = null;
+         if(data.email){            
+            contact = await prisma.user.findUnique({
+               where: {
+                  email: data.email
+               }
+            })
+         }
          if(!contact){
             contact = await prisma.user.create({
                data: {
