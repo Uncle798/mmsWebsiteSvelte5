@@ -4,7 +4,7 @@
 	import PropertyWithLien from '$lib/displayComponents/PropertyWithLien.svelte';
 	import UserAdmin from '$lib/displayComponents/UserAdmin.svelte';
 	import UserEmployee from '$lib/displayComponents/UserEmployee.svelte';
-	import AddressForm from '$lib/forms/AddressForm.svelte';
+	import OnboardingAddressForm from '$lib/forms/OnboardingAddressForm.svelte';
 	import AlternativeContactForm from '$lib/forms/AlternativeContactForm.svelte';
 	import OnboardingExistingLease from '$lib/forms/OnboardingExistingLease.svelte';
 	import PropertySubjectToLienForm from '$lib/forms/PropertySubjectToLienForm.svelte';
@@ -22,7 +22,7 @@
    {:else}
       <UserAdmin user={data.customer}/>
       {#if !data.address}
-         <AddressForm data={data.addressForm} userId={data.customer.id} redirectTo='onboarding'/>
+         <OnboardingAddressForm data={data.addressForm} userId={data.customer.id} redirectTo='onboarding' />
       {:else}
          <AddressEmployee address={data.address} />
          {#if !data.lease}
