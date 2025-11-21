@@ -69,11 +69,13 @@ export const load = (async (event) => {
             leaseId,
          },
       });
-      alternativeContact = await prisma.user.findUnique({
-         where: {
-            id: lease?.alternativeContactId ? lease.alternativeContactId : undefined
-         }
-      })
+      if(lease?.alternativeContactId){
+         alternativeContact = await prisma.user.findUnique({
+            where: {
+               id: lease?.alternativeContactId ? lease.alternativeContactId : undefined
+            }
+         })
+      }
       if(alternativeContact){
          alternativeAddress = await prisma.address.findFirst({
             where: {
