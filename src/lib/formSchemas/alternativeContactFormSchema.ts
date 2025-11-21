@@ -3,8 +3,8 @@ import { nameFormSchema } from './nameFormSchema';
 
 export const alternativeContactFormSchema = v.object({
    ...nameFormSchema.entries,   
-   email: v.pipe(v.string(), v.email()),
    leaseId: v.pipe(v.string(), v.cuid2()),
+   email: v.optional(v.pipe(v.string(), v.email())),
    organizationName: v.optional(v.pipe(v.string(), v.minLength(1), v.maxLength(255))),
    address1: v.optional(v.pipe(v.string(), v.minLength(2), v.maxLength(255))),
    address2: v.optional(v.pipe(v.string(), v.minLength(2), v.maxLength(255))),
