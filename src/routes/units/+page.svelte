@@ -159,7 +159,7 @@
 						height='h-[180px]'
 					>
 						{#snippet content()}
-							<div class="mx-2 mt-11 flex gap-2">
+							<div class="mx-2 mt-24 flex gap-2">
 								<Search searchType='Unit number' data={data.searchForm} classes='' bind:search={search}/>
 								<Combobox 
 									data={comboboxData} 
