@@ -37,14 +37,14 @@ export const actions: Actions = {
         console.log('email change form ', emailForm);
         const user = await prisma.user.update({
             where: {
-                id: event.locals.user.id
+                id: emailForm.data.userId,
             },
             data: {
                 email: emailForm.data.email,
                 emailVerified: false,
             }
         })
-        // const code = await generateEmailVerificationRequest(event.locals.user.id, user.email!);
+        // const code = await generateEmailVerificationRequest(emailForm.data.userId, user.email!);
         // sendVerificationEmail(code, user.email!);
         return message(emailForm, 'email updated successfully')
     }
