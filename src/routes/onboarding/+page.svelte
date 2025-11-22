@@ -13,26 +13,37 @@
    import type { PageProps } from './$types';
 	import Combobox from '$lib/formComponents/Combobox.svelte';
 	import { goto } from '$app/navigation';
+	import { page } from '$app/state';
 
    let { data }: PageProps = $props();
-   let comboboxData:{label:string, value:string}[] = [];
+   let customerComboboxData:{label:string, value:string}[] = [];
    if(data.customers){
       for(const customer of data.customers){
-         comboboxData.push({
+         customerComboboxData.push({
             label: `${customer.givenName} ${customer.familyName} (${customer.email})`,
             value: customer.id
          })
       }
    }
+   let addressComboboxData:{label:string, value:string}[] = [];
+   if(data.existingAddresses){
+      for(const address of data.existingAddresses){
+         addressComboboxData.push({
+            label: `${address.address1} ${address.city} ${address.state} ${address.postalCode}`,
+            value: address.addressId
+         })
+      }
+   }
+   const url = page.url
 </script>
 
 <Header title='Input Lease Details' />
 <div class="mt-10 mx-2">
    {#if !data.customer}  
       <RegisterForm data={data.registerForm} formType='employee' redirectTo='onboarding'/>
-      {#if comboboxData.length > 0}
+      {#if customerComboboxData.length > 0}
          <Combobox
-            data={comboboxData}
+            data={customerComboboxData}
             label='or chose current customer'
             onValueChange={(e) => {
                goto(`/onboarding?userId=${e.value[0]}`)
@@ -43,6 +54,18 @@
       <UserAdmin user={data.customer}/>
       {#if !data.address}
          <OnboardingAddressForm data={data.addressForm} userId={data.customer.id} redirectTo='onboarding' />
+         {#if addressComboboxData.length > 0 }
+            <Combobox
+               data={addressComboboxData}
+               label='or choose existing address'
+               onValueChange={(e) => {
+                  const userId = url.searchParams.get('userId');
+                  if(userId){
+                     goto(`/onboarding?userId=${userId}&addressId=${e.value[0]}`)
+                  }
+               }}
+            />
+         {/if}
       {:else}
          <AddressEmployee address={data.address} />
          {#if !data.lease}

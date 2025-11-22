@@ -129,7 +129,15 @@ export const load = (async (event) => {
             familyName: 'asc'
          }
       })
-   }  
+   }
+   let existingAddresses:Address[] = [];
+   if(userId && !addressId){
+      existingAddresses = await prisma.address.findMany({
+         where: {
+            userId
+         }
+      })
+   }
    const registerForm = await superValidate(valibot(registerFormSchema));
    const addressForm = await superValidate(valibot(onboardingAddressFormSchema));
    const onboardingExistingLeaseForm = await superValidate(valibot(onboardingExistingLeaseSchema));
@@ -144,6 +152,7 @@ export const load = (async (event) => {
       alternativeContact,
       alternativeAddress,
       customers,
+      existingAddresses,
       registerForm, 
       addressForm, 
       onboardingExistingLeaseForm, 
