@@ -118,7 +118,17 @@ export const load = (async (event) => {
    }
    let customers:User[] = [];
    if(!userId){
-      customers = await prisma.user.findMany({})
+      customers = await prisma.user.findMany({
+         where: {
+            AND: [
+               {employee: false},
+               {alternative: false},
+            ]
+         },
+         orderBy: {
+            familyName: 'asc'
+         }
+      })
    }  
    const registerForm = await superValidate(valibot(registerFormSchema));
    const addressForm = await superValidate(valibot(onboardingAddressFormSchema));
