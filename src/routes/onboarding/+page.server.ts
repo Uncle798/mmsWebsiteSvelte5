@@ -37,6 +37,7 @@ export const load = (async (event) => {
       }
    })
    let customer:User | null = null;
+   let address:Address | null = null;
    if(userId){
       customer = await prisma.user.findUnique({
          where: {
@@ -44,7 +45,6 @@ export const load = (async (event) => {
          }
       })
    }
-   let address:Address | null = null;
    if(addressId){
       address = await prisma.address.findUnique({
          where: {
@@ -113,10 +113,13 @@ export const load = (async (event) => {
    }
    const alternativeContactForm = await superValidate(valibot(alternativeContactFormSchema));
    let propertySubjectToLienForm = null;
-   console.log(lien);
    if(lien === 'true'){
       propertySubjectToLienForm = await superValidate(valibot(propertySubjectToLienSchema));
    }
+   let customers:User[] = [];
+   if(!userId){
+      customers = await prisma.user.findMany({})
+   }  
    const registerForm = await superValidate(valibot(registerFormSchema));
    const addressForm = await superValidate(valibot(onboardingAddressFormSchema));
    const onboardingExistingLeaseForm = await superValidate(valibot(onboardingExistingLeaseSchema));
@@ -130,6 +133,7 @@ export const load = (async (event) => {
       lienHolderContacts,
       alternativeContact,
       alternativeAddress,
+      customers,
       registerForm, 
       addressForm, 
       onboardingExistingLeaseForm, 

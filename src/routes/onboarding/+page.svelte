@@ -11,14 +11,34 @@
 	import RegisterForm from '$lib/forms/RegisterForm.svelte';
 	import Header from '$lib/Header.svelte';
    import type { PageProps } from './$types';
+	import Combobox from '$lib/formComponents/Combobox.svelte';
+	import { goto } from '$app/navigation';
 
    let { data }: PageProps = $props();
+   let comboboxData:{label:string, value:string}[] = [];
+   if(data.customers){
+      for(const customer of data.customers){
+         comboboxData.push({
+            label: `${customer.givenName} ${customer.familyName} (${customer.email})`,
+            value: customer.id
+         })
+      }
+   }
 </script>
 
 <Header title='Input Lease Details' />
 <div class="mt-10 mx-2">
    {#if !data.customer}  
       <RegisterForm data={data.registerForm} formType='employee' redirectTo='onboarding'/>
+      {#if comboboxData.length > 0}
+         <Combobox
+            data={comboboxData}
+            label='or chose current customer'
+            onValueChange={(e) => {
+               goto(`/onboarding?userId=${e.value[0]}`)
+            }}
+         />
+      {/if}
    {:else}
       <UserAdmin user={data.customer}/>
       {#if !data.address}
