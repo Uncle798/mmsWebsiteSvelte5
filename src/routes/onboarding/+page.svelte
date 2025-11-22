@@ -8,12 +8,12 @@
 	import AlternativeContactForm from '$lib/forms/AlternativeContactForm.svelte';
 	import OnboardingExistingLease from '$lib/forms/OnboardingExistingLease.svelte';
 	import PropertySubjectToLienForm from '$lib/forms/PropertySubjectToLienForm.svelte';
-	import RegisterForm from '$lib/forms/RegisterForm.svelte';
 	import Header from '$lib/Header.svelte';
    import type { PageProps } from './$types';
 	import Combobox from '$lib/formComponents/Combobox.svelte';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
+	import OnboardingRegisterForm from '$lib/forms/OnboardingRegisterForm.svelte';
 
    let { data }: PageProps = $props();
    let customerComboboxData:{label:string, value:string}[] = [];
@@ -40,7 +40,7 @@
 <Header title='Input Lease Details' />
 <div class="mt-10 mx-2">
    {#if !data.customer}  
-      <RegisterForm data={data.registerForm} formType='employee' redirectTo='onboarding'/>
+      <OnboardingRegisterForm data={data.registerForm} formType='employee' redirectTo='onboarding'/>
       {#if customerComboboxData.length > 0}
          <Combobox
             data={customerComboboxData}

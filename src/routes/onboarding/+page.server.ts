@@ -3,12 +3,12 @@ import { superValidate } from 'sveltekit-superforms';
 import type { PageServerLoad } from './$types';
 import { valibot } from 'sveltekit-superforms/adapters';
 import { onboardingExistingLeaseSchema } from '$lib/formSchemas/onboardingExistingLeaseSchema';
-import { registerFormSchema } from '$lib/formSchemas/registerFormSchema';
 import { onboardingAddressFormSchema } from '$lib/formSchemas/onboardingAddressFormSchema';
 import type { Address, User, Lease, PropertyWithLien } from '../../generated/prisma/client';
 import { propertySubjectToLienSchema } from '$lib/formSchemas/propertySubjectToLienSchema';
 import { alternativeContactFormSchema } from '$lib/formSchemas/alternativeContactFormSchema';
 import { redirect } from '@sveltejs/kit';
+import { onboardingRegisterFormSchema } from '$lib/formSchemas/onboardingRegisterFormSchema';
 
 export const load = (async (event) => {
    if(!event.locals.user?.admin){
@@ -138,7 +138,7 @@ export const load = (async (event) => {
          }
       })
    }
-   const registerForm = await superValidate(valibot(registerFormSchema));
+   const registerForm = await superValidate(valibot(onboardingRegisterFormSchema));
    const addressForm = await superValidate(valibot(onboardingAddressFormSchema));
    const onboardingExistingLeaseForm = await superValidate(valibot(onboardingExistingLeaseSchema));
    return { 
