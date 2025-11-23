@@ -19,8 +19,9 @@
    let customerComboboxData:{label:string, value:string}[] = [];
    if(data.customers){
       for(const customer of data.customers){
+         const label = customer.organizationName ? `${customer.organizationName} (${customer.email})` :  `${customer.givenName} ${customer.familyName} (${customer.email})`
          customerComboboxData.push({
-            label: `${customer.givenName} ${customer.familyName} (${customer.email})`,
+            label,
             value: customer.id
          })
       }
