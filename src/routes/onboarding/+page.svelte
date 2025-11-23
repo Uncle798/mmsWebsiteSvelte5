@@ -40,7 +40,7 @@
 <Header title='Input Lease Details' />
 <div class="mt-10 mx-2">
    {#if !data.customer}  
-      <OnboardingRegisterForm data={data.registerForm} formType='employee' redirectTo='onboarding'/>
+      <OnboardingRegisterForm data={data.onboardingRegisterForm} formType='employee' redirectTo='onboarding'/>
       {#if customerComboboxData.length > 0}
          <Combobox
             data={customerComboboxData}
@@ -53,7 +53,7 @@
    {:else}
       <UserAdmin user={data.customer}/>
       {#if !data.address}
-         <OnboardingAddressForm data={data.addressForm} userId={data.customer.id} redirectTo='onboarding' />
+         <OnboardingAddressForm data={data.onboardingAddressForm} userId={data.customer.id} redirectTo='onboarding' />
          {#if addressComboboxData.length > 0 }
             <Combobox
                data={addressComboboxData}

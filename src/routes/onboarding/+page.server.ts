@@ -138,8 +138,8 @@ export const load = (async (event) => {
          }
       })
    }
-   const registerForm = await superValidate(valibot(onboardingRegisterFormSchema));
-   const addressForm = await superValidate(valibot(onboardingAddressFormSchema));
+   const onboardingRegisterForm = await superValidate(valibot(onboardingRegisterFormSchema));
+   const onboardingAddressForm = await superValidate(valibot(onboardingAddressFormSchema));
    const onboardingExistingLeaseForm = await superValidate(valibot(onboardingExistingLeaseSchema));
    return { 
       units, 
@@ -153,8 +153,8 @@ export const load = (async (event) => {
       alternativeAddress,
       customers,
       existingAddresses,
-      registerForm, 
-      addressForm, 
+      onboardingRegisterForm, 
+      onboardingAddressForm, 
       onboardingExistingLeaseForm, 
       propertySubjectToLienForm,
       alternativeContactForm
