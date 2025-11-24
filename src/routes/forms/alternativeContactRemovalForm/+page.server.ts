@@ -24,7 +24,7 @@ export const actions: Actions = {
       }
       await prisma.address.deleteMany({
          where: {
-            userId: alternativeContactRemovalForm.data.alternativeContactID
+            userId: alternativeContactRemovalForm.data.alternativeContactId
          }
       });
       await prisma.lease.update({
@@ -37,7 +37,7 @@ export const actions: Actions = {
       })
       await prisma.user.delete({
          where: {
-            id: alternativeContactRemovalForm.data.alternativeContactID
+            id: alternativeContactRemovalForm.data.alternativeContactId
          }
       });
       return { alternativeContactRemovalForm }
