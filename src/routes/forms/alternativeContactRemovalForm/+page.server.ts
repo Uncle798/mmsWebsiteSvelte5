@@ -14,7 +14,7 @@ export const actions: Actions = {
       const formData = await event.request.formData();
       const alternativeContactRemovalForm = await superValidate(formData, valibot(alternativeContactRemovalFormSchema));
       if(!alternativeContactRemovalForm.valid){
-         console.log(alternativeContactRemovalForm)
+         console.log(alternativeContactRemovalForm);
          return message(alternativeContactRemovalForm, 'Form not valid')
       }
       const { success, reset } = await ratelimit.employeeForm.limit(event.locals.user.id);

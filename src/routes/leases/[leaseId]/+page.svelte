@@ -58,7 +58,7 @@
                         modalOpen = true
                      }}
                   >
-                     Remove Alternative contact
+                     Remove alternative contact
                   </button>
                {/if}
                {#if !data.lease.leaseEnded}
@@ -70,7 +70,7 @@
                         modalOpen = true;
                      }}
                   >
-                     End Lease
+                     End lease
                   </button>
                {/if}
             </div>
