@@ -65,14 +65,14 @@ export const actions: Actions = {
          }
          // eslint-disable-next-line @typescript-eslint/no-unused-vars
          const {phoneNum1, phoneNum1Country, ...rest} = addressForm.data
-            const newAddress = {
-               phoneNum1:phoneValid.nationalNumber ? phoneValid.nationalNumber : undefined,
-               phoneNum1Country: phoneValid.callingCode ? phoneValid.callingCode : undefined,
-               ...rest
-            }
-            const dbAddress = await prisma.address.create({
-               data: newAddress
-            })
+         const newAddress = {
+            phoneNum1:phoneValid.nationalNumber ? phoneValid.nationalNumber : undefined,
+            phoneNum1Country: phoneValid.callingCode ? phoneValid.callingCode : undefined,
+            ...rest
+         }
+         const dbAddress = await prisma.address.create({
+            data: newAddress
+         })
          const redirectTo = event.url.searchParams.get('redirectTo');
          if(redirectTo){
             redirect(303, `/${redirectTo}?addressId=${dbAddress.addressId}&userId=${data.userId}`)

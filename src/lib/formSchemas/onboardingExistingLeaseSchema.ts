@@ -10,6 +10,7 @@ export const onboardingExistingLeaseSchema = v.object({
    leaseEffectiveDate: v.date(),
    createdDate: v.date(),
    numKeys: v.nullable(v.number()),
+   deposit: v.number(),
    propertySubjectToLien: v.boolean(),
    ...nameFormSchema.entries,
 })

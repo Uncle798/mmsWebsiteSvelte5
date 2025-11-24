@@ -30,6 +30,7 @@ export const actions: Actions = {
             leaseCreatedAt: data.createdDate,
             leaseEffectiveDate: data.leaseEffectiveDate,
             price: data.price,
+            depositAmount: data.deposit,
             unitNum: data.unitNum,
             employeeId: event.locals.user.id,
             keysProvided: data.numKeys ? data.numKeys : undefined,

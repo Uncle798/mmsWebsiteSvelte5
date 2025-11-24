@@ -99,6 +99,7 @@ model Lease {
   addressId            String
   unitNum              String
   price                Float
+  depositAmount        Float?
   discountedAmount     Float?
   discountId           String?
   leaseCreatedAt       DateTime           @default(now())

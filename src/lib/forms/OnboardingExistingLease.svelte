@@ -67,6 +67,13 @@
             name='price'
          />
          <NumberInput
+            value={$form.deposit}
+            errors={$errors.price}
+            constraints={$constraints.deposit}
+            label='Deposit'
+            name='deposit'
+         />
+         <NumberInput
             value={$form.numKeys}
             errors={$errors.numKeys}
             constraints={$constraints.numKeys}
