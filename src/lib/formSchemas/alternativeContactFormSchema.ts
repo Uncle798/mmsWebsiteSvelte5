@@ -1,11 +1,10 @@
 import * as v from 'valibot';
-import { nameFormSchema } from './nameFormSchema';
 
 export const alternativeContactFormSchema = v.object({
-   ...nameFormSchema.entries,   
+   familyName: v.optional(v.pipe(v.string(), v.minLength(1), v.maxLength(255))),
+   givenName: v.optional(v.pipe(v.string(), v.minLength(1), v.maxLength(255))),   
    leaseId: v.pipe(v.string(), v.cuid2()),
    email: v.optional(v.pipe(v.string(), v.email())),
-   organizationName: v.optional(v.pipe(v.string(), v.minLength(1), v.maxLength(255))),
    address1: v.optional(v.pipe(v.string(), v.minLength(2), v.maxLength(255))),
    address2: v.optional(v.pipe(v.string(), v.minLength(2), v.maxLength(255))),
    city: v.optional(v.string()),

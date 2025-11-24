@@ -1,5 +1,4 @@
 import * as v from 'valibot'
-import { nameFormSchema } from './nameFormSchema';
 
 export const onboardingExistingLeaseSchema = v.object({
    unitNum: v.pipe(v.string(), v.minLength(3), v.maxLength(9)),
@@ -12,6 +11,8 @@ export const onboardingExistingLeaseSchema = v.object({
    numKeys: v.nullable(v.number()),
    deposit: v.number(),
    propertySubjectToLien: v.boolean(),
-   ...nameFormSchema.entries,
+   familyName: v.optional(v.pipe(v.string(), v.minLength(1), v.maxLength(255))),
+   givenName: v.optional(v.pipe(v.string(), v.minLength(1), v.maxLength(255))),
+   organizationName: v.nullable(v.pipe(v.string(), v.minLength(1), v.maxLength(255))),
 })
 export type OnboardingExistingLeaseSchema = typeof onboardingExistingLeaseSchema;
