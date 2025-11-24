@@ -16,6 +16,7 @@
 	import UserNotesForm from '$lib/forms/UserNotesForm.svelte';
 	import FormModal from '$lib/displayComponents/Modals/FormModal.svelte';
 	import UserRevenue from '$lib/displayComponents/UserRevenue.svelte';
+	import NameChangeForm from '$lib/forms/NameChangeForm.svelte';
 
    let { data }: { data: PageData } = $props();
    let globalModalOpen = $state(false);
@@ -23,7 +24,6 @@
    let currentLeaseId = $state('');
    let pageNum = $state(1);
    let size = $state(5);
-   const currencyFormatter = new Intl.NumberFormat('en-US', {style:'currency', currency:'USD'});
    const slicedInvoices = $derived((invoices:Invoice[]) => invoices.slice((pageNum - 1) * size, pageNum * size));
    const derivedTotalInvoiced = $derived((invoices:Invoice[]) => {
       let total = 0;
@@ -96,6 +96,12 @@
             bind:leaseEndModalOpen={globalModalOpen}
             leaseId={currentLeaseId}
          />
+      {:else if modalReason === 'nameChange'}
+         <NameChangeForm
+            data={data.nameChangeForm}
+            userId={data.userId}
+            bind:nameModalOpen={globalModalOpen}
+         />
       {/if}
       <button class="btn preset-filled-primary-50-950" onclick={()=>globalModalOpen=false}>Close</button>
    {/snippet}
@@ -123,6 +129,16 @@
                   Verify email address
                </button>
          {/if}
+         <button 
+            class="btn preset-filled-primary-50-950 m-2"
+            onclick={() =>{
+               modalReason='nameChange'
+               globalModalOpen=true
+            }}
+            type='button'
+         >
+            Change Name
+         </button>
       </div>
       <div>
          <UserNotesForm user={data.dbUser} data={data.userNotesForm} />

@@ -8,6 +8,8 @@ import { userNotesFormSchema } from "$lib/formSchemas/userNotesFormSchema";
 import { emailVerificationFormSchema } from '$lib/formSchemas/emailVerificationFormSchema';
 import { addressFormSchema } from '$lib/formSchemas/addressFormSchema';
 import { emailFormSchema } from '$lib/formSchemas/emailFormSchema';
+import { nameFormSchema } from "$lib/formSchemas/nameFormSchema";
+
 export const load: PageServerLoad = async (event) => {
    if(!event.locals.user?.employee){
       redirect(302, '/login?toast=employee')
@@ -17,6 +19,7 @@ export const load: PageServerLoad = async (event) => {
    const emailChangeForm = await superValidate(valibot(emailFormSchema));
    const emailVerificationForm = await superValidate(valibot(emailVerificationFormSchema));
    const userNotesForm = await superValidate(valibot(userNotesFormSchema));
+   const nameChangeForm = await superValidate(valibot(nameFormSchema));
    const userId = event.params.userId;
 
    const dbUser = await prisma.user.findUnique({
@@ -67,5 +70,19 @@ export const load: PageServerLoad = async (event) => {
          refundCreated: 'desc'
       }
    })
-   return { dbUser, address, leases, invoices, paymentRecords, addressForm, leaseEndForm, refunds, emailChangeForm, emailVerificationForm, userNotesForm }
+   return { 
+      dbUser, 
+      address, 
+      leases, 
+      invoices,
+      paymentRecords,
+      addressForm, 
+      leaseEndForm, 
+      userId, 
+      refunds, 
+      nameChangeForm, 
+      emailChangeForm, 
+      emailVerificationForm, 
+      userNotesForm, 
+   }
 };
