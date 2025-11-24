@@ -27,9 +27,9 @@ export const actions: Actions = {
             userId: alternativeContactRemovalForm.data.alternativeContactId
          }
       });
-      await prisma.lease.update({
+      await prisma.lease.updateMany({
          where: {
-            leaseId: alternativeContactRemovalForm.data.leaseId
+            alternativeContactId: alternativeContactRemovalForm.data.alternativeContactId
          },
          data: {
             alternativeContactId: undefined
