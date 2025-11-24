@@ -27,6 +27,7 @@
 
 <div class={classes}>
    <FormMessage message={$message} />
+   {alternativeContactId}
    <form action="/forms/alternativeContactRemovalForm " method="POST" use:enhance>
       <input type="hidden" name="alternativeContactId" id="alternativeContactId" value={alternativeContactId} />
       <input type="hidden" name="leaseId" id="leaseId" value={leaseId} />
