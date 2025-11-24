@@ -2,7 +2,6 @@ import * as v from 'valibot';
 
 
 export const addressFormSchema = v.object({
-   organizationName: v.optional(v.pipe(v.string(), v.minLength(1), v.maxLength(255))),
    address1: v.pipe(v.string(), v.minLength(2), v.maxLength(255)),
    address2: v.optional(v.pipe(v.string(), v.minLength(2), v.maxLength(255))),
    city: v.string(),
