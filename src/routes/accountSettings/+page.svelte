@@ -59,7 +59,7 @@
          {/if}
       {/if}
       {#if modalSelector === 'name'}
-         <NameChangeForm data={data.nameForm} bind:nameModalOpen={globalModalOpen} />
+         <NameChangeForm data={data.nameForm} bind:nameModalOpen={globalModalOpen} userId={data.user.id}>
       {/if}
       {#if modalSelector === 'email'}
          <EmailChangeForm data={data.emailForm} bind:emailModalOpen={globalModalOpen} user={data.user!}/>
