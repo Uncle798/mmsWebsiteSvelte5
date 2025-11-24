@@ -38,6 +38,20 @@ export const load = (async (event) => {
          }
       })
    }
+   const alternativeContact = await prisma.user.findFirst({
+      where: {
+         alternativeContactLeases: {
+            some: {
+               leaseId,
+            }
+         }
+      }
+   });
+   const alternativeContactAddress = await prisma.address.findFirst({
+      where: {
+         userId: alternativeContact?.id
+      }
+   })
    const invoices = await prisma.invoice.findMany({
       where: {
          leaseId: lease?.leaseId
@@ -46,5 +60,5 @@ export const load = (async (event) => {
          invoiceCreated: 'asc'
       }
    })
-   return { lease, customer, address, currentAddress, leaseEndForm, invoices };
+   return { lease, customer, address, currentAddress, leaseEndForm, invoices, alternativeContact, alternativeContactAddress };
 }) satisfies PageServerLoad;

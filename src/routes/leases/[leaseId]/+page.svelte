@@ -56,6 +56,14 @@
                   
                {/if}
             </div>
+            <div>
+               {#if data.alternativeContact}
+                  <UserEmployee user={data.alternativeContact} />
+                  {#if data.alternativeContactAddress}
+                     <AddressEmployee address={data.alternativeContactAddress} />
+                  {/if}
+               {/if}
+            </div>
          </div>
       {/if}
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2">
