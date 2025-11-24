@@ -32,7 +32,7 @@ export const actions: Actions = {
             alternativeContactId: alternativeContactRemovalForm.data.alternativeContactId
          },
          data: {
-            alternativeContactId: undefined
+            alternativeContactId: null,
          }
       })
       await prisma.user.delete({
