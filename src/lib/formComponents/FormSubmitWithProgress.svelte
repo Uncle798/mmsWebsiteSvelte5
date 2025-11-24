@@ -18,12 +18,12 @@
    {/if}
    {#if delayed && !timeout}
       <div transition:fade={{duration:600}}>
-         <ProgressRing value={null} classes='mx-1'/>
+         <ProgressRing value={null} classes='mx-2'/>
       </div>
    {/if}
    {#if timeout}         
       <div transition:fade={{duration:600}}>
-         <ProgressLine value={null} />
+         <ProgressLine value={null} classes='mx-2' />
       </div>
    {/if}
 </div>
