@@ -14,7 +14,6 @@
    }
    let { maxDate, minDate, label, value=$bindable(), errors, constraints, name, classes }:Props = $props();
    onMount(() => {
-      console.log(value);
       if(value){
          dateValue.push(parseDate(value));
       }

@@ -21,7 +21,6 @@
    let { form, message, errors, constraints, enhance, delayed, timeout } = superForm(data,{
       onSubmit(input) {
          input.formData.set('unitNum', $form.unitNum)
-         console.log(input.formData)
       },
    });
    const comboboxData:{label:string, value:string}[] = [];

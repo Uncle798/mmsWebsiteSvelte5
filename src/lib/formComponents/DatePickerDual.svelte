@@ -20,7 +20,6 @@
    <DatePicker 
       value={dateValue}
       onValueChange={(e) => {
-         console.log(e)
          dateValue = e.value;
          values = [];
          for(const value of dateValue){

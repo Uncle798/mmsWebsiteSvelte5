@@ -57,7 +57,6 @@
          if(event.target){
             const formName = 'newPaymentRecordForm'
             const value = event.get(event.path);
-            console.log(value);
             if(value && value !== ''){
                sessionStorage.setItem(`${formName}/invoiceNum=${invoice?.invoiceNum}:${event.path}`, value.toString());
             } else if(value === ''){
@@ -134,7 +133,6 @@
       if(invoice){
          $form.paymentAmount = invoice.invoiceAmount - invoice?.amountPaid;
       }
-      console.log('paymentTypesCookie', paymentTypesCookie)
       if(paymentTypesCookie !== 'true'){
          formTour = driver({
             showProgress: true,

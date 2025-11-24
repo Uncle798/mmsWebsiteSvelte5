@@ -27,7 +27,6 @@
 
    function setCurrentLeaseId(leaseId:string){
       currentLeaseId = leaseId;
-      console.log("leaseId", leaseId);
       modalSelector = 'leaseEnd';
       globalModalOpen = true;
    }

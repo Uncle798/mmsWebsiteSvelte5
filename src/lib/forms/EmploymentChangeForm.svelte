@@ -16,7 +16,6 @@
    let { form, message, enhance, delayed, timeout, submit, } = superForm(data, {
       id: userId,
       onSubmit: (input) => {
-         console.log(input.formData)
       }
    });
 </script>

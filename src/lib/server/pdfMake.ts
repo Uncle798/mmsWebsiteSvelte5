@@ -122,7 +122,6 @@ export async function makeInvoicePdf(invoice:Invoice, customer:User, address:Add
    if(download){
       return new Promise((resolve, reject) => {
          pdf.pipe(BlobStream()).on('finish', function(this:IBlobStream){
-            console.log('pdf generated')
             resolve(this.toBlob('application/pdf'));
          }).on('error', (err) => {
             console.error('err', err);
@@ -242,14 +241,12 @@ export async function makeRefundPdf(refund:RefundRecord, customer:User, address:
    if(download){
       return new Promise((resolve, reject) => {
          pdf.pipe(BlobStream()).on('finish', function(this:IBlobStream){
-            console.log('pdf generated')
             resolve(this.toBlob('application/pdf'));
          }).on('error', (err) => {
             console.error('err', err);
             reject(err)
          })
          pdf.end();
-         console.log('pdf ended')
       })
    }
    pdf.end();
