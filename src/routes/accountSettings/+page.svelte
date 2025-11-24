@@ -78,7 +78,7 @@
    <div class="flex flex-col sm:flex-row gap-2">
       <div>
          {#if data.user}
-               <UserCustomer user={data.user}/>
+            <UserCustomer user={data.user}/>
          {/if}
          {#if data.user?.emailVerified}
          <div class="flex ">
