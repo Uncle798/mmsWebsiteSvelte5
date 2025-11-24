@@ -15,15 +15,19 @@
       addressId?: string;
       redirectTo?: string;
       userId?: string;
+      modalOpen?: boolean;
       classes?: string;
    }
-   let { data, leaseId, addressId, redirectTo, userId, classes }:Props = $props();
+   let { data, leaseId, addressId, redirectTo, userId, modalOpen=$bindable(), classes }:Props = $props();
    let { form, message, errors, constraints, enhance, delayed, timeout } = superForm(data, {
       onSubmit({formData}) {
          if($form.phoneNum1){
             formData.set('phoneNum1', $form.phoneNum1.replace(/\D/g, ''));
          }
       },
+      onUpdate() {
+         modalOpen = false
+      }
    })
 </script>
 

@@ -86,8 +86,9 @@ export const actions:Actions = {
          const leaseId = event.url.searchParams.get('leaseId');
          const addressId = event.url.searchParams.get('addressId');
          if(redirectTo){
-            redirect(302, `/${redirectTo}?userId=${userId}&leaseId=${leaseId}&addressId=${addressId}&contactId=`)
+            redirect(302, `/${redirectTo}?userId=${userId}&leaseId=${leaseId}&addressId=${addressId}&contactId=`);
          }
+         return { alternativeContactForm }
       }
    }
 }
