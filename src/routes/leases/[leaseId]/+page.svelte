@@ -11,6 +11,7 @@
 	import InvoiceEmployee from '$lib/displayComponents/InvoiceEmployee.svelte';
 	import FormModal from '$lib/displayComponents/Modals/FormModal.svelte';
 	import AlternativeContactForm from '$lib/forms/AlternativeContactForm.svelte';
+	import AlternativeContactRemovalForm from '$lib/forms/AlternativeContactRemovalForm.svelte';
 
    let { data }: { data: PageData } = $props();
    let modalOpen = $state(false);
@@ -23,9 +24,11 @@
    >
       {#snippet content()}
          {#if modalReason === 'leaseEnd'}
-            <LeaseEndForm data={data.leaseEndForm} leaseId={data.lease!.leaseId} bind:leaseEndModalOpen={modalOpen}/>
+            <LeaseEndForm data={data.leaseEndForm} leaseId={data.lease!.leaseId} bind:leaseEndModalOpen={modalOpen} />
          {:else if modalReason === 'alternativeContact'}
             <AlternativeContactForm data={data.alternativeContactForm} leaseId={data.lease!.leaseId} bind:modalOpen />
+         {:else if modalReason === 'alternativeContactRemoval' && data.alternativeContact}
+            <AlternativeContactRemovalForm data={data.removeAlternativeContactForm} alternativeContactId={data.alternativeContact.id} leaseId={data.lease!.leaseId} bind:modalOpen/>
          {/if}
       {/snippet}
    </FormModal>
@@ -35,17 +38,7 @@
       {#if data.lease}
          <div class="border rounded-lg border-primary-50-950 flex flex-col sm:flex-row mx-2">
             <LeaseEmployee lease={data.lease} classes=''/>
-            {#if !data.lease.leaseEnded}
-               <button 
-                  type="button" 
-                  class="btn preset-filled-primary-50-950 m-2 h-8"  
-                  onclick={()=>{
-                     modalReason = 'leaseEnd'
-                     modalOpen = true;
-                  }}
-               >
-                  End Lease
-               </button>
+            <div class="flex flex-col">
                <button
                   type="button"
                   class="btn preset-filled-primary-50-950 h-8 my-2"
@@ -56,7 +49,31 @@
                >
                   Add alternative contact
                </button>
-            {/if}
+               {#if data.alternativeContact}
+                  <button
+                     type="button"
+                     class="btn preset-filled-primary-50-950 h-8 my-2"
+                     onclick={() => {
+                        modalReason = 'alternativeContactRemoval'
+                        modalOpen = true
+                     }}
+                  >
+                     Remove Alternative contact
+                  </button>
+               {/if}
+               {#if !data.lease.leaseEnded}
+                  <button 
+                     type="button" 
+                     class="btn preset-filled-primary-50-950 m-2 h-8"  
+                     onclick={()=>{
+                        modalReason = 'leaseEnd'
+                        modalOpen = true;
+                     }}
+                  >
+                     End Lease
+                  </button>
+               {/if}
+            </div>
             <div class="m-1 sm:m-2">
                {#if data.customer}
                   <UserEmployee user={data.customer} classes='mx-2'/>
