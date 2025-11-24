@@ -6,7 +6,7 @@ import { superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import { leaseEndFormSchema } from '$lib/formSchemas/leaseEndFormSchema';
 import { alternativeContactFormSchema } from '$lib/formSchemas/alternativeContactFormSchema';
-import { cuidIdFormSchema } from '$lib/formSchemas/cuidIdFormSchema';
+import { alternativeContactRemovalFormSchema } from '$lib/formSchemas/alternativeContactRemovalFormSchema';
 
 export const load = (async (event) => {
    if(!event.locals.user){
@@ -23,7 +23,7 @@ export const load = (async (event) => {
    }
    const leaseEndForm = await superValidate(valibot(leaseEndFormSchema));
    const alternativeContactForm = await superValidate(valibot(alternativeContactFormSchema));
-   const removeAlternativeContactForm = await superValidate(valibot(cuidIdFormSchema));
+   const removeAlternativeContactForm = await superValidate(valibot(alternativeContactRemovalFormSchema));
    const customer = await prisma.user.findUnique({
       where: {
          id: lease?.customerId
