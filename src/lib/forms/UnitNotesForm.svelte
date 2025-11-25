@@ -21,7 +21,6 @@
    const url = page.url.pathname;
    let { form, message, errors, constraints, enhance, delayed, timeout, submit } = superForm(data, {
       onChange(event) {
-         console.log(event);
          if(event.target){
             if(event.path === 'notes'){
                const formName = `${url}/unitNotesForm${unit.num.toString()}`

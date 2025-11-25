@@ -75,7 +75,6 @@
             registerModalOpen=true
          }
       }
-      console.log(data.demoCookie)
       if(data.demoCookie !== 'true'){  
          tour.drive();
       }

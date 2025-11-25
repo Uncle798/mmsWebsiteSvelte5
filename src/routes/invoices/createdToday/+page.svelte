@@ -60,7 +60,6 @@
                      selectedInvoices.push(invoice)
                   } else {
                      const index = selectedInvoices.map((inv) => inv.invoiceNum).indexOf(invoice.invoiceNum);
-                     console.log(index)
                      if(index > -1){
                         selectedInvoices.splice(index, 1);
                      }
