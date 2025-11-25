@@ -46,9 +46,17 @@ export const load = (async (event) => {
             }
          ]
       },
-      orderBy: {
-         familyName: 'asc'
-      }
+      orderBy: [
+         {  
+            organizationName: {sort: 'asc', nulls: 'last'}
+         },
+         {
+            familyName: 'asc'
+         },
+         {
+            givenName: 'asc'
+         }
+      ]
    });
    const leases = prisma.lease.findMany({
       where: {
