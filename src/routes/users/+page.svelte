@@ -26,6 +26,10 @@
          user.familyName?.toLowerCase().includes(search.toLowerCase());
       })
    )
+   let searchDrawerOpen = $state(false);
+   let adminFilter = $state(false);
+   let employeeFilter = $state(false);
+   let alternativeFilter = $state(false);
    const filterAdmin = $derived((users:User[]) => {
       if(adminFilter){
          return users.filter((user) =>{
@@ -43,16 +47,17 @@
       } else {
          return users;
       }
+   });
+   const filterAlternative = $derived((users:User[]) => {
+      if(alternativeFilter){
+         return users.filter((user) => {
+            return user.alternative === true
+         })
+      } else {
+         return users;
+      }
    })
-   let searchDrawerOpen = $state(false);
-   let explainerModalOpen = $state(true);
-   onMount(()=>{
-      setTimeout(()=>(
-         explainerModalOpen = false
-      ), 5000)
-   })
-   let adminFilter = $state(false);
-   let employeeFilter = $state(false);
+
    async function deleteUser(userId:string) {
       await fetch('/api/users', {
          method: 'DELETE',
@@ -89,21 +94,26 @@
          <div>
             Filter by 
             <Switch
-               checked={employeeFilter}
+               bind:checked={employeeFilter}
                name='employeeFilter'
                label='Employee filter'
             />
             <Switch
-               checked={adminFilter}
+               bind:checked={adminFilter}
                name='adminFilter'
                label='Admin filter'
+            />
+            <Switch
+               bind:checked={alternativeFilter}
+               name='adminFilter'
+               label='Alternative contact filter'
             />
          </div>
       {/snippet}
    </SearchDrawer>
-   <div in:fade={{duration:600}} class="m-2 mt-14 sm:mt-10">
+   <div in:fade={{duration:600}} class="m-2 mt-14 sm:mt-10 mb-8 sm:mb-8">
       <div class="grid grid-cols-1 gap-y-3 gap-x-1">
-         {#each slicedSource(searchedUsers(filterAdmin(filterEmployee(users)))) as user, i (user.id)}
+         {#each slicedSource(searchedUsers(filterAlternative(filterAdmin(filterEmployee(users))))) as user, i (user.id)}
             {#if i === 0}               
                <div class="rounded-lg border border-primary-50-950 flex flex-col sm:flex-row firstUser">
                   <UserAdmin {user} classes=" p-2 w-1/2"/>
