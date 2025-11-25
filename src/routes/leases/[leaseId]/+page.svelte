@@ -110,7 +110,7 @@
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2">
          {#each data.invoices as invoice}
             <div class="border border-primary-50-950 rounded-lg">
-               <InvoiceEmployee invoice={invoice} classes='h-60 p-2'/>
+               <InvoiceEmployee invoice={invoice} classes='p-2'/>
                {#if invoice.amountPaid < invoice.invoiceAmount}
                   <a href="/paymentRecord/new?invoiceNum={invoice.invoiceNum}" class="btn preset-filled-primary-50-950 h-8 m-2">Make a payment record for this invoice</a>
                {/if}
