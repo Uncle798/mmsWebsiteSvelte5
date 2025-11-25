@@ -27,4 +27,7 @@
 	{#if user.customerNotes}
 		<span>{user.customerNotes}</span>
 	{/if}
+	{#if user.alternative}
+		<span class="font-bold">Alternative Contact</span>
+	{/if}
 </div>
