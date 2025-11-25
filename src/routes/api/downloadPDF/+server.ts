@@ -34,7 +34,6 @@ export const GET:RequestHandler = async (event) => {
             })
          }
          const pdf = await makeRefundPdf(refund, customer, address, true) as Blob
-         console.log(pdf.size)
          event.setHeaders({
             'Content-Type': 'application/pdf',
          })

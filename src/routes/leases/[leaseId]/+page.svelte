@@ -16,6 +16,7 @@
    let { data }: { data: PageData } = $props();
    let modalOpen = $state(false);
    let modalReason = $state('');
+   let currentAlternativeContactId = $state('')
 </script>
 <Header title='Lease {data.lease?.leaseId}' />
 {#if  data.lease}   
@@ -27,8 +28,8 @@
             <LeaseEndForm data={data.leaseEndForm} leaseId={data.lease!.leaseId} bind:leaseEndModalOpen={modalOpen} />
          {:else if modalReason === 'alternativeContact'}
             <AlternativeContactForm data={data.alternativeContactForm} leaseId={data.lease!.leaseId} bind:modalOpen />
-         {:else if modalReason === 'alternativeContactRemoval' && data.alternativeContact}
-            <AlternativeContactRemovalForm data={data.removeAlternativeContactForm} alternativeContactId={data.alternativeContact.id} leaseId={data.lease!.leaseId} bind:modalOpen/>
+         {:else if modalReason === 'alternativeContactRemoval'}
+            <AlternativeContactRemovalForm data={data.removeAlternativeContactForm} alternativeContactId={currentAlternativeContactId} bind:modalOpen />
          {/if}
       {/snippet}
    </FormModal>
@@ -49,18 +50,6 @@
                >
                   Add alternative contact
                </button>
-               {#if data.alternativeContact}
-                  <button
-                     type="button"
-                     class="btn preset-filled-primary-50-950 h-8 my-2"
-                     onclick={() => {
-                        modalReason = 'alternativeContactRemoval'
-                        modalOpen = true
-                     }}
-                  >
-                     Remove alternative contact
-                  </button>
-               {/if}
                {#if !data.lease.leaseEnded}
                   <button 
                      type="button" 
@@ -95,12 +84,24 @@
                {/if}
             </div>
             <div>
-               {#if data.alternativeContact}
-                  <UserEmployee user={data.alternativeContact} />
-                  {#if data.alternativeContactAddress}
-                     <AddressEmployee address={data.alternativeContactAddress} />
+               {#each data.alternativeContacts as user}
+               {@const address = data.alternativeContactAddresses.find((address) => address.userId === user.id)}
+                  <UserEmployee {user} />
+                  {#if address}
+                     <AddressEmployee {address} />
                   {/if}
-               {/if}
+                  <button 
+                     type="button"
+                     class="btn preset-filled-primary-50-950"
+                     onclick={(e) => {
+                        modalReason = 'alternativeContactRemoval';
+                        modalOpen = true;
+                        currentAlternativeContactId = user.id
+                     }}
+                  >
+                     Remove alternative contact
+                  </button>
+               {/each}
             </div>
          </div>
       {/if}

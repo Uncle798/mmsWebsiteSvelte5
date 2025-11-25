@@ -8,12 +8,11 @@
    interface Props{
       data: SuperValidated<Infer<AlternativeContactRemovalFormSchema>>;
       alternativeContactId: string;
-      leaseId: string;
       modalOpen?: boolean;
       classes?: string;
    }
 
-   let { data, modalOpen=$bindable(false), alternativeContactId, leaseId, classes }:Props = $props()
+   let { data, modalOpen=$bindable(false), alternativeContactId, classes }:Props = $props()
    let { message, enhance, delayed, timeout } = superForm(data, {
       onUpdate(){
          modalOpen = false;
@@ -27,10 +26,8 @@
 
 <div class={classes}>
    <FormMessage message={$message} />
-   {alternativeContactId}
    <form action="/forms/alternativeContactRemovalForm " method="POST" use:enhance>
       <input type="hidden" name="alternativeContactId" id="alternativeContactId" value={alternativeContactId} />
-      <input type="hidden" name="leaseId" id="leaseId" value={leaseId} />
       <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} buttonText="I'm sure I want to delete this contact"/>
    </form>
 </div>

@@ -42,7 +42,7 @@ export const load = (async (event) => {
          }
       })
    }
-   const alternativeContact = await prisma.user.findFirst({
+   const alternativeContacts = await prisma.user.findMany({
       where: {
          alternativeContactLeases: {
             some: {
@@ -51,9 +51,15 @@ export const load = (async (event) => {
          }
       }
    });
-   const alternativeContactAddress = await prisma.address.findFirst({
+   const alternativeContactAddresses = await prisma.address.findMany({
       where: {
-         userId: alternativeContact?.id
+         user: {
+            alternativeContactLeases: {
+               some: {
+                  leaseId
+               }
+            }
+         }
       }
    })
    const invoices = await prisma.invoice.findMany({
@@ -73,7 +79,7 @@ export const load = (async (event) => {
       alternativeContactForm,
       removeAlternativeContactForm,
       invoices, 
-      alternativeContact, 
-      alternativeContactAddress, 
+      alternativeContacts, 
+      alternativeContactAddresses, 
    };
 }) satisfies PageServerLoad;
