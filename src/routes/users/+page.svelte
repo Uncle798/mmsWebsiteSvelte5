@@ -57,7 +57,46 @@
          return users;
       }
    })
-
+   let sortedUsers = $derived((customers:User[]) => {
+      return customers.sort((a, b) => {
+         console.log(a.organizationName)
+         if(a.organizationName && b.organizationName){
+            if(a.organizationName > b.organizationName){
+               return 1;
+            } else if(a.organizationName < b.organizationName){
+               return -1;
+            } else{
+               return 0;
+            }
+         }else if(a.organizationName && b.familyName){
+            if(a.organizationName > b.familyName){
+               return 1;
+            }else if(a.organizationName < b.familyName){
+               return -1;
+            }else{
+               return 0;
+            }
+         }else if(a.familyName && b.organizationName){
+            if(a.familyName > b.organizationName){
+               return 1;
+            }else if(a.familyName < b.organizationName){
+               return -1;
+            }else{
+               return 0;
+            }
+         }else if(a.familyName && b.familyName){
+            if(a.familyName > b.familyName){
+               return 1;
+            }else if(a.familyName < b.familyName){
+               return -1;
+            }else {
+               return 0;
+            }
+         }else {
+            return 0;
+         }
+      })
+   });
    async function deleteUser(userId:string) {
       await fetch('/api/users', {
          method: 'DELETE',
@@ -113,7 +152,7 @@
    </SearchDrawer>
    <div in:fade={{duration:600}} class="m-2 mt-14 sm:mt-10 mb-8 sm:mb-8">
       <div class="grid grid-cols-1 gap-y-3 gap-x-1">
-         {#each slicedSource(searchedUsers(filterAlternative(filterAdmin(filterEmployee(users))))) as user, i (user.id)}
+         {#each slicedSource(searchedUsers(filterAlternative(filterAdmin(filterEmployee(sortedUsers(users)))))) as user, i (user.id)}
             {#if i === 0}               
                <div class="rounded-lg border border-primary-50-950 flex flex-col sm:flex-row firstUser">
                   <UserAdmin {user} classes=" p-2 w-1/2"/>

@@ -90,7 +90,7 @@
             return 0;
          }
       })
-   })
+   });
    let overdueInvoices = $derived((invoices:Invoice[]) => invoices.filter((invoice) => {
       return invoice.invoiceDue <= new Date() && (invoice.invoiceAmount > invoice.amountPaid);
    }))
