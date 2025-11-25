@@ -19,7 +19,7 @@
    import 'driver.js/dist/driver.css';
 	import RevenueBar from '$lib/displayComponents/RevenueBar.svelte';
 	import UserRevenue from '$lib/displayComponents/UserRevenue.svelte';
-	import { form } from '$app/server';
+
    let { data }: { data: PageData } = $props();
    let pageNum = $state(1);
    let size = $state(25);
@@ -39,7 +39,6 @@
    })
    let totalInvoiced = $derived((invoices:Invoice[]) => {
       let total = 0;
-      console.log(invoices)
       for(const invoice of invoices){
          total += invoice.invoiceAmount;
       }
@@ -51,6 +50,46 @@
          total += payment.paymentAmount;
       }
       return total;
+   });
+   let sortedUsers = $derived((customers:User[]) => {
+      return customers.sort((a, b) => {
+         console.log(a.organizationName)
+         if(a.organizationName && b.organizationName){
+            if(a.organizationName > b.organizationName){
+               return 1;
+            } else if(a.organizationName < b.organizationName){
+               return -1;
+            } else{
+               return 0;
+            }
+         }else if(a.organizationName && b.familyName){
+            if(a.organizationName > b.familyName){
+               return 1;
+            }else if(a.organizationName < b.familyName){
+               return -1;
+            }else{
+               return 0;
+            }
+         }else if(a.familyName && b.organizationName){
+            if(a.familyName > b.organizationName){
+               return 1;
+            }else if(a.familyName < b.organizationName){
+               return -1;
+            }else{
+               return 0;
+            }
+         }else if(a.familyName && b.familyName){
+            if(a.familyName > b.familyName){
+               return 1;
+            }else if(a.familyName < b.familyName){
+               return -1;
+            }else {
+               return 0;
+            }
+         }else {
+            return 0;
+         }
+      })
    })
    let overdueInvoices = $derived((invoices:Invoice[]) => invoices.filter((invoice) => {
       return invoice.invoiceDue <= new Date() && (invoice.invoiceAmount > invoice.amountPaid);
@@ -140,7 +179,7 @@
                         {/snippet}
                   </FormModal>
                      <div class="grid grid-cols-1 mx-1 sm:mx-2 gap-y-2 gap-x-1 ">
-                        {#each slicedSource(searchedSource(customers)) as customer, i (customer.id)}
+                        {#each slicedSource(searchedSource(sortedUsers(customers))) as customer, i (customer.id)}
                         {@const address = addresses.find((address) => address.userId === customer.id)}
                         {@const customerLeases = leases.filter((lease) => lease.customerId === customer.id)}
                         {@const customerInvoices = invoices.filter((invoice) => invoice.customerId === customer.id)}
