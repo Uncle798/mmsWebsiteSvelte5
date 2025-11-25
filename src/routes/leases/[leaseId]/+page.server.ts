@@ -44,9 +44,9 @@ export const load = (async (event) => {
    }
    const alternativeContacts = await prisma.user.findMany({
       where: {
-         alternativeContactLeases: {
+         leaseAlternativeContacts: {
             some: {
-               leaseId,
+               leaseId: lease?.leaseId
             }
          }
       }
@@ -54,9 +54,9 @@ export const load = (async (event) => {
    const alternativeContactAddresses = await prisma.address.findMany({
       where: {
          user: {
-            alternativeContactLeases: {
+            leaseAlternativeContacts: {
                some: {
-                  leaseId
+                  leaseId: lease?.leaseId
                }
             }
          }

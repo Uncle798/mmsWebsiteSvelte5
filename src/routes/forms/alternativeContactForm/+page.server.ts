@@ -48,8 +48,15 @@ export const actions:Actions = {
                   familyName: data.familyName,
                   email: data.email,
                   alternative: true,
-               }
+                  
+               },
             });
+            await prisma.leaseAlternativeContacts.create({
+               data: {
+                  leaseId: lease.leaseId,
+                  userId: contact.id,
+               }
+            })
          } else {
             contact = await prisma.user.update({
                where: {
@@ -57,6 +64,7 @@ export const actions:Actions = {
                },
                data: {
                   alternative: true,
+
                }
             })
          }
@@ -71,14 +79,6 @@ export const actions:Actions = {
                phoneNum1: data.phoneNum1,
                phoneNum1Country: data.phoneNum1Country,
                userId: contact.id
-            }
-         });
-         await prisma.lease.update({
-            where: {
-               leaseId: lease.leaseId,
-            },
-            data: {
-               alternativeContactId: contact.id
             }
          });
          const redirectTo = event.url.searchParams.get('redirectTo');

@@ -4,40 +4,40 @@ generator client {
 }
 
 datasource db {
-  provider  = "postgresql"
+  provider = "postgresql"
 }
 
 model User {
-  id                       String             @id @unique @default(cuid(2)) @map("id")
-  createdAt                DateTime           @default(now()) @map("created_at")
-  updatedAt                DateTime?          @updatedAt @map("updated_at")
-  email                    String?            @unique
+  id                       String                     @id @unique @default(cuid(2)) @map("id")
+  createdAt                DateTime                   @default(now()) @map("created_at")
+  updatedAt                DateTime?                  @updatedAt @map("updated_at")
+  email                    String?                    @unique
   givenName                String?
   familyName               String?
   organizationName         String?
-  emailVerified            Boolean?           @map("email_verified")
-  employee                 Boolean            @default(false)
-  admin                    Boolean            @default(false)
-  archive                  Boolean            @default(false)
+  emailVerified            Boolean?                   @map("email_verified")
+  employee                 Boolean                    @default(false)
+  admin                    Boolean                    @default(false)
+  archive                  Boolean                    @default(false)
   googleId                 String?
   yahooId                  String?
   customerNotes            String?
-  doNotRent                Boolean            @default(false)
-  alternative              Boolean            @default(false)
+  doNotRent                Boolean                    @default(false)
+  alternative              Boolean                    @default(false)
   address                  Address[]
-  customerInvoices         Invoice[]          @relation("customer")
-  employeeInvoices         Invoice[]          @relation("employee")
-  customerLeases           Lease[]            @relation("customer")
-  employeeLeases           Lease[]            @relation("employee")
-  alternativeContactLeases Lease[]            @relation("alternativeContact")
-  paymentMade              PaymentRecord[]    @relation("customer")
-  paymentReceived          PaymentRecord[]    @relation("employee")
-  refundReceived           RefundRecord[]     @relation("customer")
-  refundMade               RefundRecord[]     @relation("employee")
+  customerInvoices         Invoice[]                  @relation("customer")
+  employeeInvoices         Invoice[]                  @relation("employee")
+  customerLeases           Lease[]                    @relation("customer")
+  employeeLeases           Lease[]                    @relation("employee")
+  paymentMade              PaymentRecord[]            @relation("customer")
+  paymentReceived          PaymentRecord[]            @relation("employee")
+  refundReceived           RefundRecord[]             @relation("customer")
+  refundMade               RefundRecord[]             @relation("employee")
   session                  Session[]
   verification             Verification[]
   employeeDiscountCode     DiscountCode[]
   PropertyWithLien         PropertyWithLien[]
+  leaseAlternativeContacts LeaseAlternativeContacts[]
 
   @@unique([id, email])
   @@unique([email, givenName, familyName])
@@ -92,35 +92,44 @@ model Unit {
 }
 
 model Lease {
-  leaseId              String             @id @unique @default(cuid(2))
-  customerId           String
-  employeeId           String
-  alternativeContactId String?
-  addressId            String
-  unitNum              String
-  price                Float
-  depositAmount        Float?
-  discountedAmount     Float?
-  discountId           String?
-  leaseCreatedAt       DateTime           @default(now())
-  leaseReturnedAt      DateTime?
-  leaseEffectiveDate   DateTime
-  leaseEnded           DateTime?
-  dropboxURL           String?
-  anvilEID             String?            @unique
-  subscriptionId       String?
-  keysProvided         Int                @default(0)
-  invoices             Invoice[]
-  Address              Address            @relation(fields: [addressId], references: [addressId], onDelete: NoAction, onUpdate: NoAction)
-  customer             User               @relation("customer", fields: [customerId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  employee             User               @relation("employee", fields: [employeeId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  alternativeContact   User?              @relation("alternativeContact", fields: [alternativeContactId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  unit                 Unit               @relation(fields: [unitNum], references: [num])
-  discountCode         DiscountCode?      @relation(fields: [discountId], references: [discountId])
-  PropertyWithLien     PropertyWithLien[]
+  leaseId                  String                     @id @unique @default(cuid(2))
+  customerId               String
+  employeeId               String
+  alternativeContactId     String[]
+  addressId                String
+  unitNum                  String
+  price                    Float
+  depositAmount            Float?
+  discountedAmount         Float?
+  discountId               String?
+  leaseCreatedAt           DateTime                   @default(now())
+  leaseReturnedAt          DateTime?
+  leaseEffectiveDate       DateTime
+  leaseEnded               DateTime?
+  dropboxURL               String?
+  anvilEID                 String?                    @unique
+  subscriptionId           String?
+  keysProvided             Int                        @default(0)
+  invoices                 Invoice[]
+  Address                  Address                    @relation(fields: [addressId], references: [addressId], onDelete: NoAction, onUpdate: NoAction)
+  customer                 User                       @relation("customer", fields: [customerId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  employee                 User                       @relation("employee", fields: [employeeId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  unit                     Unit                       @relation(fields: [unitNum], references: [num])
+  discountCode             DiscountCode?              @relation(fields: [discountId], references: [discountId])
+  PropertyWithLien         PropertyWithLien[]
+  leaseAlternativeContacts LeaseAlternativeContacts[]
 
   @@unique([leaseId, unitNum, price])
   @@index([leaseId, leaseCreatedAt(sort: Desc)])
+}
+
+model LeaseAlternativeContacts {
+  user    User   @relation(fields: [userId], references: [id])
+  userId  String
+  lease   Lease  @relation(fields: [leaseId], references: [leaseId])
+  leaseId String
+
+  @@id([userId, leaseId])
 }
 
 model Invoice {
@@ -143,23 +152,23 @@ model Invoice {
 }
 
 model PaymentRecord {
-  paymentNumber     Int            @id @unique @default(autoincrement())
-  transactionId     String?        @unique
-  invoiceNum        Int?
-  customerId        String
-  paymentAmount     Float
-  employeeId        String?
-  payee             String?
-  paymentCreated    DateTime       @default(now())
-  paymentCompleted  DateTime?
-  paymentNotes      String?
-  deposit           Boolean        @default(false)
-  refundedAmount    Float          @default(0.0)
-  paymentType       PaymentType
-  invoice           Invoice?       @relation(fields: [invoiceNum], references: [invoiceNum])
-  customer          User           @relation("customer", fields: [customerId], references: [id])
-  receiver          User?          @relation("employee", fields: [employeeId], references: [id])
-  refundRecords     RefundRecord[]
+  paymentNumber    Int            @id @unique @default(autoincrement())
+  transactionId    String?        @unique
+  invoiceNum       Int?
+  customerId       String
+  paymentAmount    Float
+  employeeId       String?
+  payee            String?
+  paymentCreated   DateTime       @default(now())
+  paymentCompleted DateTime?
+  paymentNotes     String?
+  deposit          Boolean        @default(false)
+  refundedAmount   Float          @default(0.0)
+  paymentType      PaymentType
+  invoice          Invoice?       @relation(fields: [invoiceNum], references: [invoiceNum])
+  customer         User           @relation("customer", fields: [customerId], references: [id])
+  receiver         User?          @relation("employee", fields: [employeeId], references: [id])
+  refundRecords    RefundRecord[]
 }
 
 model RefundRecord {

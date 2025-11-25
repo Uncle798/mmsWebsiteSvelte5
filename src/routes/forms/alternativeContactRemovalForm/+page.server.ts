@@ -15,24 +15,21 @@ export const actions: Actions = {
       const alternativeContactRemovalForm = await superValidate(formData, valibot(alternativeContactRemovalFormSchema));
       if(!alternativeContactRemovalForm.valid){
          console.log(alternativeContactRemovalForm);
-         return message(alternativeContactRemovalForm, 'Form not valid')
+         return message(alternativeContactRemovalForm, 'Form not valid');
       }
       const { success, reset } = await ratelimit.employeeForm.limit(event.locals.user.id);
       if(!success) {
          const timeRemaining = Math.floor((reset - Date.now()) /1000);
-         return message(alternativeContactRemovalForm, `Please wait ${timeRemaining} seconds before trying again.`)
+         return message(alternativeContactRemovalForm, `Please wait ${timeRemaining} seconds before trying again.`);
       }
       await prisma.address.deleteMany({
          where: {
             userId: alternativeContactRemovalForm.data.alternativeContactId
          }
       });
-      await prisma.lease.updateMany({
+      await prisma.leaseAlternativeContacts.deleteMany({
          where: {
-            alternativeContactId: alternativeContactRemovalForm.data.alternativeContactId
-         },
-         data: {
-            alternativeContactId: null,
+            userId: alternativeContactRemovalForm.data.alternativeContactId
          }
       })
       await prisma.user.delete({
