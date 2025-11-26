@@ -73,6 +73,7 @@
                   label='Select alt contact'
                   onValueChange={async(e) => {
                      await fetch('/api/addAlternativeContact', {
+                        method: 'POST',
                         body: JSON.stringify({userId: e.value[0], leaseId: data.lease?.leaseId})
                      });
                      invalidateAll();
