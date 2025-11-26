@@ -55,8 +55,8 @@ export const load = (async (event) => {
    let lease:Lease | null = null;
    let properties:PropertyWithLien[] | null = null;
    let lienHolderAddresses:Address[] = [];
-   let alternativeContact:User | null = null; 
-   let alternativeAddress:Address | null = null;
+   let alternativeContacts:User[] = []; 
+   let alternativeAddresses:Address[] = [];
    const lienHolderContacts:User[] = [];
    if(leaseId){
       lease = await prisma.lease.findUnique({
@@ -69,26 +69,24 @@ export const load = (async (event) => {
             leaseId,
          },
       });
-      if(lease?.alternativeContactId){
-         alternativeContact = await prisma.user.findUnique({
-            where: {
-               id: lease?.alternativeContactId ? lease.alternativeContactId : undefined
+      alternativeContacts = await prisma.user.findMany({
+         where: {
+            leaseAlternativeContacts: {
+               some: {
+                  leaseId: lease?.leaseId
+               }
             }
-         })
-      }
-      if(alternativeContact){
-         alternativeAddress = await prisma.address.findFirst({
+         }
+      })
+      for(const altContact of alternativeContacts){
+         const address = await prisma.address.findFirst({
             where: {
-               AND: [
-                  { 
-                     userId: alternativeContact.id,
-                  },
-                  {
-                     softDelete: false,
-                  }
-               ]
+               userId: altContact.id
             }
-         })
+         });
+         if(address){
+            alternativeAddresses.push(address)
+         }
       }
       if(properties){
          for(const property of properties){
@@ -149,8 +147,8 @@ export const load = (async (event) => {
       properties,
       lienHolderAddresses,
       lienHolderContacts,
-      alternativeContact,
-      alternativeAddress,
+      alternativeContacts,
+      alternativeAddresses,
       customers,
       existingAddresses,
       onboardingRegisterForm, 

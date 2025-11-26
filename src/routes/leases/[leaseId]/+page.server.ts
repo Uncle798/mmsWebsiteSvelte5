@@ -28,7 +28,7 @@ export const load = (async (event) => {
       where: {
          id: lease?.customerId
       }
-   })
+   });
    const address = await prisma.address.findUnique({
       where: {
          addressId: lease?.addressId
