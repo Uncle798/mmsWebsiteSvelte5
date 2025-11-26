@@ -27,6 +27,8 @@
             const value = event.get(event.path);
             if(value){
                sessionStorage.setItem(key, value);
+            }else {
+               sessionStorage.removeItem(key);
             }
          }
       },
