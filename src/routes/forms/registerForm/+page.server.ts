@@ -82,10 +82,10 @@ export const actions: Actions = {
 		}
       const user = await prisma.user.create({
 			data:{ 
-				email: registerForm.data.email, 
-				givenName: registerForm.data.givenName,
-				familyName: registerForm.data.familyName,
-				organizationName: registerForm.data.organizationName,
+				email: registerForm.data.email ? registerForm.data.email : undefined, 
+				givenName: registerForm.data.givenName ? registerForm.data.givenName : undefined,
+				familyName: registerForm.data.familyName ? registerForm.data.familyName : undefined,
+				organizationName: registerForm.data.organizationName ? registerForm.data.organizationName : undefined,
 			}
 		});
 		const unitNum = event.url.searchParams.get('unitNum');
