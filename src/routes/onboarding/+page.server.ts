@@ -81,7 +81,14 @@ export const load = (async (event) => {
       for(const altContact of alternativeContacts){
          const address = await prisma.address.findFirst({
             where: {
-               userId: altContact.id
+               AND: [
+                  {
+                     userId: altContact.id
+                  },
+                  {
+                     softDelete: false
+                  }
+               ]
             }
          });
          if(address){
