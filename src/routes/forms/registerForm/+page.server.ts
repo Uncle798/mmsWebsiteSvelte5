@@ -70,14 +70,16 @@ export const actions: Actions = {
          const timeRemaining = Math.floor((reset - Date.now()) / 1000);
          return message(registerForm, `Please wait ${timeRemaining} seconds before trying again`)
       }
-      const userAlreadyExists = await prisma.user.findUnique({
-			where:{
-				email: registerForm.data.email
+		if(registerForm.data.email){
+			const userAlreadyExists = await prisma.user.findUnique({
+				where:{
+					email: registerForm.data.email
+				}
+			})
+			if(userAlreadyExists){
+				return message(registerForm, 'User Already exists');
 			}
-		})
-      if(userAlreadyExists){
-         return message(registerForm, 'User Already exists');
-      }
+		}
       const user = await prisma.user.create({
 			data:{ 
 				email: registerForm.data.email, 
