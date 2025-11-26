@@ -100,29 +100,27 @@
                   
                {/if}
             </div>
-            <div>
-               {#if data.alternativeContacts.length > 0}                  
-                  {#each data.alternativeContacts as user}
-                  {@const address = data.alternativeContactAddresses.find((address) => address.userId === user.id)}
-                     <div class="flex flex-col">
-                        <UserEmployee {user} />
-                        {#if address}
-                           <AddressEmployee {address} />
-                        {/if}
-                        <button 
-                           type="button"
-                           class="btn preset-filled-primary-50-950"
-                           onclick={(e) => {
-                              modalReason = 'alternativeContactRemoval';
-                              modalOpen = true;
-                              currentAlternativeContactId = user.id
-                           }}
-                        >
-                           Remove alternative contact
-                        </button>
-                     </div>
-                  {/each}
-               {/if}
+            <div>             
+               {#each data.alternativeContacts as user}
+               {@const address = data.alternativeContactAddresses.find((address) => address.userId === user.id)}
+                  <div class="flex flex-col">
+                     <UserEmployee {user} />
+                     {#if address}
+                        <AddressEmployee {address} />
+                     {/if}
+                     <button 
+                        type="button"
+                        class="btn preset-filled-primary-50-950"
+                        onclick={(e) => {
+                           modalReason = 'alternativeContactRemoval';
+                           modalOpen = true;
+                           currentAlternativeContactId = user.id
+                        }}
+                     >
+                        Remove alternative contact
+                     </button>
+                  </div>
+               {/each}
             </div>
          </div>
       {/if}
