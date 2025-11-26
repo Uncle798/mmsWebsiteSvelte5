@@ -39,7 +39,7 @@
 </script>
 
 <Header title='Input Lease Details' />
-<div class="mt-10 mx-2">
+<div class="mt-10 mx-2 mb-8">
    {#if !data.customer}  
       <OnboardingRegisterForm data={data.onboardingRegisterForm} formType='employee' redirectTo='onboarding'/>
       {#if customerComboboxData.length > 0}
