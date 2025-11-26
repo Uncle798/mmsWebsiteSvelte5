@@ -45,6 +45,9 @@ export const load = (async (event) => {
    const allAlternativeContacts = await prisma.user.findMany({
       where: {
          alternative: true
+      },
+      orderBy: {
+         familyName: 'asc'
       }
    })
    const alternativeContacts = await prisma.user.findMany({
