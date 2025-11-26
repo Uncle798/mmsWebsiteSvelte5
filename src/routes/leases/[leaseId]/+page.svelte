@@ -12,11 +12,17 @@
 	import FormModal from '$lib/displayComponents/Modals/FormModal.svelte';
 	import AlternativeContactForm from '$lib/forms/AlternativeContactForm.svelte';
 	import AlternativeContactRemovalForm from '$lib/forms/AlternativeContactRemovalForm.svelte';
+	import Combobox from '$lib/formComponents/Combobox.svelte';
+	import { invalidateAll } from '$app/navigation';
 
    let { data }: { data: PageData } = $props();
    let modalOpen = $state(false);
    let modalReason = $state('');
-   let currentAlternativeContactId = $state('')
+   let currentAlternativeContactId = $state('');
+   const comboboxData:{label:string, value:string}[] = [];
+   for(const altContact of data.allAlternativeContacts){
+      comboboxData.push({label: `${altContact.givenName} ${altContact.familyName}`, value: altContact.id})
+   }
 </script>
 <Header title='Lease {data.lease?.leaseId}' />
 {#if  data.lease}   
@@ -62,6 +68,16 @@
                      End lease
                   </button>
                {/if}
+               <Combobox
+                  data={comboboxData}
+                  label='Select alt contact'
+                  onValueChange={async(e) => {
+                     await fetch('/api/addAlternativeContact', {
+                        body: JSON.stringify({userId: e.value[0], leaseId: data.lease?.leaseId})
+                     });
+                     invalidateAll();
+                  }}
+               />
             </div>
             <div class="m-1 sm:m-2">
                {#if data.customer}
@@ -84,26 +100,28 @@
                {/if}
             </div>
             <div>
-               {#each data.alternativeContacts as user}
-               {@const address = data.alternativeContactAddresses.find((address) => address.userId === user.id)}
-                  <div class="flex flex-col">
-                     <UserEmployee {user} />
-                     {#if address}
-                        <AddressEmployee {address} />
-                     {/if}
-                     <button 
-                        type="button"
-                        class="btn preset-filled-primary-50-950"
-                        onclick={(e) => {
-                           modalReason = 'alternativeContactRemoval';
-                           modalOpen = true;
-                           currentAlternativeContactId = user.id
-                        }}
-                     >
-                        Remove alternative contact
-                     </button>
-                  </div>
-               {/each}
+               {#if data.alternativeContacts.length > 0}                  
+                  {#each data.alternativeContacts as user}
+                  {@const address = data.alternativeContactAddresses.find((address) => address.userId === user.id)}
+                     <div class="flex flex-col">
+                        <UserEmployee {user} />
+                        {#if address}
+                           <AddressEmployee {address} />
+                        {/if}
+                        <button 
+                           type="button"
+                           class="btn preset-filled-primary-50-950"
+                           onclick={(e) => {
+                              modalReason = 'alternativeContactRemoval';
+                              modalOpen = true;
+                              currentAlternativeContactId = user.id
+                           }}
+                        >
+                           Remove alternative contact
+                        </button>
+                     </div>
+                  {/each}
+               {/if}
             </div>
          </div>
       {/if}

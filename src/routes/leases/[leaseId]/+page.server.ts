@@ -42,6 +42,11 @@ export const load = (async (event) => {
          }
       })
    }
+   const allAlternativeContacts = await prisma.user.findMany({
+      where: {
+         alternative: true
+      }
+   })
    const alternativeContacts = await prisma.user.findMany({
       where: {
          leaseAlternativeContacts: {
@@ -81,5 +86,6 @@ export const load = (async (event) => {
       invoices, 
       alternativeContacts, 
       alternativeContactAddresses, 
+      allAlternativeContacts,
    };
 }) satisfies PageServerLoad;
