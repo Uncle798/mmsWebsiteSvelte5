@@ -79,15 +79,16 @@
          {:else}
             <div>
                <LeaseEmployee lease={data.lease} />
-               {#if data.alternativeContact}
-                  <UserEmployee user={data.alternativeContact} />
-                  {#if data.alternativeAddress}
-                     <AddressEmployee address={data.alternativeAddress} />
+               {#each data.alternativeContacts as user}
+               {@const address = data.alternativeAddresses.find((address) => address.userId === user.id)}
+                  <UserEmployee {user} />
+                  {#if address}
+                     <AddressEmployee {address} />
                   {/if}
-               {/if}
+               {/each}
                <a href="/onboarding" class="btn preset-filled-primary-50-950">Create another lease</a>
             </div>
-            {#if data.alternativeContactForm && !data.alternativeContact}
+            {#if data.alternativeContactForm}
                <div>
                   <h3 class="h3">Enter the alternative contact info</h3>
                </div>
