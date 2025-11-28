@@ -23,7 +23,8 @@
    let searchedUsers = $derived((users:User[]) => 
       users.filter((user) => {
          return user.givenName?.toLowerCase().includes(search.toLowerCase()) ||
-         user.familyName?.toLowerCase().includes(search.toLowerCase());
+         user.familyName?.toLowerCase().includes(search.toLowerCase()) ||
+         user.organizationName?.toLowerCase().includes(search.toLowerCase());
       })
    )
    let searchDrawerOpen = $state(false);
