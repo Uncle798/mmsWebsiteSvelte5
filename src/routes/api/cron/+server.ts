@@ -14,30 +14,28 @@ export const GET:RequestHandler = async (event) => {
          leaseEnded: null
       }
    });
-   // for tomorrow only
-   for(const lease of leases){
-      await prisma.unit.update({
-         where: {
-            num: lease.unitNum,
-         },
-         data: {
-            leasedPrice: lease.price
-         }
-      })
-   }
    let today = dayjs();
    const todaysLeases = leases.filter((lease) => dayjs(lease.leaseEffectiveDate).date() === today.date());
    const todaysInvoices:Invoice[] = [];
    for(const lease of todaysLeases){
-      todaysInvoices.push(await prisma.invoice.create({
-         data: {
-            leaseId: lease.leaseId,
-            invoiceAmount: lease.price,
-            customerId: lease.customerId,
-            invoiceDue: today.add(1, 'month').toDate(),
-            invoiceNotes: `Rent for unit ${lease.unitNum.replace(/^0/gm, '')} for ${today.format('MMMM YYYY')}`
+      const invoice = await prisma.invoice.findFirst({
+         where: {
+            invoiceCreated: {
+               gte: new Date(new Date().setHours(0,0,0,0))
+            }
          }
-      }))
+      })
+      if(!invoice){
+         todaysInvoices.push(await prisma.invoice.create({
+            data: {
+               leaseId: lease.leaseId,
+               invoiceAmount: lease.price,
+               customerId: lease.customerId,
+               invoiceDue: today.add(1, 'month').toDate(),
+               invoiceNotes: `Rent for unit ${lease.unitNum.replace(/^0/gm, '')} for ${today.format('MMMM D YYYY')} - ${today.add(1,'month').format('MMMM D YYYY')}`
+            }
+         }))
+      }
    }
    let totalInvoiced = 0;
    for(const invoice of todaysInvoices){
