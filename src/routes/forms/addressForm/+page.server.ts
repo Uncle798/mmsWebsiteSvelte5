@@ -6,6 +6,7 @@ import { addressFormSchema } from '$lib/formSchemas/addressFormSchema';
 import { prisma } from '$lib/server/prisma';
 import { error, redirect } from '@sveltejs/kit';
 import { DEV_ME_KEY } from '$env/static/private';
+import type { Address } from '../../../generated/prisma/client';
 
 export const load:PageServerLoad = (async () => {
    const addressForm = await superValidate(valibot(addressFormSchema));
@@ -38,6 +39,7 @@ export const actions: Actions = {
                ]
             }
          });
+         let newAddress:Omit<Address, 'addressId' | 'phoneNum1Validated' | 'softDelete'>;
          if(oldAddress){
             oldAddress = await prisma.address.update({
                where:{
@@ -47,32 +49,38 @@ export const actions: Actions = {
                   softDelete: true,
                }
             })
-         }
-         const phoneValidResponse = await fetch(`https://api.dev.me/v1-get-phone-details?phone=${addressForm.data.phoneNum1Country}${addressForm.data.phoneNum1}`,
-            {
-               headers: {
-                  'Accept': 'application/json',
-                  'x-api-key': DEV_ME_KEY
+            const phoneValidResponse = await fetch(`https://api.dev.me/v1-get-phone-details?phone=${addressForm.data.phoneNum1Country}${addressForm.data.phoneNum1}`,
+               {
+                  headers: {
+                     'Accept': 'application/json',
+                     'x-api-key': DEV_ME_KEY
+                  }
                }
+            )
+            const phoneValid = await phoneValidResponse.json();
+            if(!phoneValid.valid){
+               return message(addressForm, 'Phone number not valid')
             }
-         )
-         const phoneValid = await phoneValidResponse.json();
-         if(!phoneValid.valid){
-            return message(addressForm, 'Phone number not valid')
-         }
-         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-         const {phoneNum1, phoneNum1Country, ...rest} = addressForm.data
-            const newAddress = {
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            const data = addressForm.data
+            newAddress = {
                phoneNum1:phoneValid.nationalNumber,
                phoneNum1Country: phoneValid.callingCode,
-               ...rest
+               address1: data.address1 ? data.address1 : oldAddress.address1, 
+               address2: data.address2 ? data.address2 : oldAddress.address2,
+               city: data.city ? data.city : oldAddress.city, 
+               state: data.state? data.state : oldAddress.state,
+               postalCode: data.postalCode ? data.postalCode : oldAddress.postalCode,
+               country: data.country ? data.country : oldAddress.country,
+               userId: data.userId
             }
             const dbAddress = await prisma.address.create({
                data: newAddress
             })
-         const redirectTo = event.url.searchParams.get('redirectTo');
-         if(redirectTo){
-            redirect(303, `/${redirectTo}?addressId=${dbAddress.addressId}&userId=${data.userId}`)
+            const redirectTo = event.url.searchParams.get('redirectTo');
+            if(redirectTo){
+               redirect(303, `/${redirectTo}?addressId=${dbAddress.addressId}&userId=${data.userId}`)
+            }
          }
       }
       return {addressForm}
