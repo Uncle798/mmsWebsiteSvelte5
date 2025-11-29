@@ -13,7 +13,7 @@
 	import AlternativeContactForm from '$lib/forms/AlternativeContactForm.svelte';
 	import AlternativeContactRemovalForm from '$lib/forms/AlternativeContactRemovalForm.svelte';
 	import Combobox from '$lib/formComponents/Combobox.svelte';
-	import { invalidateAll } from '$app/navigation';
+	import { goto, invalidateAll } from '$app/navigation';
 
    let { data }: { data: PageData } = $props();
    let modalOpen = $state(false);
@@ -66,6 +66,22 @@
                      }}
                   >
                      End lease
+                  </button>
+               {:else}
+                  <button 
+                     class="butn preset-filled-primary-50-950 m-2 h-8"
+                     type="button"
+                     onclick={async () => {
+                        const response = await fetch('/api/leases', {
+                           method: 'DELETE',
+                           body: JSON.stringify({leaseId: data.lease?.leaseId})
+                        });
+                        if(response.status === 200){
+                           goto('/leases');
+                        }
+                     }}
+                  >
+                     Delete lease
                   </button>
                {/if}
                <Combobox

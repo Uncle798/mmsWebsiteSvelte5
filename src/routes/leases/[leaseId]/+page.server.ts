@@ -1,4 +1,4 @@
-import { redirect } from '@sveltejs/kit';
+import { error, redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { prisma } from '$lib/server/prisma';
 import type { Address } from '../../../generated/prisma/client';
@@ -24,6 +24,11 @@ export const load = (async (event) => {
    const leaseEndForm = await superValidate(valibot(leaseEndFormSchema));
    const alternativeContactForm = await superValidate(valibot(alternativeContactFormSchema));
    const removeAlternativeContactForm = await superValidate(valibot(alternativeContactRemovalFormSchema));
+   if(!lease){
+      return error(404, {
+         message: 'Lease not found'
+      })
+   }
    const customer = await prisma.user.findUnique({
       where: {
          id: lease?.customerId
