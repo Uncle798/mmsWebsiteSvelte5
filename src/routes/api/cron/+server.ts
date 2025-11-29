@@ -14,6 +14,17 @@ export const GET:RequestHandler = async (event) => {
          leaseEnded: null
       }
    });
+   // for tomorrow only
+   for(const lease of leases){
+      await prisma.unit.update({
+         where: {
+            num: lease.unitNum,
+         },
+         data: {
+            leasedPrice: lease.price
+         }
+      })
+   }
    let today = dayjs();
    const todaysLeases = leases.filter((lease) => dayjs(lease.leaseEffectiveDate).date() === today.date());
    const todaysInvoices:Invoice[] = [];
