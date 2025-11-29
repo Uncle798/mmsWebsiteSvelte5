@@ -31,7 +31,9 @@
          }
       },
       onSubmit({formData}) {
-         formData.set('phoneNum1', $form.phoneNum1.replace(/\D/g, ''));
+         if($form.phoneNum1){
+            formData.set('phoneNum1', $form.phoneNum1.replace(/\D/g, ''));
+         }
       },
       onUpdated() {
          if(!$message || !$errors){
