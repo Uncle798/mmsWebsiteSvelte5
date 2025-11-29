@@ -256,7 +256,9 @@
                {/each}
             </div>
          {/if}
-         <Pagination bind:pageNum={pageNum} bind:size={size} label='invoices' array={invoices} />
+         {#if invoices.length > size}
+            <Pagination bind:pageNum={pageNum} bind:size={size} label='invoices' array={invoices} />
+         {/if}
       {/await}
    {/await}
 {/await}    
