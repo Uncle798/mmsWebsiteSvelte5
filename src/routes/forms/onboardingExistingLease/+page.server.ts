@@ -35,7 +35,15 @@ export const actions: Actions = {
             employeeId: event.locals.user.id,
             keysProvided: data.numKeys ? data.numKeys : undefined,
          }
-      })
+      });
+      await prisma.unit.update({
+         where: {
+            num: lease.unitNum,
+         },
+         data: {
+            leasedPrice: lease.price
+         }
+      });
       redirect(303, `/onboarding?leaseId=${lease.leaseId}&userId=${data.customerId}&addressId=${data.addressId}&lien=${data.propertySubjectToLien}`);
    }
 };
