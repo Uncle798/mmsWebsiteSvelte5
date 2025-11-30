@@ -18,23 +18,43 @@ export const GET:RequestHandler = async (event) => {
    const todaysLeases = leases.filter((lease) => dayjs(lease.leaseEffectiveDate).date() === today.date());
    const todaysInvoices:Invoice[] = [];
    for(const lease of todaysLeases){
-      const invoice = await prisma.invoice.findFirst({
+      let invoice = await prisma.invoice.findFirst({
          where: {
             invoiceCreated: {
                gte: new Date(new Date().setHours(0,0,0,0))
             }
          }
-      })
+      });
       if(!invoice){
-         todaysInvoices.push(await prisma.invoice.create({
-            data: {
-               leaseId: lease.leaseId,
-               invoiceAmount: lease.price,
-               customerId: lease.customerId,
-               invoiceDue: today.add(1, 'month').toDate(),
-               invoiceNotes: `Rent for unit ${lease.unitNum.replace(/^0/gm, '')} for ${today.format('MMMM D YYYY')} - ${today.add(1,'month').format('MMMM D YYYY')}`
+         invoice = await prisma.invoice.findFirst({
+            where: {
+               AND: [
+                  {
+                     invoiceDue: {
+                        gte: today.add(1,'month').set('minutes', 0).set('hours', 0).set('seconds', 0).toDate(),
+                     }
+                  },
+                  {
+                     invoiceDue: {
+                        lte: today.add(1, 'month').set('hours', 24).set('minutes', 59).set('seconds', 59).set('milliseconds', 1000).toDate(),
+                     }
+                  }
+               ]
             }
-         }))
+         })
+      }
+      if(!invoice){
+         todaysInvoices.push(
+            await prisma.invoice.create({
+               data: {
+                  leaseId: lease.leaseId,
+                  invoiceAmount: lease.price,
+                  customerId: lease.customerId,
+                  invoiceDue: today.add(1, 'month').toDate(),
+                  invoiceNotes: `Rent for unit ${lease.unitNum.replace(/^0/gm, '')} for ${today.format('MMMM D YYYY')} - ${today.add(1,'month').format('MMMM D YYYY')}`
+               }
+            })
+         )
       }
    }
    let totalInvoiced = 0;
