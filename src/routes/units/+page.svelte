@@ -149,9 +149,11 @@
 					</FormModal>
 					<RevenueBar>
 						{#snippet content()}
-							<Revenue label='Current leased monthly revenue' amount={totalRevenue(leases)} classes=''/>
-							<Revenue label='Currently open monthly advertised total' amount={openRevenue(openUnits(units, leases))} />
-							<span>Open percentage: {Math.round((openUnits(units, leases).length*100)/units.length)}%</span>
+							<div class="mx-2 flex flex-row gap-0.5">
+								<Revenue label='Current leased monthly revenue' amount={totalRevenue(leases)} classes=''/>
+								<Revenue label='Currently open monthly advertised total' amount={openRevenue(openUnits(units, leases))} />
+								<span>Open percentage: {Math.round((openUnits(units, leases).length*100)/units.length)}%</span>
+							</div>
 						{/snippet}
 					</RevenueBar>
 					<SearchDrawer
