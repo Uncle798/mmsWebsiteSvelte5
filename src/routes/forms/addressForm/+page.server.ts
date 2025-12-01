@@ -42,6 +42,8 @@ export const actions: Actions = {
          });
          let newAddress:Omit<Address, 'addressId' | 'phoneNum1Validated' | 'softDelete'>;
          let phoneValid;
+         let phoneNum1;
+         let phoneNum1Country;
          if(data.phoneNum1){
             const phoneValidResponse = await fetch(`https://api.dev.me/v1-get-phone-details?phone=${addressForm.data.phoneNum1Country}${addressForm.data.phoneNum1}`,
                {
@@ -55,7 +57,10 @@ export const actions: Actions = {
             if(!phoneValid.valid){
                return message(addressForm, 'Phone number not valid')
             }
+            phoneNum1= phoneValid.nationalNumber;
+            phoneNum1Country= phoneValid.callingCode;
          }
+
          if(oldAddress){
             oldAddress = await prisma.address.update({
                where:{
@@ -67,8 +72,8 @@ export const actions: Actions = {
             })
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             newAddress = {
-               phoneNum1:phoneValid.nationalNumber,
-               phoneNum1Country: phoneValid.callingCode,
+               phoneNum1,
+               phoneNum1Country,
                address1: data.address1 ? data.address1 : oldAddress.address1, 
                address2: data.address2 ? data.address2 : oldAddress.address2,
                city: data.city ? data.city : oldAddress.city, 
@@ -86,8 +91,8 @@ export const actions: Actions = {
          } else {
             if(phoneValid){
                newAddress = {
-                  phoneNum1: phoneValid.nationalNumber,
-                  phoneNum1Country: phoneValid.callingCode,
+                  phoneNum1,
+                  phoneNum1Country,
                   address1: data.address1 ? data.address1 : null,
                   address2: data.address2 ? data.address2 : null,
                   city: data.city ? data.city : null,
