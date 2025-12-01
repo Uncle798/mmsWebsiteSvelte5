@@ -20,6 +20,7 @@ export const actions: Actions = {
          redirect(302, '/login?toast=unauthorized')
       }
       const formData = await event.request.formData();
+      const redirectTo = event.url.searchParams.get('redirectTo');
       const addressForm = await superValidate(formData, valibot(addressFormSchema));
       const { success, reset } = await ratelimit.customerForm.limit(event.locals.user.id)
 		if(!success) {
@@ -40,6 +41,21 @@ export const actions: Actions = {
             }
          });
          let newAddress:Omit<Address, 'addressId' | 'phoneNum1Validated' | 'softDelete'>;
+         let phoneValid;
+         if(data.phoneNum1){
+            const phoneValidResponse = await fetch(`https://api.dev.me/v1-get-phone-details?phone=${addressForm.data.phoneNum1Country}${addressForm.data.phoneNum1}`,
+               {
+                  headers: {
+                     'Accept': 'application/json',
+                     'x-api-key': DEV_ME_KEY
+                  }
+               }
+            )
+            phoneValid = await phoneValidResponse.json();
+            if(!phoneValid.valid){
+               return message(addressForm, 'Phone number not valid')
+            }
+         }
          if(oldAddress){
             oldAddress = await prisma.address.update({
                where:{
@@ -49,21 +65,6 @@ export const actions: Actions = {
                   softDelete: true,
                }
             })
-            let phoneValid;
-            if(data.phoneNum1){
-               const phoneValidResponse = await fetch(`https://api.dev.me/v1-get-phone-details?phone=${addressForm.data.phoneNum1Country}${addressForm.data.phoneNum1}`,
-                  {
-                     headers: {
-                        'Accept': 'application/json',
-                        'x-api-key': DEV_ME_KEY
-                     }
-                  }
-               )
-               phoneValid = await phoneValidResponse.json();
-               if(!phoneValid.valid){
-                  return message(addressForm, 'Phone number not valid')
-               }
-            }
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             newAddress = {
                phoneNum1:phoneValid.nationalNumber,
@@ -79,12 +80,43 @@ export const actions: Actions = {
             const dbAddress = await prisma.address.create({
                data: newAddress
             })
-            const redirectTo = event.url.searchParams.get('redirectTo');
+            if(redirectTo){
+               redirect(303, `/${redirectTo}?addressId=${dbAddress.addressId}&userId=${data.userId}`)
+            }
+         } else {
+            if(phoneValid){
+               newAddress = {
+                  phoneNum1: phoneValid.nationalNumber,
+                  phoneNum1Country: phoneValid.callingCode,
+                  address1: data.address1 ? data.address1 : null,
+                  address2: data.address2 ? data.address2 : null,
+                  city: data.city ? data.city : null,
+                  state: data.state ? data.state : null,
+                  postalCode: data.postalCode ? data.postalCode : null,
+                  country: data.country ? data.country : null,
+                  userId: data.userId
+               }
+            } else {
+               newAddress = {
+                  phoneNum1: null,
+                  phoneNum1Country: null,
+                  address1: data.address1 ? data.address1 : null,
+                  address2: data.address2 ? data.address2 : null,
+                  city: data.city ? data.city : null,
+                  state: data.state ? data.state : null,
+                  postalCode: data.postalCode ? data.postalCode : null,
+                  country: data.country ? data.country : null,
+                  userId: data.userId
+               }
+            }
+            const dbAddress = await prisma.address.create({
+               data: newAddress,
+            })
             if(redirectTo){
                redirect(303, `/${redirectTo}?addressId=${dbAddress.addressId}&userId=${data.userId}`)
             }
          }
-      }
+      } 
       return {addressForm}
    }
 };
