@@ -49,20 +49,22 @@ export const actions: Actions = {
                   softDelete: true,
                }
             })
-            const phoneValidResponse = await fetch(`https://api.dev.me/v1-get-phone-details?phone=${addressForm.data.phoneNum1Country}${addressForm.data.phoneNum1}`,
-               {
-                  headers: {
-                     'Accept': 'application/json',
-                     'x-api-key': DEV_ME_KEY
+            let phoneValid;
+            if(data.phoneNum1){
+               const phoneValidResponse = await fetch(`https://api.dev.me/v1-get-phone-details?phone=${addressForm.data.phoneNum1Country}${addressForm.data.phoneNum1}`,
+                  {
+                     headers: {
+                        'Accept': 'application/json',
+                        'x-api-key': DEV_ME_KEY
+                     }
                   }
+               )
+               phoneValid = await phoneValidResponse.json();
+               if(!phoneValid.valid){
+                  return message(addressForm, 'Phone number not valid')
                }
-            )
-            const phoneValid = await phoneValidResponse.json();
-            if(!phoneValid.valid){
-               return message(addressForm, 'Phone number not valid')
             }
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            const data = addressForm.data
             newAddress = {
                phoneNum1:phoneValid.nationalNumber,
                phoneNum1Country: phoneValid.callingCode,

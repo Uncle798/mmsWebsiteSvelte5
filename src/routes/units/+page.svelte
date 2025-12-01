@@ -59,7 +59,7 @@
 			totalRevenue += lease.price
 		})
 		return totalRevenue;
-	})
+	});
 	const openUnits = $derived((units:Unit[], leases:Lease[]) => {
 		const returnedUnits:Unit[] = [];
 		for(const unit of units){

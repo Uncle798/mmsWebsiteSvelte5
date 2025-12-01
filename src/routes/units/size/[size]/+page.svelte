@@ -51,7 +51,7 @@
          revenue += unit.advertisedPrice
       }
       return revenue;
-   })
+   });
    interface ComboboxData {
       label: string;
       value: string;
