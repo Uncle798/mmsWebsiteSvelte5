@@ -176,14 +176,16 @@
 						{/snippet}
 					</SearchDrawer>
             	<div class="sm:m-2 m-1 sm:mt-20 mt-22 mb-8 sm:mb-8" in:fade={{duration:1600}} out:fade={{duration:0}}>
-               	{#each slicedUnits(filteredUnits(searchedUnits(units))) as unit}
+               	{#each slicedUnits(filteredUnits(searchedUnits(units))) as unit (unit.num)}
                	{@const lease = leases?.find((lease) => lease.unitNum === unit.num)}
+						{@const unitNotesForm = data.unitNotesForms.find((formData) => formData.id === unit.num)}
 							<div class="border-2 border-primary-50-950 rounded-lg grid grid-cols-1 sm:grid-cols-2 my-2 gap-2">
 								<div class="flex flex-col">
 									<UnitEmployee {unit} classes=''/>
 									<button class="btn preset-filled-primary-50-950 rounded-lg mx-2 mb-2" onclick={()=> openModal('unitPricing', unit.advertisedPrice, '', unit.size)}>Change all {unit.size.replace(/^0+/gm,'').replace(/x0/gm,'x')} pricing</button>
-									{#if data.unitNotesForm}
-										<UnitNotesForm data={data.unitNotesForm} {unit} classes='mx-1 sm:mx-2'/>
+									{#if unitNotesForm}
+										<UnitNotesForm data={unitNotesForm} {unit} classes='mx-1 sm:mx-2'/>
+										unitNoteForm.id = {unitNotesForm.id}
 									{/if}
 								</div>
 								{#if lease}

@@ -19,7 +19,6 @@ export const load:PageServerLoad = async (event) =>{
       throw redirect(302, '/units/available')
    }
    const unitPricingForm = await superValidate(valibot(unitPricingFormSchema), {id: 'pricingFrom'});
-   const unitNotesForm = await superValidate(valibot(unitNotesFormSchema), {id: 'unitNotesForm'});
    const leaseEndForm = await superValidate(valibot(leaseEndFormSchema));
    const searchForm = await superValidate(valibot(searchFormSchema));
    const leases =  prisma.lease.findMany({
@@ -34,6 +33,9 @@ export const load:PageServerLoad = async (event) =>{
          num: 'asc'
       }
    });
+   const unitNotesForms = await Promise.all((await prisma.unit.findMany()).map(async (unit) => {
+      return await superValidate(valibot(unitNotesFormSchema), {id: unit.num});
+   }));
    const sizes:string[] = []
    for(const datum of pricingData){
       if(datum.size !== 'ours'){
@@ -44,7 +46,7 @@ export const load:PageServerLoad = async (event) =>{
       units,
       leases, 
       customers,
-      unitNotesForm,
+      unitNotesForms,
       unitPricingForm,
       leaseEndForm,
       searchForm,
