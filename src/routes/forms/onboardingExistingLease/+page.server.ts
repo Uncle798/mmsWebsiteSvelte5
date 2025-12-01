@@ -28,7 +28,7 @@ export const actions: Actions = {
             customerId: data.customerId,
             addressId: data.addressId,
             leaseCreatedAt: data.createdDate,
-            leaseEffectiveDate: data.leaseEffectiveDate,
+            leaseEffectiveDate: data.createdDate,
             price: data.price,
             depositAmount: data.deposit,
             unitNum: data.unitNum,

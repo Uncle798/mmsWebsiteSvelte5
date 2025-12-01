@@ -49,15 +49,6 @@
                $form.unitNum = e.value[0];
             }}
          />
-         <DatePickerSingle
-            value={$form.leaseEffectiveDate}
-            errors={$errors.leaseEffectiveDate}
-            constraints={$constraints.leaseEffectiveDate}
-            label='Lease effective date'
-            name='leaseEffectiveDate'
-            minDate={dayjs('jan 1 1970').toDate()}
-            maxDate={new Date()}
-         />
          <NumberInput
             value={$form.price}
             errors={$errors.price}
