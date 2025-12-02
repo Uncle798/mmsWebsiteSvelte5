@@ -1,4 +1,6 @@
-import { makeInvoicePdf, makeReceiptPdf, makeRefundPdf } from "$lib/server/pdfMake";
+import { makeReceiptPdf } from "$lib/server/pdfMake/makeReceiptPdf";
+import { makeRefundPdf } from "$lib/server/pdfMake/makeRefundPdf";
+import { makeInvoicePdf } from "$lib/server/pdfMake/makeInvoicePdf";
 import { prisma } from "$lib/server/prisma";
 import { error, type RequestHandler } from "@sveltejs/kit";
 
