@@ -26,14 +26,18 @@ export const load = (async (event) => {
 
     const invoices = prisma.invoice.findMany({
         orderBy: {
-            invoiceCreated: 'asc'
+            invoiceNum: 'asc'
         }
-    })
-    const customers = prisma.user.findMany();
+    });
+    const customers = prisma.user.findMany({
+        where: {
+            alternative: false
+        }
+    });
     const addresses = prisma.address.findMany({
         where:{
             softDelete: false
         }
-    })
+    });
     return { invoices, invoiceCount, searchForm, years, customers, dateSearchForm, addresses };
 }) satisfies PageServerLoad;
