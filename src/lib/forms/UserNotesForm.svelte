@@ -21,7 +21,6 @@
          userNotesFormModalOpen = false;
       },
       id: user.id,
-      invalidateAll:'force'
    })
    const url = page.url.pathname
    onMount(() => {
@@ -44,6 +43,7 @@
             checked={$form.doNotRent}
             name='doNotRent'
             label='Do not Rent to {user.organizationName ? user.organizationName : `${user.givenName} ${user.familyName}`}'
+            classes='my-2'
          />
          <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} buttonText='Update notes'/>
       </div>

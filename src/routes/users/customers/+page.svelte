@@ -184,7 +184,7 @@
                         {@const customerLeases = leases.filter((lease) => lease.customerId === customer.id)}
                         {@const customerInvoices = invoices.filter((invoice) => invoice.customerId === customer.id)}
                         {@const customerPayments = paymentRecords.filter((payment) => payment.customerId === customer.id)}
-                           <div class="border rounded-lg border-primary-50-950 sm:grid sm:grid-cols-2">
+                           <div class="border rounded-lg border-primary-50-950 sm:grid sm:grid-cols-1">
                               {#if i === 0}
                                  <div class="p-2 firstCustomer">
                                     <UserEmployee user={customer} classes=''/>
@@ -202,7 +202,7 @@
                                     />
                                  </div>
                               {:else}
-                                 <div class="p-2">
+                                 <div class="m-2">
                                     <UserEmployee user={customer} classes=''/>
                                     {#if address}
                                        <Address {address} />
