@@ -48,5 +48,8 @@ export async function makeAllUnitsCSV(units:Unit[], leases:Lease[], customers:Us
    }
    return json2csv(allJSON, {
       checkSchemaDifferences: true,
+      delimiter: {
+         wrap: ''
+      }
    });
 }
