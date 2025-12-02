@@ -220,11 +220,11 @@
                               {#if customerLeases}
                                  {#each customerLeases as lease}
                                  {@const unit = units.find((unit) => unit.num === lease.unitNum)}
-                                    <div>
+                                    <div class='flex flex-row gap-2 mx-2'>
                                        <LeaseEmployee {lease} classes='my-2 w-auto'/>
-                                       <a href="/invoices/new?leaseId={lease.leaseId}" class="btn preset-filled-primary-50-950 mx-2">Make an invoice for this lease</a>
+                                       <a href="/invoices/new?leaseId={lease.leaseId}" class="btn preset-filled-primary-50-950 my-2 h-8">Make an invoice for this lease</a>
                                        {#if unit}
-                                          <button type="button" onclick={()=>leaseEndModal(lease.leaseId, unit)} class="btn preset-filled-primary-50-950">End lease</button>
+                                          <button type="button" onclick={()=>leaseEndModal(lease.leaseId, unit)} class="btn preset-filled-primary-50-950 my-2 h-8">End lease</button>
                                        {/if}
                                     </div>
                                  {/each}
