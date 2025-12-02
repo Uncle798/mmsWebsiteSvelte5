@@ -8,7 +8,7 @@ export async function makeAllUnitsCSV(units:Unit[], leases:Lease[], customers:Us
       size: string,
       familyName:string,
       givenName: string,
-      nextDueDate: Date | string,
+      nextDueDate: string,
       leasedPrice: number,
       advertisedPrice: number
    }[] = [];
