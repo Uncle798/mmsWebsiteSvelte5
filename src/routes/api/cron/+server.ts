@@ -4,6 +4,7 @@ import { prisma } from '$lib/server/prisma';
 import dayjs from 'dayjs';
 import type { RequestHandler} from './$types';
 import type { Invoice } from '../../../generated/prisma/client';
+import { makeTodaysInvoicesReport } from '$lib/server/pdfMake/makeTodaysInvoicesReport';
 export const GET:RequestHandler = async (event) => {
    const authHeader = event.request.headers.get('authorization');
    if(authHeader !== `Bearer ${CRON_SECRET}`){
@@ -61,19 +62,28 @@ export const GET:RequestHandler = async (event) => {
    for(const invoice of todaysInvoices){
       totalInvoiced += invoice.invoiceAmount;
    }
-   const unitCount = await prisma.unit.count();
+   const units = await prisma.unit.findMany();
    const leasedCount = await prisma.lease.count({
       where: {
          leaseEnded: null
       }
    });
+   const customers = await prisma.user.findMany({
+      where: {
+         customerLeases: {
+            some: {
+               leaseEnded: null,
+            }
+         }
+      }
+   })
    const admins = await prisma.user.findMany({
       where: {
          admin: true
       }
    });
    for(const admin of admins){
-      await sendStatusEmail(admin, todaysInvoices.length, totalInvoiced, unitCount - leasedCount)
+      await sendStatusEmail(admin, todaysInvoices.length, totalInvoiced, units.length - leasedCount, (await makeTodaysInvoicesReport(todaysInvoices, customers, false) as PDFKit.PDFDocument))
    }
    return new Response(JSON.stringify({success:true}), { status: 200 })
 }
