@@ -1,4 +1,4 @@
-import { makeAllUnitsCSV } from '$lib/server/json2csv/json2csv';
+import { makeAllUnitsCSV } from '$lib/server/json2csv/makeAllUnitsCSV';
 import { prisma } from '$lib/server/prisma';
 import type { RequestHandler } from './$types';
 
@@ -41,6 +41,10 @@ export const GET: RequestHandler = async (event) => {
       const csv = await makeAllUnitsCSV(units, leases, customers, invoices);
       console.log(csv);
       return new Response(JSON.stringify(csv), {status: 200});
+   }
+   const currentCustomers = event.url.searchParams.get('currentCustomers');
+   if(currentCustomers === 'true'){
+
    }
    return new Response();
 };
