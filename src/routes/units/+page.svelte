@@ -19,6 +19,8 @@
 	import SearchDrawer from '$lib/displayComponents/Modals/SearchDrawer.svelte';
 	import FormModal from '$lib/displayComponents/Modals/FormModal.svelte';
 	import RevenueBar from '$lib/displayComponents/RevenueBar.svelte';
+	import { PUBLIC_COMPANY_NAME } from '$env/static/public';
+	import dayjs from 'dayjs';
 	
 	let { data }: { data: PageData } = $props();
 	let modalOpen = $state(false);
@@ -97,6 +99,30 @@
 </script>
 
 <Header title="All units" />
+<FormModal
+	modalOpen={modalOpen}
+>
+	{#snippet content()}
+		{#if globalModalType === 'lease'}
+			{#if data.leaseEndForm}
+				<LeaseEndForm
+					data={data.leaseEndForm}
+					leaseId={currentLeaseId}
+					employee={true}
+					bind:leaseEndModalOpen={modalOpen}
+				/>
+			{/if}
+		{:else if globalModalType === 'unitPricing'}
+			<UnitPricingForm
+				data={data.unitPricingForm!}
+				bind:unitPricingFormModalOpen={modalOpen}
+				size={currentSize}
+				oldPrice={currentOldPrice}
+				classes='m-1 sm:m-2'
+			/>
+		{/if}
+	{/snippet}
+</FormModal>
 {#await data.units}
 	<div class="mt-14 sm:mt-10 m-1 sm:m-2">
 		Loading units...
@@ -123,30 +149,6 @@
 			<Placeholder numCols={1} numRows={3} heightClass='h-96'/>
 			{:then addresses} 
             {#if units}
-					<FormModal
-						modalOpen={modalOpen}
-					>
-						{#snippet content()}
-							{#if globalModalType === 'lease'}
-								{#if data.leaseEndForm}
-									<LeaseEndForm
-										data={data.leaseEndForm}
-										leaseId={currentLeaseId}
-										employee={true}
-										bind:leaseEndModalOpen={modalOpen}
-									/>
-								{/if}
-							{:else if globalModalType === 'unitPricing'}
-								<UnitPricingForm
-									data={data.unitPricingForm!}
-									bind:unitPricingFormModalOpen={modalOpen}
-									size={currentSize}
-									oldPrice={currentOldPrice}
-									classes='m-1 sm:m-2'
-								/>
-							{/if}
-						{/snippet}
-					</FormModal>
 					<RevenueBar>
 						{#snippet content()}
 							<div class="mx-2 flex flex-row gap-0.5">
@@ -161,7 +163,7 @@
 						height='h-[180px]'
 					>
 						{#snippet content()}
-							<div class="mx-2 mt-24 flex gap-2">
+							<div class="mx-2 flex gap-2">
 								<Search searchType='Unit number' data={data.searchForm} classes='' bind:search={search}/>
 								<Combobox 
 									data={comboboxData} 
@@ -172,6 +174,13 @@
 										selectedSize=details.value
 									}}
 								/> 
+								<a
+									href="/api/json2csv?allUnits=true"
+									class="btn preset-filled-primary-50-950 h-8"
+									download='{PUBLIC_COMPANY_NAME} Unit Report {dayjs().format('MMMM D YYYY')}.csv'
+								>
+									Download CSV
+								</a>
 								</div>
 						{/snippet}
 					</SearchDrawer>
@@ -185,7 +194,6 @@
 									<button class="btn preset-filled-primary-50-950 rounded-lg mx-2 mb-2" onclick={()=> openModal('unitPricing', unit.advertisedPrice, '', unit.size)}>Change all {unit.size.replace(/^0+/gm,'').replace(/x0/gm,'x')} pricing</button>
 									{#if unitNotesForm}
 										<UnitNotesForm data={unitNotesForm} {unit} classes='mx-1 sm:mx-2'/>
-										unitNoteForm.id = {unitNotesForm.id}
 									{/if}
 								</div>
 								{#if lease}
