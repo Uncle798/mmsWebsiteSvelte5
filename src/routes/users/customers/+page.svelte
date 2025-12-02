@@ -179,44 +179,28 @@
                         {/snippet}
                   </FormModal>
                      <div class="grid grid-cols-1 mx-1 sm:mx-2 gap-y-2 gap-x-1 ">
-                        {#each slicedSource(searchedSource(sortedUsers(customers))) as customer, i (customer.id)}
+                        {#each slicedSource(searchedSource(sortedUsers(customers))) as customer (customer.id)}
                         {@const address = addresses.find((address) => address.userId === customer.id)}
                         {@const customerLeases = leases.filter((lease) => lease.customerId === customer.id)}
                         {@const customerInvoices = invoices.filter((invoice) => invoice.customerId === customer.id)}
                         {@const customerPayments = paymentRecords.filter((payment) => payment.customerId === customer.id)}
                            <div class="border rounded-lg border-primary-50-950 sm:grid sm:grid-cols-1">
-                              {#if i === 0}
-                                 <div class="p-2 firstCustomer">
-                                    <UserEmployee user={customer} classes=''/>
-                                    {#if address}
-                                       <Address {address} />
-                                    {/if}
-                                    <UserNotesForm user={customer} data={data.userNotesForm} classes='firstCustomerNotes'/>
-                                    <UserRevenue 
-                                       totalInvoiced={totalInvoiced(customerInvoices)}
-                                       totalPaid={totalPaid(customerPayments)}
-                                       customer={customer}
-                                       overdueAmount={totalInvoiced(overdueInvoices(customerInvoices))}
-                                       invoices={overdueInvoices(customerInvoices)}
-                                       classes='firstCustomerIncome'
-                                    />
-                                 </div>
-                              {:else}
-                                 <div class="m-2">
-                                    <UserEmployee user={customer} classes=''/>
-                                    {#if address}
-                                       <Address {address} />
-                                    {/if}
-                                    <UserNotesForm user={customer} data={data.userNotesForm} />
-                                    <UserRevenue 
-                                       totalInvoiced={totalInvoiced(customerInvoices)}
-                                       totalPaid={totalPaid(customerPayments)}
-                                       {customer}
-                                       invoices={overdueInvoices(customerInvoices)}
-                                       overdueAmount={totalInvoiced(overdueInvoices(customerInvoices  ))}
-                                    />
-                                 </div>
-                              {/if}
+                              <div class="m-2 flex gap-2">
+                                 <UserEmployee user={customer} classes=''/>
+                                 {#if address}
+                                    <Address {address} />
+                                 {/if}
+                              </div>
+                              <div class="m-2">
+                                 <UserNotesForm user={customer} data={data.userNotesForm} />
+                                 <UserRevenue 
+                                    totalInvoiced={totalInvoiced(customerInvoices)}
+                                    totalPaid={totalPaid(customerPayments)}
+                                    {customer}
+                                    invoices={overdueInvoices(customerInvoices)}
+                                    overdueAmount={totalInvoiced(overdueInvoices(customerInvoices  ))}
+                                 />
+                              </div>
                               {#if customerLeases}
                                  {#each customerLeases as lease}
                                  {@const unit = units.find((unit) => unit.num === lease.unitNum)}
