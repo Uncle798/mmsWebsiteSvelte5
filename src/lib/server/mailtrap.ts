@@ -2,7 +2,9 @@ import {  PUBLIC_COMPANY_NAME, PUBLIC_URL } from "$env/static/public";
 import type { Address, Invoice, PaymentRecord, RefundRecord, User } from "../../generated/prisma/client";
 import { MailtrapClient } from "mailtrap";
 import dayjs from "dayjs";
-import { makeInvoicePdf, makeReceiptPdf, makeRefundPdf } from "./pdfMake";
+import { makeReceiptPdf } from "./pdfMake/makeReceiptPdf";
+import { makeRefundPdf } from "./pdfMake/makeRefundPdf";
+import { makeInvoicePdf } from "./pdfMake/makeInvoicePdf";
 import { buffer } from "stream/consumers";
 
 const token = process.env.MAILTRAP_TOKEN!;
@@ -109,10 +111,11 @@ export async function sendInvoice(invoice:Invoice, customer:User, address:Addres
    }
 }
 
-export async function sendStatusEmail(admin:User, invoiceCount:number, totalInvoice:number, emptyUnits:number) {
+export async function sendStatusEmail(admin:User, invoiceCount:number, totalInvoice:number, emptyUnits:number, pdf:PDFKit.PDFDocument) {
    if(admin.email?.includes('veryFakeEmail.com'.toLowerCase()) || admin.email?.includes('yetAnotherFakeEmail.com'.toLowerCase())){
       return null;
    }
+   const buf = await buffer(pdf)
    if(admin.admin){
       try {
          const response = await mailtrap.send({
@@ -120,7 +123,14 @@ export async function sendStatusEmail(admin:User, invoiceCount:number, totalInvo
             to: [{email: admin.email!}],
             subject: `${PUBLIC_COMPANY_NAME} Daily email`,
             html: `Hello ${admin.givenName}<br/> ${invoiceCount} invoices were created this morning totaling ${currencyFormatter.format(totalInvoice)}.\
-            There are ${emptyUnits} empty units as of this morning. <br/>`
+            There are ${emptyUnits} empty units as of this morning. <br/>`,
+            attachments: [
+               {
+                  filename: `${PUBLIC_COMPANY_NAME} Invoices ${dayjs().format('MMMM D YYYY')}`,
+                  content: buf.toString('base64'),
+                  type: 'application/pdf'
+               }
+            ]
          })
          return response 
       } catch (error) {
