@@ -221,7 +221,7 @@
                                  {#each customerLeases as lease}
                                  {@const unit = units.find((unit) => unit.num === lease.unitNum)}
                                     <div>
-                                       <LeaseEmployee {lease} classes='p-2 max-h-64'/>
+                                       <LeaseEmployee {lease} classes='my-2 w-auto'/>
                                        <a href="/invoices/new?leaseId={lease.leaseId}" class="btn preset-filled-primary-50-950 mx-2">Make an invoice for this lease</a>
                                        {#if unit}
                                           <button type="button" onclick={()=>leaseEndModal(lease.leaseId, unit)} class="btn preset-filled-primary-50-950">End lease</button>
