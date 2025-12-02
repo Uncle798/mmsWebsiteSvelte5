@@ -159,11 +159,11 @@
                   <UserAdmin {user} classes=" p-2 w-1/2"/>
                   <div>
                      <EmploymentChangeForm 
-                     data={data.employmentChangeForm} 
-                     employeeChecked={user.employee} 
-                     adminChecked={user.admin}
-                     userId={user.id}
-                     classes="flex flex-col sm:flex-row firstUserEmployment"
+                        data={data.employmentChangeForm} 
+                        employeeChecked={user.employee} 
+                        adminChecked={user.admin}
+                        userId={user.id}
+                        classes="flex flex-col sm:flex-row firstUserEmployment"
                      />
                      <button class="btn preset-filled-primary-50-950 h-8 mb-2" onclick={()=> deleteUser(user.id)}>Delete User</button>
                   </div>
@@ -173,11 +173,11 @@
                   <UserAdmin {user} classes=" p-2 w-1/2"/>
                   <div>
                      <EmploymentChangeForm 
-                     data={data.employmentChangeForm} 
-                     employeeChecked={user.employee} 
-                     adminChecked={user.admin}
-                     userId={user.id}
-                     classes="flex flex-col sm:flex-row"
+                        data={data.employmentChangeForm} 
+                        employeeChecked={user.employee} 
+                        adminChecked={user.admin}
+                        userId={user.id}
+                        classes="flex flex-col sm:flex-row"
                      />
                      <button class="btn preset-filled-primary-50-950 h-8 mb-2" onclick={()=> deleteUser(user.id)}>Delete User</button>
                   </div>
