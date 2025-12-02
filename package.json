@@ -78,6 +78,7 @@
 		"dropbox": "^10.34.0",
 		"fuse.js": "^7.1.0",
 		"inngest": "^3.45.1",
+		"json-2-csv": "^5.5.10",
 		"lucide-svelte": "^0.554.0",
 		"mailtrap": "^4.3.0",
 		"payment": "^2.4.7",
