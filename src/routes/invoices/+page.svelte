@@ -61,7 +61,7 @@
    let searchedInvoices = $derived((invoices:Invoice[]) => invoices.filter((invoice) => invoice.invoiceNum.toString().includes(search)));
    let dateSearchedInvoices = $derived((invoices:Invoice[]) => invoices.filter((invoice) => {
       if(!startDate || !endDate){
-         return
+         return invoice;
       }
       return invoice.invoiceCreated >= startDate && invoice.invoiceCreated <= endDate
    }))
@@ -159,8 +159,7 @@
          {/if}
       </div> 
       <Placeholder numCols={1} numRows={size} heightClass='h-40' classes='z-0'/>
-   </div>
-   
+   </div> 
    {:then invoices}
    {#await data.customers}
       <Header title='Loading customers' />
@@ -175,14 +174,12 @@
          </div>
          <Placeholder numCols={1} numRows={size} heightClass='h-40'/>
       {:then addresses}
-         {#if invoices.length >0}
             <Header title='All invoices' />
             <Revenue 
                label="Total invoiced (not including deposits)" 
                amount={totalRevenue(searchedInvoices(dateSearchedInvoices(invoices)))} 
                classes='bg-tertiary-50-950 w-full rounded-b-lg fixed top-11 sm:top-8 p-2 z-40'
             />
-
             <SearchDrawer
                bind:modalOpen={searchDrawerOpen}
                height='h-[160px]'
@@ -212,7 +209,7 @@
                {/snippet}
             </SearchDrawer>
             <div class="grid grid-cols-1 sm:m-2 m-1 gap-2 mt-28 sm:mt-20 mb-8 sm:mb-8" in:fade={{duration:600}} out:fade={{duration:0}}>
-               {#each slicedInvoices(sortedByDate(dateSearchedInvoices(searchedInvoices(searchByUser(invoices, currentUsers(customers)))))) as invoice}  
+               {#each slicedInvoices(sortedByDate(searchedInvoices(searchByUser(invoices, currentUsers(customers))))) as invoice}  
                {@const customer = customers.find((customer) => customer.id === invoice.customerId)}
                   <div class="sm:grid sm:grid-cols-2 border-2 border-primary-50-950 rounded-lg ">
                      {#if customer}
@@ -256,7 +253,6 @@
                {/each}
                <Pagination bind:pageNum={pageNum} bind:size={size} array={searchedInvoices(searchByUser(invoices, currentUsers(customers)))} label='invoices' />
             </div>
-         {/if}
       {/await}
    {/await}
 {/await}
