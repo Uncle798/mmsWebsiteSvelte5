@@ -9,11 +9,25 @@
 	import Header from '$lib/Header.svelte';
    import type { PageData } from './$types';
 	import PaymentRecordEmployee from '$lib/displayComponents/PaymentRecordEmployee.svelte';
+	import DownloadPDFButton from '$lib/DownloadPDFButton.svelte';
+	import FormModal from '$lib/displayComponents/Modals/FormModal.svelte';
+	import DeleteRecordForm from '$lib/forms/DeleteRecordForm.svelte';
 
    let { data }: { data: PageData } = $props();
+   let modalOpen = $state(false);
 </script>
+
 {#if data.user?.employee}
-   {#if data.invoice}      
+   {#if data.invoice}  
+      {#if data.deleteRecordForm}       
+         <FormModal
+            {modalOpen}
+         >
+            {#snippet content()}
+               <DeleteRecordForm data={data.deleteRecordForm} recordNum={data.invoice?.invoiceNum} recordType='invoice' bind:modalOpen={modalOpen}/>
+            {/snippet}
+         </FormModal>
+      {/if}    
       <Header title="Invoice number {data.invoice.invoiceNum}" />
       <div class="flex flex-col sm:flex-row gap-x-1 mx-1 sm:mx-2 mt-14 sm:mt-10 border-2 border-primary-50-950 rounded-lg">
          <div class="flex flex-col">
@@ -38,6 +52,15 @@
                   recordType='invoiceNum'
                   num={data.invoice.invoiceNum}
                />
+               <button
+                  class="btn preset-filled-primary-50-950 h-8"
+                  type="button"
+                  onclick={() => {
+                     modalOpen = true;
+                  }}
+               >
+                  Delete invoice {data.invoice.invoiceNum}
+               </button>
             </div>
          </div>
          <div class="flex flex-col min-w-64"> 
@@ -70,15 +93,20 @@
                {#if data.address}
                   <Address address={data.address} classes='px-2'/>
                {/if}
-               {#if data.customer?.email && data.customer?.emailVerified}         
-                  <EmailCustomer
-                     recordNum={data.invoice.invoiceNum}
-                     apiEndPoint='/api/sendInvoice'
-                     emailAddress={data.customer.email}
-                     buttonText='Send invoice'
-                     classes='m-1 sm:m-2'
+               <div class="flex flex-row gap-2">
+                  {#if data.customer?.email && data.customer?.emailVerified}         
+                     <EmailCustomer
+                        recordNum={data.invoice.invoiceNum}
+                        apiEndPoint='/api/sendInvoice'
+                        emailAddress={data.customer.email}
+                        buttonText='Send invoice'
+                     />
+                  {/if}
+                  <DownloadPDFButton
+                     recordType='invoiceNum'
+                     num={data.invoice.invoiceNum}
                   />
-               {/if}
+               </div>
             </div>
          </div>
       {/if}
