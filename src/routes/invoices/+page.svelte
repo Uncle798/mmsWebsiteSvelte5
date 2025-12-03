@@ -215,9 +215,9 @@
                      {#if customer}
                      <div>
                         <InvoiceEmployee {invoice} classes=' px-2' />
-                        <div class="flex flex-col sm:flex-row">
+                        <div class="flex flex-col sm:flex-row gap-2 m-2">
                            {#if invoice.invoiceAmount > invoice.amountPaid}
-                              <a href="/paymentRecords/new?invoiceNum{invoice.invoiceNum}" class="btn preset-filled-primary-50-950">Make a payment record for this invoice</a>
+                              <a href="/paymentRecords/new?invoiceNum{invoice.invoiceNum}" class="btn preset-filled-primary-50-950 h-8 ">Make a payment record for this invoice</a>
                            {/if}
                            {#if customer?.email && customer.emailVerified}
                               <EmailCustomer
@@ -225,13 +225,13 @@
                                  recordNum={invoice.invoiceNum}
                                  buttonText='Email invoice'
                                  apiEndPoint='/api/sendInvoice'
-                                 classes='my-2 m-2'
+                                 classes=''
                               />
                            {/if}
                            <DownloadPdfButton
                               recordType='invoiceNum'
                               num={invoice.invoiceNum}
-                              classes='mx-2 mb-2'
+                              classes=''
                            />
                            <EmailCustomer
                               recordNum={invoice.invoiceNum}
