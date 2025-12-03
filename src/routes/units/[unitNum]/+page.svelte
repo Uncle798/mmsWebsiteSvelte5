@@ -37,6 +37,7 @@
             <a href="/employeeNewLease?unitNum={unit.num}" class="btn preset-filled-primary-50-950 m-2 rounded-lg">Rent Unit {unit.num.replace(/^0+/gm, '')}</a>
          </div>
          <UnitNotesForm data={data.unitNotesForm} {unit} classes=''/>
+         {data.unitNotesForm.id}
          <UnitPricingForm data={data.unitPricingForm} size={unit.size} oldPrice={unit.advertisedPrice} unitPricingFormModalOpen={modalOpen} />
          <div class="grid grid-cols-1 gap-y-2 sm:grid-cols-2 gap-x-1">
             {#each data.leases as lease}
