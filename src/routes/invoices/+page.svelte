@@ -233,12 +233,6 @@
                               num={invoice.invoiceNum}
                               classes=''
                            />
-                           <EmailCustomer
-                              recordNum={invoice.invoiceNum}
-                              apiEndPoint='/api/sendInvoice'
-                              emailAddress={customer.email!}
-                              buttonText='Email invoice to customer'
-                           />
                         </div>
                      </div>
                      {@const address = addresses.find((address) => address.userId === customer.id)}
