@@ -29,5 +29,5 @@
       {...others}
    />
  </label>
- {#if errors}<span class="invalid">{errors}</span>{/if}
+ {#if errors}<span class="text-error-50-950">{errors}</span>{/if}
 </div>
