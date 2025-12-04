@@ -28,7 +28,7 @@
       onUpdate() {
          modalOpen = false
       }
-   })
+   });
 </script>
 
 <div class={classes}>

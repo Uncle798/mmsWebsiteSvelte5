@@ -10,12 +10,11 @@ export const actions: Actions = {
       if(!event.locals.user?.employee){
          redirect(302, '/login?toast=employee');
       }
-      const formData = await event.request.json();
-      console.log(formData);
+      const formData = await event.request.formData();
       const deleteRecordForm = await superValidate(formData, valibot(deleteRecordFormSchema));
       if(!deleteRecordForm.valid){
          console.log(deleteRecordForm);
-         return message(deleteRecordForm, 'Form not valid');
+         return message(deleteRecordForm, `Form invalid`);
       }
       const { success, reset } = await ratelimit.employeeForm.limit(event.locals.user.id);
       if(!success) {
@@ -45,8 +44,8 @@ export const actions: Actions = {
                where: {
                   invoiceNum: invoice.invoiceNum
                }
-            })
-            break;
+            });
+            redirect(308, '/invoices');
          case 'payment': 
             const payment = await prisma.paymentRecord.findUnique({
                where: {
@@ -64,12 +63,14 @@ export const actions: Actions = {
             if(refunds.length > 0){
                return message(deleteRecordForm, 'Refunds must be deleted first');
             }
-            await prisma.paymentRecord.delete({
+            const deleted = await prisma.paymentRecord.delete({
                where: {
                   paymentNumber: payment.paymentNumber
                }
             });
-            break;
+            if(deleted){
+               redirect(308, '/paymentRecords');
+            }
          case 'refund': 
             const refund = await prisma.refundRecord.findUnique({
                where: {
@@ -84,7 +85,7 @@ export const actions: Actions = {
                   refundNumber: refund.refundNumber
                }
             })
-            break;
+            redirect(308, '/refunds')
          default:
             break;
       }
