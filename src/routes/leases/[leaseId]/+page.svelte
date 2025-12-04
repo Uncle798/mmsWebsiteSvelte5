@@ -14,6 +14,7 @@
 	import AlternativeContactRemovalForm from '$lib/forms/AlternativeContactRemovalForm.svelte';
 	import Combobox from '$lib/formComponents/Combobox.svelte';
 	import { goto, invalidateAll } from '$app/navigation';
+	import LeaseChangeForm from '$lib/forms/LeaseChangeForm.svelte';
 
    let { data }: { data: PageData } = $props();
    let modalOpen = $state(false);
@@ -36,6 +37,8 @@
             <AlternativeContactForm data={data.alternativeContactForm} leaseId={data.lease!.leaseId} bind:modalOpen />
          {:else if modalReason === 'alternativeContactRemoval'}
             <AlternativeContactRemovalForm data={data.removeAlternativeContactForm} alternativeContactId={currentAlternativeContactId} bind:modalOpen />
+         {:else if modalReason === 'leaseChange'}
+            <LeaseChangeForm data={data.leaseChangeForm} lease={data.lease!} bind:modalOpen={modalOpen}/>
          {/if}
       {/snippet}
    </FormModal>
@@ -44,11 +47,11 @@
    <div class="mt-14 sm:mt-10 mb-8">
       {#if data.lease}
          <div class="border rounded-lg border-primary-50-950 flex flex-col sm:flex-row mx-2">
-            <LeaseEmployee lease={data.lease} classes=''/>
-            <div class="flex flex-col">
+            <LeaseEmployee lease={data.lease} open={true} classes=''/>
+            <div class="flex flex-col gap-2 mt-2">
                <button
                   type="button"
-                  class="btn preset-filled-primary-50-950 h-8 my-2"
+                  class="btn preset-filled-primary-50-950 h-8"
                   onclick={() => {
                      modalReason = 'alternativeContact';
                      modalOpen = true;
@@ -56,10 +59,20 @@
                >
                   Add alternative contact
                </button>
+               <button
+                  type="button"
+                  class="btn preset-filled-primary-50-950 h-8"
+                  onclick={() => {
+                     modalReason = 'leaseChange';
+                     modalOpen = true;
+                  }}
+               >
+                  Change lease details
+               </button>
                {#if !data.lease.leaseEnded}
                   <button 
                      type="button" 
-                     class="btn preset-filled-primary-50-950 m-2 h-8"  
+                     class="btn preset-filled-primary-50-950 h-8"  
                      onclick={()=>{
                         modalReason = 'leaseEnd'
                         modalOpen = true;
@@ -69,7 +82,7 @@
                   </button>
                {:else}
                   <button 
-                     class="butn preset-filled-primary-50-950 m-2 h-8"
+                     class="butn preset-filled-primary-50-950 h-8"
                      type="button"
                      onclick={async () => {
                         const response = await fetch('/api/leases', {

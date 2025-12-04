@@ -7,6 +7,7 @@ import { valibot } from 'sveltekit-superforms/adapters';
 import { leaseEndFormSchema } from '$lib/formSchemas/leaseEndFormSchema';
 import { alternativeContactFormSchema } from '$lib/formSchemas/alternativeContactFormSchema';
 import { alternativeContactRemovalFormSchema } from '$lib/formSchemas/alternativeContactRemovalFormSchema';
+import { leaseChangeFormSchema } from '$lib/formSchemas/leaseChangeFormSchema';
 
 export const load = (async (event) => {
    if(!event.locals.user){
@@ -24,6 +25,7 @@ export const load = (async (event) => {
    const leaseEndForm = await superValidate(valibot(leaseEndFormSchema));
    const alternativeContactForm = await superValidate(valibot(alternativeContactFormSchema));
    const removeAlternativeContactForm = await superValidate(valibot(alternativeContactRemovalFormSchema));
+   const leaseChangeForm = await superValidate(valibot(leaseChangeFormSchema));
    if(!lease){
       return error(404, {
          message: 'Lease not found'
@@ -91,6 +93,7 @@ export const load = (async (event) => {
       leaseEndForm, 
       alternativeContactForm,
       removeAlternativeContactForm,
+      leaseChangeForm,
       invoices, 
       alternativeContacts, 
       alternativeContactAddresses, 
