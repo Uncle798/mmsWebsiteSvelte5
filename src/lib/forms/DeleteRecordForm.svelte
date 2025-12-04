@@ -5,6 +5,7 @@
 	import FormMessage from "$lib/formComponents/FormMessage.svelte";
 	import TextInput from "$lib/formComponents/TextInput.svelte";
 	import FormSubmitWithProgress from "$lib/formComponents/FormSubmitWithProgress.svelte";
+	import { goto } from "$app/navigation";
 
    interface Props {
       data: SuperValidated<Infer<DeleteRecordFormSchema>>;
@@ -15,8 +16,24 @@
    }
    let { data, recordNum, recordType, modalOpen=$bindable(), classes }:Props = $props();
    let { form, errors, constraints, message, enhance, delayed, timeout} = superForm(data, {
-      onUpdate(){
-         modalOpen = false;
+      onUpdated(form){
+         console.log(form);
+         if(form.form.valid){
+            modalOpen = false;
+            switch (recordType) {
+               case 'invoice':
+                  goto('/invoices');
+                  break;
+               case 'payment':
+                  goto('/payment');
+                  break;
+               case 'refund':
+                  goto('/refunds');
+                  break;
+               default:
+                  break;
+            }
+         }
       },
    });
 </script>
@@ -25,10 +42,10 @@
    <FormMessage message={$message} />
    <form action="/forms/deleteRecordForm" method="POST" use:enhance>
       <TextInput
-         value={$form.confirmRecordNum.toString()}
-         constraints={$constraints.confirmRecordNum}
-         errors={$errors.confirmRecordNum}
-         name='confirmRecordNum'
+         bind:value={$form.confirm}
+         constraints={$constraints.confirm}
+         errors={$errors.confirm}
+         name='confirm'
          label='Please enter the record number to delete that record'
       />
       <input type="hidden" name="recordNum" id="recordNum" value={recordNum} />
