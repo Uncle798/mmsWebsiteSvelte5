@@ -25,6 +25,11 @@
       <div class="text-right">Price</div>
       <div class="font-medium">{currencyFormatter.format(lease.price)}</div>
       <HorizontalDivider classes="col-span-2"/>
+      {#if lease.depositAmount}
+         <div class="text-right">Deposit</div>
+         <div class="font-medium">{currencyFormatter.format(lease.depositAmount)}</div>
+         <HorizontalDivider classes="col-span-2"/>
+      {/if}
       {#if lease.leaseEnded}
          <div class="text-right">End date</div>
          <div class="font-medium"> {dayjs(lease.leaseEnded).format('M/D/YYYY')}</div>
