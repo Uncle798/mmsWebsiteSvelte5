@@ -1,5 +1,5 @@
 import {  PrismaClient, PaymentType } from '@prisma/client';
-import type { User,  Unit, Address, Lease, PaymentRecord, RefundRecord, DiscountCode, Invoice } from '@prisma/client'
+import type { User,  Unit, Address, Lease, PaymentRecord, RefundRecord, DiscountCode, Invoice } from '../src/generated/prisma/client'
 import { faker } from '@faker-js/faker';
 import dayjs  from 'dayjs';
 import  unitData from './unitData'
@@ -179,7 +179,6 @@ async function createLease(unit: Unit, leaseStart:Date, leaseEnd: Date | null, r
       customerId: customer.id,
       employeeId: randEmployee.id,
       addressId: address.addressId,
-      alternativeContactId: alternativeContact.id,
       unitNum: unit.num,
       price: discount ? unit.advertisedPrice-discount.amountOff : unit.advertisedPrice ,
       leaseEffectiveDate: leaseStart,
@@ -187,6 +186,7 @@ async function createLease(unit: Unit, leaseStart:Date, leaseEnd: Date | null, r
       leaseEnded,
       discountId: discount?.discountId ? discount.discountId : null,
       discountedAmount: discount?.amountOff ? discount.amountOff : null,
+      depositAmount: unit.advertisedPrice, 
       keysProvided: 0,
    };
    return lease;
