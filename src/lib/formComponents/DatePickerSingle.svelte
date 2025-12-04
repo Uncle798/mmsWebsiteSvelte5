@@ -9,10 +9,11 @@
       classes?: string;
       errors?: string[];
       constraints?: InputConstraint;
-      value: Date;
-      name: string
+      value: Date | undefined;
+      name: string;
+      placeholder?: string
    }
-   let { maxDate, minDate, label, value=$bindable(), errors, constraints, name, classes }:Props = $props();
+   let { maxDate, minDate, label, value=$bindable(), errors, constraints, name, placeholder, classes }:Props = $props();
    onMount(() => {
       if(value){
          dateValue.push(parseDate(value));
@@ -32,6 +33,7 @@
       class='gap-0!'
       numOfMonths={1}
       {name}
+      {placeholder}
    > 
       <DatePicker.Label>{label}</DatePicker.Label>
       <DatePicker.Control>
