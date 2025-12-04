@@ -95,7 +95,6 @@ model Lease {
   leaseId                  String                     @id @unique @default(cuid(2))
   customerId               String
   employeeId               String
-  alternativeContactId     String[]
   addressId                String
   unitNum                  String
   price                    Float
