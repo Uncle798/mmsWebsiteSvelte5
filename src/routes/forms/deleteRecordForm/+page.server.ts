@@ -85,7 +85,7 @@ export const actions: Actions = {
                   refundNumber: refund.refundNumber
                }
             })
-            redirect(308, '/refunds')
+            redirect(308, '/refundRecords')
          default:
             break;
       }
