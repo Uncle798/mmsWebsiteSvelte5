@@ -17,18 +17,17 @@
    let { data, recordNum, recordType, modalOpen=$bindable(), classes }:Props = $props();
    let { form, errors, constraints, message, enhance, delayed, timeout} = superForm(data, {
       onUpdated(form){
-         console.log(form);
-         if(form.form.valid){
+         if(form.form.valid && !$message){
             modalOpen = false;
             switch (recordType) {
                case 'invoice':
                   goto('/invoices');
                   break;
                case 'payment':
-                  goto('/payment');
+                  goto('/paymentRecords');
                   break;
                case 'refund':
-                  goto('/refunds');
+                  goto('/refundRecords');
                   break;
                default:
                   break;
