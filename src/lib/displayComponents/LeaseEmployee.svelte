@@ -44,10 +44,5 @@
       <HorizontalDivider classes="col-span-2"/>
       <div class="text-right">leaseID</div>
       <div class="truncate font-medium"><a href="/leases/{lease.leaseId}" class="anchor">{lease.leaseId}</a></div>
-      {#if lease.subscriptionId}
-         On auto-pay
-      {:else if !lease.leaseEnded}
-         <a href="/autopay?leaseId={lease.leaseId}" class="anchor mx-2 col-span-2">Sign up for Auto-pay</a>
-      {/if}
    </Collapsible.Content>
 </Collapsible>
