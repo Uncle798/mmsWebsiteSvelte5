@@ -1,5 +1,4 @@
 <script lang="ts">
-
    interface Props {
       label: string;
       onClick?: ()=>void;
@@ -10,4 +9,4 @@
 
 </script>
 
-<button class="btn {classes}" {type}>{label}</button>
+<button class="btn preset-filled-primary-50-950 h-8 {classes}" {type} onclick={onClick}>{label}</button>
