@@ -1,29 +1,24 @@
-import {  PrismaClient, PaymentType } from '@prisma/client';
-import type { User,  Unit, Address, Lease, PaymentRecord, RefundRecord, DiscountCode, Invoice } from '../src/generated/prisma/client'
+
+import type { User,  Unit, Address, Lease, PaymentRecord, RefundRecord, DiscountCode, Invoice, } from '../src/generated/prisma/client'
+import { PaymentType } from '../src/generated/prisma/client';
 import { faker } from '@faker-js/faker';
 import dayjs  from 'dayjs';
 import  unitData from './unitData'
 import pricingData  from './pricingData'
 import sizeDescription  from './sizeDescription'
+import { PrismaClient } from '../src/generated/prisma/client';
+import { PrismaNeon} from '@prisma/adapter-neon'
+
 
 const numUsers=unitData.length + 2000;
 const earliestStarting = new Date('2020-01-01');
 
+const adapter = new PrismaNeon({
+   connectionString: process.env.POSTGRES_PRISMA_URL
+});
 const prisma = new PrismaClient({
-   log: [
-     {
-       emit: "event",
-       level: "query",
-     },
-   ],
- });
- 
-// prisma.$on('query', e => {
-//           console.log('Query: ' + e.query);
-//           console.log('Params: ' + e.params);
-//           console.log('Duration: ' + e.duration + 'ms');
-//         });
-
+   adapter 
+});
 const userData = Array.from({length:numUsers}).map(()=>({
    email: '',
    givenName: faker.person.firstName(),
@@ -41,12 +36,15 @@ async function deleteAll() {
    await prisma.invoice.deleteMany().catch((err) =>{
       console.error(err);
    });
+   await prisma.leaseAlternativeContacts.deleteMany().catch((err) => {
+      console.error(err)
+   });
    await prisma.lease.deleteMany().catch((err) =>{
       console.error(err);
    });
    await prisma.discountCode.deleteMany().catch((err) => {
       console.error(err);
-   })
+   });
    await prisma.unit.deleteMany().catch((err) =>{
       console.error(err);
    });
@@ -173,14 +171,14 @@ function arrayOfMonths(startDate:Date, endDate:Date){
 
 type PartialLease = Omit<Lease, 'leaseId' | 'leaseCreatedAt' | 'dropboxURL' | 'subscriptionId' | 'anvilEID'>
 
-async function createLease(unit: Unit, leaseStart:Date, leaseEnd: Date | null, randEmployee: User, customer: User, address:Address, alternativeContact:User, discount?:DiscountCode, ) {
+async function createLease(unit: Unit, leaseStart:Date, leaseEnd: Date | null, randEmployee: User, customer: User, address:Address, discount?:DiscountCode, ) {
    const leaseEnded:Date | null = leaseEnd;
    const lease:PartialLease = {
       customerId: customer.id,
       employeeId: randEmployee.id,
       addressId: address.addressId,
       unitNum: unit.num,
-      price: discount ? unit.advertisedPrice-discount.amountOff : unit.advertisedPrice ,
+      price: discount ? unit.advertisedPrice-discount.amountOff : unit.advertisedPrice,
       leaseEffectiveDate: leaseStart,
       leaseReturnedAt: leaseStart,
       leaseEnded,
@@ -340,10 +338,6 @@ async function  main (){
       const randEmployee = employees[Math.floor(Math.random()*employees.length)];
       let leaseEnd = leaseStart.add(lengthOfLease, 'months');
       let customer = users.pop();
-      let alternativeContact = users.pop();
-      if(!alternativeContact){
-         break;
-      }
       numMonthsLeft = today.diff(leaseStart, 'months');
       const discounted = Math.floor(Math.random()*100) >= 95
       if(!customer){
@@ -353,19 +347,12 @@ async function  main (){
       while(numMonthsLeft > 3 ){
          let lease:PartialLease;
          if(discounted){
-            lease = await createLease(unit, leaseStart.toDate(), leaseEnd.toDate(), randEmployee, customer!, contact!, alternativeContact, discount);
+            lease = await createLease(unit, leaseStart.toDate(), leaseEnd.toDate(), randEmployee, customer!, contact!, discount);
          } else {
-            lease = await createLease(unit, leaseStart.toDate(), leaseEnd.toDate(), randEmployee, customer!, contact!, alternativeContact)
+            lease = await createLease(unit, leaseStart.toDate(), leaseEnd.toDate(), randEmployee, customer!, contact!);
          }
          leases.push(lease);
          customer = users.pop();
-         alternativeContact = users.pop()
-         if(!customer){
-            break;
-         }
-         if(!alternativeContact){
-            break;
-         }
          contact = dbContacts.find((c) => c.userId === customer?.id);
          leaseStart = leaseEnd.add(2,'months');
          numMonthsLeft = today.diff(leaseStart, 'months');
@@ -428,6 +415,15 @@ async function  main (){
    console.log(`🎫 ${leases.length} leases created in ${leaseEndTime.diff(unitEndTime, 'second')} seconds`);
    const invoices: PartialInvoice[] = [];
    for await (const lease of dbLeases){
+      const altContact = users.pop();
+      if(altContact){
+         await prisma.leaseAlternativeContacts.create({
+            data: {
+               leaseId: lease.leaseId,
+               userId: altContact.id,
+            }
+         })
+      }
       const leaseEndDate:Date | null = lease.leaseEnded ?? new Date();
       const months:Date[] = arrayOfMonths(lease.leaseEffectiveDate, leaseEndDate);
       let i = 0;
