@@ -86,7 +86,7 @@
             {@const customer = customers.find((customer) => customer.id === lease.customerId)}
             {@const leaseAddress = addresses.find((address) => address.addressId === lease.addressId)}
                <div class="grid sm:grid-cols-2 border border-primary-50-950 m-2 rounded-lg">
-                  <LeaseEmployee lease={lease} classes='mx-2'/>
+                  <LeaseEmployee lease={lease} classes='mx-2' open={true}/>
                   {#if customer}
                      <div class='m-2'> 
                         <UserEmployee user={customer} />
