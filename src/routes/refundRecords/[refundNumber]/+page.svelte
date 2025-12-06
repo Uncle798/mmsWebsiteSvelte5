@@ -9,12 +9,23 @@
    import EmailCustomer from '$lib/EmailCustomer.svelte';
    import type { PageData } from './$types';
 	import DownloadPdfButton from '$lib/DownloadPDFButton.svelte';
+	import FormModal from '$lib/displayComponents/Modals/FormModal.svelte';
+	import DeleteRecordForm from '$lib/forms/DeleteRecordForm.svelte';
+	import Button from '$lib/core/Button.svelte';
 
-    let { data }: { data: PageData } = $props();
+   let { data }: { data: PageData } = $props();
+   let modalOpen = $state(false);
 </script>
 {#if data.refundRecord}
-   {@const customer = data.refundRecord.customer}
+{@const customer = data.refundRecord.customer}
    <Header title='Refund Record number: {data.refundRecord.refundNumber}' />
+   <FormModal
+      bind:modalOpen={modalOpen}
+   >
+      {#snippet content()}
+         <DeleteRecordForm data={data.deleteRecordForm} recordNum={data.refundRecord!.refundNumber} recordType='refund'/>
+      {/snippet}
+   </FormModal>
    <div class="m-2 mt-14 sm:mt-10 border border-primary-50-950 rounded-lg flex flex-col sm:flex-row mb-22 sm:mb-14 lg:mb-9">
       {#if data.user?.employee}
       <div class="w-1/2">
@@ -32,6 +43,13 @@
             <DownloadPdfButton
                recordType='refundNum'
                num={data.refundRecord.refundNumber}
+            />
+            <Button
+               label='Delete refund {data.refundRecord.refundNumber}'
+               type='button'
+               onClick={() => {
+                  modalOpen = true;
+               }}
             />
          </div>
       </div>
