@@ -12,9 +12,12 @@
 	import DownloadPDFButton from '$lib/DownloadPDFButton.svelte';
 	import FormModal from '$lib/displayComponents/Modals/FormModal.svelte';
 	import DeleteRecordForm from '$lib/forms/DeleteRecordForm.svelte';
+	import Button from '$lib/core/Button.svelte';
+	import InvoiceChangeForm from '$lib/forms/InvoiceChangeForm.svelte';
 
    let { data }: { data: PageData } = $props();
    let modalOpen = $state(false);
+   let modalReason = $state('');
 </script>
 
 {#if data.user?.employee}
@@ -24,7 +27,11 @@
             {modalOpen}
          >
             {#snippet content()}
-               <DeleteRecordForm data={data.deleteRecordForm} recordNum={data.invoice?.invoiceNum} recordType='invoice' bind:modalOpen={modalOpen}/>
+               {#if modalReason === 'deleteInvoice'}
+                  <DeleteRecordForm data={data.deleteRecordForm} recordNum={data.invoice?.invoiceNum} recordType='invoice' bind:modalOpen={modalOpen}/>
+               {:else if modalReason === 'editInvoice'}
+                  <InvoiceChangeForm data={data.invoiceChangeForm} invoice={data.invoice} />
+               {/if}
             {/snippet}
          </FormModal>
       {/if}    
@@ -52,15 +59,22 @@
                   recordType='invoiceNum'
                   num={data.invoice.invoiceNum}
                />
-               <button
-                  class="btn preset-filled-primary-50-950 h-8"
-                  type="button"
-                  onclick={() => {
+               <Button
+                  type='button'
+                  label='Delete invoice {data.invoice.invoiceNum}'
+                  onClick={() => {
+                     modalReason = 'deleteInvoice';
                      modalOpen = true;
                   }}
-               >
-                  Delete invoice {data.invoice.invoiceNum}
-               </button>
+               />
+               <Button
+                  type='button'
+                  label='Edit invoice {data.invoice.invoiceNum}'
+                  onClick={() => {
+                     modalReason = 'editInvoice';
+                     modalOpen = true;
+                  }}
+               />
             </div>
          </div>
          <div class="flex flex-col min-w-64"> 

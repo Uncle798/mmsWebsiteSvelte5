@@ -4,6 +4,7 @@ import type { PageServerLoad } from './$types';
 import { error, redirect } from '@sveltejs/kit';
 import { valibot } from 'sveltekit-superforms/adapters';
 import { deleteRecordFormSchema } from '$lib/formSchemas/deleteRecordFormSchema';
+import { invoiceChangeFormSchema } from '$lib/formSchemas/invoiceChangeFormSchema';
 
 export const load = (async (event) => {
    const invoiceNum = event.params.invoiceNum;
@@ -39,7 +40,8 @@ export const load = (async (event) => {
             }
          })
          const deleteRecordForm = await superValidate(valibot(deleteRecordFormSchema));
-         return { invoice, address, customer, paymentRecords, deleteRecordForm };
+         const invoiceChangeForm = await superValidate(valibot(invoiceChangeFormSchema));
+         return { invoice, address, customer, paymentRecords, deleteRecordForm, invoiceChangeForm };
       } else {
          const invoice = await prisma.invoice.findFirst({
             where: {

@@ -1,4 +1,5 @@
 import { prisma } from '$lib/server/prisma';
+import { eventNames } from 'process';
 import type { RequestHandler } from './$types';
 
 export const DELETE: RequestHandler = async (event) => {
