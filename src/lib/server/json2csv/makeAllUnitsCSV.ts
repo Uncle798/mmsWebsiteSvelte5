@@ -44,12 +44,12 @@ export async function makeAllUnitsCSV(units:Unit[], leases:Lease[], customers:Us
          leasedPrice: unit.leasedPrice ? unit.leasedPrice : 0,
          advertisedPrice: unit.advertisedPrice,
       }
-      allJSON.push(json)
+      allJSON.push(json);
    }
    return json2csv(allJSON, {
       checkSchemaDifferences: true,
       delimiter: {
-         wrap: '/'
+         wrap: ';'
       },
    });
 }
