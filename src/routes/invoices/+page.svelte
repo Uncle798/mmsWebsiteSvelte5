@@ -177,7 +177,7 @@
             <Header title='All invoices' />
             <Revenue 
                label="Total invoiced (not including deposits)" 
-               amount={totalRevenue(searchedInvoices(dateSearchedInvoices(invoices)))} 
+               amount={totalRevenue(searchedInvoices(invoices))} 
                classes='bg-tertiary-50-950 w-full rounded-b-lg fixed top-11 sm:top-8 p-2 z-40'
             />
             <SearchDrawer
