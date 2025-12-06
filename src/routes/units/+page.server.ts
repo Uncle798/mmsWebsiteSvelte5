@@ -10,6 +10,7 @@ import { leaseEndFormSchema } from "$lib/formSchemas/leaseEndFormSchema";
 import type { PageServerLoad, Actions } from "./$types";
 
 import pricingData from "$lib/server/pricingData";
+import { changeDepositFormSchema } from "$lib/formSchemas/changeDepositFormSchema";
 
 export const load:PageServerLoad = async (event) =>{ 
    if(!event.locals.user){
@@ -21,6 +22,7 @@ export const load:PageServerLoad = async (event) =>{
    const unitPricingForm = await superValidate(valibot(unitPricingFormSchema), {id: 'pricingFrom'});
    const leaseEndForm = await superValidate(valibot(leaseEndFormSchema));
    const searchForm = await superValidate(valibot(searchFormSchema));
+   const changeDepositForm = await superValidate(valibot(changeDepositFormSchema));
    const leases =  prisma.lease.findMany({
       where: {
          leaseEnded: null
@@ -48,6 +50,7 @@ export const load:PageServerLoad = async (event) =>{
       customers,
       unitNotesForms,
       unitPricingForm,
+      changeDepositForm,
       leaseEndForm,
       searchForm,
       addresses,

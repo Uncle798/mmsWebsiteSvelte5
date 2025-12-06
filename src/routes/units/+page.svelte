@@ -21,6 +21,8 @@
 	import RevenueBar from '$lib/displayComponents/RevenueBar.svelte';
 	import { PUBLIC_COMPANY_NAME } from '$env/static/public';
 	import dayjs from 'dayjs';
+	import Button from '$lib/core/Button.svelte';
+	import ChangeDepositForm from '$lib/forms/ChangeDepositForm.svelte';
 	
 	let { data }: { data: PageData } = $props();
 	let modalOpen = $state(false);
@@ -45,7 +47,7 @@
 	let selectedSize = $state(['']);
 	let slicedUnits = $derived((units: Unit[]) => units.slice((pageNum - 1) * size, pageNum * size));
 	let filteredUnits = $derived((units:Unit[]) => {
-		if(selectedSize[0] === 'All'){
+		if(selectedSize[0] === 'all'){
 			return units
 		} else if(selectedSize[0] !== ''){
 			return units.filter((unit) => {
@@ -71,20 +73,20 @@
 			}
 		}
 		return returnedUnits;
-	})
+	});
 	const openRevenue = $derived((units:Unit[]) => {
 		let total = 0;
 		for(const unit of units){
 			total += unit.advertisedPrice
 		}
 		return total;
-	})
+	});
 	const searchedUnits = $derived((units:Unit[]) => 
 		units.filter((unit) => {
 			return unit.num.toString().toLowerCase().includes(search.toLowerCase())
 		})
-	)
-	   interface ComboboxData {
+	);
+	interface ComboboxData {
       label: string;
       value: string;
    }
@@ -95,7 +97,8 @@
 	onMount(() => {
 		comboboxData.unshift({label: 'All', value: 'all'})
 	})
-	let searchDrawerOpen = $state(false)
+	let searchDrawerOpen = $state(false);
+	let currentUnit = $state<Unit>();
 </script>
 
 <Header title="All units" />
@@ -119,6 +122,11 @@
 				size={currentSize}
 				oldPrice={currentOldPrice}
 				classes='m-1 sm:m-2'
+			/>
+		{:else if globalModalType === 'changeDeposit' && currentUnit}
+			<ChangeDepositForm
+				data={data.changeDepositForm}
+				unit={currentUnit}
 			/>
 		{/if}
 	{/snippet}
@@ -188,10 +196,30 @@
                	{#each slicedUnits(filteredUnits(searchedUnits(units))) as unit (unit.num)}
                	{@const lease = leases?.find((lease) => lease.unitNum === unit.num)}
 						{@const unitNotesForm = data.unitNotesForms.find((formData) => formData.id === unit.num)}
+						{@const humanUnitNum = unit.num.replace(/^0+/gm, '')}
+						{@const humanUnitSize = unit.size.replace(/^0+/gm,'').replace(/x0/gm,'x')}
 							<div class="border-2 border-primary-50-950 rounded-lg grid grid-cols-1 sm:grid-cols-2 my-2 gap-2">
 								<div class="flex flex-col">
 									<UnitEmployee {unit} classes=''/>
-									<button class="btn preset-filled-primary-50-950 rounded-lg mx-2 mb-2" onclick={()=> openModal('unitPricing', unit.advertisedPrice, '', unit.size)}>Change all {unit.size.replace(/^0+/gm,'').replace(/x0/gm,'x')} pricing</button>
+									<div class="mx-2 flex flex-col gap-2">
+										<Button
+											label="Change all {humanUnitSize} pricing"
+											type='button'
+											onClick={() => {
+												openModal('unitPricing', unit.advertisedPrice, '', unit.size);
+											}}
+										/>
+										<Button
+											label="Change all the deposit for unit {humanUnitNum}"
+											type='button'
+											onClick={() => {
+												currentUnit = unit;
+												globalModalType = 'changeDeposit'
+												modalOpen = true;
+											}}
+										/>
+									</div>
+									
 									{#if unitNotesForm}
 										<UnitNotesForm data={unitNotesForm} {unit} classes='mx-1 sm:mx-2'/>
 									{/if}
