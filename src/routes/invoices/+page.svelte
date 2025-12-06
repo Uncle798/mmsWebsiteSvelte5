@@ -21,6 +21,7 @@
    import ProgressLine from '$lib/displayComponents/ProgressLine.svelte';
 	import SearchDrawer from '$lib/displayComponents/Modals/SearchDrawer.svelte';
 	import DateSearchForm from '$lib/forms/DateSearchForm.svelte';
+	import Button from '$lib/core/Button.svelte';
 
    dayjs.extend(utc)
    let { data }: { data: PageData } = $props();
@@ -200,12 +201,14 @@
                         }}
                      />
                   </div>
-                     <button class="btn preset-filled-primary-50-950 h-8" onclick={()=> {
-                        sortBy = !sortBy;
-                        searchDrawerOpen = false;
-                     }}>
-                        Sort by date {sortBy? 'starting earliest' : 'starting latest'}
-                     </button>
+                     <Button
+                        label='Sort by date {sortBy? 'starting earliest' : 'starting latest'}'
+                        type='button'
+                        onClick={() => {
+                           sortBy = !sortBy;
+                           searchDrawerOpen = false;
+                        }}
+                     />
                {/snippet}
             </SearchDrawer>
             <div class="grid grid-cols-1 sm:m-2 m-1 gap-2 mt-28 sm:mt-20 mb-8 sm:mb-8" in:fade={{duration:600}} out:fade={{duration:0}}>
