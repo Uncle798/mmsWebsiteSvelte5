@@ -104,19 +104,6 @@
       currentUnit = unit;
       leaseEndModalOpen = true;
    }
-   const customersTour = driver({
-      showProgress: true,
-      stagePadding: 2,
-      steps: [
-         { popover: { title: `Customers`, description: `Here are your current customers`}},
-         { element: '.firstCustomer', popover: { title: `First Customer`, description: `This is the first current customer alphabetized by last name. `}},
-         { element: '.firstCustomerNotes', popover: { title: `Customer Notes`, description: `Here you can keep notes about customers including not to rent to them in the future.`}},
-         { element: '.firstCustomerIncome', popover: { title: `Customer Profit and Loss`, description: `Quickly see how much a customer has paid you and if they own you money.`}}
-      ],
-      onDestroyed: () => {
-         fetch('/api/demoSetCookie?demoPage=customers')
-      }
-   })
    onNavigate(() => {
       leaseEndModalOpen = false;
       currentLeaseId = '';
@@ -154,7 +141,7 @@
                      Loading units...
                   </div>
                {:then units}
-                  <div in:fade={{duration:600}} class="mt-20 sm:mt-18 mb-8 sm:mb-8" {@attach () => {if(data.demoCookie !== 'true'){customersTour.drive()}}}>
+                  <div in:fade={{duration:600}} class="mt-20 sm:mt-18 mb-8 sm:mb-8" >
                      <RevenueBar>
                         {#snippet content()}
                            <Revenue label='Current monthly invoiced' amount={totalLeased(leases)} />
