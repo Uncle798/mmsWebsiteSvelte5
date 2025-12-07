@@ -9,6 +9,7 @@ import { emailVerificationFormSchema } from '$lib/formSchemas/emailVerificationF
 import { addressFormSchema } from '$lib/formSchemas/addressFormSchema';
 import { emailFormSchema } from '$lib/formSchemas/emailFormSchema';
 import { nameFormSchema } from "$lib/formSchemas/nameFormSchema";
+import { onboardingCreateManyInvoicesFormSchema } from "$lib/formSchemas/onboardingCreateManyInvoicesFormSchema";
 
 export const load: PageServerLoad = async (event) => {
    if(!event.locals.user?.employee){
@@ -20,6 +21,7 @@ export const load: PageServerLoad = async (event) => {
    const emailVerificationForm = await superValidate(valibot(emailVerificationFormSchema));
    const userNotesForm = await superValidate(valibot(userNotesFormSchema));
    const nameChangeForm = await superValidate(valibot(nameFormSchema));
+   const onboardingCreateManyInvoicesForm = await superValidate(valibot(onboardingCreateManyInvoicesFormSchema));
    const userId = event.params.userId;
 
    const dbUser = await prisma.user.findUnique({
@@ -84,5 +86,6 @@ export const load: PageServerLoad = async (event) => {
       emailChangeForm, 
       emailVerificationForm, 
       userNotesForm, 
+      onboardingCreateManyInvoicesForm
    }
 };

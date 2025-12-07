@@ -8,6 +8,7 @@ import { leaseEndFormSchema } from '$lib/formSchemas/leaseEndFormSchema';
 import { alternativeContactFormSchema } from '$lib/formSchemas/alternativeContactFormSchema';
 import { alternativeContactRemovalFormSchema } from '$lib/formSchemas/alternativeContactRemovalFormSchema';
 import { leaseChangeFormSchema } from '$lib/formSchemas/leaseChangeFormSchema';
+import { onboardingCreateManyInvoicesFormSchema } from '$lib/formSchemas/onboardingCreateManyInvoicesFormSchema';
 
 export const load = (async (event) => {
    if(!event.locals.user){
@@ -26,6 +27,7 @@ export const load = (async (event) => {
    const alternativeContactForm = await superValidate(valibot(alternativeContactFormSchema));
    const removeAlternativeContactForm = await superValidate(valibot(alternativeContactRemovalFormSchema));
    const leaseChangeForm = await superValidate(valibot(leaseChangeFormSchema));
+   const onboardingCreateManyInvoicesForm = await superValidate(valibot(onboardingCreateManyInvoicesFormSchema));
    if(!lease){
       return error(404, {
          message: 'Lease not found'
@@ -93,6 +95,7 @@ export const load = (async (event) => {
       leaseEndForm, 
       alternativeContactForm,
       removeAlternativeContactForm,
+      onboardingCreateManyInvoicesForm,
       leaseChangeForm,
       invoices, 
       alternativeContacts, 

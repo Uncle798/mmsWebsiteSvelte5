@@ -90,17 +90,6 @@
                      }}
                   />
                {/if}
-               <Combobox
-                  data={comboboxData}
-                  label='Select alt contact'
-                  onValueChange={async(e) => {
-                     await fetch('/api/addAlternativeContact', {
-                        method: 'POST',
-                        body: JSON.stringify({userId: e.value[0], leaseId: data.lease?.leaseId})
-                     });
-                     invalidateAll();
-                  }}
-               />
             </div>
             <div class="m-1 sm:m-2">
                {#if data.customer}
