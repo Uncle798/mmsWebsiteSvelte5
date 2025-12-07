@@ -22,7 +22,7 @@
       setTimeout(()=>{
          emailing = false
          emailed = false
-      }, 5000)
+      }, 5000);
    }
 </script>
 <div class={classes}>
