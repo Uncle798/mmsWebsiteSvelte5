@@ -3,7 +3,7 @@
 	import type { NewPaymentRecordFormSchema } from '$lib/formSchemas/newPaymentRecordFormSchema';
 	import type { EmailVerificationFormSchema } from '$lib/formSchemas/emailVerificationFormSchema';
 	import type { RegisterFormSchema } from '$lib/formSchemas/registerFormSchema';
-	import type { Invoice, Lease, User } from '../../generated/prisma/browser';
+	import { type Invoice, type Lease, type User, PaymentType } from '../../generated/prisma/browser';
 	import { onMount } from "svelte";
 	import { superForm, type Infer, type SuperValidated } from "sveltekit-superforms";
    import NewInvoiceForm from "./NewInvoiceForm.svelte";
@@ -19,8 +19,6 @@
 	import ProgressRing from "$lib/displayComponents/ProgressRing.svelte";
 	import ProgressLine from "$lib/displayComponents/ProgressLine.svelte";
    import Switch from "$lib/formComponents/Switch.svelte";
-	import { driver } from "driver.js";
-   import 'driver.js/dist/driver.css';
 
    interface Props {
       data: SuperValidated<Infer<NewPaymentRecordFormSchema>>;
@@ -94,20 +92,8 @@
       }
    }));
    let invoiceModalOpen = $state(false);
-   const paymentTypes = [ 'CASH', 'CHECK', 'CREDIT'];
    let navDelayed = $state(false);
    let navTimeout = $state(false);
-   let formTour = driver({
-      showProgress: true,
-      stagePadding: 2,
-      steps: [
-         { popover: { title: `Take a payment`, description: `Here's where you take in person or over the phone payments. To take a payment you'll need an invoice first.`}},
-         { element: '.paymentNotes', popover: { title: `Payment Notes`, description: `Here is where to enter any notes for the payment, they will be visible to the customer. MMS has defaults that we can customize for you, and you can edit the notes before making the payment record.`}}
-      ],
-      onDestroyed: () => {
-         fetch('/api/demoSetCookie?demoPage=newPayment');
-      }
-   });
    onNavigate(() => {
       navDelayed = false;
       navTimeout = false;
@@ -132,20 +118,6 @@
       }
       if(invoice){
          $form.paymentAmount = invoice.invoiceAmount - invoice?.amountPaid;
-      }
-      if(paymentTypesCookie !== 'true'){
-         formTour = driver({
-            showProgress: true,
-            stagePadding: 2,
-            steps: [
-               { popover: { title: `Take a payment`, description: `Here's where you take in person or over the phone payments. To take a payment you'll need an invoice first.`}},
-               { element: '.paymentNotes', popover: { title: `Payment Notes`, description: `Here is where to enter any notes for the payment, they will be visible to the customer. MMS has defaults that we can customize for you, and you can edit the notes before making the payment record.`}},
-               { element: '.paymentTypes', popover: { title: `Payment Types`, description: `Please chose cash or check as there is currently no way to demo a credit card payment.`}}
-            ],
-            onDestroyed: () => {
-               fetch('/api/demoSetCookie?demoPage=paymentTypes');
-            }
-         });
       }
    })
 </script>
@@ -199,9 +171,6 @@
          $form.paymentNotes=`Payment for Invoice ${invoice.invoiceNum} ${invoice.invoiceNotes}`
          $form.paymentAmount=invoice.invoiceAmount - invoice.amountPaid;
          $form.deposit=invoice.deposit;
-         if(newPaymentsCookie !== 'true'){
-            formTour.drive()
-         }
       }}>
          <NumberInput
             bind:value={$form.paymentAmount}
@@ -211,7 +180,7 @@
             name='paymentAmount'
          />
          <div class="flex paymentTypes">
-            {#each paymentTypes as paymentType}
+            {#each Object.values(PaymentType) as paymentType}
                {#if paymentType === 'CREDIT'}
                   <RadioButton
                      value={paymentType}
