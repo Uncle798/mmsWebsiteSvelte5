@@ -62,7 +62,7 @@
                         if(body.success){
                            emailed = true;
                            emailing = false;
-                           setTimeout(() => { emailed = false; menuOpen = false }, 5000);
+                           setTimeout(() => { emailed = false; menuOpen = false; }, 5000);
                         }else {
 
                         }
@@ -128,20 +128,20 @@
                         </Menu.Item>
                         {#if data.invoice.amountPaid < data.invoice.invoiceAmount}                           
                            <Menu.Item value='editInvoice'>
-                              Edit invoice
+                              Edit invoice {data.invoice.invoiceNum}
                            </Menu.Item>
                         {:else}
                            <Menu.Item value='editInvoice' disabled={true}>
-                              Edit invoice
+                              Edit invoice {data.invoice.invoiceNum}
                            </Menu.Item>
                         {/if}
                         {#if data.invoice.amountPaid < data.invoice.invoiceAmount}
                            <Menu.Item value='deleteInvoice'>
-                              Delete invoice
+                              Delete invoice {data.invoice.invoiceNum}
                            </Menu.Item>
                         {:else}
                            <Menu.Item value='deleteInvoice' disabled={true}>
-                              Delete invoice
+                              Delete invoice {data.invoice.invoiceNum}
                            </Menu.Item>
                         {/if}
                      </Menu.Content>
