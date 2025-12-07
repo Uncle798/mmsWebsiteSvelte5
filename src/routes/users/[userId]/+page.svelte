@@ -107,7 +107,7 @@
             bind:nameModalOpen={globalModalOpen}
          />
       {:else if modalReason === 'onboardingCreateManyInvoices' && currentLease}
-         <OnboardingCreateManyInvoicesForm data={data.onboardingCreateManyInvoicesForm} lease={currentLease} />
+         <OnboardingCreateManyInvoicesForm data={data.onboardingCreateManyInvoicesForm} lease={currentLease} bind:modalOpen={globalModalOpen} />
       {/if}
    {/snippet}
 </FormModal>
