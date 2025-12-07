@@ -47,7 +47,6 @@
             <InvoiceEmployee invoice={data.invoice} classes="min-w-64 mx-2 " />
             <Menu 
                onSelect={async (e) => {
-                  console.log(e);
                   switch (e.value) {
                      case 'newPayment':
                         menuOpen = false;
@@ -63,7 +62,7 @@
                         if(body.success){
                            emailed = true;
                            emailing = false;
-                           setTimeout(() => { emailed = false }, 5000);
+                           setTimeout(() => { emailed = false; menuOpen = false }, 5000);
                         }else {
 
                         }
