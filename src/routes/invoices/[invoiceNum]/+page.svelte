@@ -100,7 +100,7 @@
                <Menu.Trigger class='btn preset-filled-primary-50-950 m-2 w-16' ><EllipsisVertical aria-label='Invoice Menu' /></Menu.Trigger>
                <Portal>
                   <Menu.Positioner>
-                     <Menu.Content>
+                     <Menu.Content class='backdrop-blur-sm'>
                         {#if data.invoice.amountPaid < data.invoice.invoiceAmount}
                            <Menu.Item value='newPayment'>Make a payment for invoice {data.invoice.invoiceNum}</Menu.Item>
                         {:else}   
