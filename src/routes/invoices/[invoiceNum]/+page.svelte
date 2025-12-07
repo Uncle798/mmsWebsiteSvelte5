@@ -43,7 +43,7 @@
       {/if}    
       <Header title="Invoice number {data.invoice.invoiceNum}" />
       <div class="flex flex-col sm:flex-row gap-x-1 mx-1 sm:mx-2 mt-14 sm:mt-10 border-2 border-primary-50-950 rounded-lg">
-         <div class="flex flex-col">
+         <div class="flex flex-col w-1/2">
             <InvoiceEmployee invoice={data.invoice} classes="min-w-64 mx-2 " />
             <Menu 
                onSelect={async (e) => {
@@ -149,7 +149,7 @@
                </Portal>
             </Menu>
          </div>
-         <div class="flex flex-col"> 
+         <div class="flex flex-col w-1/2"> 
             {#if data.customer}
                <UserEmployee user={data.customer} classes="px-2 pt-2" />
             {/if}

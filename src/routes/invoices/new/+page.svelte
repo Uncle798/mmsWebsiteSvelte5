@@ -4,7 +4,6 @@
 	import UserEmployee from '$lib/displayComponents/UserEmployee.svelte';
    import NewInvoiceForm from '$lib/forms/NewInvoiceForm.svelte';
 	import Header from '$lib/Header.svelte';
-   import FormMessage from '$lib/formComponents/FormMessage.svelte';
    import type { PageData } from './$types';
    import { fade } from 'svelte/transition';
 	import AddressForm from '$lib/forms/AddressForm.svelte';
