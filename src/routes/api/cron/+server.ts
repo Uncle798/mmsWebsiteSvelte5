@@ -52,7 +52,7 @@ export const GET:RequestHandler = async (event) => {
                   invoiceAmount: lease.price,
                   customerId: lease.customerId,
                   invoiceDue: today.add(1, 'month').toDate(),
-                  invoiceNotes: `Rent for unit ${lease.unitNum.replace(/^0/gm, '')} for ${today.format('MMMM D YYYY')} - ${today.add(1,'month').format('MMMM D YYYY')}`
+                  invoiceNotes: `Rent for unit ${lease.unitNum.replace(/^0/gm, '')} for ${today.add(1, 'month').format('MMMM D YYYY')} - ${today.add(2,'month').format('MMMM D YYYY')}`
                }
             })
          )
