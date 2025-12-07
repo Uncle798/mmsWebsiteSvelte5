@@ -82,7 +82,7 @@ export const load = (async (event) => {
          leaseId: lease?.leaseId
       },
       orderBy: {
-         invoiceCreated: 'asc'
+         invoiceDue: 'asc'
       }
    })
    return { 
