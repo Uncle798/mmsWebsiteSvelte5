@@ -33,7 +33,7 @@
    </FormModal>
       <div class="m-2 rounded-lg border border-primary-50-950 grid sm:grid-cols-2">
          {#if data.lease}
-            <LeaseEmployee lease={data.lease} classes='p-2'/>
+            <LeaseEmployee lease={data.lease} classes='p-2' open={true} />
          {/if}
          <div class="p-2">
             <UserEmployee user={data.customer} />
