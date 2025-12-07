@@ -7,6 +7,8 @@
 	import type { Invoice } from "../../generated/prisma/browser";
 	import TextArea from "$lib/formComponents/TextArea.svelte";
 	import { onMount } from "svelte";
+	import NumberInput from "$lib/formComponents/NumberInput.svelte";
+	import DatePickerSingle from "$lib/formComponents/DatePickerSingle.svelte";
 
    interface Props {
       data: SuperValidated<Infer<InvoiceChangeFormSchema>>;
@@ -14,12 +16,16 @@
       modalOpen?: boolean;
       classes?: string;
    }
-   let { data, invoice, modalOpen, classes }:Props = $props();
+   let { data, invoice, modalOpen=$bindable(), classes }:Props = $props();
       let { form, errors, constraints, message, enhance,  delayed, timeout } = superForm(data, {
-      onSubmit(){
-      }, 
-      onUpdated() {
-         modalOpen = false;
+      onUpdated({form}) {
+         if(form.valid && !$message){
+            modalOpen = false;
+         }else if(form.valid && $message === 'Invoice updated'){
+            setTimeout(() => {
+               modalOpen = false;
+            }, 1000);
+         }
        },
    });
    onMount(() => {
@@ -29,6 +35,20 @@
 <div class={classes}>
    <FormMessage message={$message} />
    <form action="/forms/invoiceChangeForm" method="POST" use:enhance>
+      <NumberInput
+         bind:value={$form.invoiceAmount}
+         errors={$errors.invoiceAmount}
+         constraints={$constraints.invoiceAmount}
+         label='Invoice amount'
+         name='invoiceAmount'
+      />
+      <DatePickerSingle
+         bind:value={$form.invoiceDue}
+         errors={$errors.invoiceDue}
+         constraints={$constraints.invoiceDue}
+         label='Invoice due date'
+         name='invoiceDues'
+      />
       <TextArea
          bind:value={$form.invoiceNotes}
          label='Invoice notes'
@@ -36,6 +56,7 @@
          errors={$errors.invoiceNotes}
          constraints={$constraints.invoiceNotes}
       />
+      <input type="hidden" name="invoiceNum" id="invoiceNum" value={invoice.invoiceNum} />
       <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} />
    </form>
 </div>
