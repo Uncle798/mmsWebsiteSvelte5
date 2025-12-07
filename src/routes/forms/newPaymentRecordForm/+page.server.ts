@@ -32,7 +32,7 @@ export const actions:Actions = {
             }
          })
       }
-      if(data.paymentType === 'CASH' || data.paymentType === 'CHECK'){
+      if(data.paymentType === 'CASH' || data.paymentType === 'CHECK' || data.paymentType === 'ONBOARDING_CREDIT'){
          const paymentRecord = await prisma.paymentRecord.create({
             data: {
                paymentAmount: data.paymentAmount,
