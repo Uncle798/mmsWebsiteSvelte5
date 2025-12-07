@@ -232,4 +232,5 @@ enum PaymentType {
   CREDIT
   CASH
   CHECK
+  ONBOARDING_CREDIT
 }
