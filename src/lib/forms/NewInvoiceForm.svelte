@@ -267,6 +267,7 @@
          />
          <input type="hidden" name='employeeId' value={employeeId}/>
          <input type="hidden" name="customerId" value={customer?.id} />
+         <input type="hidden" name='leaseId' value={lease?.leaseId} />
          <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} buttonText='Create Invoice'/>
       </form>
    {/if}
