@@ -15,7 +15,7 @@
       classes?: string;
    }
    let { data, unit, modalOpen=$bindable(), classes }:Props = $props();
-      let { form, message, errors, constraints, enhance, delayed, timeout, capture, restore, } = superForm(data, {
+   let { form, message, errors, constraints, enhance, delayed, timeout, capture, restore, } = superForm(data, {
       onChange(event) {
       },
       onSubmit({formData}) {

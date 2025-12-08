@@ -31,7 +31,7 @@
          errors={$errors.price}
          constraints={$constraints.price}
          label='Change price of unit {lease.unitNum.replace(/^0+/gm, '')}'
-         name='leasePrice'
+         name='price'
          placeholder={lease.price.toString()}
       />
       <NumberInput
