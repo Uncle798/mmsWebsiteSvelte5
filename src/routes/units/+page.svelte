@@ -103,7 +103,7 @@
 
 <Header title="All units" />
 <FormModal
-	modalOpen={modalOpen}
+	bind:modalOpen={modalOpen}
 >
 	{#snippet content()}
 		{#if globalModalType === 'lease'}

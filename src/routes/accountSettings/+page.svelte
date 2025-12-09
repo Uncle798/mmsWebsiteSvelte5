@@ -44,7 +44,7 @@
 </script>
 <Header title='Settings for {data.user?.givenName}' />
 <FormModal
-   modalOpen={globalModalOpen}
+   bind:modalOpen={globalModalOpen}
 >
    {#snippet content()}
       {#if modalSelector === 'emailVerification'}

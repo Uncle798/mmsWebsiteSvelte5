@@ -83,7 +83,7 @@
 </script>
 <Header title='Deposits' />
 <FormModal
-   modalOpen={refundModalOpen}
+   bind:modalOpen={refundModalOpen}
 >
    {#snippet content()}
       <RefundForm data={data.refundForm} paymentRecord={paymentRecord}/>

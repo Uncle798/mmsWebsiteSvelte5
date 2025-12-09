@@ -40,7 +40,7 @@
          <AddressCustomer address={data.address} />
       {:else}
          <FormModal
-            modalOpen={addressModalOpen}
+            bind:modalOpen={addressModalOpen}
          >
             {#snippet content()}
                <AddressForm data={data.addressForm} bind:addressModalOpen={addressModalOpen} userId={data.user?.id}/>

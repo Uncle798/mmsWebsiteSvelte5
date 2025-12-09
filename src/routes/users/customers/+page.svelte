@@ -156,7 +156,7 @@
                         {/snippet}
                      </SearchDrawer>
                      <FormModal
-                        modalOpen={leaseEndModalOpen}
+                        bind:modalOpen={leaseEndModalOpen}
                      >
                         {#snippet content()}
                            <LeaseEndForm data={data.leaseEndForm} {leaseEndModalOpen} leaseId={currentLeaseId} employee={true}/>

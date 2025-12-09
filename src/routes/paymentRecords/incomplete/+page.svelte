@@ -22,7 +22,7 @@
 <Header title='Incomplete Payment Records' />
 
 <FormModal
-   modalOpen={modalOpen}
+   bind:modalOpen={modalOpen}
 >
    {#snippet content()}
       <FormMessage message={$message} />

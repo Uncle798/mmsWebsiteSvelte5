@@ -110,7 +110,7 @@
 <Header title="Employee New Lease" />
 
 <FormModal
-   modalOpen={registerModalOpen}
+   bind:modalOpen={registerModalOpen}
 >
    {#snippet content()}
       {#if !data.customer}

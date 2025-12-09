@@ -22,7 +22,7 @@
    ...loading unit
 {:then unit}
    <FormModal
-      modalOpen={modalOpen}
+      bind:modalOpen={modalOpen}
    >
       {#snippet content()}
          <LeaseEndForm data={data.leaseEndForm} leaseId={currentLeaseId} />

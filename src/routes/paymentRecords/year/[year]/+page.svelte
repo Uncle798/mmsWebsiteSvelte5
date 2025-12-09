@@ -128,7 +128,7 @@
    })
 </script>
 <FormModal
-   modalOpen={modalOpen}
+   bind:modalOpen={modalOpen}
 >  
    {#snippet content()}
       <RefundForm data={data.refundForm} paymentRecord={currentPaymentRecord}/>

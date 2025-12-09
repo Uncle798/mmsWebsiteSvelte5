@@ -71,7 +71,7 @@
 <Header title='All {data.size.replace(/^0+/gm,'').replace(/0x/gm,'x')} units' />
 
 <FormModal
-   modalOpen={unitPricingModalOpen}
+   bind:modalOpen={unitPricingModalOpen}
 >  
    {#snippet content()}
       <UnitPricingForm data={data.unitPricingForm} bind:unitPricingFormModalOpen={unitPricingModalOpen} size={data.size} oldPrice={currentOldPrice}/>

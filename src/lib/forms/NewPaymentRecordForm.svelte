@@ -123,7 +123,7 @@
 </script>
 
 <FormModal
-   modalOpen={invoiceModalOpen}
+   bind:modalOpen={invoiceModalOpen}
 >
    {#snippet content()}    
       <NewInvoiceForm 

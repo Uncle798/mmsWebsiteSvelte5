@@ -30,7 +30,7 @@
    {#if data.invoice}  
       {#if data.deleteRecordForm}       
          <FormModal
-            {modalOpen}
+            bind:modalOpen={modalOpen}
          >
             {#snippet content()}
                {#if modalReason === 'deleteInvoice'}
