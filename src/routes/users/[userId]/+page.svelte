@@ -22,6 +22,7 @@
 	import type { Lease } from '../../../generated/prisma/client';
 	import PayManyInvoicesForm from '$lib/forms/PayManyInvoicesForm.svelte';
 	import { Accordion } from '@skeletonlabs/skeleton-svelte';
+	import NewInvoiceForm from '$lib/forms/NewInvoiceForm.svelte';
 
    let { data }: { data: PageData } = $props();
    let globalModalOpen = $state(false);
@@ -76,7 +77,6 @@
       currentUser=user
    }
    let currentLease = $state<Lease>();
-   let selectedInvoices = $state<Invoice[]>([])
 </script>
 <FormModal
    bind:modalOpen={globalModalOpen}
@@ -120,6 +120,15 @@
             data={data.payManyInvoicesForm}
             customerId={data.userId}
             bind:modalOpen={globalModalOpen}
+         />
+      {:else if modalReason === 'newInvoice'}
+         <NewInvoiceForm
+            data={data.newInvoiceForm}
+            employeeId={data.user!.id}
+            emailVerificationFormData={data.emailVerificationForm}
+            registerFormData={data.registerForm}
+            lease={currentLease}
+            customer={data.dbUser}
          />
       {/if}
    {/snippet}
@@ -195,23 +204,31 @@
          <div class="rounded-lg border-2 border-primary-50 dark:border-primary-950 flex flex-col m-2">
             <LeaseEmployee lease={lease} classes='m-2'/>
             {#if !lease?.leaseEnded}
-               <Button
-                  label='End lease'
-                  type='button'
-                  onClick={() => leaseModal(lease.leaseId)}
-                  classes='m-2'
-               />
-               <a href="/invoices/new?leaseId={lease.leaseId}" class="btn preset-filled-primary-50-950 mx-2">Make an invoice for this lease</a>
-               <Button
-                  label='Create many invoices for this lease'
-                  type='button'
-                  onClick={() => {
-                     modalReason='onboardingCreateManyInvoices'
-                     currentLease = lease;
-                     globalModalOpen = true;
-                  }}
-                  classes='m-2'
-               />
+               <div class="m-2 gap-2 flex flex-col">
+                  <Button
+                     label='End lease'
+                     type='button'
+                     onClick={() => leaseModal(lease.leaseId)}
+                  />
+                  <Button
+                     label='Make an invoice for this lease'
+                     type='button'
+                     onClick={() => {
+                        modalReason='newInvoice';
+                        currentLease=lease;
+                        globalModalOpen=true;
+                     }}
+                  />
+                  <Button
+                     label='Create many invoices for this lease'
+                     type='button'
+                     onClick={() => {
+                        modalReason='onboardingCreateManyInvoices'
+                        currentLease = lease;
+                        globalModalOpen = true;
+                     }}
+                  />
+               </div>
             {/if}
          </div>
       {/each}
