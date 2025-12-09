@@ -20,6 +20,8 @@
 	import OnboardingCreateManyInvoicesForm from '$lib/forms/OnboardingCreateManyInvoicesForm.svelte';
 	import Button from '$lib/core/Button.svelte';
 	import type { Lease } from '../../../generated/prisma/client';
+	import PayManyInvoicesForm from '$lib/forms/PayManyInvoicesForm.svelte';
+	import { Accordion } from '@skeletonlabs/skeleton-svelte';
 
    let { data }: { data: PageData } = $props();
    let globalModalOpen = $state(false);
@@ -32,7 +34,7 @@
       let total = 0;
       for(const invoice of invoices){
          if(!invoice.deposit){
-            total += invoice.invoiceAmount
+            total += invoice.invoiceAmount - invoice.amountPaid;
          }
       }
       return total;
@@ -74,9 +76,10 @@
       currentUser=user
    }
    let currentLease = $state<Lease>();
+   let selectedInvoices = $state<Invoice[]>([])
 </script>
 <FormModal
-   modalOpen={globalModalOpen}
+   bind:modalOpen={globalModalOpen}
 >
    {#snippet content()}
       {#if modalReason === 'emailChange'}
@@ -107,7 +110,17 @@
             bind:nameModalOpen={globalModalOpen}
          />
       {:else if modalReason === 'onboardingCreateManyInvoices' && currentLease}
-         <OnboardingCreateManyInvoicesForm data={data.onboardingCreateManyInvoicesForm} lease={currentLease} bind:modalOpen={globalModalOpen} />
+         <OnboardingCreateManyInvoicesForm 
+            data={data.onboardingCreateManyInvoicesForm} 
+            lease={currentLease} 
+            bind:modalOpen={globalModalOpen} 
+         />
+      {:else if modalReason === 'payManyInvoices'}
+         <PayManyInvoicesForm
+            data={data.payManyInvoicesForm}
+            customerId={data.userId}
+            bind:modalOpen={globalModalOpen}
+         />
       {/if}
    {/snippet}
 </FormModal>
@@ -117,33 +130,31 @@
    <div class="grid grid-cols-1 sm:grid-cols-2 mt-14 sm:mt-10 mx-1 sm:mx-2">
       <div class="gap-2">
          <UserEmployee user={data.dbUser} classes='mx-2' />
-         <button class="btn preset-filled-primary-50-950 m-2" 
-            onclick={() => emailChangeModal(data.dbUser) }
+         <Button
+            label='Change email address'
             type='button'
-            >
-               Change email address
-            </button>
-         {#if !data.dbUser.emailVerified}      
-            <button class="btn preset-filled-primary-50-950 mx-2" 
-               onclick={()=>{
-                  modalReason='emailVerify' 
-                  globalModalOpen=true
-               }} 
+            onClick={() => {
+               emailChangeModal(data.dbUser)
+            }}
+         />
+         {#if !data.dbUser.emailVerified}
+            <Button
+               label='Verify email address'
                type='button'
-               >
-                  Verify email address
-               </button>
+               onClick={() => {
+                  modalReason='emailVerify';
+                  globalModalOpen=true;
+               }}
+            />
          {/if}
-         <button 
-            class="btn preset-filled-primary-50-950 m-2"
-            onclick={() =>{
+         <Button
+            label='Change name'
+            type='button'
+            onClick={() => {
                modalReason='nameChange'
                globalModalOpen=true
             }}
-            type='button'
-         >
-            Change Name
-         </button>
+         />
       </div>
       <div>
          <UserNotesForm user={data.dbUser} data={data.userNotesForm} />
@@ -155,25 +166,23 @@
 <div class="mx-1 sm:mx-2">
    {#if data.address}
       <Address address={data.address} classes=''/>
-      <button class="btn preset-filled-primary-50-950"
-         onclick={()=>{
-            modalReason='addressChange' 
-            globalModalOpen=true
-         }} 
+      <Button
          type='button'
-      >
-         Change address
-      </button>
+         label='Change address'
+         onClick={() => {
+            modalReason='addressChange';
+            globalModalOpen=true;
+         }}
+      />
    {:else}
-      <button class="btn preset-filled-primary-50-950 mx-2"
-         onclick={()=>{
-            modalReason='addressChange' 
-            globalModalOpen=true
-         }} 
-         type='button'
-      >
-         Add address
-      </button>
+         <Button
+            type='button'
+            label='Add address'
+            onClick={() => {
+               modalReason='addressChange';
+               globalModalOpen=true;
+            }}
+         />
    {/if}
 </div>
 {#await data.leases}
@@ -224,50 +233,57 @@
             Loading refunds...
          </div>
       {:then refunds}
-            <UserRevenue
-               totalInvoiced={derivedTotalInvoiced(invoices)}
-               totalPaid={derivedTotalPaid(paymentRecords)}
-               overdueAmount={derivedTotalInvoiced(overDueInvoices(invoices))}
-               customer={data.dbUser}
-               classes='m-2'
-            />
-
+         <UserRevenue
+            totalInvoiced={derivedTotalInvoiced(invoices)}
+            totalPaid={derivedTotalPaid(paymentRecords)}
+            overdueAmount={derivedTotalInvoiced(overDueInvoices(invoices))}
+            customer={data.dbUser}
+            classes='m-2'
+         />
          {#if refunds.length > 0}
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-x-1 gap-y-3 mx-2 ">
                {#each slicedInvoices(invoices) as invoice}
-               {@const paymentRecord = paymentRecords.find((payment) => payment.invoiceNum === invoice.invoiceNum)}
-               {@const refund = refunds.find((refund) => refund.paymentRecordNum === paymentRecord?.paymentNumber)}
+               {@const invoicePaymentRecords = paymentRecords.filter((payment) => payment.invoiceNum === invoice.invoiceNum)}
                   <InvoiceEmployee invoice={invoice} classes='rounded-lg border-2 border-primary-50-950'/>
                   {#if overDueInvoice(invoice) > 0 }
                      <a href="/paymentRecords/new?userId={invoice.customerId}" class="btn preset-filled-primary-50-950">Make a payment Record for this invoice</a>
                   {/if}
-                  {#if paymentRecord}
+                  {#each invoicePaymentRecords as paymentRecord (paymentRecord.paymentNumber)}
                      <PaymentRecordEmployee paymentRecord={paymentRecord} classes='rounded-lg border-2 border-primary-50-950'/>
-                  {:else}
-                     <div class="min-w-1/3"></div>
-                  {/if}
-                  {#if refund}
-                     <RefundRecordDisplay refundRecord={refund} classes='rounded-lg border-2 border-primary-50-950 min-h-72'/>
-                  {:else}
-                     <div class="min-w-1/3"></div>
-                  {/if}
+                  {/each}
                {/each}
             </div>
          {:else}
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-1 gap-y-3 mx-2">
+               <Button
+                  type='button'
+                  label='Take a payment'
+                  onClick={() => {
+                     modalReason='payManyInvoices';
+                     globalModalOpen=true;
+                  }}
+                  classes='m-2'
+               />
+            <div class="mx-2">
                {#each slicedInvoices(invoices) as invoice}
-               {@const paymentRecord = paymentRecords.find((payment) => payment.invoiceNum === invoice.invoiceNum)}
-                  <div class="rounded-lg border-2 border-primary-50-950">
+               {@const invoicePaymentRecords = paymentRecords.filter((payment) => payment.invoiceNum === invoice.invoiceNum)}
+                  <div>
                      <InvoiceEmployee invoice={invoice} classes=''/>
                      {#if overDueInvoice(invoice) > 0 }
                         <a href="/paymentRecords/new?invoiceNum={invoice.invoiceNum}" class="btn preset-filled-primary-50-950 h-8 w-fit m-2">Make a payment Record for this invoice</a>
                      {/if}
+                     <Accordion multiple>
+                        {#each invoicePaymentRecords as paymentRecord (paymentRecord.paymentNumber)}
+                           <Accordion.Item value={paymentRecord.paymentNumber.toString()} >
+                              <Accordion.ItemTrigger>
+                                 Payment record {paymentRecord.paymentNumber}
+                              </Accordion.ItemTrigger>
+                              <Accordion.ItemContent>
+                                 <PaymentRecordEmployee paymentRecord={paymentRecord} classes='rounded-lg border-2 border-primary-50-950'/>
+                              </Accordion.ItemContent>
+                           </Accordion.Item>
+                        {/each}      
+                     </Accordion>
                   </div>
-                  {#if paymentRecord}
-                     <PaymentRecordEmployee paymentRecord={paymentRecord} classes='rounded-lg border-2 border-primary-50-950'/>
-                  {:else}
-                     <div></div>
-                  {/if}
                {/each}
             </div>
          {/if}
