@@ -35,7 +35,7 @@
       let total = 0;
       for(const invoice of invoices){
          if(!invoice.deposit){
-            total += invoice.invoiceAmount - invoice.amountPaid;
+            total += invoice.invoiceAmount;
          }
       }
       return total;
@@ -50,21 +50,21 @@
       return total
    })
    const overDueInvoices = $derived((invoices:Invoice[]) => {
-      const returnedInvoices:Invoice[] = [];
+      let totalOverdue = 0;
       for(const invoice of invoices){
          if(invoice.amountPaid < invoice.invoiceAmount && invoice.invoiceDue < new Date()){
-            returnedInvoices.push(invoice);
+            totalOverdue += invoice.invoiceAmount - invoice.amountPaid;
          }
       }
-      return returnedInvoices;
-   })
+      return totalOverdue;
+   });
    const overDueInvoice = $derived((invoice:Invoice) =>{
       if(invoice.amountPaid < invoice.invoiceAmount){
          return invoice.invoiceAmount - invoice.amountPaid;
       } else {
          return 0;
       }
-   })
+   });
    function leaseModal(leaseId:string) {
       currentLeaseId = leaseId;
       modalReason = 'leaseEnd';
@@ -254,7 +254,7 @@
          <UserRevenue
             totalInvoiced={derivedTotalInvoiced(invoices)}
             totalPaid={derivedTotalPaid(paymentRecords)}
-            overdueAmount={derivedTotalInvoiced(overDueInvoices(invoices))}
+            overdueAmount={overDueInvoices(invoices)}
             customer={data.dbUser}
             classes='m-2'
          />
