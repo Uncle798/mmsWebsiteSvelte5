@@ -33,6 +33,7 @@
       customer?: User;
       leases?: Lease[];
       lease?: Lease;
+      modalOpen?: boolean;
       classes?: string;
    }
    let {
@@ -43,7 +44,8 @@
       customers,
       customer,
       leases, 
-      lease, 
+      lease,
+      modalOpen=$bindable(), 
       classes,
    }:Props = $props();
    let url = page.url.pathname
@@ -57,6 +59,11 @@
             }
          }
       },
+      onUpdated() {
+         if(!$message && !$errors){
+            modalOpen = false;
+         }
+      }
    });
    interface ComboboxData {
       label: string;

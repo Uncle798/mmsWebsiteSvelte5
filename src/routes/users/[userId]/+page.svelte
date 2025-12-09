@@ -129,6 +129,7 @@
             registerFormData={data.registerForm}
             lease={currentLease}
             customer={data.dbUser}
+            bind:modalOpen={globalModalOpen}
          />
       {/if}
    {/snippet}

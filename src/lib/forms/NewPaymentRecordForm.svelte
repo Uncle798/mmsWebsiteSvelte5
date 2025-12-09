@@ -31,9 +31,8 @@
       invoices?: Invoice[];
       invoice?: Invoice;
       leases?: Lease[];
+      modalOpen?: boolean;
       classes?: string;
-      paymentTypesCookie?: string;
-      newPaymentsCookie?: string;
    }
    let { 
       data, 
@@ -45,9 +44,8 @@
       customer, 
       invoices, 
       invoice, 
-      leases, 
-      paymentTypesCookie,
-      newPaymentsCookie,
+      leases,
+      modalOpen=$bindable(),
       classes
    }:Props = $props();
    let { form, enhance, errors, message, constraints, delayed, timeout, capture, restore} = superForm(data, {
@@ -64,6 +62,11 @@
             }
          }
       },
+      onUpdated(){
+         if(!$message && !$errors){
+            modalOpen=false;
+         }
+      }
    })
    export const snapshot = {
       capture, 
