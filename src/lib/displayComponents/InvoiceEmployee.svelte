@@ -20,8 +20,8 @@
    <div class='text-right'>Amount</div>
    <div class="font-medium ">{currencyFormatter.format(invoice.invoiceAmount)}</div>
    <HorizontalDivider classes='col-span-2' />
-   <div class="text-right">Amount left to be paid</div>
-   <div class="font-medium">{currencyFormatter.format(invoice.invoiceAmount - invoice.amountPaid)}</div>
+   <div class="text-right">Amount paid</div>
+   <div class="font-medium">{currencyFormatter.format(invoice.amountPaid)}</div>
    <HorizontalDivider classes='col-span-2' />
    <div class='text-right'>Created</div> 
    <div class="font-medium">{dayjs(invoice.invoiceCreated).format('M/D/YYYY')}</div>
