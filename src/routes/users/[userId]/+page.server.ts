@@ -13,6 +13,7 @@ import { onboardingCreateManyInvoicesFormSchema } from "$lib/formSchemas/onboard
 import { payManyInvoicesFormSchema } from "$lib/formSchemas/payManyInvoicesFormSchema";
 import { newInvoiceFormSchema } from "$lib/formSchemas/newInvoiceFormSchema";
 import { registerFormSchema } from "$lib/formSchemas/registerFormSchema";
+import { newPaymentRecordFormSchema } from "$lib/formSchemas/newPaymentRecordFormSchema";
 
 export const load: PageServerLoad = async (event) => {
    if(!event.locals.user?.employee){
@@ -28,6 +29,7 @@ export const load: PageServerLoad = async (event) => {
    const payManyInvoicesForm = await superValidate(valibot(payManyInvoicesFormSchema));
    const newInvoiceForm = await superValidate(valibot(newInvoiceFormSchema));
    const registerForm = await superValidate(valibot(registerFormSchema));
+   const newPaymentRecordForm = await superValidate(valibot(newPaymentRecordFormSchema));
    const userId = event.params.userId;
 
    const dbUser = await prisma.user.findUnique({
@@ -95,6 +97,7 @@ export const load: PageServerLoad = async (event) => {
       onboardingCreateManyInvoicesForm,
       payManyInvoicesForm,
       newInvoiceForm,
-      registerForm
+      registerForm,
+      newPaymentRecordForm,
    }
 };

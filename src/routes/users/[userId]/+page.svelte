@@ -23,6 +23,7 @@
 	import PayManyInvoicesForm from '$lib/forms/PayManyInvoicesForm.svelte';
 	import { Accordion } from '@skeletonlabs/skeleton-svelte';
 	import NewInvoiceForm from '$lib/forms/NewInvoiceForm.svelte';
+	import NewPaymentRecordForm from '$lib/forms/NewPaymentRecordForm.svelte';
 
    let { data }: { data: PageData } = $props();
    let globalModalOpen = $state(false);
@@ -77,6 +78,7 @@
       currentUser=user
    }
    let currentLease = $state<Lease>();
+   let currentInvoice = $state<Invoice>()
 </script>
 <FormModal
    bind:modalOpen={globalModalOpen}
@@ -128,6 +130,17 @@
             emailVerificationFormData={data.emailVerificationForm}
             registerFormData={data.registerForm}
             lease={currentLease}
+            customer={data.dbUser}
+            bind:modalOpen={globalModalOpen}
+         />
+      {:else if modalReason === 'newPayment'}
+         <NewPaymentRecordForm
+            data={data.newPaymentRecordForm}
+            invoiceFormData={data.newInvoiceForm}
+            registerFormData={data.registerForm}
+            emailVerificationFormData={data.emailVerificationForm}
+            employeeId={data.user!.id}
+            invoice={currentInvoice}
             customer={data.dbUser}
             bind:modalOpen={globalModalOpen}
          />
@@ -264,7 +277,15 @@
                {@const invoicePaymentRecords = paymentRecords.filter((payment) => payment.invoiceNum === invoice.invoiceNum)}
                   <InvoiceEmployee invoice={invoice} classes='rounded-lg border-2 border-primary-50-950'/>
                   {#if overDueInvoice(invoice) > 0 }
-                     <a href="/paymentRecords/new?userId={invoice.customerId}" class="btn preset-filled-primary-50-950">Make a payment Record for this invoice</a>
+                     <Button
+                        label='Make a payment record for invoice {invoice.invoiceNum}'
+                        type='button'
+                        onClick={() => {
+                           currentInvoice=invoice;
+                           modalReason='newPayment';
+                           globalModalOpen=true;
+                        }}
+                     />
                   {/if}
                   {#each invoicePaymentRecords as paymentRecord (paymentRecord.paymentNumber)}
                      <PaymentRecordEmployee paymentRecord={paymentRecord} classes='rounded-lg border-2 border-primary-50-950'/>
@@ -287,7 +308,15 @@
                   <div>
                      <InvoiceEmployee invoice={invoice} classes=''/>
                      {#if overDueInvoice(invoice) > 0 }
-                        <a href="/paymentRecords/new?invoiceNum={invoice.invoiceNum}" class="btn preset-filled-primary-50-950 h-8 w-fit m-2">Make a payment Record for this invoice</a>
+                        <Button
+                           label='Make a payment record for invoice {invoice.invoiceNum}'
+                           type='button'
+                           onClick={() => {
+                              currentInvoice=invoice;
+                              modalReason='newPayment';
+                              globalModalOpen=true;
+                           }}
+                        />
                      {/if}
                      <Accordion multiple>
                         {#each invoicePaymentRecords as paymentRecord (paymentRecord.paymentNumber)}
