@@ -17,6 +17,9 @@ export const load = (async (event) => {
             {size: {not: 'ours'}}
          ]
       },
+      orderBy: {
+         num: 'asc'
+      }
    });
    const unitCount = await prisma.unit.count();
    const unitNotesForm = await superValidate(valibot(unitNotesFormSchema));
