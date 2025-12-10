@@ -74,7 +74,7 @@
 </SearchDrawer>
 <Header title='Unavailable Units' />
 <div class="grid grid-cols-1 gap-3 m-1 sm:m-2 sm:mt-20 mt-32 mb-8 sm:mb-8">
-   {#each filterSize(data.units) as unit}
+   {#each filterSize(data.units) as unit (unit.num)}
       <div class="border-2 border-primary-50-950 rounded-lg">
          <UnitEmployee {unit}/>
          <UnitNotesForm {unit} data={data.unitNotesForm} classes='mx-2' />
