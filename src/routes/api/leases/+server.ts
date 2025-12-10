@@ -17,7 +17,7 @@ export const DELETE: RequestHandler = async (event) => {
    if(!lease){
       return new Response(JSON.stringify('Lease not found'), {status: 404});
    }
-   await prisma.address.deleteMany({
+   const altAddresses = await prisma.address.findMany({
       where: {
          user: {
             leaseAlternativeContacts: {
@@ -28,7 +28,7 @@ export const DELETE: RequestHandler = async (event) => {
          }
       }
    });
-   await prisma.user.deleteMany({
+   const altUsers = await prisma.user.findMany({
       where: {
          leaseAlternativeContacts: {
             some: {
@@ -41,7 +41,21 @@ export const DELETE: RequestHandler = async (event) => {
       where: {
          leaseId: lease.leaseId
       }
-   })
+   });
+   for(const address of altAddresses){
+      await prisma.address.delete({
+         where: {
+            addressId: address.addressId
+         }
+      });
+   }
+   for(const user of altUsers){
+      await prisma.user.delete({
+         where: {
+            id: user.id
+         }
+      });
+   }
    await prisma.lease.delete({
       where: {
          leaseId: lease.leaseId
