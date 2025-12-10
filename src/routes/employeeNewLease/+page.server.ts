@@ -192,25 +192,18 @@ export const actions: Actions = {
          }
       }
       price = unit.advertisedPrice - discountAmount;
-      const alternativeContact = await prisma.user.findUnique({
-         where: {
-            id: leaseForm.data.alternativeContactId
-         }
-      })
-      if(!alternativeContact){
-         return message(leaseForm, 'Alternative Contact needed')
-      }
+
       const lease = await prisma.lease.create({
          data:{
             customerId: customer!.id,
             employeeId: employee!.id,
-            alternativeContactId: alternativeContact.id,
             unitNum: leaseForm.data.unitNum,
             price: price,
             addressId:address!.addressId,
             leaseEffectiveDate: new Date(),
             discountId: discount ? discount.discountId : undefined,
-            discountedAmount: discount ? discountAmount : undefined
+            discountedAmount: discount ? discountAmount : undefined,
+            depositAmount: leaseForm.data.depositAmount
          }
       });
       await prisma.unit.update({
@@ -222,41 +215,43 @@ export const actions: Actions = {
          }
       });
       inngest.send({name: 'leaseCreated', data: { leaseId: lease.leaseId }})
-      const invoice = await prisma.invoice.create({
-         data:{
-            invoiceAmount: unit!.deposit,
-            customerId: lease.customerId,
-            leaseId: lease.leaseId,
-            invoiceNotes:'Deposit for unit ' + lease.unitNum.replace(/^0+/gm,''), 
-            deposit: true,
-            invoiceDue: new Date(),
-         }
-      })
-
-      if(leaseForm.data.paymentType === 'CASH' || leaseForm.data.paymentType === 'CHECK') {
-         const paymentRecord = await prisma.paymentRecord.create({
-            data: {
-               invoiceNum: invoice.invoiceNum,
-               paymentType: leaseForm.data.paymentType,
-               paymentAmount: invoice.invoiceAmount,
-               customerId: invoice.customerId!,
-               paymentNotes: 'Payment for invoice ' + invoice.invoiceNum + ', ' + invoice.invoiceNotes,
-               deposit: invoice.deposit,
-               paymentCompleted: new Date()
+      if(lease.depositAmount && lease.depositAmount > 0){
+         const invoice = await prisma.invoice.create({
+            data:{
+               invoiceAmount: lease.depositAmount ? lease.depositAmount : unit.deposit,
+               customerId: lease.customerId,
+               leaseId: lease.leaseId,
+               invoiceNotes:'Deposit for unit ' + lease.unitNum.replace(/^0+/gm,''), 
+               deposit: true,
+               invoiceDue: new Date(),
             }
          })
-         await prisma.invoice.update({
-            where: {
-               invoiceNum: invoice.invoiceNum
-            },
-            data: {
-               amountPaid: invoice.amountPaid + paymentRecord.paymentAmount
-            }
-         });
-         await sendPaymentReceipt(customer, paymentRecord, address);  
+         if(leaseForm.data.paymentType !== 'CREDIT') {
+            const paymentRecord = await prisma.paymentRecord.create({
+               data: {
+                  invoiceNum: invoice.invoiceNum,
+                  paymentType: leaseForm.data.paymentType,
+                  paymentAmount: invoice.invoiceAmount,
+                  customerId: invoice.customerId!,
+                  paymentNotes: 'Payment for invoice ' + invoice.invoiceNum + ', ' + invoice.invoiceNotes,
+                  deposit: invoice.deposit,
+                  paymentCompleted: new Date()
+               }
+            })
+            await prisma.invoice.update({
+               where: {
+                  invoiceNum: invoice.invoiceNum
+               },
+               data: {
+                  amountPaid: invoice.amountPaid + paymentRecord.paymentAmount
+               }
+            });
+            await sendPaymentReceipt(customer, paymentRecord, address);  
+            redirect(302, `/employeeNewLease/leaseSent?leaseId=${lease.leaseId}`);
+         }
+      } else {
          redirect(302, `/employeeNewLease/leaseSent?leaseId=${lease.leaseId}`);
       }
-      redirect(303, `/makePayment?invoiceNum=${invoice.invoiceNum}&newLease=true`);
    },
    selectCustomer: async (event ) => {
       if(!event.locals.user?.employee){

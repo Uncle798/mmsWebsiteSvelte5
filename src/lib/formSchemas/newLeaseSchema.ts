@@ -6,7 +6,7 @@ export const newLeaseSchema = v.object({
    organization: v.boolean(),
    discountId: v.optional(v.pipe(v.string(), v.cuid2())),
    customerId: v.pipe(v.string(), v.cuid2()),
-   alternativeContactId: v.optional(v.pipe(v.string(), v.cuid2())),
    paymentType: v.enum(PaymentType),
+   depositAmount: v.number(),
 })
 export type NewLeaseSchema = typeof newLeaseSchema;
