@@ -32,7 +32,7 @@ export const actions:Actions = {
             }
          })
       }
-      if(data.paymentType === 'CASH' || data.paymentType === 'CHECK' || data.paymentType === 'ONBOARDING_CREDIT'){
+      if(data.paymentType !== 'CREDIT'){
          const paymentRecord = await prisma.paymentRecord.create({
             data: {
                paymentAmount: data.paymentAmount,
@@ -56,7 +56,7 @@ export const actions:Actions = {
                }
             })
          }
-         redirect(302, '/paymentRecords/' + paymentRecord.paymentNumber)
+         return { newPaymentRecordForm }
       }
       
       if(data.paymentType === 'CREDIT'){
