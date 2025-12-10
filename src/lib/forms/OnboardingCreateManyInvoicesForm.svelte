@@ -35,7 +35,7 @@
          value={$form.startingDate}
          errors={$errors.startingDate}
          constraints={$constraints.startingDate}
-         label='Create leases starting from'
+         label='Create invoices starting from'
          name='startingDate'
       />
       <input type="hidden" name="leaseId" value={lease.leaseId} />
