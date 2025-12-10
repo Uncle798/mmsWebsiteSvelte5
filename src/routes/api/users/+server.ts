@@ -23,12 +23,12 @@ export const DELETE: RequestHandler = async (event) => {
          where: {
             userId: user.id
          }
-      })
+      });
       await prisma.verification.deleteMany({
          where: {
             userId: user.id
          }
-      })
+      });
       await prisma.session.deleteMany({
          where: {
             userId: user.id
@@ -38,22 +38,27 @@ export const DELETE: RequestHandler = async (event) => {
          where: {
             customerId: user.id
          }
-      })
+      });
       await prisma.paymentRecord.deleteMany({
          where: {
             customerId: user.id
          }
-      })
+      });
       await prisma.invoice.deleteMany({
          where: {
             customerId: user.id
+         }
+      });
+      await prisma.leaseAlternativeContacts.deleteMany({
+         where: {
+            userId: user.id
          }
       })
       await prisma.lease.deleteMany({
          where: {
             customerId: user.id
          }
-      })
+      });
       await prisma.address.deleteMany({
          where: {
             userId: user.id
