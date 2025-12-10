@@ -271,6 +271,7 @@
             maxDate={dayjs().add(1, 'year').toDate()}
             name='invoiceDue'
             label='Invoice Due Date'
+            placeholder='Invoice due date'
          />
          <input type="hidden" name='employeeId' value={employeeId}/>
          <input type="hidden" name="customerId" value={customer?.id} />
