@@ -8,11 +8,9 @@
 	import UserAdmin from '$lib/displayComponents/UserAdmin.svelte';
 	import Search from '$lib/forms/Search.svelte';
 	import Switch from '$lib/formComponents/Switch.svelte';
-	import { onMount } from 'svelte';
 	import { invalidateAll } from '$app/navigation';
 	import SearchDrawer from '$lib/displayComponents/Modals/SearchDrawer.svelte';
-   import { driver } from 'driver.js';
-   import 'driver.js/dist/driver.css';
+	import Button from '$lib/core/Button.svelte';
 
    let { data }: { data: PageData } = $props();
    let search = $state('')
@@ -60,7 +58,6 @@
    })
    let sortedUsers = $derived((customers:User[]) => {
       return customers.sort((a, b) => {
-         console.log(a.organizationName)
          if(a.organizationName && b.organizationName){
             if(a.organizationName > b.organizationName){
                return 1;
@@ -105,22 +102,6 @@
       })
       invalidateAll();
    }
-   const userTour = driver({
-      showProgress: true,
-      stagePadding: 2,
-      steps: [
-         { popover: { title: `Admin all user page`, description: `Welcome to the admin user page. Here is where you add or remove employees and other admins.`}},
-         { element: '.firstUserEmployment', popover:{ title: `Employee and admin`, description: `Admins can change employment status, employees can't, all admins should also be employees`}}
-      ],
-      onDestroyed: () => {
-         fetch('/api/demoSetCookie?demoPage=users')
-      }
-   })
-   onMount(() => {
-      if(data.demoCookie !== 'true'){
-         userTour.drive()
-      }
-   })
 </script>
 <Header title='All users' />
 {#await data.users}
@@ -165,7 +146,11 @@
                         userId={user.id}
                         classes="flex flex-col sm:flex-row firstUserEmployment"
                      />
-                     <button class="btn preset-filled-primary-50-950 h-8 mb-2" onclick={()=> deleteUser(user.id)}>Delete User</button>
+                     <Button
+                        label='Delete user'
+                        type='button'
+                        onClick={() => deleteUser(user.id)}
+                     />
                   </div>
                </div>
             {:else}
@@ -179,7 +164,11 @@
                         userId={user.id}
                         classes="flex flex-col sm:flex-row"
                      />
-                     <button class="btn preset-filled-primary-50-950 h-8 mb-2" onclick={()=> deleteUser(user.id)}>Delete User</button>
+                     <Button
+                        label='Delete user'
+                        type='button'
+                        onClick={() => deleteUser(user.id)}
+                     />
                   </div>
                </div>
             {/if}
