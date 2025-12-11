@@ -37,18 +37,23 @@ export const GET: RequestHandler = async (event) => {
             }
          },
          orderBy: {
-            invoiceCreated: 'asc'
+            invoiceDue: 'asc'
          }
       })
-      const allJSON:{
-         unitNum: string,
-         size: string,
-         familyName:string,
-         givenName: string,
-         nextDueDate: string,
-         leasedPrice: number,
-         advertisedPrice: number
-      }[] = [];
+      const data:string[] = [];
+      const csv = stringify({
+         header: true,
+         columns: [{key: 'unitNum'}, {key: 'size'}, {key: 'familyName'}, {key: 'givenName'}, {key: 'nextDueDate'}, {key: 'leasedPrice'}, {key: 'advertisedPrice'}]
+      });
+      csv.on('readable', () => {
+         let row;
+         while((row = csv.read()) !== null){
+            data.push(row)
+         }
+      });
+      csv.on('error', (err) => {
+         console.error(err.message)
+      });
       for(const unit of units){
          const lease = leases.find((lease) => lease.unitNum === unit.num);
          let customer: User | undefined = undefined;
@@ -72,14 +77,11 @@ export const GET: RequestHandler = async (event) => {
             leasedPrice: unit.leasedPrice ? unit.leasedPrice : 0,
             advertisedPrice: unit.advertisedPrice,
          }
-         allJSON.push(json);
+         csv.write(json);
       }
-      const data:string[] = [];
-      const csv = stringify(allJSON, {
-         header: true
-      }).end();
-      
-      return new Response(JSON.stringify(data.join('')), {status: 200});
+      csv.end();
+      console.log(data);
+      return new Response(data.join(''), {status: 200});
    }
    return new Response();
 };

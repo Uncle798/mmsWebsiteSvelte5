@@ -95,7 +95,7 @@
 		value: size
 	})))
 	onMount(() => {
-		comboboxData.unshift({label: 'All', value: 'all'})
+		comboboxData.unshift({label: 'All', value: 'all'});
 	})
 	let searchDrawerOpen = $state(false);
 	let currentUnit = $state<Unit>();
@@ -183,7 +183,7 @@
 									}}
 								/> 
 								<a
-									href="/api/json2csv?allUnits=true"
+									href="/api/csv?allUnits=true"
 									class="btn preset-filled-primary-50-950 h-8"
 									download='{PUBLIC_COMPANY_NAME} Unit Report {dayjs().format('MMMM D YYYY')}.csv'
 								>
