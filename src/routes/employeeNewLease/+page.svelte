@@ -172,8 +172,11 @@
                bind:value={$form.depositAmount}
                errors={$errors.depositAmount}
                constraints={$constraints.depositAmount}
-               label='Deposit amount'
+               label='Deposit amount $'
                name='depositAmount'
+               {@attach () => {
+                  $form.depositAmount = data.unit!.deposit;
+               }}
             />
                <div class="flex bg-primary-50-950 mt-2 p-2 rounded-lg justify-between">
                   {#each paymentTypes as paymentType}
@@ -202,7 +205,7 @@
                <FormSubmitWithProgress 
                   delayed={$delayed} 
                   timeout={$timeout} 
-                  buttonText='The above is correct charge ${data.unit.deposit} deposit'
+                  buttonText='The above is correct charge ${$form.depositAmount} deposit'
                   classes=''  
                />
             {:else if data.unit}
