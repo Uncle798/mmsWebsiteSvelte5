@@ -43,7 +43,7 @@ export const GET: RequestHandler = async (event) => {
       const data:string[] = [];
       const csv = stringify({
          header: true,
-         columns: [{key: 'unitNum'}, {key: 'size'}, {key: 'familyName'}, {key: 'givenName'}, {key: 'nextDueDate'}, {key: 'leasedPrice'}, {key: 'advertisedPrice'}]
+         columns: [{key: 'unitNum'}, {key: 'size'}, {key: 'familyName'}, {key: 'givenName'}, {key: 'invoiceDue'}, {key: 'leasedPrice'}, {key: 'advertisedPrice'}]
       });
       csv.on('readable', () => {
          let row;
@@ -73,15 +73,18 @@ export const GET: RequestHandler = async (event) => {
             size: unit.size.replace(/0/gm,'').replace(/x0/gm, 'x'),
             familyName: sortingName,
             givenName: customer?.givenName ? customer.givenName : '',
-            nextDueDate: customerInvoices[0]?.invoiceDue ? dayjs(customerInvoices[0].invoiceDue).format('MM/DD/YYYY') : '',
+            invoiceDue: customerInvoices[0]?.invoiceDue ? dayjs(customerInvoices[0].invoiceDue).format('MM/DD/YYYY') : '',
             leasedPrice: unit.leasedPrice ? unit.leasedPrice : 0,
             advertisedPrice: unit.advertisedPrice,
          }
          csv.write(json);
       }
       csv.end();
-      console.log(data);
       return new Response(data.join(''), {status: 200});
+   }
+   const currentCustomers = event.url.searchParams.get('currentCustomers');
+   if(currentCustomers === 'true'){
+      
    }
    return new Response();
 };
