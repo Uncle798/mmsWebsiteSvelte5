@@ -4,6 +4,7 @@ import { prisma } from '$lib/server/prisma';
 import type { Invoice, User } from '../../../generated/prisma/client';
 import dayjs from 'dayjs';
 import { stringify } from 'csv';
+import { sortUsers } from '$lib/userSort';
 
 export const GET: RequestHandler = async (event) => {
    if(!event.locals.user){
@@ -87,7 +88,7 @@ export const GET: RequestHandler = async (event) => {
    }
    const currentCustomers = event.url.searchParams.get('currentCustomers');
    if(currentCustomers === 'true'){
-      const customers = await prisma.user.findMany({
+      let customers = await prisma.user.findMany({
          where: {
             customerLeases: {
                some: {
@@ -95,11 +96,8 @@ export const GET: RequestHandler = async (event) => {
                }
             }
          },
-         include: {
-            customerLeases: true,
-            address: true
-         }
       });
+      customers = sortUsers(customers);
       const invoices = await prisma.invoice.findMany({
          where: {
             AND: [
@@ -122,6 +120,11 @@ export const GET: RequestHandler = async (event) => {
          orderBy: {
             invoiceDue: 'asc'
          }
+      });
+      const leases = await prisma.lease.findMany({
+         where: {
+            leaseEnded: null
+         } 
       })
       const csv = stringify({
          header: true,
@@ -156,14 +159,27 @@ export const GET: RequestHandler = async (event) => {
                totalDue += invoice.invoiceAmount - invoice.amountPaid;
             }
          };
-         let unitNumbers:string[] = []
-         for(const lease of customer.customerLeases){
+         let unitNumbers:string[] = [];
+         const customerLeases = leases.filter((lease) => lease.customerId === customer.id)
+         for(const lease of customerLeases){
             unitNumbers.push(lease.unitNum.replace(/^0+/gm, ''));
          }
+         const address = await prisma.address.findFirst({
+            where: {
+               AND: [
+                  {
+                     softDelete: false
+                  },
+                  {
+                     userId: customer.id
+                  }
+               ]
+            }
+         })
          const json = {
-            "Name": sortingName,
+            "Name": customer.organizationName ? customer.organizationName : `${customer.givenName} ${customer.familyName}`,
             'Units': unitNumbers.join(' '),
-            'Phone number': customer.address[0].phoneNum1,
+            'Phone number': address?.phoneNum1?.substring(0,3) + '.' + address?.phoneNum1?.substring(3,6) + '.' + address?.phoneNum1?.substring(6),
             'Earliest due date': customerInvoices[0] ? dayjs(earliestDue).format('MM/DD/YYYY') : '',
             'Amount due': totalDue,
          }
