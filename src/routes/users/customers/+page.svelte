@@ -19,6 +19,9 @@
 	import UserRevenue from '$lib/displayComponents/UserRevenue.svelte';
 	import { PUBLIC_COMPANY_NAME } from '$env/static/public';
 	import dayjs from 'dayjs';
+	import { sortUsers } from '$lib/userSort';
+	import ProgressRing from '$lib/displayComponents/ProgressRing.svelte';
+	import ProgressLine from '$lib/displayComponents/ProgressLine.svelte';
 
    let { data }: { data: PageData } = $props();
    let pageNum = $state(1);
@@ -51,46 +54,7 @@
       }
       return total;
    });
-   let sortedUsers = $derived((customers:User[]) => {
-      return customers.sort((a, b) => {
-         console.log(a.organizationName)
-         if(a.organizationName && b.organizationName){
-            if(a.organizationName > b.organizationName){
-               return 1;
-            } else if(a.organizationName < b.organizationName){
-               return -1;
-            } else{
-               return 0;
-            }
-         }else if(a.organizationName && b.familyName){
-            if(a.organizationName > b.familyName){
-               return 1;
-            }else if(a.organizationName < b.familyName){
-               return -1;
-            }else{
-               return 0;
-            }
-         }else if(a.familyName && b.organizationName){
-            if(a.familyName > b.organizationName){
-               return 1;
-            }else if(a.familyName < b.organizationName){
-               return -1;
-            }else{
-               return 0;
-            }
-         }else if(a.familyName && b.familyName){
-            if(a.familyName > b.familyName){
-               return 1;
-            }else if(a.familyName < b.familyName){
-               return -1;
-            }else {
-               return 0;
-            }
-         }else {
-            return 0;
-         }
-      })
-   });
+   let sortedUsers = $derived((customers:User[]) => sortUsers(customers));
    let overdueInvoices = $derived((invoices:Invoice[]) => invoices.filter((invoice) => {
       return invoice.invoiceDue <= new Date() && (invoice.invoiceAmount > invoice.amountPaid);
    }))
@@ -99,6 +63,10 @@
    let leaseEndModalOpen = $state(false);
    let currentLeaseId = $state('');
    let currentUnit = $state<Unit>();
+   let csvCurrentCustomersDelayed = $state(false);
+   let csvCurrentCustomersTimeout = $state(false);
+   let csvPhoneBookDelayed = $state(false);
+   let csvPhoneBookTimeout = $state(false);
    function leaseEndModal(leaseId:string, unit:Unit){
       currentLeaseId = leaseId;
       currentUnit = unit;
@@ -153,20 +121,42 @@
                      >
                         {#snippet content()}
                            <Search bind:search={search} searchType='customer name' data={data.userSearchForm} classes='mx-2 mt-11'/>
-                           <a
-                              class="btn preset-filled-primary-50-950 h-8"
-                              href="/api/csv?phoneBook=true"
-                              download="{PUBLIC_COMPANY_NAME} phone book {dayjs().format('MMMM D YYYY')}"
-                           >
-                              Download CSV Phone book
-                           </a>
-                           <a
-                              class="btn preset-filled-primary-50-950 h-8"
-                              href="/api/csv?currentCustomers=true"
-                              download="{PUBLIC_COMPANY_NAME} current customers {dayjs().format('MMMM D YYYY')}"
-                           >
-                              Download CSV current customers
-                           </a>
+                           <div class="flex flex-col gap-2">
+                              <div>
+                                 <a
+                                    class="btn preset-filled-primary-50-950 h-8"
+                                    href="/api/csv?phoneBook=true"
+                                    download="{PUBLIC_COMPANY_NAME} phone book {dayjs().format('MMMM D YYYY')}"
+                                 >
+                                    Download CSV Phone book
+                                 </a>
+                              </div>
+                              <div class="flex flex-row gap-0.5">
+                                 <a
+                                    class="btn preset-filled-primary-50-950 h-8"
+                                    href="/api/csv?currentCustomers=true"
+                                    download="{PUBLIC_COMPANY_NAME} current customers {dayjs().format('MMMM D YYYY')}.csv"
+                                    onclick={() => {
+                                       setTimeout(() => {
+                                          csvCurrentCustomersDelayed = true;
+                                          setTimeout(() => {
+                                             csvCurrentCustomersDelayed = false;
+                                             csvCurrentCustomersTimeout = true;
+                                          }, 700);
+                                       }, 300);
+                                    }}
+                                 >
+                                    Download CSV current customers
+                                 </a>
+                                 {#if csvCurrentCustomersDelayed}
+                                    <ProgressRing value={null} />
+                                 {:else if csvCurrentCustomersTimeout}
+                                    <ProgressLine value={null} />
+                                 {:else}
+                                    <div class="size-8"></div>
+                                 {/if}
+                              </div>
+                           </div>
                         {/snippet}
                      </SearchDrawer>
                      <FormModal
