@@ -5,7 +5,7 @@ import type { RefundRecord } from '../../../generated/prisma/client';
 import { message, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import { paymentRecordDeleteSchema } from '$lib/formSchemas/paymentRecordDeleteSchema';
-import { sendPaymentReceipt } from '$lib/server/mailtrap';
+import { sendPaymentReceipt } from "$lib/server/mailtrap/sendPaymentReceipt";
 import { deleteRecordFormSchema } from '$lib/formSchemas/deleteRecordFormSchema';
 
 export const load = (async (event) => {

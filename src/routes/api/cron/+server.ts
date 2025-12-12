@@ -1,5 +1,5 @@
 import { CRON_SECRET } from '$env/static/private';
-import { sendStatusEmail } from '$lib/server/mailtrap';
+import { sendStatusEmail } from "$lib/server/mailtrap/sendStatusEmail";
 import { prisma } from '$lib/server/prisma';
 import dayjs from 'dayjs';
 import type { RequestHandler} from './$types';

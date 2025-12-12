@@ -5,7 +5,7 @@ import { emailVerificationFormSchema } from '$lib/formSchemas/emailVerificationF
 import { error, redirect, } from '@sveltejs/kit';
 import { ratelimit } from '$lib/server/rateLimit';
 import { generateEmailVerificationRequest } from '$lib/server/authUtils';
-import { sendVerificationEmail } from '$lib/server/mailtrap';
+import { sendVerificationEmail } from "$lib/server/mailtrap/sendVerificationEmail";
 import { prisma } from '$lib/server/prisma';
 
 export const load:PageServerLoad = (async (event) => {

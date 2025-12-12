@@ -1,4 +1,4 @@
-import { sendInvoice } from '$lib/server/mailtrap';
+import { sendInvoice } from "$lib/server/mailtrap/sendInvoice";
 import { prisma } from '$lib/server/prisma';
 import { ratelimit } from '$lib/server/rateLimit';
 import type { RequestHandler } from './$types';

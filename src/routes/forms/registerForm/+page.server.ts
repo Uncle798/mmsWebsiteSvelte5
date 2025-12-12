@@ -6,7 +6,7 @@ import { createSession, generateEmailVerificationRequest, generateSessionToken, 
 import { registerFormSchema } from '$lib/formSchemas/registerFormSchema';
 import { ratelimit } from '$lib/server/rateLimit';
 import { prisma } from '$lib/server/prisma';
-import { sendVerificationEmail } from "$lib/server/mailtrap";
+import { sendVerificationEmail } from "$lib/server/mailtrap/sendVerificationEmail";
 
 export const load = (async () => {
     return {};

@@ -12,7 +12,7 @@ import type { PageServerLoad, Actions } from './$types';
 import { prisma } from '$lib/server/prisma'; 
 import type { Address, DiscountCode, User } from '../../generated/prisma/client';
 import { ratelimit } from '$lib/server/rateLimit';
-import { sendPaymentReceipt } from '$lib/server/mailtrap';
+import { sendPaymentReceipt } from "$lib/server/mailtrap/sendPaymentReceipt";
 import { inngest } from '$lib/server/inngest/inngest';
 import { alternativeContactFormSchema } from '$lib/formSchemas/alternativeContactFormSchema';
 
@@ -214,8 +214,8 @@ export const actions: Actions = {
             leasedPrice: lease.price
          }
       });
-      inngest.send({name: 'leaseCreated', data: { leaseId: lease.leaseId }})
       if(lease.depositAmount && lease.depositAmount > 0){
+         inngest.send({name: 'leaseCreated', data: { leaseId: lease.leaseId }});
          const invoice = await prisma.invoice.create({
             data:{
                invoiceAmount: lease.depositAmount ? lease.depositAmount : unit.deposit,

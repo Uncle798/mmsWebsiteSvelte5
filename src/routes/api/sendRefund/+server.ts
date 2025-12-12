@@ -1,4 +1,4 @@
-import { sendRefundEmail } from '$lib/server/mailtrap';
+import { sendRefundEmail } from "$lib/server/mailtrap/sendRefundEmail";
 import { prisma } from '$lib/server/prisma';
 import { ratelimit } from '$lib/server/rateLimit';
 import type { RequestHandler } from './$types';
