@@ -121,7 +121,7 @@ export const GET: RequestHandler = async (event) => {
          const address = addresses.find((address) => address.userId === user.id)
          let name = user.organizationName;
          if(!name){
-            name = user.givenName + ' ' + user.familyName
+            name = `"${user.givenName} ${user.givenName}"`
          }
 
          const json = {
