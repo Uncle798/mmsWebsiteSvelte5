@@ -44,6 +44,7 @@
          constraints={$constraints.endingDate}
          label='Create invoices to'
          name='endingDate'
+         placeholder='Ending date'
       />
       <input type="hidden" name="leaseId" value={lease.leaseId} />
       <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} />
