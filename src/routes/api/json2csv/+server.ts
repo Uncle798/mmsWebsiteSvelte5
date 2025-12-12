@@ -39,7 +39,6 @@ export const GET: RequestHandler = async (event) => {
          }
       })
       const csv = await makeAllUnitsCSV(units, leases, customers, invoices);
-      console.log(csv);
       return new Response(JSON.stringify(csv, (key, value) => {
          if(key=== '"'){
             return ''
