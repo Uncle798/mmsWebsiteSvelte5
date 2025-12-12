@@ -33,7 +33,11 @@ export const actions: Actions = {
       if(!lease){
          return message(onboardingCreateManyInvoicesForm, 'Lease not found');
       }
-      const months = arrayOfMonths(data.startingDate, dayjs().add(1,'month').toDate());
+      let endingDate = dayjs().add(1,'month').toDate()
+      if(data.endingDate){
+         endingDate = data.endingDate
+      }
+      const months = arrayOfMonths(data.startingDate, endingDate);
       type PartialInvoice = Omit<Invoice, 'invoiceNum' | 'invoiceCreated' >
       const invoices:PartialInvoice[] = [];
       for(const month of months){

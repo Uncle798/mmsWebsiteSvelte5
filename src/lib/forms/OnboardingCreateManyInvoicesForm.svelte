@@ -38,6 +38,13 @@
          label='Create invoices starting from'
          name='startingDate'
       />
+      <DatePickerSingle
+         value={$form.endingDate}
+         errors={$errors.endingDate}
+         constraints={$constraints.endingDate}
+         label='Create invoices to'
+         name='endingDate'
+      />
       <input type="hidden" name="leaseId" value={lease.leaseId} />
       <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} />
    </form>
