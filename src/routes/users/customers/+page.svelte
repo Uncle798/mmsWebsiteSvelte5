@@ -15,10 +15,10 @@
 	import { onNavigate } from '$app/navigation';
 	import SearchDrawer from '$lib/displayComponents/Modals/SearchDrawer.svelte';
 	import FormModal from '$lib/displayComponents/Modals/FormModal.svelte';
-	import { driver } from 'driver.js';
-   import 'driver.js/dist/driver.css';
 	import RevenueBar from '$lib/displayComponents/RevenueBar.svelte';
 	import UserRevenue from '$lib/displayComponents/UserRevenue.svelte';
+	import { PUBLIC_COMPANY_NAME } from '$env/static/public';
+	import dayjs from 'dayjs';
 
    let { data }: { data: PageData } = $props();
    let pageNum = $state(1);
@@ -153,6 +153,13 @@
                      >
                         {#snippet content()}
                            <Search bind:search={search} searchType='customer name' data={data.userSearchForm} classes='mx-2 mt-11'/>
+                           <a
+                              class="btn preset-filled-primary-50-950 h-8"
+                              href="/api/csv?phoneBook=true"
+                              download="{PUBLIC_COMPANY_NAME} phone book {dayjs().format('MMMM D YYYY')}"
+                           >
+                              Download CSV Phone book
+                           </a>
                         {/snippet}
                      </SearchDrawer>
                      <FormModal

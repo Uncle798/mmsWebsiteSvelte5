@@ -68,6 +68,9 @@ export const GET: RequestHandler = async (event) => {
          if(sortingName === null || sortingName === undefined){
             sortingName = ''
          }
+         if(sortingName === '' && unit.unavailable){
+            sortingName = 'unavailable';
+         }
          const json = {
             unitNum: unit.num.replace(/^0+/gm, ''),
             size: unit.size.replace(/0/gm,'').replace(/x0/gm, 'x'),
@@ -85,6 +88,50 @@ export const GET: RequestHandler = async (event) => {
    const currentCustomers = event.url.searchParams.get('currentCustomers');
    if(currentCustomers === 'true'){
       
+   }
+   const phoneBook = event.url.searchParams.get('phoneBook');
+   if(phoneBook === 'true'){
+      const users = await prisma.user.findMany({
+         where: {
+            alternative: false
+         },
+      });
+      const addresses = await prisma.address.findMany({
+         where: {
+            user: {
+               alternative: false,
+            }
+         }
+      })
+      const csv = stringify({
+         header: true,
+         columns: [{key:'name'}, {key:'phoneNumber'}, ]
+      });
+      const data:string[] = [];
+      csv.on('readable', () => {
+         let row;
+         while((row = csv.read()) !== null){
+            data.push(row)
+         }
+      });
+      csv.on('error', (err) => {
+         console.error(err.message)
+      });
+      for(const user of users){
+         const address = addresses.find((address) => address.userId === user.id)
+         let name = user.organizationName;
+         if(!name){
+            name = user.givenName + ' ' + user.familyName
+         }
+
+         const json = {
+            name,
+            phoneNumber: address?.phoneNum1
+         }
+         csv.write(json)
+      }
+      csv.end();
+      return new Response(data.join(''),{status: 200})
    }
    return new Response();
 };
