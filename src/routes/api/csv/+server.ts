@@ -87,7 +87,90 @@ export const GET: RequestHandler = async (event) => {
    }
    const currentCustomers = event.url.searchParams.get('currentCustomers');
    if(currentCustomers === 'true'){
-      
+      const customers = await prisma.user.findMany({
+         where: {
+            customerLeases: {
+               some: {
+                  leaseEnded: null
+               }
+            }
+         },
+         include: {
+            customerLeases: true,
+            address: true
+         }
+      });
+      const invoices = await prisma.invoice.findMany({
+         where: {
+            AND: [
+               { 
+                  customer: {
+                     customerLeases: {
+                        some: {
+                           leaseEnded: null
+                        }
+                     }
+                  }
+               },
+               {
+                  invoiceAmount: {
+                     gt: prisma.invoice.fields.amountPaid
+                  }
+               }
+            ]
+         },
+         orderBy: {
+            invoiceDue: 'asc'
+         }
+      })
+      const csv = stringify({
+         header: true,
+         columns: [{key:'Name'}, {key: 'Units'}, {key:'Phone number'}, {key: 'Earliest due date'}, {key: 'Amount due'}]
+      });
+      const data:string[] = [];
+      csv.on('readable', () => {
+         let row;
+         while((row = csv.read()) !== null){
+            data.push(row)
+         }
+      });
+      csv.on('error', (err) => {
+         console.error(err.message)
+      });
+      for(const customer of customers){
+         let sortingName = customer.organizationName ? customer.organizationName : customer.familyName;
+         if(sortingName === null || sortingName === undefined){
+            sortingName = ''
+         }
+         if(sortingName === ''){
+            sortingName = 'unavailable';
+         }
+         const customerInvoices = invoices.filter((invoice) => invoice.customerId === customer.id);
+         let totalDue = 0;
+         let earliestDue = new Date();
+         for(const invoice of customerInvoices){
+            if(invoice.invoiceDue < earliestDue){
+               earliestDue = invoice.invoiceDue
+            }
+            if(invoice.invoiceDue < new Date()){
+               totalDue += invoice.invoiceAmount - invoice.amountPaid;
+            }
+         };
+         let unitNumbers:string[] = []
+         for(const lease of customer.customerLeases){
+            unitNumbers.push(lease.unitNum.replace(/^0+/gm, ''));
+         }
+         const json = {
+            "Name": sortingName,
+            'Units': unitNumbers.join(' '),
+            'Phone number': customer.address[0].phoneNum1,
+            'Earliest due date': customerInvoices[0] ? dayjs(earliestDue).format('MM/DD/YYYY') : '',
+            'Amount due': totalDue,
+         }
+         csv.write(json);
+      }
+      csv.end();
+      return new Response(data.join(''), { status: 200 })
    }
    const phoneBook = event.url.searchParams.get('phoneBook');
    if(phoneBook === 'true'){
@@ -123,7 +206,6 @@ export const GET: RequestHandler = async (event) => {
          if(!name){
             name = `"${user.givenName} ${user.givenName}"`
          }
-
          const json = {
             name,
             phoneNumber: address?.phoneNum1

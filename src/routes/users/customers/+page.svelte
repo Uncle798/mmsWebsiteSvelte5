@@ -160,6 +160,13 @@
                            >
                               Download CSV Phone book
                            </a>
+                           <a
+                              class="btn preset-filled-primary-50-950 h-8"
+                              href="/api/csv?currentCustomers=true"
+                              download="{PUBLIC_COMPANY_NAME} current customers {dayjs().format('MMMM D YYYY')}"
+                           >
+                              Download CSV current customers
+                           </a>
                         {/snippet}
                      </SearchDrawer>
                      <FormModal
