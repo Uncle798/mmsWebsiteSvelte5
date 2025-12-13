@@ -15,12 +15,13 @@ export async function makeMultipleInvoicesPDF(invoices:Invoice[], customer:User,
    }
    const table:ContentTable = {
       table: {
+         widths: [ 100, '*', 100, 200, 100],
          headerRows: 1,
          body: [
             ['Invoice number', 'Invoice notes', 'Invoice amount', 'Invoice due', 'Amount paid']
          ],
       },
-      layout: 'lightHorizontalLines'
+      layout: 'lightHorizontalLines',
    }
    let totalInvoiced = 0;
    let totalPaid = 0;
@@ -30,7 +31,7 @@ export async function makeMultipleInvoicesPDF(invoices:Invoice[], customer:User,
       table.table.body.push(
          [
             invoice.invoiceNum, 
-            invoice.invoiceNotes ? invoice.invoiceNotes : '', invoice.invoiceAmount, 
+            invoice.invoiceNotes ? invoice.invoiceNotes : '', 
             invoice.invoiceAmount,
             dayjs(invoice.invoiceDue).format('MMMM D YYYY'),
             invoice.amountPaid,
