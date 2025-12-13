@@ -5,7 +5,7 @@ import { defineConfig } from 'vite';
 import { readdirSync, readFileSync } from 'fs';
 import { join } from 'path';
 
-const modulePath = 'node_modules/@skeletonlabs/skeleton/dist/themes';
+const modulePath = 'node_modules/@skeletonlabs/skeleton/src/themes';
 const files = readdirSync(modulePath);
 const fileContents = files.map(file => {
 	return {
