@@ -5,18 +5,18 @@ import type { Address, Lease, Unit, User } from "../../generated/prisma/client";
 
 export const anvilClient = new Anvil({apiKey:ANVIL_API_KEY});
 
-export const leaseTemplateId = '3ABabYkvU2ySORZ7RKrw'
+export const leaseTemplateId = 'xpTVlW1pfNrWdfdsBV2a'
 
 export function getPersonalPacketVariables(customer:User, lease:Lease, unit:Unit, employee:User, address:Address){
    return {
       isDraft: false,
       isTest: true,
-      name: `Fake Lease ${customer.familyName}, ${customer.givenName} unit ${unit.num.replace(/^0+/gm,'')}`,
+      name: `Lease ${customer.familyName}, ${customer.givenName} unit ${unit.num.replace(/^0+/gm,'')}`,
       signatureEmailSubject: `Lease for Unit ${unit.num.replace(/^0+/gm,'')} at ${PUBLIC_COMPANY_NAME}`,
       signatureEmailBody: `Please sign the attached lease for unit ${unit.num.replace(/^0+/gm,'')} from ${PUBLIC_COMPANY_NAME}`,
       files:[
          {
-            id:'leaseTemplate',
+            id:'MMS LEASE',
             castEid: leaseTemplateId,
          }
       ],
