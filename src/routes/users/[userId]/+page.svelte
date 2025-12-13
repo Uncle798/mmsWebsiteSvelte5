@@ -78,7 +78,8 @@
       currentUser=user
    }
    let currentLease = $state<Lease>();
-   let currentInvoice = $state<Invoice>()
+   let currentInvoice = $state<Invoice>();
+   const selectedInvoices = $state<Invoice[]>([]);
 </script>
 <FormModal
    bind:modalOpen={globalModalOpen}
@@ -293,6 +294,27 @@
                {/each}
             </div>
          {:else}
+            <div class="flex flex-row gap-2">
+               <label for="selectAll" class="label-text m-2">Select all invoices
+                  <input 
+                     type="checkbox" 
+                     name="selectAll" 
+                     id="selectAll" 
+                     class="input checkbox"
+                     onchange={(e) => {
+                        if(e.currentTarget.checked){
+                           for(const invoice of invoices){
+                              selectedInvoices.push(invoice);
+                           }
+                        } else {
+                           for(const invoice of invoices){
+                              selectedInvoices.pop();
+                           }
+                        }
+                     }}
+                     checked={selectedInvoices.length === invoices.length ? true : undefined}
+                  />
+               </label>
                <Button
                   type='button'
                   label='Take a payment'
@@ -300,12 +322,45 @@
                      modalReason='payManyInvoices';
                      globalModalOpen=true;
                   }}
-                  classes='m-2'
+                  classes=''
                />
+               <Button
+                  type='button'
+                  label='Download PDF of selected invoices'
+                  onClick={async() => {
+                     let url = '/api/downloadPDF?'
+                     for(const invoice of selectedInvoices){
+                        url += `invoiceNum=${invoice.invoiceNum}&`
+                     }
+                     await fetch(url)
+                  }}
+               />
+            </div>
             <div class="mx-2">
                {#each slicedInvoices(invoices) as invoice}
                {@const invoicePaymentRecords = paymentRecords.filter((payment) => payment.invoiceNum === invoice.invoiceNum)}
-                  <div>
+                  <div class="flex flex-row">
+                     <label for={invoice.invoiceNum.toString()} class="label-text mx-2 self-center">
+                        Select {invoice.invoiceNum}
+                        <input 
+                           type="checkbox" 
+                           group={selectedInvoices}
+                           name={invoice.invoiceNum.toString()}
+                           value={invoice.invoiceNum.toString()} 
+                           class='input checkbox justify-self-center self-center'
+                           onchange={(e) => {
+                              if(e.currentTarget.checked){
+                                 selectedInvoices.push(invoice)
+                              } else {
+                                 const index = selectedInvoices.map((inv) => inv.invoiceNum).indexOf(invoice.invoiceNum);
+                                 if(index > -1){
+                                    selectedInvoices.splice(index, 1);
+                                 }
+                              }
+                           }}
+                           checked={ selectedInvoices.find((i) => i.invoiceNum === invoice.invoiceNum) ? true : undefined }
+                        />
+                     </label>
                      <InvoiceEmployee invoice={invoice} classes=''/>
                      {#if overDueInvoice(invoice) > 0 }
                         <Button
