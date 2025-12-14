@@ -9,7 +9,6 @@
    import PaymentRecordEmployee from '$lib/displayComponents/PaymentRecordEmployee.svelte';
    import Header from '$lib/Header.svelte';
    import type { Invoice, PaymentRecord, User } from '../../../generated/prisma/browser';
-	import RefundRecordDisplay from '$lib/displayComponents/RefundRecordEmployee.svelte';
 	import Pagination from '$lib/displayComponents/Pagination.svelte';
 	import EmailChangeForm from '$lib/forms/EmailChangeForm.svelte';
 	import EmailVerificationForm from '$lib/forms/EmailVerificationForm.svelte';
@@ -24,6 +23,7 @@
 	import { Accordion } from '@skeletonlabs/skeleton-svelte';
 	import NewInvoiceForm from '$lib/forms/NewInvoiceForm.svelte';
 	import NewPaymentRecordForm from '$lib/forms/NewPaymentRecordForm.svelte';
+	import { PUBLIC_COMPANY_NAME } from '$env/static/public';
 
    let { data }: { data: PageData } = $props();
    let globalModalOpen = $state(false);
@@ -71,22 +71,28 @@
       modalReason = 'leaseEnd';
       globalModalOpen = true;
    }
-   let currentUser = $state<User>(data.dbUser);
-   function emailChangeModal(user:User){
+   function emailChangeModal(){
       modalReason='emailChange'
-      globalModalOpen=true
-      currentUser=user
+      globalModalOpen=true;
    }
    let currentLease = $state<Lease>();
    let currentInvoice = $state<Invoice>();
    const selectedInvoices = $state<Invoice[]>([]);
+   const isInvoiceSelected = $derived((invoice:Invoice) => {
+      const selected = selectedInvoices.find((inv) => inv.invoiceNum === invoice.invoiceNum)
+      if(selected){
+         return true
+      } else {
+         return undefined
+      }
+   })
 </script>
 <FormModal
    bind:modalOpen={globalModalOpen}
 >
    {#snippet content()}
       {#if modalReason === 'emailChange'}
-         <EmailChangeForm data={data.emailChangeForm} bind:emailModalOpen={globalModalOpen} user={currentUser}/>
+         <EmailChangeForm data={data.emailChangeForm} bind:emailModalOpen={globalModalOpen} user={data.dbUser}/>
       {:else if modalReason === 'emailVerification'}
          <EmailVerificationForm 
             data={data.emailVerificationForm}
@@ -158,7 +164,7 @@
             label='Change email address'
             type='button'
             onClick={() => {
-               emailChangeModal(data.dbUser)
+               emailChangeModal()
             }}
          />
          {#if !data.dbUser.emailVerified}
@@ -294,8 +300,8 @@
                {/each}
             </div>
          {:else}
-            <div class="flex flex-row gap-2">
-               <label for="selectAll" class="label-text m-2">Select all invoices
+            <div class="flex flex-row gap-2 m-2">
+               <label for="selectAll" class="label-text">Select all invoices
                   <input 
                      type="checkbox" 
                      name="selectAll" 
@@ -304,11 +310,17 @@
                      onchange={(e) => {
                         if(e.currentTarget.checked){
                            for(const invoice of invoices){
-                              selectedInvoices.push(invoice);
+                              const alreadyThere = selectedInvoices.find((inv) => inv.invoiceNum === invoice.invoiceNum)
+                              if(!alreadyThere){
+                                 selectedInvoices.push(invoice);
+                              }
                            }
                         } else {
                            for(const invoice of invoices){
-                              selectedInvoices.pop();
+                              const index = selectedInvoices.map((inv) => inv.invoiceNum).indexOf(invoice.invoiceNum);
+                              if(index > -1){
+                                 selectedInvoices.splice(index, 1);
+                              }
                            }
                         }
                      }}
@@ -328,12 +340,28 @@
                   type='button'
                   label='Download PDF of selected invoices'
                   onClick={async() => {
-                     let url = '/api/downloadPDF?'
+                     let url = '/api/downloadPDF?';
+                     const invoiceNums:number[] = []
                      for(const invoice of selectedInvoices){
-                        url += `invoiceNum=${invoice.invoiceNum}&`
+                        url += `invoiceNum=${invoice.invoiceNum}&`;
+                        invoiceNums.push(invoice.invoiceNum);
                      }
-                     await fetch(url)
+                     const res = await fetch(url);
+                     const blob = await res.blob();
+                     url = URL.createObjectURL(blob);
+                     let fileName = `${PUBLIC_COMPANY_NAME} invoices `;
+                     for(const num of invoiceNums){
+                        fileName += `${num} `
+                     }
+                     const a = document.createElement('a');
+                     a.href = url;
+                     a.download = fileName
+                     document.body.append(a);
+                     a.click();
+                     document.body.removeChild(a);
+                     URL.revokeObjectURL(url)
                   }}
+                  disabled={selectedInvoices.length > 0 ? undefined : true}
                />
             </div>
             <div class="mx-2">
@@ -350,7 +378,7 @@
                            class='input checkbox justify-self-center self-center'
                            onchange={(e) => {
                               if(e.currentTarget.checked){
-                                 selectedInvoices.push(invoice)
+                                 selectedInvoices.push(invoice);
                               } else {
                                  const index = selectedInvoices.map((inv) => inv.invoiceNum).indexOf(invoice.invoiceNum);
                                  if(index > -1){
@@ -358,7 +386,7 @@
                                  }
                               }
                            }}
-                           checked={ selectedInvoices.find((i) => i.invoiceNum === invoice.invoiceNum) ? true : undefined }
+                           checked={ isInvoiceSelected(invoice) }
                         />
                      </label>
                      <InvoiceEmployee invoice={invoice} classes=''/>
