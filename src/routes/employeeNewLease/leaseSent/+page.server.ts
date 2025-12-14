@@ -1,7 +1,7 @@
 import { redirect, error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { prisma } from '$lib/server/prisma';
-import { anvilClient, getOrganizationalPacketVariables, getPersonalPacketVariables } from '$lib/server/anvil';
+import { anvilClient, getPacketVariables, } from '$lib/server/anvil';
 import { inngest } from '$lib/server/inngest/inngest';
 
 export const load = (async (event) => {
@@ -22,28 +22,35 @@ export const load = (async (event) => {
          where: {
             num: lease.unitNum
          }
-      })
+      });
+      if(!unit){
+         return error(500, 'Unit not found');
+      }
       const customer = await prisma.user.findUnique({
          where: {
             id: lease.customerId
          }
       });
+      if(!customer){
+         return error(500, 'Customer not found');
+      }
       const address = await prisma.address.findUnique({
          where: {
             addressId: lease.addressId
          }
-      })
+      });
+      if(!address){
+         return error(500, 'Address not found');
+      }
       const employee = await prisma.user.findUnique({
          where: {
             id: event.locals.user.id
          }
       });
-      let variables = {}
-      if(customer?.organizationName){
-         variables = getOrganizationalPacketVariables( customer, lease!, unit!, employee!, address!)
-      } else {
-         variables = getPersonalPacketVariables( customer!, lease!, unit!, employee!, address!)
+      if(!employee){
+         return error(500, 'Employee not found');
       }
+      const variables = getPacketVariables( customer, lease, unit, employee, address);
       const { data, errors } = await anvilClient.createEtchPacket({variables})
       if (errors) {
          // Note: because of the nature of GraphQL, statusCode may be a 200 even when
