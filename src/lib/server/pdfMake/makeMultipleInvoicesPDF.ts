@@ -1,7 +1,7 @@
 import type { ContentTable, ContentText, TDocumentDefinitions } from "pdfmake/interfaces";
 import type { Address, Invoice, User } from "../../../generated/prisma/client";
 import { PUBLIC_COMPANY_NAME } from "$env/static/public";
-import { printer, styles } from "./pdfMake";
+import { currencyFormatter, printer, styles } from "./pdfMake";
 import BlobStream, { type IBlobStream } from "blob-stream";
 import { makeNamePlate } from "./makeNamePlate";
 import { makeAddress } from "./makeAddress";
@@ -15,10 +15,10 @@ export async function makeMultipleInvoicesPDF(invoices:Invoice[], customer:User,
    }
    const table:ContentTable = {
       table: {
-         widths: [ 100, '*', 100, 200, 100],
+         widths: [ 50, '*', 50, 100, 50],
          headerRows: 1,
          body: [
-            ['Invoice number', 'Invoice notes', 'Invoice amount', 'Invoice due', 'Amount paid']
+            ['Number', 'Notes', 'Amount', 'Due date', 'Amount paid']
          ],
       },
       layout: 'lightHorizontalLines',
@@ -32,21 +32,31 @@ export async function makeMultipleInvoicesPDF(invoices:Invoice[], customer:User,
          [
             invoice.invoiceNum, 
             invoice.invoiceNotes ? invoice.invoiceNotes : '', 
-            invoice.invoiceAmount,
+            currencyFormatter.format(invoice.invoiceAmount),
             dayjs(invoice.invoiceDue).format('MMMM D YYYY'),
-            invoice.amountPaid,
+            currencyFormatter.format(invoice.amountPaid),
          ]
       )
    }
-   table.table.body.push(['', '', '', '', '']);
-   table.table.body.push(['', '', '', 'total invoiced', totalInvoiced]);
-   table.table.body.push(['', '', '', 'total paid', totalPaid]);
+   const sumTable: ContentTable = {
+      table: {
+         widths: [ 50, '*', 50, 100, 50],
+         body: [
+            ['', '', '', 'Total invoiced', currencyFormatter.format(totalInvoiced)],
+            ['', '', '', 'Total paid', currencyFormatter.format(totalPaid)]
+         ]
+      },
+      layout: 'noBorders'
+   }
    const reportDocDef: TDocumentDefinitions = {
       content: [
          header,
+         '\n',
          makeNamePlate(customer),
          makeAddress(address),
+         '\n',
          table,
+         sumTable,
       ],
       styles: styles,
       defaultStyle: {
