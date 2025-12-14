@@ -7,13 +7,18 @@ export const anvilClient = new Anvil({apiKey:ANVIL_API_KEY});
 
 export const leaseTemplateId = 'xpTVlW1pfNrWdfdsBV2a'
 
-export function getPersonalPacketVariables(customer:User, lease:Lease, unit:Unit, employee:User, address:Address){
+export function getPacketVariables(customer:User, lease:Lease, unit:Unit, employee:User, address:Address){
+   let customerName = customer.organizationName;
+   if(!customerName){
+      customerName = `${customer.givenName} ${customer.familyName}`
+   }
+   const unitNum = unit.num.replace(/^0+/gm,'')
    return {
       isDraft: false,
       isTest: true,
-      name: `Lease ${customer.familyName}, ${customer.givenName} unit ${unit.num.replace(/^0+/gm,'')}`,
-      signatureEmailSubject: `Lease for Unit ${unit.num.replace(/^0+/gm,'')} at ${PUBLIC_COMPANY_NAME}`,
-      signatureEmailBody: `Please sign the attached lease for unit ${unit.num.replace(/^0+/gm,'')} from ${PUBLIC_COMPANY_NAME}`,
+      name: `${PUBLIC_COMPANY_NAME} Lease unit ${unitNum} ${customerName}`,
+      signatureEmailSubject: `Lease for Unit ${unitNum} at ${PUBLIC_COMPANY_NAME}`,
+      signatureEmailBody: `Please sign the attached lease for unit ${unitNum} from ${PUBLIC_COMPANY_NAME}`,
       files:[
          {
             id:'MMS LEASE',
@@ -24,10 +29,10 @@ export function getPersonalPacketVariables(customer:User, lease:Lease, unit:Unit
          payloads: {
             leaseTemplate:{
                data: {
-                  'customerName':customer.givenName + ' ' + customer.familyName,
+                  'customerName':customerName,
                   'companyName': PUBLIC_COMPANY_NAME,
                   'leaseEffectiveDate': lease.leaseEffectiveDate,
-                  'unitNum': unit.num.replace(/^0+/gm,''),
+                  'unitNum': unitNum,
                   'size': unit.size.replace(/^0+/gm,'').replace(/x0/gm,'x'),
                   'price': lease.price,
                   'address':{
@@ -45,7 +50,7 @@ export function getPersonalPacketVariables(customer:User, lease:Lease, unit:Unit
       signers: [
          {
             id: 'customer', 
-            name: `${customer.givenName} ${customer.familyName}`,
+            name: customerName,
             email: customer.email,
             signerType: 'email',
             fields: [
