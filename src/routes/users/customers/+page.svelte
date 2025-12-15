@@ -22,7 +22,8 @@
 	import { sortUsers } from '$lib/userSort';
 	import ProgressRing from '$lib/displayComponents/ProgressRing.svelte';
 	import ProgressLine from '$lib/displayComponents/ProgressLine.svelte';
-
+	import Button from '$lib/core/Button.svelte';
+   
    let { data }: { data: PageData } = $props();
    let pageNum = $state(1);
    let size = $state(25);
@@ -59,7 +60,6 @@
       return invoice.invoiceDue <= new Date() && (invoice.invoiceAmount > invoice.amountPaid);
    }))
    let searchDrawerOpen = $state(false);
-   const currencyFormatter = new Intl.NumberFormat('en-US', {style:'currency', currency:'USD'});
    let leaseEndModalOpen = $state(false);
    let currentLeaseId = $state('');
    let currentUnit = $state<Unit>();
@@ -132,25 +132,36 @@
                                  </a>
                               </div>
                               <div class="flex flex-row gap-0.5">
-                                 <a
-                                    class="btn preset-filled-primary-50-950 h-8"
-                                    href="/api/csv?currentCustomers=true"
-                                    download="{PUBLIC_COMPANY_NAME} current customers {dayjs().format('MMMM D YYYY')}.csv"
-                                    onclick={() => {
+                                 <Button
+                                    label='Download CSV of current customers'
+                                    type='button'
+                                    onClick={async () => {
                                        setTimeout(() => {
                                           csvCurrentCustomersDelayed = true;
-                                          setTimeout(() => {
-                                             csvCurrentCustomersDelayed = false;
-                                             csvCurrentCustomersTimeout = true;
-                                          }, 700);
                                        }, 300);
+                                       setTimeout(() => {
+                                          csvCurrentCustomersDelayed = false;
+                                          csvCurrentCustomersTimeout = true;
+                                       }, 1000);
+                                       const res = await fetch('/api/csv?currentCustomers=true');
+                                       const blob = await res.blob();
+                                       const url = URL.createObjectURL(blob);
+                                       const fileName = `${PUBLIC_COMPANY_NAME} current customers.csv`;
+                                       const a = document.createElement('a');
+                                       a.href = url;
+                                       a.download = fileName;
+                                       document.body.append(a);
+                                       a.click();
+                                       document.removeChild(a);
+                                       URL.revokeObjectURL(url);
+                                       csvCurrentCustomersDelayed = false;
+                                       csvCurrentCustomersTimeout = false;
                                     }}
-                                 >
-                                    Download CSV current customers
-                                 </a>
+                                 />
                                  {#if csvCurrentCustomersDelayed}
                                     <ProgressRing value={null} />
-                                 {:else if csvCurrentCustomersTimeout}
+                                 {/if}
+                                 {#if csvCurrentCustomersTimeout}
                                     <ProgressLine value={null} />
                                  {:else}
                                     <div class="size-8"></div>
