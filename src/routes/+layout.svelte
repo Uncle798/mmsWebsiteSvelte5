@@ -76,7 +76,7 @@
 			<Portal>
 				<Dialog.Backdrop class="fixed inset-0 bg-surface-50-950/50 transition transition-discrete opacity-0 starting:data-[state=open]:opacity-0 data-[state=open]:opacity-100"/>
 				<Dialog.Positioner class='fixed inset-0 z-41 flex justify-start rounded-none'>
-					<Dialog.Content class="h-screen card bg-surface-100-900 w-[250px] space-y-4 shadow-xl transition transition-discrete opacity-0 -translate-x-full 
+					<Dialog.Content class="h-screen card bg-surface-100-900 w-62 space-y-4 shadow-xl transition transition-discrete opacity-0 -translate-x-full 
 						starting:data-[state=open]:opacity-0 starting:data-[state=open]:-translate-x-full data-[state=open]:opacity-100 data-[state=open]:translate-x-0 rounded-l-none mainMenu">
 						<header class='flex justify-between items-center m-2'>
 							<Dialog.Title class='font-bold text-2xl' >Main Menu</Dialog.Title>
@@ -159,7 +159,7 @@
 			</Portal>
 		</Dialog>
 		<div class="bg-tertiary-50-950 fixed w-screen top-0 left-0 h-12 sm:h-8 text-center font-bold z-30 rounded-b-lg">
-			<div class="fixed top-0 left-[85px] w-[225px] sm:w-screen text-center sm:left-0 text-wrap">
+			<div class="fixed top-0 left-21 w-56 sm:w-screen text-center sm:left-0 text-wrap">
 				<a href="/" class="anchor">{PUBLIC_COMPANY_NAME}</a>
 			</div>
 		</div>
@@ -171,7 +171,7 @@
 			<Portal>
 				<Dialog.Backdrop class="fixed inset-0 bg-surface-50-950/50 transition transition-discrete opacity-0 starting:data-[state=open]:opacity-0 data-[state=open]:opacity-100"/>
 				<Dialog.Positioner class='fixed inset-0 z-40 flex justify-start'>
-					<Dialog.Content class="h-screen card bg-surface-100-900 w-[200px] p-4 space-y-4 shadow-xl transition transition-discrete opacity-0 -translate-x-full 
+					<Dialog.Content class="h-screen card bg-surface-100-900 w-50 p-4 space-y-4 shadow-xl transition transition-discrete opacity-0 -translate-x-full 
 						starting:data-[state=open]:opacity-0 starting:data-[state=open]:-translate-x-full data-[state=open]:opacity-100 data-[state=open]:translate-x-0 rounded-l-none">
 						<header class="flex justify-between items-center">
 							<Dialog.Title class='text-2xl font-bold'>Main Menu</Dialog.Title>
@@ -201,7 +201,7 @@
 			</Portal>
 		</Dialog>
 		<div class="bg-tertiary-50-950 fixed w-screen top-0 left-0 h-12 sm:h-8 text-center font-bold z-30 rounded-b-lg">
-			<div class="fixed top-0 left-[85px] w-[225px] sm:w-screen text-center sm:left-0 text-wrap mt-0.5">
+			<div class="fixed top-0 left-21 w-56 sm:w-screen text-center sm:left-0 text-wrap mt-0.5">
 				<a href="/" class="anchor">{PUBLIC_COMPANY_NAME}</a>
 			</div>
 		</div>
