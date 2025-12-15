@@ -301,11 +301,10 @@
             </div>
          {:else}
             <div class="flex flex-row gap-2 m-2">
-               <label for="selectAll" class="label-text">Select all invoices
+               <label for="selectAllInovices" class="label-text">Select all invoices
                   <input 
                      type="checkbox" 
-                     name="selectAll" 
-                     id="selectAll" 
+                     name="selectAllInvoices" 
                      class="input checkbox"
                      onchange={(e) => {
                         if(e.currentTarget.checked){

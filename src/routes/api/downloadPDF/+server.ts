@@ -1,27 +1,43 @@
-import { makeReceiptPdf } from "$lib/server/pdfMake/makeReceiptPdf";
-import { makeRefundPdf } from "$lib/server/pdfMake/makeRefundPdf";
-import { makeInvoicePdf } from "$lib/server/pdfMake/makeInvoicePdf";
+
 import { prisma } from "$lib/server/prisma";
 import { error, type RequestHandler } from "@sveltejs/kit";
 import { PUBLIC_COMPANY_NAME } from "$env/static/public";
-import type { Invoice } from "../../../generated/prisma/client";
+import type { Invoice, PaymentRecord } from "../../../generated/prisma/client";
 import { makeMultipleInvoicesPDF } from "$lib/server/pdfMake/makeMultipleInvoicesPDF";
+import type { RefundRecord} from "../../../generated/prisma/client";
+import { makeMultipleRefundsPDF } from "$lib/server/pdfMake/makeMultipleRefundsPDF";
+import { makeMultiplePaymentsPDF } from "$lib/server/pdfMake/makeMultiplePaymentsPDF";
 
 export const GET:RequestHandler = async (event) => {
-   const refundNum = event.url.searchParams.get('refundNum');
-   const paymentNum = event.url.searchParams.get('paymentNum');
+   const refundNumbers = event.url.searchParams.getAll('refundNum');
+   const paymentNumbers = event.url.searchParams.getAll('paymentNum');
    const invoiceNumbers = event.url.searchParams.getAll('invoiceNum');
-   console.log(invoiceNumbers)
-   if(refundNum){
-      const refund = await prisma.refundRecord.findUnique({
-         where: {
-            refundNumber:parseInt(refundNum, 10)
+   if(refundNumbers.length > 0){
+      const refunds:RefundRecord[] = [];
+      let filename = `${PUBLIC_COMPANY_NAME} `
+      if(refundNumbers.length === 1){
+         filename += 'refund'
+      } else {
+         filename += 'refunds'
+      }
+      for(const refundNum of refundNumbers){
+         const refund = await prisma.refundRecord.findUnique({
+            where: {
+               refundNumber: parseInt(refundNum, 10),
+            }
+         });
+         if(refund){
+            refunds.push(refund);
+            filename += ` ${refund.refundNumber} `
          }
-      })
-      if(refund){
+      }
+      if(refunds.length === 0){
+         throw error(404, {message: 'Refunds not found'});
+      } else {
+         filename += '.pdf'
          const customer = await prisma.user.findUnique({
             where: {
-               id: refund?.customerId
+               id: refunds[0].customerId
             }
          })
          if(!customer){
@@ -39,66 +55,82 @@ export const GET:RequestHandler = async (event) => {
                message: 'Address not found'
             })
          }
-         const pdf = await makeRefundPdf(refund, customer, address, true) as Blob
+         const pdf = await makeMultipleRefundsPDF(refunds, customer, address, true) as Blob
          event.setHeaders({
             'Content-Type': 'application/pdf',
             'Content-Disposition': 'inline',
-            'filename': `${PUBLIC_COMPANY_NAME} refund ${refund.refundNumber}`
+            'filename': filename
          })
          return new Response(pdf,{
             status: 200
          })
       }
-      throw error(404, {
-         message: 'Refund not found'
-      })
    }
-   if(paymentNum){
-      const payment = await prisma.paymentRecord.findUnique({
-         where: {
-            paymentNumber: parseInt(paymentNum, 10)
+   if(paymentNumbers.length > 0){
+      const payments:PaymentRecord[] = [];
+      let filename = `${PUBLIC_COMPANY_NAME} `;
+      if(paymentNumbers.length === 1){
+         filename += 'payment'
+      } else {
+         filename += 'payments'
+      }
+      for(const paymentNum of paymentNumbers){
+         const payment = await prisma.paymentRecord.findUnique({
+            where: {
+               paymentNumber: parseInt(paymentNum, 10)
+            }
+         });
+         if(payment){
+            payments.push(payment);
+            filename += ` ${payment.paymentNumber},`
          }
-      });
-      if(payment){
+      }
+      if(payments.length === 0){
+         throw error(404, {message: 'Payments not found'});
+      } else {
+         filename += '.pdf'
          const customer = await prisma.user.findUnique({
             where: {
-               id: payment.customerId
+               id: payments[0].customerId,
             }
-         })
+         });
          if(!customer){
-            throw error(500, {
-               message: 'Customer not found'
-            })
+            throw error(500, { message: 'Customer not found'});
          }
          const address = await prisma.address.findFirst({
             where: {
                AND: [
-                  {userId: customer.id},
-                  {softDelete: false}
+                  {
+                     userId: customer.id
+                  },
+                  {
+                     softDelete: false
+                  }
                ]
             }
-         })
-         if(!address){
-            throw error(500, {
-               message: 'Address not found'
-            })
-         }
-         const pdf = await makeReceiptPdf(payment, customer, address, true) as Blob;
-         event.setHeaders({
-            'Content-Type': 'application/pdf'
-         })
-         const res = new Response(pdf, {
-            status: 200,
          });
-         res.headers.set('Content-Disposition', 'attachment; filename``')
-         return res
+         if(!address){
+            throw error(500, { message: 'Address not found'});
+         }
+         const pdf = await makeMultiplePaymentsPDF(payments, customer, address, true) as Blob;
+         event.setHeaders({
+            'Content-Type': 'application/pdf',
+            'Content-Disposition': 'inline',
+            'filename': filename
+         })
+         return new Response(pdf,{
+            status: 200
+         })
       }
-      throw error(404, {
-         message: 'Payment not found'
-      })
    }
    if(invoiceNumbers.length > 0){
-      const invoices:Invoice[] = [];
+      let invoices:Invoice[] = [];
+      let filename = `${PUBLIC_COMPANY_NAME} `;
+      if(invoiceNumbers.length === 1){
+         filename += 'payment';
+      } else {
+         filename += 'payments'
+      }
       for(const invoiceNum of invoiceNumbers){
          const invoice = await prisma.invoice.findUnique({
             where: {
@@ -107,6 +139,7 @@ export const GET:RequestHandler = async (event) => {
          });
          if(invoice){
             invoices.push(invoice);
+            filename += ` ${invoice.invoiceNum},`
          }
       }
       if(invoices.length === 0){
@@ -114,6 +147,15 @@ export const GET:RequestHandler = async (event) => {
             message: 'No invoices found'
          });
       }
+      invoices = invoices.sort((a, b) => {
+         if(a.invoiceNum > b.invoiceNum){
+            return 1;
+         }else if(a.invoiceNum < b.invoiceNum){
+            return -1;
+         } else {
+            return 0;
+         }
+      })
       const customer = await prisma.user.findUnique({
          where: {
             id: invoices[0].customerId
@@ -137,22 +179,20 @@ export const GET:RequestHandler = async (event) => {
       if(!address){
          throw error(500, 'Address not found');
       }
-      if(invoices.length === 1){
-         const pdf = await makeInvoicePdf(invoices[0], customer, address, true) as Blob;
-         const res = new Response(pdf, {
-            status: 200,
-         });
-         res.headers.set('Content-Disposition', `attachment; filename="${PUBLIC_COMPANY_NAME} invoice number ${invoices[0].invoiceNum}.pdf`);
-         return res;
-      } else {
-         const pdf = await makeMultipleInvoicesPDF(invoices, customer, address, true) as Blob;
-         const res = new Response(pdf, {
-            status: 200,
-         });
-         res.headers.set('Content-Disposition', `attachment; filename="${PUBLIC_COMPANY_NAME} invoice number ${invoices[0].invoiceNum}.pdf`);
-         console.log(res);
-         return res;
-      }
+      const pdf = await makeMultipleInvoicesPDF(invoices, customer, address, true) as Blob;
+      filename += '.pdf'
+      const res = new Response(pdf, {
+         status: 200,
+      });
+      event.setHeaders({
+         'Content-Type': 'application/pdf',
+         'Content-Disposition': 'inline',
+         'filename': filename
+      })
+      return new Response(pdf,{
+         status: 200
+      })
+      return res;
    }
    throw error(400, {
       message: 'Record Number not provided'

@@ -9,10 +9,7 @@ import dayjs from "dayjs";
 import  utc  from "dayjs";
 dayjs.extend(utc);
 export async function makeMultipleInvoicesPDF(invoices:Invoice[], customer:User, address:Address, download?:boolean): Promise<Blob | PDFKit.PDFDocument> {
-   const header:ContentText = {
-      text: `${PUBLIC_COMPANY_NAME} invoices`,
-      style: 'header'
-   }
+
    const table:ContentTable = {
       table: {
          widths: [ 50, '*', 50, 100, 50],
@@ -25,6 +22,13 @@ export async function makeMultipleInvoicesPDF(invoices:Invoice[], customer:User,
    }
    let totalInvoiced = 0;
    let totalPaid = 0;
+   let index = 1;
+   let title = `${PUBLIC_COMPANY_NAME}`
+   if(invoices.length === 1){
+      title += ` invoice`
+   } else {
+      title += ' invoices'
+   }
    for(const invoice of invoices){
       totalInvoiced += invoice.invoiceAmount;
       totalPaid += invoice.amountPaid;
@@ -36,7 +40,19 @@ export async function makeMultipleInvoicesPDF(invoices:Invoice[], customer:User,
             dayjs(invoice.invoiceDue).format('MMMM D YYYY'),
             currencyFormatter.format(invoice.amountPaid),
          ]
-      )
+      );
+      console.log(invoices.length)
+      console.log(index)
+      if(index === invoices.length){
+         title += ` ${invoice.invoiceNum}.`
+      } else {
+         title += ` ${invoice.invoiceNum},`
+      }
+      index += 1;
+   }
+   const header:ContentText = {
+      text: title,
+      style: 'header'
    }
    const sumTable: ContentTable = {
       table: {
@@ -63,7 +79,7 @@ export async function makeMultipleInvoicesPDF(invoices:Invoice[], customer:User,
          font: 'Helvetica'
       },
       info: {
-         title: `${PUBLIC_COMPANY_NAME} Invoices`
+         title,
       }
    }
    const pdf = printer.createPdfKitDocument(reportDocDef);
