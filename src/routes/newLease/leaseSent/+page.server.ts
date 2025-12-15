@@ -1,8 +1,7 @@
 import { prisma } from '$lib/server/prisma';
-import { anvilClient, getOrganizationalPacketVariables, getPersonalPacketVariables } from '$lib/server/anvil';
+import { anvilClient,  getPacketVariables, } from '$lib/server/anvil';
 import { error, redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { qStash } from '$lib/server/qStash';
 
 export const load:PageServerLoad = (async (event) => {
    if(!event.locals.user){
@@ -22,7 +21,10 @@ export const load:PageServerLoad = (async (event) => {
          where:{
             id: lease.customerId!,
          }
-      })
+      });
+      if(!customer){
+         throw error(500, 'Customer not found');
+      }
       if(lease.anvilEID){
          return { customer, lease}
       }
@@ -31,28 +33,28 @@ export const load:PageServerLoad = (async (event) => {
             num: lease?.unitNum,
          }
       });
+      if(!unit){
+         throw error(500, {message: 'Unit not found'});
+      }
       const employee = await prisma.user.findFirst({
          where: {
             AND:[
                {admin:true},
-               {familyName: 'Branson'}
             ]
          }
-      })
+      });
+      if(!employee){
+         throw error(500, {message: 'Employee not found'})
+      }
       const address = await prisma.address.findUnique({
          where: {
             addressId: lease?.addressId
          }
       });
       if(!address){
-         error(400)
+         error(500, {message: 'Address not found'})
       }
-      let variables ={};
-      if(customer?.organizationName){
-         variables = getOrganizationalPacketVariables( customer!, lease!, unit!, employee!, address! );
-      } else {
-         variables = getPersonalPacketVariables( customer!, lease!, unit!, employee!, address!);
-      }
+      let variables = getPacketVariables(customer, lease, unit, employee, address)
       const { data, errors } = await anvilClient.createEtchPacket({
          variables
       })
@@ -73,7 +75,6 @@ export const load:PageServerLoad = (async (event) => {
                anvilEID 
             }
          })
-         await qStash.notify({eventId:lease.leaseId});
          const invoice = await prisma.invoice.findFirst({
             where: {
                leaseId: lease.leaseId
