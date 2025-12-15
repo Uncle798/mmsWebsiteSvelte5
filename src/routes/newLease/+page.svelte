@@ -14,6 +14,7 @@
    import FormModal from '$lib/displayComponents/Modals/FormModal.svelte';
     
    let { data }: {data:PageData} = $props();
+   // svelte-ignore state_referenced_locally
    let { form, message, errors, constraints, enhance, delayed, timeout } = superForm(data.leaseForm);
    let addressModalOpen = $state(false);
    const currencyFormatter = new Intl.NumberFormat('en-US', {style: 'currency', currency: 'USD'})
