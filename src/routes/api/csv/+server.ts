@@ -141,13 +141,6 @@ export const GET: RequestHandler = async (event) => {
          console.error(err.message)
       });
       for(const customer of customers){
-         let sortingName = customer.organizationName ? customer.organizationName : customer.familyName;
-         if(sortingName === null || sortingName === undefined){
-            sortingName = ''
-         }
-         if(sortingName === ''){
-            sortingName = 'unavailable';
-         }
          const customerInvoices = invoices.filter((invoice) => invoice.customerId === customer.id);
          let totalDue = 0;
          let earliestDue = new Date();
@@ -160,7 +153,7 @@ export const GET: RequestHandler = async (event) => {
             }
          };
          let unitNumbers:string[] = [];
-         const customerLeases = leases.filter((lease) => lease.customerId === customer.id)
+         const customerLeases = leases.filter((lease) => lease.customerId === customer.id);
          for(const lease of customerLeases){
             unitNumbers.push(lease.unitNum.replace(/^0+/gm, ''));
          }
