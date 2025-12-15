@@ -13,6 +13,7 @@
       classes?: string;
    }
    let { data,  employeeChecked=$bindable(false), adminChecked=$bindable(false), userId, classes }:Props = $props();
+   // svelte-ignore state_referenced_locally
    let { form, message, enhance, delayed, timeout, submit, } = superForm(data, {
       id: userId,
       onSubmit: (input) => {

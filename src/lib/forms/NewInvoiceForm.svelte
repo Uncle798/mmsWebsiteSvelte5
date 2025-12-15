@@ -48,7 +48,8 @@
       modalOpen=$bindable(), 
       classes,
    }:Props = $props();
-   let url = page.url.pathname
+   let url = page.url.pathname;
+   // svelte-ignore state_referenced_locally
    let { form, errors, message, constraints, enhance, delayed, timeout, } = superForm(data, {
       onChange(event) {
          if(event.target){

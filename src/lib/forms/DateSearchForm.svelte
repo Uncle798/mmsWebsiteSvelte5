@@ -21,7 +21,7 @@
 		label='Search by date range',
 		classes
 	}: Props = $props();
-
+// svelte-ignore state_referenced_locally
 	let { form, message, enhance, constraints, errors } = superForm(data, {
 	});
 	onMount(() => {

@@ -20,6 +20,7 @@
       redirect=$bindable(''),
       classes,
    }:Props = $props();
+   // svelte-ignore state_referenced_locally
    let { form, errors, constraints, message, enhance,  delayed, timeout } = superForm(data, {
       onSubmit(){
       }, 

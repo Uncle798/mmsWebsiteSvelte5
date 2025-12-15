@@ -17,7 +17,8 @@
       classes?: string;
    }
    let { data, invoice, modalOpen=$bindable(), classes }:Props = $props();
-      let { form, errors, constraints, message, enhance,  delayed, timeout } = superForm(data, {
+   // svelte-ignore state_referenced_locally
+   let { form, errors, constraints, message, enhance,  delayed, timeout } = superForm(data, {
       onUpdated({form}) {
          if(form.valid && !$message){
             modalOpen = false;

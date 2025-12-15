@@ -19,6 +19,7 @@
       classes?: string;
    }
    let { data, leaseId, addressId, redirectTo, userId, modalOpen=$bindable(), classes }:Props = $props();
+   // svelte-ignore state_referenced_locally
    let { form, message, errors, constraints, enhance, delayed, timeout } = superForm(data, {
       onSubmit({formData}) {
          if($form.phoneNum1){

@@ -30,6 +30,7 @@
    let { data, sessionToken, invoice, subscription, buttonText='Pay Bill',classes, }:Props = $props();
    let processing = $state(false);
    let errorDisplay = $state<HTMLElement>();
+   // svelte-ignore state_referenced_locally
    let { form, message, errors, constraints, enhance, delayed, timeout, } = superForm(data, {
       SPA: true,
       validators: valibot(creditCardFormSchema),

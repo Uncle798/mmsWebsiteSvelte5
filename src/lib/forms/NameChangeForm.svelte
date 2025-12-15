@@ -14,6 +14,7 @@
    }
 
    let { data, nameModalOpen=$bindable(false), userId, classes }:Props = $props();
+   // svelte-ignore state_referenced_locally
    let { form, errors, message, constraints, enhance, delayed, timeout} = superForm(data, {
       onChange(event) {
          if(event.target){

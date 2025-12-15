@@ -8,7 +8,7 @@
 	import { invalidateAll } from '$app/navigation';
 	import FormProgress from '$lib/formComponents/FormSubmitWithProgress.svelte';
 	import FormMessage from '$lib/formComponents/FormMessage.svelte';
-	import { onMount } from 'svelte';
+	import { onMount, untrack } from 'svelte';
 	import { page } from '$app/state';
 
    interface Props {
@@ -20,6 +20,7 @@
    }
 
    let {data, addressModalOpen=$bindable(false), userId, redirectTo, classes }:Props = $props();
+   // svelte-ignore state_referenced_locally
    let { form, message, errors, constraints, enhance, delayed, timeout, capture, restore, } = superForm(data, {
       onChange(event) {
          if(event.target){
