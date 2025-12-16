@@ -16,6 +16,7 @@
 	import Address from '$lib/displayComponents/AddressEmployee.svelte';
 	import Revenue from '$lib/displayComponents/Revenue.svelte'
 	import { onMount } from 'svelte';
+	import { fromStore } from 'svelte/store';
 	import SearchDrawer from '$lib/displayComponents/Modals/SearchDrawer.svelte';
 	import FormModal from '$lib/displayComponents/Modals/FormModal.svelte';
 	import RevenueBar from '$lib/displayComponents/RevenueBar.svelte';
@@ -23,6 +24,7 @@
 	import dayjs from 'dayjs';
 	import Button from '$lib/core/Button.svelte';
 	import ChangeDepositForm from '$lib/forms/ChangeDepositForm.svelte';
+	import { source } from 'sveltekit-sse';
 	
 	let { data }: { data: PageData } = $props();
 	let modalOpen = $state(false);
@@ -30,6 +32,18 @@
 	let globalModalType = $state('');
 	let currentSize = $state('');
 	let currentOldPrice = $state(0);
+	const connection = source('/api/csv');
+	const value = connection.select('message');
+	const valueState = $state(fromStore(value));
+	const csv = connection.select('csv');
+	const csvState = $state(fromStore(csv));
+	$effect(() => {
+		if(csvState.current !== ''){
+			const transformed = csv.transform(function run(data) {
+				console.log(data);
+			})
+		}
+	})
 	function openModal(modalType: string, oldPrice: number, leaseId?: string, size?: string) {
 		if (leaseId) {
 			currentLeaseId = leaseId;
@@ -181,14 +195,29 @@
 										searchDrawerOpen=false;
 										selectedSize=details.value
 									}}
-								/> 
-								<a
-									href="/api/csv?allUnits=true"
-									class="btn preset-filled-primary-50-950 h-8"
-									download='{PUBLIC_COMPANY_NAME} Unit Report {dayjs().format('MMMM D YYYY')}.csv'
-								>
-									Download CSV
-								</a>
+								/>
+								<Button
+									label='Download CSV of all units.'
+									type='button'
+									onClick={() => {
+										
+										if(csvState.current !== ''){
+											const blob = new Blob([csvState.current], {
+												type: 'application/csv'
+											});
+											const url = URL.createObjectURL(blob);
+											const filename = `${PUBLIC_COMPANY_NAME} units report ${dayjs().format('MMMM D YYYY')}.csv`
+											const a = document.createElement('a');
+											a.download = filename;
+											a.href = url;
+											document.body.append(a);
+											a.click();
+											document.removeChild(a);
+											URL.revokeObjectURL(url);
+										}
+									}}
+								/>
+								{valueState.current}
 								</div>
 						{/snippet}
 					</SearchDrawer>
