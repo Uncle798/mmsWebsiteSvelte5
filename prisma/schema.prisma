@@ -17,6 +17,7 @@ model User {
   organizationName         String?
   emailVerified            Boolean?                   @map("email_verified")
   employee                 Boolean                    @default(false)
+  vendor                   Boolean                    @default(false)
   admin                    Boolean                    @default(false)
   archive                  Boolean                    @default(false)
   googleId                 String?
@@ -38,6 +39,8 @@ model User {
   employeeDiscountCode     DiscountCode[]
   PropertyWithLien         PropertyWithLien[]
   leaseAlternativeContacts LeaseAlternativeContacts[]
+  expenseses               Expense[]                  @relation("employee")
+  transactions             Expense[]                  @relation("vendor")
 
   @@unique([id, email])
   @@unique([email, givenName, familyName])
@@ -234,4 +237,16 @@ enum PaymentType {
   CHECK
   ONBOARDING_CREDIT
   OVER_THE_PHONE_CREDIT
+}
+
+model Expense {
+  id          String   @id @default(cuid(2))
+  explanation String
+  amount      Float
+  createdAt   DateTime @default(now())
+  recieptLink String?
+  employeeId  String
+  vendorId    String
+  employee    User     @relation("employee", fields: [employeeId], references: [id])
+  vendor      User     @relation("vendor", fields: [vendorId], references: [id])
 }
