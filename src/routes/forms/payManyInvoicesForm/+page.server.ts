@@ -42,7 +42,7 @@ export const actions: Actions = {
             return message(payManyInvoicesForm, 'No invoice found');
          }
          for(const invoice of invoices){
-            if(invoice.invoiceAmount <= paidAmount){
+            if(invoice.invoiceAmount <= paidAmount && paidAmount > 0){
                const payment = await prisma.paymentRecord.create({
                   data: {
                      invoiceNum: invoice.invoiceNum,
@@ -63,7 +63,7 @@ export const actions: Actions = {
                   }
                })
                paidAmount -= payment.paymentAmount;
-            } else {
+            } else if(paidAmount > 0){
                const payment = await prisma.paymentRecord.create({
                   data: {
                      invoiceNum: invoice.invoiceNum,
