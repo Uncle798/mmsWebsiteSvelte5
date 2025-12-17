@@ -8,7 +8,7 @@ import { prisma } from '$lib/server/prisma';
 
 export const actions: Actions = {
    default: async (event) => {
-      if(!event.locals.user.employee){
+      if(!event.locals.user?.employee){
          redirect(302, '/login?toast=employee');
       }
       const formData = await event.request.formData();
@@ -23,7 +23,8 @@ export const actions: Actions = {
       }
       await prisma.user.create({
          data: {
-            organizationName: newVendorForm.data.organizationName
+            organizationName: newVendorForm.data.organizationName,
+            vendor: true
          }
       });
       return { newVendorForm }
