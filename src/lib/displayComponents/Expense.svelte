@@ -1,0 +1,30 @@
+<script lang='ts'>
+	import dayjs from 'dayjs';
+   import type { Expense, User } from '../../generated/prisma/browser'
+	import HorizontalDivider from './HorizontalDivider.svelte';
+   interface Props {
+      expense:Expense;
+      employee:User;
+      vendor:User;
+      classes?: string;
+   }
+   let { expense, employee, vendor, classes }:Props = $props();
+</script>
+<div class="{classes} grid grid-cols-2 gap-x-2">
+   <div class="col-span-2 text-center text-sm font-semibold">Expense</div>
+   <div class="text-right">Explanation</div>
+   <div class="font-medium">{expense.explanation}</div>
+   <HorizontalDivider classes='col-span-2'/>
+   <div class="text-right">Date created</div>
+   <div class="font-medium">{dayjs(expense.createdAt).format('MMMM D YYYY')}</div>
+   <HorizontalDivider classes='col-span-2'/>
+   <div class="text-right">Employee</div>
+   <div class="font-medium">{`${employee.givenName} ${employee.familyName}`}</div>
+   <HorizontalDivider classes='col-span-2'/>
+   <div class="text-right">Vendor</div>
+   <div class="font-medium">{`${vendor.organizationName}`}</div>
+   <HorizontalDivider classes='col-span-2'/>
+   <div class="text-right">Amount</div>
+   <div class="font-medium">{`${expense.amount}`}</div>
+   <HorizontalDivider classes='col-span-2'/>
+</div>
