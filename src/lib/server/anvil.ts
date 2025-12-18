@@ -21,7 +21,6 @@ export function getPacketVariables(customer:User, lease:Lease, unit:Unit, employ
       signatureEmailBody: `Please sign the attached lease for unit ${unitNum} from ${PUBLIC_COMPANY_NAME}`,
       files:[
          {
-            id:'MMS LEASE',
             castEid: leaseTemplateId,
          }
       ],
