@@ -158,8 +158,8 @@
 {#if data.dbUser}
    <Header title='{data.dbUser.givenName} {data.dbUser.familyName}' />
    <div class="grid grid-cols-1 sm:grid-cols-2 mt-14 sm:mt-10 mx-1 sm:mx-2">
-      <div class="gap-2">
-         <UserEmployee user={data.dbUser} classes='mx-2' />
+      <UserEmployee user={data.dbUser} classes='mx-2' />
+      <div class="gap-2 flex flex-col sm:flex-row mx-2">
          <Button
             label='Change email address'
             type='button'
@@ -186,14 +186,12 @@
             }}
          />
       </div>
-      <div>
-         <UserNotesForm user={data.dbUser} data={data.userNotesForm} />
-      </div>
+      <UserNotesForm user={data.dbUser} data={data.userNotesForm} classes='m-2'/>
    </div>
 {:else}
 ...loading user
 {/if}
-<div class="mx-1 sm:mx-2">
+<div class="mx-2">
    {#if data.address}
       <Address address={data.address} classes=''/>
       <Button
@@ -279,28 +277,30 @@
             classes='m-2'
          />
          {#if refunds.length > 0}
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-x-1 gap-y-3 mx-2 ">
+            <div class="grid grid-cols-1 lg:grid-cols-2` gap-x-1 gap-y-3 mx-2 ">
                {#each slicedInvoices(invoices) as invoice}
                {@const invoicePaymentRecords = paymentRecords.filter((payment) => payment.invoiceNum === invoice.invoiceNum)}
-                  <InvoiceEmployee invoice={invoice} classes='rounded-lg border-2 border-primary-50-950'/>
-                  {#if overDueInvoice(invoice) > 0 }
-                     <Button
-                        label='Make a payment record for invoice {invoice.invoiceNum}'
-                        type='button'
-                        onClick={() => {
-                           currentInvoice=invoice;
-                           modalReason='newPayment';
-                           globalModalOpen=true;
-                        }}
-                     />
-                  {/if}
+                  <div class="flex flex-col">
+                     <InvoiceEmployee invoice={invoice} classes='rounded-lg border-2 border-primary-50-950' />
+                     {#if overDueInvoice(invoice) > 0 }
+                        <Button
+                           label='Make a payment record for invoice {invoice.invoiceNum}'
+                           type='button'
+                           onClick={() => {
+                              currentInvoice=invoice;
+                              modalReason='newPayment';
+                              globalModalOpen=true;
+                           }}
+                        />
+                     {/if}
+                  </div>   
                   {#each invoicePaymentRecords as paymentRecord (paymentRecord.paymentNumber)}
                      <PaymentRecordEmployee paymentRecord={paymentRecord} classes='rounded-lg border-2 border-primary-50-950'/>
                   {/each}
                {/each}
             </div>
          {:else}
-            <div class="flex flex-row gap-2 m-2">
+            <div class="flex flex-col sm:flex-row gap-2 m-2">
                <label for="selectAllInovices" class="label-text">Select all invoices
                   <input 
                      type="checkbox" 

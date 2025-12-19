@@ -137,7 +137,7 @@
          {#each slicedSource(searchedUsers(filterAlternative(filterAdmin(filterEmployee(sortedUsers(users)))))) as user, i (user.id)}
             {#if i === 0}               
                <div class="rounded-lg border border-primary-50-950 flex flex-col sm:flex-row firstUser">
-                  <UserAdmin {user} classes=" p-2 w-1/2"/>
+                  <UserAdmin {user} classes=" p-2 w-1/2 max-w-1/2"/>
                   <div>
                      <EmploymentChangeForm 
                         data={data.employmentChangeForm} 

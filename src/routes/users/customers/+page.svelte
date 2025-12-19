@@ -188,7 +188,7 @@
                         {@const customerPayments = paymentRecords.filter((payment) => payment.customerId === customer.id)}
                            <div class="border rounded-lg border-primary-50-950 sm:grid sm:grid-cols-1">
                               <div class="m-2 flex gap-2">
-                                 <UserEmployee user={customer} classes=''/>
+                                 <UserEmployee user={customer} classes='max-w-1/2'/>
                                  {#if address}
                                     <Address {address} />
                                  {/if}
@@ -206,11 +206,11 @@
                               {#if customerLeases}
                                  {#each customerLeases as lease}
                                  {@const unit = units.find((unit) => unit.num === lease.unitNum)}
-                                    <div class='flex flex-row gap-2 mx-2'>
-                                       <LeaseEmployee {lease} classes='my-2 w-auto'/>
-                                       <a href="/invoices/new?leaseId={lease.leaseId}" class="btn preset-filled-primary-50-950 my-2 h-8">Make an invoice for this lease</a>
+                                    <div class='flex flex-col sm:flex-row gap-2 mx-2 mb-2'>
+                                       <LeaseEmployee {lease} open={true} classes='my-2'/>
+                                       <a href="/invoices/new?leaseId={lease.leaseId}" class="btn preset-filled-primary-50-950 h-8">Make an invoice for this lease</a>
                                        {#if unit}
-                                          <button type="button" onclick={()=>leaseEndModal(lease.leaseId, unit)} class="btn preset-filled-primary-50-950 my-2 h-8">End lease</button>
+                                          <button type="button" onclick={()=>leaseEndModal(lease.leaseId, unit)} class="btn preset-filled-primary-50-950 h-8">End lease</button>
                                        {/if}
                                     </div>
                                  {/each}

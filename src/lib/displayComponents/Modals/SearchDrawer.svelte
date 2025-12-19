@@ -12,7 +12,7 @@
 </script>
 
 <Dialog>
-   <Dialog.Trigger class='z-50 sm:z-50 fixed right-0 top-0 btn preset-filled-primary-50-950 h-12 sm:h-8 rounded-tr-none'><Search class=''/></Dialog.Trigger>
+   <Dialog.Trigger class='z-50 fixed right-0 top-0 btn preset-filled-primary-50-950 h-12 sm:h-8 rounded-tr-none'><Search class=''/></Dialog.Trigger>
    <Portal>
       <Dialog.Backdrop class="fixed inset-0 z-50 bg-surface-50-950/50 
          transition transition-discrete opacity-0 
