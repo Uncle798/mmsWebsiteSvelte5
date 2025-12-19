@@ -48,6 +48,8 @@
 		{link: '/refundRecords/year', label: 'Refunds by year', toolTip: 'If you know what year you\'re looking for this will load faster'},
 		{link: '/employeeNewLease', label:'New lease', toolTip: 'Rent a unit here'},
 		{link: '/employeeNewCustomer', label:'New customer', toolTip: 'Create a new customer'},
+		{link: '/expenses', label: 'Expenses'},
+		{link: '/expenses/new', label: 'New expense'}
 	]
 	let adminLinks:Link[] = [
 		{link: '/users', label:'All Users', toolTip: 'Change the employment status of a user here'},

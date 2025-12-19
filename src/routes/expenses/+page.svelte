@@ -4,7 +4,7 @@
     let { data }: PageProps = $props();
 </script>
 
-<div>
+<div class="mt-14 sm:mt-12 mb-8">
     {#each data.expenses as expense}
     {@const employee = data.employees.find((emp) => emp.id === expense.employeeId)}
     {@const vendor = data.vendors.find((ven) => ven.id === expense.vendorId)}

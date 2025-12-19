@@ -4,6 +4,7 @@
    import Combobox from '$lib/formComponents/Combobox.svelte';
    import NewVendorForm from '$lib/forms/NewVendorForm.svelte';
    import NewExpenseForm from '$lib/forms/NewExpenseForm.svelte';
+	import { goto } from '$app/navigation';
 
    let { data }: PageProps = $props();
    let comboboxData = $derived(data.vendors.map((vendor) => {
@@ -14,7 +15,7 @@
    }));
    let step = $derived(data.step);
 </script>
-<div class=" mb-8">
+<div class="mx-2 mt-14 sm:mt-12 mb-8">
    <Steps count={2} {step} onStepChange={(details) => (step = details.step)}>
       <Steps.List>
          <Steps.Item index={0}>
@@ -33,8 +34,11 @@
       </Steps.List>
       <Steps.Content index={0}>
          <Combobox
-               data={comboboxData}
-               label='Select vendor'
+            data={comboboxData}
+            label='Select vendor'
+            onValueChange={(d) => {
+               goto(`/expenses/new?vendorId=${d.value[0]}`);
+            }}
          />
          or
          <NewVendorForm data={data.newVendorForm} />
