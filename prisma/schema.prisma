@@ -240,13 +240,15 @@ enum PaymentType {
 }
 
 model Expense {
-  id          String   @id @default(cuid(2))
-  explanation String
-  amount      Float
-  createdAt   DateTime @default(now())
-  recieptLink String?
-  employeeId  String
-  vendorId    String
-  employee    User     @relation("employee", fields: [employeeId], references: [id])
-  vendor      User     @relation("vendor", fields: [vendorId], references: [id])
+  id            String   @id @default(cuid(2))
+  explanation   String
+  amount        Float
+  createdAt     DateTime @default(now())
+  datePurchased DateTime
+  receiptLink   String
+  
+  employeeId    String
+  vendorId      String
+  employee      User     @relation("employee", fields: [employeeId], references: [id])
+  vendor        User     @relation("vendor", fields: [vendorId], references: [id])
 }
