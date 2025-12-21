@@ -45,7 +45,7 @@ export const actions: Actions = {
          if(folderExists && folderExists.totalCount === 0){
             const folder = await box.folders.createFolder({
                name: dayjs(data.datePurchased).format('YYYY-MM-DD'),
-               parent: { id: '0'}
+               parent: { id: '356856801330'}
             });
             folderId = folder.id
          } 
