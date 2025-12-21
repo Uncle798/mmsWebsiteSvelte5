@@ -37,6 +37,7 @@ export const actions: Actions = {
       const { receipt } = data;
       if(receipt.size < 1024 * 1024 *5 ){
          const folderExists = await box.search.searchForContent({
+            ancestorFolderIds: ['356856801330'],
             query: dayjs(data.datePurchased).format('YYYY-MM-DD'),
             contentTypes: [ 'name' ],
             type: 'folder',
