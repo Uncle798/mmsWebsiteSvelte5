@@ -22,7 +22,6 @@ export const actions: Actions = {
          return message(newVendorForm, `Please wait ${timeRemaining} seconds before trying again`);
       }
       const vendor = await prisma.user.create({
-      const vendor = await prisma.user.create({
          data: {
             organizationName: newVendorForm.data.organizationName,
             vendor: true
