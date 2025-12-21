@@ -89,18 +89,21 @@ export const actions: Actions = {
          let url:string | undefined  = undefined;
          if(file.entries){
             url = await box.downloads.getDownloadFileUrl(file.entries[0].id)
-         }
-         console.log(url)
-         await prisma.expense.create({
-            data: {
-               amount: parseFloat(data.amount),
-               datePurchased: data.datePurchased,
-               employeeId: data.employeeId,
-               vendorId: data.vendorId,
-               receiptLink: url,
-               explanation: data.explanation
+            if(url){
+               await prisma.expense.create({
+                  data: {
+                     amount: parseFloat(data.amount),
+                     datePurchased: data.datePurchased,
+                     employeeId: data.employeeId,
+                     vendorId: data.vendorId,
+                     receiptLink: url,
+                     explanation: data.explanation,
+                     boxFileId: file.entries[0].id
+                  }
+               });
             }
-         });
+         }
+         console.log(url);
          return { newExpenseForm }
       }
    }

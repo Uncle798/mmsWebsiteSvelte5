@@ -246,7 +246,7 @@ model Expense {
   createdAt     DateTime @default(now())
   datePurchased DateTime
   receiptLink   String
-  
+  boxFileId     String
   employeeId    String
   vendorId      String
   employee      User     @relation("employee", fields: [employeeId], references: [id])
