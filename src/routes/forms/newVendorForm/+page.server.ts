@@ -22,15 +22,12 @@ export const actions: Actions = {
          return message(newVendorForm, `Please wait ${timeRemaining} seconds before trying again`);
       }
       const vendor = await prisma.user.create({
+      const vendor = await prisma.user.create({
          data: {
             organizationName: newVendorForm.data.organizationName,
             vendor: true
          }
       });
-      const redirectTo = event.url.searchParams.get('redirectTo');
-      if(!redirectTo){
-         redirect(302, `/expenses/new?vendorId=${vendor.id}`);
-      }
-      return { newVendorForm }
+      redirect(302, `/expenses/new?vendorId=${vendor.id}`);
    }
 };
