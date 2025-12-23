@@ -6,7 +6,9 @@
    import NewExpenseForm from '$lib/forms/NewExpenseForm.svelte';
 	import { goto } from '$app/navigation';
 	import UserEmployee from '$lib/displayComponents/UserEmployee.svelte';
-
+   import { toaster } from '../../../lib/toaster';
+	import { onMount } from 'svelte';
+   
    let { data }: PageProps = $props();
    let comboboxData = $derived(data.vendors.map((vendor) => {
       return {
@@ -15,6 +17,16 @@
       }
    }));
    let step = $derived(data.step);
+   const toastReason = $derived(data.toastReason);
+   onMount(() => {
+      if(toastReason === 'expenseCreated'){
+         toaster.create({
+            title: 'Expense created',
+            description: 'Expense created',
+            type: 'info'
+         })
+      }
+   })
 </script>
 <div class="mt-12 mx-2 mb-8">
    <Steps count={2} {step} onStepChange={(details) => (step = details.step)}>

@@ -90,6 +90,7 @@ export const actions: Actions = {
             file: generateByteStreamFromBuffer(await receipt.arrayBuffer())
          });
          let url:string | undefined  = undefined;
+         console.log(data.datePurchased)
          if(file.entries){
             url = await box.downloads.getDownloadFileUrl(file.entries[0].id)
             if(url){
@@ -106,7 +107,7 @@ export const actions: Actions = {
                });
             }
          }
-         return redirect(302, '/expense/new')
+         return redirect(302, '/expenses/new?toast=expenseCreated')
       }
    }
 };

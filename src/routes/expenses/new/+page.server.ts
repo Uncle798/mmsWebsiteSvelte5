@@ -21,6 +21,7 @@ export const load = (async (event) => {
    });
    const newExpenseForm = await superValidate(valibot(newExpenseFormSchema));
    const newVendorForm = await superValidate(valibot(newVendorFormSchema));
+   const toastReason = event.url.searchParams.get('toast');
    let step = 0;
    const vendorId = event.url.searchParams.get('vendorId');
    let vendor:User | null = null;
@@ -34,5 +35,5 @@ export const load = (async (event) => {
    if(vendor){
       step = 1
    }
-   return { vendors, vendor, step, newExpenseForm, newVendorForm };
+   return { vendors, vendor, step, newExpenseForm, newVendorForm, toastReason, };
 }) satisfies PageServerLoad;
