@@ -106,7 +106,7 @@ export const actions: Actions = {
                });
             }
          }
-         return message(newExpenseForm, 'Expense created')
+         return redirect(302, '/expense/new')
       }
    }
 };
