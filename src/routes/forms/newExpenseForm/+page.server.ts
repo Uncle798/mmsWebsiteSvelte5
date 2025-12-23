@@ -7,8 +7,10 @@ import { ratelimit } from '$lib/server/rateLimit';
 import { box } from '$lib/server/box';
 import { prisma } from '$lib/server/prisma';
 import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc'
 import type { SearchResultItem } from 'box-node-sdk/lib/schemas/searchResultItem';
 import { generateByteStreamFromBuffer } from 'box-node-sdk/lib/internal/utils';
+dayjs.extend(utc)
 export const actions: Actions = {
    default: async (event) => {
       if(!event.locals.user?.employee){
@@ -35,7 +37,7 @@ export const actions: Actions = {
          message(newExpenseForm, 'Vendor not found');
       }
       const { receipt } = data;
-      if(receipt.size < 1024 * 1024 *5 ){
+      if(receipt.size < 1024 * 1024 * 5 ){
          const folderExists = await box.search.searchForContent({
             ancestorFolderIds: ['356856801330'],
             query: dayjs(data.datePurchased).format('YYYY-MM-DD'),
