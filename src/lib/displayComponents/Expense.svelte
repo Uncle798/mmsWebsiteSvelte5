@@ -3,7 +3,7 @@
    import utc  from 'dayjs/plugin/utc';
    import type { Expense, User } from '../../generated/prisma/browser'
 	import HorizontalDivider from './HorizontalDivider.svelte';
-	import { currencyFormatter } from '$lib/server/pdfMake/pdfMake';
+	
    dayjs.extend(utc);
    interface Props {
       expense:Expense;
@@ -12,6 +12,7 @@
       classes?: string;
    }
    let { expense, employee, vendor, classes }:Props = $props();
+   const currencyFormatter = new Intl.NumberFormat('en-US', {style:'currency', currency:'USD'});
 </script>
 
 <div class="{classes} grid grid-cols-2 gap-x-2">
