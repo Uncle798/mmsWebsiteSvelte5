@@ -3,6 +3,7 @@
    import utc  from 'dayjs/plugin/utc';
    import type { Expense, User } from '../../generated/prisma/browser'
 	import HorizontalDivider from './HorizontalDivider.svelte';
+	import { currencyFormatter } from '$lib/server/pdfMake/pdfMake';
    dayjs.extend(utc);
    interface Props {
       expense:Expense;
@@ -28,7 +29,7 @@
    <div class="font-medium">{`${vendor.organizationName}`}</div>
    <HorizontalDivider classes='col-span-2'/>
    <div class="text-right">Amount</div>
-   <div class="font-medium">{`${expense.amount}`}</div>
+   <div class="font-medium">${currencyFormatter.format(expense.amount)}</div>
    <HorizontalDivider classes='col-span-2'/>
    <div class="text-right">Receipt</div>
    <div class="font-medium"><a href={expense.receiptLink} class="anchor">Link</a></div>
