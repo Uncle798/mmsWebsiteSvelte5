@@ -1,7 +1,9 @@
 <script lang='ts'>
 	import dayjs from 'dayjs';
+   import utc  from 'dayjs/plugin/utc';
    import type { Expense, User } from '../../generated/prisma/browser'
 	import HorizontalDivider from './HorizontalDivider.svelte';
+   dayjs.extend(utc);
    interface Props {
       expense:Expense;
       employee:User;
@@ -10,6 +12,7 @@
    }
    let { expense, employee, vendor, classes }:Props = $props();
 </script>
+
 <div class="{classes} grid grid-cols-2 gap-x-2">
    <div class="col-span-2 text-center text-sm font-bold"><a href="/expenses/{expense.id}" class="anchor">Expense</a></div>
    <div class="text-right">Explanation</div>
