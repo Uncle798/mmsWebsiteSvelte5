@@ -1,4 +1,5 @@
 <script lang='ts'>
+	import { goto } from "$app/navigation";
 	import DatePickerSingle from "$lib/formComponents/DatePickerSingle.svelte";
    import FormMessage from "$lib/formComponents/FormMessage.svelte";
 	import FormSubmitWithProgress from "$lib/formComponents/FormSubmitWithProgress.svelte";
@@ -21,8 +22,11 @@
      // svelte-ignore state_referenced_locally
    let { form, errors, message, constraints, enhance, delayed, timeout, } = superForm(data, {
       onUpdated() {
-         if(!$message && !$errors){
+         if(!$message && $message === 'Expense created'){
             modalOpen = false;
+            setTimeout(() => {
+               goto('/expenses/new')
+            }, 1000);
          }
       }
    });
