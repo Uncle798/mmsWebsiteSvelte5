@@ -104,8 +104,7 @@ export const actions: Actions = {
                });
             }
          }
-         console.log(url);
-         return { newExpenseForm }
+         return message(newExpenseForm, 'Expense created')
       }
    }
 };

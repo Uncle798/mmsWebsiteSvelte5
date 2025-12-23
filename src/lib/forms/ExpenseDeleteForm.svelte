@@ -6,6 +6,7 @@
    import { superForm } from "sveltekit-superforms";
 	import type { Expense } from "../../generated/prisma/browser";
 	import TextInput from "$lib/formComponents/TextInput.svelte";
+	import FormSubmitWithProgress from "$lib/formComponents/FormSubmitWithProgress.svelte";
 
    interface Props {
       data: SuperValidated<Infer<ExpenseDeleteFormSchema>>;
@@ -40,5 +41,6 @@
       />
       <input type="hidden" name="expenseId" id="expenseId" value={expense.id} />
       <input type="hidden" name="amount" id="amount" value={expense.amount} />
+      <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} buttonText='Delete expense'/>
    </form>
 </div>
