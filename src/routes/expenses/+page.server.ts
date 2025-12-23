@@ -3,7 +3,7 @@ import type { PageServerLoad } from './$types';
 import { prisma } from '$lib/server/prisma';
 
 export const load = (async (event) => {
-    if(!event.locals.user.employee){
+    if(!event.locals.user?.employee){
         redirect(302, '/login?toast=employee');
     }
     const expenses = await prisma.expense.findMany({
