@@ -37,6 +37,6 @@ export const actions: Actions = {
             id: data.expenseId,
          }
       });
-      return message(expenseDeleteForm, 'Expense deleted');
+      return redirect(302, '/expenses');
    }
 };
