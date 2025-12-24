@@ -237,6 +237,7 @@ export const POST: RequestHandler = async (event) => {
             }
             if(address && address.phoneNum1){
                const json = {
+                  'code':'',
                   'name': name,
                   'phoneNumber': address.phoneNum1
                }

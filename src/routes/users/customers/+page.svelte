@@ -163,11 +163,11 @@
                      </RevenueBar>
                      <SearchDrawer
                         modalOpen={searchDrawerOpen}
-                        height='h-[180px]'
+                        height='h-[230px] sm:h-[120px]'
                      >
                         {#snippet content()}
-                           <Search bind:search={search} searchType='customer name' data={data.userSearchForm} classes='mx-2 mt-11'/>
-                           <div class="flex flex-col gap-2">
+                           <Search bind:search={search} searchType='customer name' data={data.userSearchForm} classes='' />
+                           <div class="flex flex-col sm:flex-row gap-2 justify-center align-middle">
                               <Button
                                  label='Download CSV phone book'
                                  type='button'
