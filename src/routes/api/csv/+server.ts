@@ -217,7 +217,7 @@ export const POST: RequestHandler = async (event) => {
          const csv = stringify(
             {
                header: true,
-               columns: [{key: 'name'}, {key: 'phoneNumber'}]
+               columns: [{key: 'code'}, {key: 'name'}, {key: 'phoneNumber'}, {key: 'group'}]
             },
          );
          csv.on('readable', () => {
