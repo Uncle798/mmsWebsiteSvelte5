@@ -239,7 +239,8 @@ export const POST: RequestHandler = async (event) => {
                const json = {
                   'code':'',
                   'name': name,
-                  'phoneNumber': address.phoneNum1
+                  'phoneNumber': address.phoneNum1,
+                  'group': user.employee ? 'employee' : 'General'
                }
                csv.write(json)
             }
