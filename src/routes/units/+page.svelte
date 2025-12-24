@@ -25,23 +25,44 @@
 	import Button from '$lib/core/Button.svelte';
 	import ChangeDepositForm from '$lib/forms/ChangeDepositForm.svelte';
 	import { source } from 'sveltekit-sse';
-	
+	import type { Readable } from 'svelte/store';
+	import type { SourceSelected, Source } from 'sveltekit-sse';
+
 	let { data }: { data: PageData } = $props();
 	let modalOpen = $state(false);
 	let currentLeaseId = $state('');
 	let globalModalType = $state('');
 	let currentSize = $state('');
 	let currentOldPrice = $state(0);
-	const connection = source('/api/csv');
-	const value = connection.select('message');
-	const valueState = $state(fromStore(value));
-	const csv = connection.select('csv');
-	const csvState = $state(fromStore(csv));
+	let connection: Source | undefined = $state();
+	let csv: Readable<string> & SourceSelected | undefined = $state();
+	let value: Readable<string> & SourceSelected | undefined = $state();
+	let valueState: {
+    	readonly current: string;
+	} | undefined = $state();
+	let csvState: {
+    	readonly current: string;
+	} | undefined = $state();
 	$effect(() => {
-		if(csvState.current !== ''){
-			const transformed = csv.transform(function run(data) {
-				console.log(data);
-			})
+		if(csvState && csvState?.current !== ''){
+			const blob = new Blob([csvState.current], {
+				type: 'application/csv'
+			});
+			const url = URL.createObjectURL(blob);
+			const filename = `${PUBLIC_COMPANY_NAME} units report ${dayjs().format('MMMM D YYYY')}.csv`
+			const a = document.createElement('a');
+			a.download = filename;
+			a.href = url;
+			document.body.append(a);
+			a.click();
+			document.body.removeChild(a);
+			URL.revokeObjectURL(url);
+		}
+		if(valueState && valueState.current === 'CSV ready'){
+			setTimeout(() => {
+				connection?.close();
+				valueState = undefined;
+			}, 1000);
 		}
 	})
 	function openModal(modalType: string, oldPrice: number, leaseId?: string, size?: string) {
@@ -200,24 +221,14 @@
 									label='Download CSV of all units.'
 									type='button'
 									onClick={() => {
-										
-										if(csvState.current !== ''){
-											const blob = new Blob([csvState.current], {
-												type: 'application/csv'
-											});
-											const url = URL.createObjectURL(blob);
-											const filename = `${PUBLIC_COMPANY_NAME} units report ${dayjs().format('MMMM D YYYY')}.csv`
-											const a = document.createElement('a');
-											a.download = filename;
-											a.href = url;
-											document.body.append(a);
-											a.click();
-											document.removeChild(a);
-											URL.revokeObjectURL(url);
-										}
+										connection = source('/api/csv?allUnits=true');
+										value = connection.select('message');
+										valueState = fromStore(value);
+										csv = connection.select('csv');
+										csvState = fromStore(csv);
 									}}
 								/>
-								{valueState.current}
+								{valueState?.current}
 								</div>
 						{/snippet}
 					</SearchDrawer>

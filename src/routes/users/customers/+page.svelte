@@ -20,9 +20,11 @@
 	import { PUBLIC_COMPANY_NAME } from '$env/static/public';
 	import dayjs from 'dayjs';
 	import { sortUsers } from '$lib/userSort';
-	import ProgressRing from '$lib/displayComponents/ProgressRing.svelte';
-	import ProgressLine from '$lib/displayComponents/ProgressLine.svelte';
+   import { fromStore } from 'svelte/store';
 	import Button from '$lib/core/Button.svelte';
+   import { source } from 'sveltekit-sse';
+	import type { Readable } from 'svelte/store';
+	import type { SourceSelected, Source } from 'sveltekit-sse';
    
    let { data }: { data: PageData } = $props();
    let pageNum = $state(1);
@@ -63,15 +65,59 @@
    let leaseEndModalOpen = $state(false);
    let currentLeaseId = $state('');
    let currentUnit = $state<Unit>();
-   let csvCurrentCustomersDelayed = $state(false);
-   let csvCurrentCustomersTimeout = $state(false);
-   let csvPhoneBookDelayed = $state(false);
-   let csvPhoneBookTimeout = $state(false);
+	let connection: Source | undefined = $state();
+	let csv: Readable<string> & SourceSelected | undefined = $state();
+	let value: Readable<string> & SourceSelected | undefined = $state();
+	let valueState: {
+    	readonly current: string;
+	} | undefined = $state();
+	let csvState: {
+    	readonly current: string;
+	} | undefined = $state();
    function leaseEndModal(leaseId:string, unit:Unit){
       currentLeaseId = leaseId;
       currentUnit = unit;
       leaseEndModalOpen = true;
    }
+   let csvPurpose = $state('')
+   $effect(() => {
+      if(csvState && csvState?.current !== '' && csvPurpose === 'currentCustomers'){
+			const blob = new Blob([csvState.current], {
+				type: 'application/csv'
+			});
+			const url = URL.createObjectURL(blob);
+			const filename = `${PUBLIC_COMPANY_NAME} current customers report ${dayjs().format('MMMM D YYYY')}.csv`
+			const a = document.createElement('a');
+			a.download = filename;
+			a.href = url;
+			document.body.append(a);
+			a.click();
+			document.body.removeChild(a);
+			URL.revokeObjectURL(url);
+		}
+      if(csvState && csvState?.current !== '' && csvPurpose === 'phoneBook'){
+         console.log('phone book download')
+			const blob = new Blob([csvState.current], {
+				type: 'application/csv'
+			});
+			const url = URL.createObjectURL(blob);
+			const filename = `${PUBLIC_COMPANY_NAME} phone book ${dayjs().format('MMMM D YYYY')}.csv`
+			const a = document.createElement('a');
+			a.download = filename;
+			a.href = url;
+			document.body.append(a);
+			a.click();
+			document.body.removeChild(a);
+			URL.revokeObjectURL(url);
+		}
+		if(valueState && valueState.current === 'CSV ready'){
+         setTimeout(() => {
+            connection?.close();
+				valueState = undefined;
+            connection = undefined;
+			}, 1500);
+		}
+   })
    onNavigate(() => {
       leaseEndModalOpen = false;
       currentLeaseId = '';
@@ -122,51 +168,31 @@
                         {#snippet content()}
                            <Search bind:search={search} searchType='customer name' data={data.userSearchForm} classes='mx-2 mt-11'/>
                            <div class="flex flex-col gap-2">
-                              <div>
-                                 <a
-                                    class="btn preset-filled-primary-50-950 h-8"
-                                    href="/api/csv?phoneBook=true"
-                                    download="{PUBLIC_COMPANY_NAME} phone book {dayjs().format('MMMM D YYYY')}"
-                                 >
-                                    Download CSV Phone book
-                                 </a>
-                              </div>
-                              <div class="flex flex-row gap-0.5">
-                                 <Button
-                                    label='Download CSV of current customers'
-                                    type='button'
-                                    onClick={async () => {
-                                       setTimeout(() => {
-                                          csvCurrentCustomersDelayed = true;
-                                       }, 300);
-                                       setTimeout(() => {
-                                          csvCurrentCustomersDelayed = false;
-                                          csvCurrentCustomersTimeout = true;
-                                       }, 1000);
-                                       const res = await fetch('/api/csv?currentCustomers=true');
-                                       const blob = await res.blob();
-                                       const url = URL.createObjectURL(blob);
-                                       const fileName = `${PUBLIC_COMPANY_NAME} current customers.csv`;
-                                       const a = document.createElement('a');
-                                       a.href = url;
-                                       a.download = fileName;
-                                       document.body.append(a);
-                                       a.click();
-                                       document.removeChild(a);
-                                       URL.revokeObjectURL(url);
-                                       csvCurrentCustomersDelayed = false;
-                                       csvCurrentCustomersTimeout = false;
-                                    }}
-                                 />
-                                 {#if csvCurrentCustomersDelayed}
-                                    <ProgressRing value={null} />
-                                 {/if}
-                                 {#if csvCurrentCustomersTimeout}
-                                    <ProgressLine value={null} />
-                                 {:else}
-                                    <div class="size-8"></div>
-                                 {/if}
-                              </div>
+                              <Button
+                                 label='Download CSV phone book'
+                                 type='button'
+                                 onClick={() => {
+                                    connection = source('/api/csv?phoneBook=true');
+                                    value = connection.select('message');
+                                    valueState = fromStore(value);
+                                    csv = connection.select('csv');
+                                    csvState = fromStore(csv);
+                                    csvPurpose = 'phoneBook'
+                                 }}
+                              />
+                              <Button
+                                 label='Download CSV of current customers'
+                                 type='button'
+                                 onClick={async () => {
+                                    connection = source('/api/csv?currentCustomers=true');
+                                    value = connection.select('message');
+                                    valueState = fromStore(value);
+                                    csv = connection.select('csv');
+                                    csvState = fromStore(csv);
+                                    csvPurpose = 'currentCustomers'
+                                 }}
+                              />
+                              {valueState?.current}
                            </div>
                         {/snippet}
                      </SearchDrawer>
