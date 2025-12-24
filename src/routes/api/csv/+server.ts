@@ -233,7 +233,7 @@ export const POST: RequestHandler = async (event) => {
             const address = addresses.find((address) => address.userId === user.id)
             let name = user.organizationName;
             if(!name){
-               name = `${user.givenName} ${user.givenName}`
+               name = `${user.givenName} ${user.familyName}`
             }
             if(address && address.phoneNum1){
                const json = {
