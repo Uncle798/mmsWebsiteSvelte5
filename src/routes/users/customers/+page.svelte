@@ -7,8 +7,8 @@
    import { fade } from 'svelte/transition';
    import Search from '$lib/forms/Search.svelte';
    import Revenue from '$lib/displayComponents/Revenue.svelte';
-   import type { Invoice, Lease, PaymentRecord, Unit, User } from '../../../generated/prisma/browser';
-   import Address from '$lib/displayComponents/AddressEmployee.svelte';
+   import type { Invoice, Lease, PaymentRecord, Unit, User, Address } from '../../../generated/prisma/browser';
+   import AddressEmployee from '$lib/displayComponents/AddressEmployee.svelte';
 	import UserNotesForm from '$lib/forms/UserNotesForm.svelte';
 	import LeaseEndForm from '$lib/forms/LeaseEndForm.svelte';
 	import UnitNotesForm from '$lib/forms/UnitNotesForm.svelte';
@@ -35,7 +35,19 @@
       return customer.familyName?.toLowerCase().includes(search.toLowerCase()) 
       || customer.givenName?.toLowerCase().includes(search.toLowerCase())
       || customer.organizationName?.toLowerCase().includes(search.toLowerCase())
-   }))
+   }));
+   let phoneSearch = $state('');
+   let phoneSearcher = $derived((customers:User[], addresses:Address[]) => {
+      const searchedAddresses = addresses.filter((add) => add.phoneNum1?.toLowerCase().includes(phoneSearch.replaceAll('-', '').replaceAll(' ', '').replaceAll('(', '').replaceAll(')', '').toLowerCase()));
+      const users:User[] = [];
+      for(const address of searchedAddresses){
+         const user = customers.find((customer) => customer.id === address.userId)
+         if(user){
+            users.push(user);
+         }
+      }
+      return users;
+   })
    let totalLeased = $derived((leases:Lease[]) => {
       let totalLeased = 0;
       leases.forEach((lease) => {
@@ -167,6 +179,7 @@
                      >
                         {#snippet content()}
                            <Search bind:search={search} searchType='customer name' data={data.userSearchForm} classes='' />
+                           <Search bind:search={phoneSearch} searchType='phone number' data={data.userSearchForm}  />
                            <div class="flex flex-col sm:flex-row gap-2 justify-center align-middle">
                               <Button
                                  label='Download CSV phone book'
@@ -207,7 +220,7 @@
                         {/snippet}
                   </FormModal>
                      <div class="grid grid-cols-1 mx-1 sm:mx-2 gap-y-2 gap-x-1 ">
-                        {#each slicedSource(searchedSource(sortedUsers(customers))) as customer (customer.id)}
+                        {#each slicedSource(searchedSource(phoneSearcher(sortedUsers(customers), addresses))) as customer (customer.id)}
                         {@const address = addresses.find((address) => address.userId === customer.id)}
                         {@const customerLeases = leases.filter((lease) => lease.customerId === customer.id)}
                         {@const customerInvoices = invoices.filter((invoice) => invoice.customerId === customer.id)}
@@ -216,7 +229,7 @@
                               <div class="m-2 flex gap-2">
                                  <UserEmployee user={customer} classes='max-w-1/2'/>
                                  {#if address}
-                                    <Address {address} />
+                                    <AddressEmployee {address} />
                                  {/if}
                               </div>
                               <div class="m-2">
