@@ -25,6 +25,9 @@
    import { source } from 'sveltekit-sse';
 	import type { Readable } from 'svelte/store';
 	import type { SourceSelected, Source } from 'sveltekit-sse';
+	import NewInvoiceForm from '$lib/forms/NewInvoiceForm.svelte';
+	import { Menu, Portal } from '@skeletonlabs/skeleton-svelte';
+	import { MenuIcon } from 'lucide-svelte';
    
    let { data }: { data: PageData } = $props();
    let pageNum = $state(1);
@@ -38,7 +41,7 @@
    }));
    let phoneSearch = $state('');
    let phoneSearcher = $derived((customers:User[], addresses:Address[]) => {
-      const searchedAddresses = addresses.filter((add) => add.phoneNum1?.toLowerCase().includes(phoneSearch.replaceAll('-', '').replaceAll(' ', '').replaceAll('(', '').replaceAll(')', '').toLowerCase()));
+      const searchedAddresses = addresses.filter((add) => add.phoneNum1?.toLowerCase().includes(phoneSearch.toLowerCase()));
       const users:User[] = [];
       for(const address of searchedAddresses){
          const user = customers.find((customer) => customer.id === address.userId)
@@ -76,22 +79,15 @@
    let searchDrawerOpen = $state(false);
    let leaseEndModalOpen = $state(false);
    let currentLeaseId = $state('');
+   let currentLease = $state<Lease>();
    let currentUnit = $state<Unit>();
-	let connection: Source | undefined = $state();
-	let csv: Readable<string> & SourceSelected | undefined = $state();
-	let value: Readable<string> & SourceSelected | undefined = $state();
-	let valueState: {
-    	readonly current: string;
-	} | undefined = $state();
-	let csvState: {
-    	readonly current: string;
-	} | undefined = $state();
-   function leaseEndModal(leaseId:string, unit:Unit){
-      currentLeaseId = leaseId;
-      currentUnit = unit;
-      leaseEndModalOpen = true;
-   }
-   let csvPurpose = $state('')
+   let currentCustomer = $state<User>()
+	let connection = $state<Source>();
+	let csv = $state<Readable<string> & SourceSelected >();
+	let value = $state<Readable<string> & SourceSelected>();
+	let valueState = $state<{readonly current: string;}>();
+	let csvState = $state<{readonly current: string;}>();
+   let csvPurpose = $state('');
    $effect(() => {
       if(csvState && csvState?.current !== '' && csvPurpose === 'currentCustomers'){
 			const blob = new Blob([csvState.current], {
@@ -108,7 +104,6 @@
 			URL.revokeObjectURL(url);
 		}
       if(csvState && csvState?.current !== '' && csvPurpose === 'phoneBook'){
-         console.log('phone book download')
 			const blob = new Blob([csvState.current], {
 				type: 'application/csv'
 			});
@@ -135,8 +130,33 @@
       currentLeaseId = '';
       currentUnit = undefined;
    });
+   let modalOpen = $state(false);
+   let modalReason = $state('')
 </script>
 <Header title='Current Customers'/>
+<FormModal
+   bind:modalOpen={modalOpen}
+>
+   {#snippet content()}
+      {#if modalReason === 'newInvoice'}
+         <NewInvoiceForm 
+            data={data.newInvoiceForm} 
+            employeeId={data.user!.id} 
+            registerFormData={data.registerForm} 
+            emailVerificationFormData={data.emailVerificationForm} 
+            customer={currentCustomer} 
+            lease={currentLease}
+            bind:modalOpen={modalOpen}
+         />
+      {/if}
+      {#if modalReason === 'leaseEnd' && currentLease}
+         <LeaseEndForm data={data.leaseEndForm} bind:leaseEndModalOpen={modalOpen} leaseId={currentLease.leaseId} employee={true}/>  
+      {/if}
+      {#if modalReason === 'unitNotes' && currentUnit}
+         <UnitNotesForm data={data.unitNotesForm} unit={currentUnit} bind:unitNotesFormModalOpen={modalOpen}/>
+      {/if}
+   {/snippet}
+</FormModal>
 {#await data.customers}
    <div class="mt-14 sm:mt-10 mx-2">
       Loading {data.customerCount} customers...
@@ -175,7 +195,7 @@
                      </RevenueBar>
                      <SearchDrawer
                         modalOpen={searchDrawerOpen}
-                        height='h-[230px] sm:h-[120px]'
+                        height='h-[320px] sm:h-[280px] lg:h-[130px]'
                      >
                         {#snippet content()}
                            <Search bind:search={search} searchType='customer name' data={data.userSearchForm} classes='' />
@@ -209,16 +229,6 @@
                            </div>
                         {/snippet}
                      </SearchDrawer>
-                     <FormModal
-                        bind:modalOpen={leaseEndModalOpen}
-                     >
-                        {#snippet content()}
-                           <LeaseEndForm data={data.leaseEndForm} {leaseEndModalOpen} leaseId={currentLeaseId} employee={true}/>
-                           {#if currentUnit}
-                              <UnitNotesForm data={data.unitNotesForm} unit={currentUnit}/>
-                           {/if}
-                        {/snippet}
-                  </FormModal>
                      <div class="grid grid-cols-1 mx-1 sm:mx-2 gap-y-2 gap-x-1 ">
                         {#each slicedSource(searchedSource(phoneSearcher(sortedUsers(customers), addresses))) as customer (customer.id)}
                         {@const address = addresses.find((address) => address.userId === customer.id)}
@@ -232,7 +242,7 @@
                                     <AddressEmployee {address} />
                                  {/if}
                               </div>
-                              <div class="m-2">
+                              <div class="m-2 ">
                                  <UserNotesForm user={customer} data={data.userNotesForm} />
                                  <UserRevenue 
                                     totalInvoiced={totalInvoiced(customerInvoices)}
@@ -243,16 +253,54 @@
                                  />
                               </div>
                               {#if customerLeases}
-                                 {#each customerLeases as lease}
-                                 {@const unit = units.find((unit) => unit.num === lease.unitNum)}
-                                    <div class='flex flex-col sm:flex-row gap-2 mx-2 mb-2'>
-                                       <LeaseEmployee {lease} open={true} classes='my-2'/>
-                                       <a href="/invoices/new?leaseId={lease.leaseId}" class="btn preset-filled-primary-50-950 h-8">Make an invoice for this lease</a>
-                                       {#if unit}
-                                          <button type="button" onclick={()=>leaseEndModal(lease.leaseId, unit)} class="btn preset-filled-primary-50-950 h-8">End lease</button>
-                                       {/if}
-                                    </div>
-                                 {/each}
+                                 <div class="flex flex-col sm:flex-row border border-primary-50-950 m-2 rounded-lg gap-2 w-87 sm:w-110">
+                                    {#each customerLeases as lease}
+                                    {@const unit = units.find((unit) => unit.num === lease.unitNum)}
+                                       <div class='relative '>
+                                          <LeaseEmployee {lease} open={true} classes='self-start p-2'/>
+                                          <Menu onSelect={(e) => {
+                                             switch (e.value) {
+                                                case 'endLease':
+                                                   currentLease = lease;
+                                                   currentUnit = unit;
+                                                   modalReason = e.value;
+                                                   modalOpen = true;
+                                                   break;
+                                                case 'unitNote':
+                                                   currentUnit = unit;
+                                                   modalReason = e.value;
+                                                   modalOpen = true;
+                                                   break;
+                                                case 'newInvoice':
+                                                   currentCustomer = customer;
+                                                   currentLease = lease;
+                                                   modalReason = e.value;
+                                                   modalOpen = true;
+                                                   break;
+                                                default:
+                                                   modalReason = e.value;
+                                                   modalOpen = true;
+                                                   break;
+                                             }
+                                          }}>
+                                             <Menu.Trigger class='absolute top-1 left-1'><MenuIcon aria-label='Lease menu' class='preset-filled-primary-50-950 rounded-sm p-1 size-8'/></Menu.Trigger>
+                                             <Portal>
+                                                <Menu.Positioner>
+                                                   <Menu.Content>
+                                                      <Menu.Item value='newInvoice'>
+                                                         <Menu.ItemText>New invoice</Menu.ItemText>
+                                                      </Menu.Item>
+                                                      <Menu.Item value='endLease'>
+                                                         <Menu.ItemText>End Lease</Menu.ItemText>
+                                                      </Menu.Item>
+                                                      <Menu.Item value='unitNote'>Note on Unit</Menu.Item>
+                                                   </Menu.Content>
+                                                </Menu.Positioner>
+                                             </Portal>
+                                          </Menu>
+                                       </div>
+                                    {/each}
+                                 </div>
                               {/if}
                            </div>
                         {/each}
