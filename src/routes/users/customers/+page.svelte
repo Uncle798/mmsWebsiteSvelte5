@@ -154,8 +154,8 @@
          <LeaseEndForm data={data.leaseEndForm} bind:leaseEndModalOpen={modalOpen} leaseId={currentLease.leaseId} employee={true}/>  
       {/if}
       {#if modalReason === 'unitNote' && currentUnit}
-         <UnitEmployee unit={currentUnit} classes='border-primary-50-950 border rounded-lg p-2 m-1' />
-         <UnitNotesForm data={data.unitNotesForm} unit={currentUnit} bind:unitNotesFormModalOpen={modalOpen}/>
+         <UnitEmployee unit={currentUnit} classes='border-primary-50-950 border rounded-lg' />
+         <UnitNotesForm data={data.unitNotesForm} unit={currentUnit} bind:unitNotesFormModalOpen={modalOpen} />
       {/if}
    {/snippet}
 </FormModal>
@@ -192,7 +192,7 @@
                   <div in:fade={{duration:600}} class="mt-20 sm:mt-18 mb-8 sm:mb-8" >
                      <RevenueBar>
                         {#snippet content()}
-                           <Revenue label='Current monthly invoiced' amount={totalLeased(leases)} />
+                           <Revenue label='Current monthly invoiced' amount={totalLeased(leases)} classes='mx-2'/>
                         {/snippet}
                      </RevenueBar>
                      <SearchDrawer
@@ -202,32 +202,36 @@
                         {#snippet content()}
                            <Search bind:search={search} searchType='customer name' data={data.userSearchForm} classes='' />
                            <Search bind:search={phoneSearch} searchType='phone number' data={data.userSearchForm}  />
-                           <div class="flex flex-col sm:flex-row gap-2 justify-center align-middle">
-                              <Button
-                                 label='Download CSV phone book'
-                                 type='button'
-                                 onClick={() => {
-                                    connection = source('/api/csv?phoneBook=true');
-                                    value = connection.select('message');
-                                    valueState = fromStore(value);
-                                    csv = connection.select('csv');
-                                    csvState = fromStore(csv);
-                                    csvPurpose = 'phoneBook'
-                                 }}
-                              />
-                              <Button
-                                 label='Download CSV of current customers'
-                                 type='button'
-                                 onClick={async () => {
-                                    connection = source('/api/csv?currentCustomers=true');
-                                    value = connection.select('message');
-                                    valueState = fromStore(value);
-                                    csv = connection.select('csv');
-                                    csvState = fromStore(csv);
-                                    csvPurpose = 'currentCustomers'
-                                 }}
-                              />
-                              {valueState?.current}
+                           <div class="flex flex-col">
+                              <div class="flex flex-col sm:flex-row gap-2 justify-center align-middle">
+                                 <Button
+                                    label='Download CSV phone book'
+                                    type='button'
+                                    onClick={() => {
+                                       connection = source('/api/csv?phoneBook=true');
+                                       value = connection.select('message');
+                                       valueState = fromStore(value);
+                                       csv = connection.select('csv');
+                                       csvState = fromStore(csv);
+                                       csvPurpose = 'phoneBook'
+                                    }}
+                                 />
+                                 <Button
+                                    label='Download CSV of current customers'
+                                    type='button'
+                                    onClick={async () => {
+                                       connection = source('/api/csv?currentCustomers=true');
+                                       value = connection.select('message');
+                                       valueState = fromStore(value);
+                                       csv = connection.select('csv');
+                                       csvState = fromStore(csv);
+                                       csvPurpose = 'currentCustomers'
+                                    }}
+                                 />
+                              </div>
+                              <div class='place-self-center'>
+                                 {valueState?.current}
+                              </div>
                            </div>
                         {/snippet}
                      </SearchDrawer>

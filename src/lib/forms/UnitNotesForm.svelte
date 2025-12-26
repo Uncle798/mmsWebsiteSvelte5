@@ -74,7 +74,7 @@
          label='Notes'
          name='notes'
       />
-      <div class="flex flex-col sm:flex-row gap-2 mt-2 justify-center">
+      <div class="flex flex-row gap-2 mt-2">
          <Switch 
             bind:checked={$form.unavailable}
             name='unavailable'

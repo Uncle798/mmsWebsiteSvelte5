@@ -27,11 +27,13 @@
 	import { source } from 'sveltekit-sse';
 	import type { Readable } from 'svelte/store';
 	import type { SourceSelected, Source } from 'sveltekit-sse';
+	import { Menu, Portal } from '@skeletonlabs/skeleton-svelte';
+	import { MenuIcon } from 'lucide-svelte';
 
 	let { data }: { data: PageData } = $props();
 	let modalOpen = $state(false);
 	let currentLeaseId = $state('');
-	let globalModalType = $state('');
+	let modalReason = $state('');
 	let currentSize = $state('');
 	let currentOldPrice = $state(0);
 	let connection: Source | undefined = $state();
@@ -73,7 +75,7 @@
 			currentSize = size;
 			currentOldPrice = oldPrice;
 		}
-		globalModalType = modalType;
+		modalReason = modalType;
 		modalOpen = true;
 	}
 	let search = $state('');
@@ -141,7 +143,7 @@
 	bind:modalOpen={modalOpen}
 >
 	{#snippet content()}
-		{#if globalModalType === 'lease'}
+		{#if modalReason === 'endLease'}
 			{#if data.leaseEndForm}
 				<LeaseEndForm
 					data={data.leaseEndForm}
@@ -150,7 +152,7 @@
 					bind:leaseEndModalOpen={modalOpen}
 				/>
 			{/if}
-		{:else if globalModalType === 'unitPricing'}
+		{:else if modalReason === 'changeAllPrice'}
 			<UnitPricingForm
 				data={data.unitPricingForm!}
 				bind:unitPricingFormModalOpen={modalOpen}
@@ -158,7 +160,7 @@
 				oldPrice={currentOldPrice}
 				classes='m-1 sm:m-2'
 			/>
-		{:else if globalModalType === 'changeDeposit' && currentUnit}
+		{:else if modalReason === 'changeDeposit' && currentUnit}
 			<ChangeDepositForm
 				data={data.changeDepositForm}
 				unit={currentUnit}
@@ -195,18 +197,18 @@
 					<RevenueBar>
 						{#snippet content()}
 							<div class="mx-2 flex flex-row gap-0.5">
-								<Revenue label='Current leased monthly revenue' amount={totalRevenue(leases)} classes=''/>
-								<Revenue label='Currently open monthly advertised total' amount={openRevenue(openUnits(units, leases))} />
+								<Revenue label='Leased monthly revenue' amount={totalRevenue(leases)} classes=''/>
+								<Revenue label='Open monthly advertised total' amount={openRevenue(openUnits(units, leases))} />
 								<span>Open percentage: {Math.round((openUnits(units, leases).length*100)/units.length)}%</span>
 							</div>
 						{/snippet}
 					</RevenueBar>
 					<SearchDrawer
 						modalOpen={searchDrawerOpen}
-						height='h-[180px]'
+						height='h-[250px] sm:h-[180px]'
 					>
 						{#snippet content()}
-							<div class="mx-2 flex gap-2">
+							<div class="flex flex-col sm:flex-row gap-2">
 								<Search searchType='Unit number' data={data.searchForm} classes='' bind:search={search}/>
 								<Combobox 
 									data={comboboxData} 
@@ -232,44 +234,70 @@
 								</div>
 						{/snippet}
 					</SearchDrawer>
-            	<div class="sm:m-2 m-1 sm:mt-20 mt-22 mb-8 sm:mb-8" in:fade={{duration:1600}} out:fade={{duration:0}}>
+            	<div class="sm:m-2 m-1 sm:mt-20 mt-38 mb-8 sm:mb-8" in:fade={{duration:1600}} out:fade={{duration:0}}>
                	{#each slicedUnits(filteredUnits(searchedUnits(units))) as unit (unit.num)}
                	{@const lease = leases?.find((lease) => lease.unitNum === unit.num)}
 						{@const unitNotesForm = data.unitNotesForms.find((formData) => formData.id === unit.num)}
 						{@const humanUnitNum = unit.num.replace(/^0+/gm, '')}
 						{@const humanUnitSize = unit.size.replace(/^0+/gm,'').replace(/x0/gm,'x')}
 							<div class="border-2 border-primary-50-950 rounded-lg grid grid-cols-1 sm:grid-cols-2 my-2 gap-2">
-								<div class="flex flex-col">
+								<div class="relative">
 									<UnitEmployee {unit} classes=''/>
-									<div class="mx-2 flex flex-col gap-2">
-										<Button
-											label="Change all {humanUnitSize} pricing"
-											type='button'
-											onClick={() => {
-												openModal('unitPricing', unit.advertisedPrice, '', unit.size);
-											}}
-										/>
-										<Button
-											label="Change all the deposit for unit {humanUnitNum}"
-											type='button'
-											onClick={() => {
+									<Menu onSelect={(e) =>{
+										switch (e.value) {
+											case 'changeAllPrice':
+												modalReason = e.value;
+												currentSize = unit.size;
+												currentOldPrice = unit.advertisedPrice;
+												modalOpen = true
+												break;
+											case 'changeDeposit':
+												modalReason = e.value;
 												currentUnit = unit;
-												globalModalType = 'changeDeposit'
 												modalOpen = true;
-											}}
-										/>
-									</div>
-									
+											default:
+												break;
+										}
+									}}>
+										<Menu.Trigger class='absolute top-1 left-1'><MenuIcon aria-label='Unit menu' class='preset-filled-primary-50-950 rounded-sm p-1 size-8' /></Menu.Trigger>
+										<Portal>
+											<Menu.Positioner>
+												<Menu.Content>
+													<Menu.Item value='changeAllPrice'>
+														<Menu.ItemText>Change all {humanUnitSize} prices</Menu.ItemText>
+													</Menu.Item>
+													<Menu.Item value='changeDeposit'>
+														<Menu.ItemText>Change the deposit for unit {humanUnitNum}</Menu.ItemText>
+													</Menu.Item>
+												</Menu.Content>
+											</Menu.Positioner>
+										</Portal>
+									</Menu>
 									{#if unitNotesForm}
-										<UnitNotesForm data={unitNotesForm} {unit} classes='mx-1 sm:mx-2'/>
+										<UnitNotesForm data={unitNotesForm} {unit} classes='mx-2'/>
 									{/if}
 								</div>
 								{#if lease}
 								{@const customer = customers?.find((customer) => customer.id === lease.customerId)}
-									<div class="grid grid-cols-2 border rounded-lg border-primary-50-950 sm:flex-row m-2">
-										<div>
+									<div class="grid grid-cols-1 sm:grid-cols-2 border rounded-lg border-primary-50-950 sm:flex-row m-2">
+										<div class = relative>
 											<LeaseEmployee {lease} classes=''/>
-											<button class="btn preset-filled-primary-50-950 rounded-lg m-1 sm:m-2 h-8" onclick={()=>openModal('lease', 0, lease.leaseId)}>End Lease</button>
+											<Menu onSelect={(e) => {
+												modalReason = e.value;
+												currentLeaseId = lease.leaseId;
+												modalOpen = true;
+											}}>
+												<Menu.Trigger class='absolute top-1 left-1'><MenuIcon aria-label='Lease menu' class='preset-filled-primary-50-950 rounded-sm p-1 size-8' /></Menu.Trigger>
+												<Portal>
+													<Menu.Positioner>
+														<Menu.Content>
+															<Menu.Item value='endLease'>
+																<Menu.ItemText>End lease</Menu.ItemText>
+															</Menu.Item>
+														</Menu.Content>
+													</Menu.Positioner>
+												</Portal>
+											</Menu>
 										</div>
 										<div class="flex flex-col">
 											{#if customer}
