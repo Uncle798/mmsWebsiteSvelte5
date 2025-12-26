@@ -182,15 +182,17 @@ export const POST: RequestHandler = async (event) => {
                      }
                   ]
                }
-            })
+            });
+            const name =  customer.organizationName ? customer.organizationName : `${customer.givenName} ${customer.familyName}`
             const json = {
-               'Name': customer.organizationName ? customer.organizationName : `${customer.givenName} ${customer.familyName}`,
+               'Name': name,
                'Units': unitNumbers.join(' '),
                'Phone number': address?.phoneNum1?.substring(0,3) + '.' + address?.phoneNum1?.substring(3,6) + '.' + address?.phoneNum1?.substring(6),
                'Earliest due date': customerInvoices[0] ? dayjs(earliestDue).format('MM/DD/YYYY') : '',
                'Amount due': totalDue,
             }
             csv.write(json);
+            emit('message', `${name} added to CSV`)
          }
          csv.end();
          emit('csv', data.join(''));
