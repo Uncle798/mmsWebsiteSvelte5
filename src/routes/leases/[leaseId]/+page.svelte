@@ -12,19 +12,16 @@
 	import FormModal from '$lib/displayComponents/Modals/FormModal.svelte';
 	import AlternativeContactForm from '$lib/forms/AlternativeContactForm.svelte';
 	import AlternativeContactRemovalForm from '$lib/forms/AlternativeContactRemovalForm.svelte';
-	import Combobox from '$lib/formComponents/Combobox.svelte';
-	import { goto, invalidateAll } from '$app/navigation';
+	import { goto, } from '$app/navigation';
 	import LeaseChangeForm from '$lib/forms/LeaseChangeForm.svelte';
 	import Button from '$lib/core/Button.svelte';
+	import { Menu, Portal } from '@skeletonlabs/skeleton-svelte';
+	import { MenuIcon } from 'lucide-svelte';
 
    let { data }: { data: PageData } = $props();
    let modalOpen = $state(false);
    let modalReason = $state('');
    let currentAlternativeContactId = $state('');
-   const comboboxData:{label:string, value:string}[] = [];
-   for(const altContact of data.allAlternativeContacts){
-      comboboxData.push({label: `${altContact.givenName} ${altContact.familyName}`, value: altContact.id})
-   }
 </script>
 <Header title='Lease {data.lease?.leaseId}' />
 {#if  data.lease}   
@@ -45,52 +42,35 @@
    </FormModal>
 {/if}
 {#if data.user?.employee}   
-   <div class="mt-14 sm:mt-10 mb-8">
+   <div class="mt-14 sm:mt-10 mb-8 mx-2">
       {#if data.lease}
-         <div class="border rounded-lg border-primary-50-950 flex flex-col sm:flex-row mx-2">
+         <div class="border-2 rounded-lg border-primary-50-950 relative">
             <LeaseEmployee lease={data.lease} open={true} classes=''/>
-            <div class="flex flex-col gap-2 mt-2">
-               <Button
-                  label='Add alternative contact'
-                  type='button'
-                  onClick={() =>{
-                     modalReason = 'alternativeContact';
+            <Menu onSelect={(e) => {
+               switch (e.value) {
+                  default:
+                     modalReason = e.value;
                      modalOpen = true;
-                  }}
-               />
-               <Button
-                  label='Change lease details'
-                  type='button'
-                  onClick={() => {
-                     modalReason = 'leaseChange'
-                     modalOpen = true;
-                  }}
-               />
-               {#if !data.lease.leaseEnded}
-                  <Button
-                     type='button'
-                     label='End lease'
-                     onClick={() => {
-                        modalReason = 'leaseEnd';
-                        modalOpen = true;
-                     }}
-                  />
-               {:else}
-                  <Button
-                     type="button"
-                     label='Delete lease'
-                     onClick={async () => {
-                        const response = await fetch('/api/leases', {
-                           method: 'DELETE',
-                           body: JSON.stringify({leaseId: data.lease?.leaseId})
-                        });
-                        if(response.status === 200){
-                           goto('/leases');
-                        }
-                     }}
-                  />
-               {/if}
-            </div>
+                     break;
+               }
+            }}>
+               <Menu.Trigger class='absolute top-1 left-1'><MenuIcon aria-label='Lease menu' class='preset-filled-primary-50-950 rounded-sm p-1 size-8'/></Menu.Trigger>
+               <Portal>
+                  <Menu.Positioner>
+                     <Menu.Content>
+                        <Menu.Item value='alternativeContact'>
+                           <Menu.ItemText>Add alternative contact</Menu.ItemText>
+                        </Menu.Item>
+                        <Menu.Item value='leaseChange' disabled={data.lease.leaseEnded ? true : undefined}>
+                           <Menu.ItemText>Edit lease details</Menu.ItemText>
+                        </Menu.Item>
+                        <Menu.Item value='leaseEnd' disabled={data.lease.leaseEnded ? true : undefined}>
+                           <Menu.ItemText>End lease</Menu.ItemText>
+                        </Menu.Item>
+                     </Menu.Content>
+                  </Menu.Positioner>
+               </Portal>
+            </Menu>
             <div class="m-1 sm:m-2">
                {#if data.customer}
                   <UserEmployee user={data.customer} classes='mx-2'/>

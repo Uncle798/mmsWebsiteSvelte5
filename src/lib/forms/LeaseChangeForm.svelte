@@ -59,6 +59,6 @@
          placeholder={dayjs(lease.leaseEffectiveDate).format('MM/DD/YYYY')}
       />
       <input type="hidden" value={lease.leaseId} name='leaseId'/>
-      <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} />  
+      <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} classes='mt-2'/>  
    </form>
 </div>

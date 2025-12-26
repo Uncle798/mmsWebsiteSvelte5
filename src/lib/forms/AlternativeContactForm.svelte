@@ -142,6 +142,6 @@
          </div>
       </div>
       <input type="hidden" value={leaseId} name="leaseId"/>
-      <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} />
+      <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} classes='mt-2'/>
    </form>
 </div>
