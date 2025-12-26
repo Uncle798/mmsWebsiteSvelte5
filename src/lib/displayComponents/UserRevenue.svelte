@@ -13,7 +13,7 @@
 
    let currencyFormatter = Intl.NumberFormat('EN-US', {style: 'currency', currency: 'USD'});
 </script>
-<div class="flex flex-col sm:flex-row bg-primary-contrast-100-900 p-2 rounded-lg {classes}">
+<div class="flex flex-col sm:flex-row sm:gap-2 bg-primary-contrast-100-900 p-2 rounded-lg {classes}">
    <p class="text-error-400-600">Total invoiced: {currencyFormatter.format(totalInvoiced)}</p>
    <p class="text-success-300-700">Total paid: {currencyFormatter.format(totalPaid)}</p>
    {#if overdueAmount > 0 && invoices?.length === 1}
