@@ -28,6 +28,7 @@
 	import NewInvoiceForm from '$lib/forms/NewInvoiceForm.svelte';
 	import { Menu, Portal } from '@skeletonlabs/skeleton-svelte';
 	import { MenuIcon } from 'lucide-svelte';
+	import UnitEmployee from '$lib/displayComponents/UnitEmployee.svelte';
    
    let { data }: { data: PageData } = $props();
    let pageNum = $state(1);
@@ -153,6 +154,7 @@
          <LeaseEndForm data={data.leaseEndForm} bind:leaseEndModalOpen={modalOpen} leaseId={currentLease.leaseId} employee={true}/>  
       {/if}
       {#if modalReason === 'unitNote' && currentUnit}
+         <UnitEmployee unit={currentUnit} classes='border-primary-50-950 border rounded-lg p-2 m-1' />
          <UnitNotesForm data={data.unitNotesForm} unit={currentUnit} bind:unitNotesFormModalOpen={modalOpen}/>
       {/if}
    {/snippet}
