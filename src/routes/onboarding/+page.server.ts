@@ -9,6 +9,7 @@ import { propertySubjectToLienSchema } from '$lib/formSchemas/propertySubjectToL
 import { alternativeContactFormSchema } from '$lib/formSchemas/alternativeContactFormSchema';
 import { redirect } from '@sveltejs/kit';
 import { onboardingRegisterFormSchema } from '$lib/formSchemas/onboardingRegisterFormSchema';
+import { sortUsers } from '$lib/userSort';
 
 export const load = (async (event) => {
    if(!event.locals.user?.admin){
@@ -130,10 +131,8 @@ export const load = (async (event) => {
                {alternative: false},
             ]
          },
-         orderBy: {
-            familyName: 'asc'
-         }
       })
+      customers = sortUsers(customers)
    }
    let existingAddresses:Address[] = [];
    if(userId && !addressId){
