@@ -95,6 +95,6 @@
          constraints={$constraints.email}
          placeholder='smokeybear@theforest.email'
       />
-      <FormSubmitWithProgress delayed={$delayed} timeout={$timeout}/>
+      <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} classes='my-2'/>
    </form>
 </div>
