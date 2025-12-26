@@ -12,13 +12,13 @@
    const currencyFormatter = new Intl.NumberFormat('en-US', {style:'currency', currency:'USD'});
 </script>
 <Collapsible {open} onOpenChange={(d) => open = d.open}>
-   <Collapsible.Trigger class='{classes} grid grid-cols-2 gap-x-2'>
+   <Collapsible.Trigger class='{classes} grid grid-cols-2 gap-x-2 w-87 sm:w-110'>
       <div class="col-span-2 text-center text-sm font-semibold">Lease</div>
       <div class="text-right">Unit number</div>
       <div class="font-medium"><a href="/units/{lease.unitNum}" class="anchor">{lease.unitNum.replace(/^0+/gm,'')}</a></div>
       <HorizontalDivider classes="col-span-2"/>
    </Collapsible.Trigger>
-   <Collapsible.Content class='grid grid-cols-2 gap-x-2'>
+   <Collapsible.Content class='{classes} grid grid-cols-2 gap-x-2 w-87 sm:w-110'>
       <div class="text-right -indent-2">Effective date</div>
       <div class="font-medium">{dayjs(lease.leaseEffectiveDate).format('M/D/YYYY')}</div>
       <HorizontalDivider classes="col-span-2"/>
