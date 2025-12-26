@@ -16,7 +16,7 @@
       unit:Unit
       classes?: string;
    }
-   let { data, unitNotesFormModalOpen, unit, classes }:Props = $props();
+   let { data, unitNotesFormModalOpen = $bindable(), unit, classes }:Props = $props();
    const id = $props.id();
    const url = page.url.pathname;
    // svelte-ignore state_referenced_locally
