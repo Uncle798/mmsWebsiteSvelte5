@@ -253,10 +253,10 @@
                                  />
                               </div>
                               {#if customerLeases}
-                                 <div class="flex flex-col sm:flex-row border border-primary-50-950 m-2 rounded-lg gap-2 w-87 sm:w-110">
+                                 <div class="flex flex-col sm:flex-row gap-2">
                                     {#each customerLeases as lease}
                                     {@const unit = units.find((unit) => unit.num === lease.unitNum)}
-                                       <div class='relative '>
+                                       <div class='relative border border-primary-50-950 m-2 rounded-lg w-87 sm:w-110'>
                                           <LeaseEmployee {lease} open={true} classes='self-start p-2'/>
                                           <Menu onSelect={(e) => {
                                              switch (e.value) {
