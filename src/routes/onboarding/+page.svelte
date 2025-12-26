@@ -16,30 +16,19 @@
 	import OnboardingRegisterForm from '$lib/forms/OnboardingRegisterForm.svelte';
 
    let { data }: PageProps = $props();
-   let customerComboboxData:{label:string, value:string}[] = [];
-   if(data.customers){
-      for(const customer of data.customers){
-         const label = customer.organizationName ? `${customer.organizationName} (${customer.email})` :  `${customer.givenName} ${customer.familyName} (${customer.email})`
-         customerComboboxData.push({
-            label,
-            value: customer.id
-         })
-      }
-   }
-   let addressComboboxData:{label:string, value:string}[] = [];
-   if(data.existingAddresses){
-      for(const address of data.existingAddresses){
-         addressComboboxData.push({
-            label: `${address.address1} ${address.city} ${address.state} ${address.postalCode}`,
-            value: address.addressId
-         })
-      }
-   }
+   let customerComboboxData = $derived(data.customers.map((customer) => ({
+      label: customer.organizationName ? `${customer.organizationName} (${customer.email})` :  `${customer.givenName} ${customer.familyName} (${customer.email})`,
+      value: customer.id
+   })));
+   let addressComboboxData = $derived(data.existingAddresses.map((address) => ({
+      label: `${address.address1} ${address.city} ${address.state} ${address.postalCode}`,
+      value: address.addressId
+   })));
    const url = page.url
 </script>
 
 <Header title='Input Lease Details' />
-<div class="mt-10 mx-2 mb-8">
+<div class="mt-14 sm:mt-10 mx-2 mb-8">
    {#if !data.customer}  
       <OnboardingRegisterForm data={data.onboardingRegisterForm} formType='employee' redirectTo='onboarding'/>
       {#if customerComboboxData.length > 0}
