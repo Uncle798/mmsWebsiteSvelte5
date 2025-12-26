@@ -149,10 +149,10 @@
             bind:modalOpen={modalOpen}
          />
       {/if}
-      {#if modalReason === 'leaseEnd' && currentLease}
+      {#if modalReason === 'endLease' && currentLease}
          <LeaseEndForm data={data.leaseEndForm} bind:leaseEndModalOpen={modalOpen} leaseId={currentLease.leaseId} employee={true}/>  
       {/if}
-      {#if modalReason === 'unitNotes' && currentUnit}
+      {#if modalReason === 'unitNote' && currentUnit}
          <UnitNotesForm data={data.unitNotesForm} unit={currentUnit} bind:unitNotesFormModalOpen={modalOpen}/>
       {/if}
    {/snippet}
