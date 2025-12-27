@@ -5,7 +5,8 @@ import type { ContentText, ContentTable, TDocumentDefinitions } from "pdfmake/in
 import type { PaymentRecord, User, Address } from "../../../generated/prisma/client";
 import { makeAddress } from "./makeAddress";
 import { makeNamePlate } from "./makeNamePlate";
-import { currencyFormatter, styles, printer } from "./pdfMake";
+import { styles, printer } from "./pdfMake";
+import { currencyFormatter } from "$lib/utils/currencyFormatter";
 
 export async function makeReceiptPdf(paymentRecord: PaymentRecord, customer: User, address: Address, download?: boolean): Promise<Blob | PDFKit.PDFDocument> {
    const header: ContentText = {
@@ -18,7 +19,7 @@ export async function makeReceiptPdf(paymentRecord: PaymentRecord, customer: Use
          headerRows: 0,
          widths: [150, '*'],
          body: [
-            ['Amount', currencyFormatter.format(paymentRecord.paymentAmount)],
+            ['Amount', currencyFormatter(paymentRecord.paymentAmount)],
             ['Date', dayjs(paymentRecord.paymentCompleted).format('MMMM D YYYY')],
             ['Type', paymentRecord.paymentType],
          ]

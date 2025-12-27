@@ -1,11 +1,12 @@
 import type { ContentText, ContentTable, TDocumentDefinitions } from "pdfmake/interfaces";
 import type { Address, RefundRecord, User } from "../../../generated/prisma/client";
 import { PUBLIC_COMPANY_NAME } from "$env/static/public";
-import { currencyFormatter, styles, printer } from "./pdfMake";
+import { styles, printer } from "./pdfMake";
 import BlobStream, { type IBlobStream } from "blob-stream";
 import dayjs from "dayjs";
 import { makeNamePlate } from "./makeNamePlate";
 import { makeAddress } from "./makeAddress";
+import { currencyFormatter } from "$lib/utils/currencyFormatter";
 
 export async function makeMultipleRefundsPDF(refunds:RefundRecord[], customer:User, address:Address, download?:boolean): Promise<Blob | PDFKit.PDFDocument>{
    const header:ContentText = {
@@ -36,7 +37,7 @@ export async function makeMultipleRefundsPDF(refunds:RefundRecord[], customer:Us
          [
             refund.refundNumber,
             refund.refundNotes ? refund.refundNotes : '',
-            currencyFormatter.format(refund.refundAmount),
+            currencyFormatter(refund.refundAmount),
             dayjs(refund.refundCompleted).format('MMMM D YYYY')
          ]
       )

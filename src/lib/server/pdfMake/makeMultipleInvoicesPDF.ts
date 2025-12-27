@@ -1,7 +1,8 @@
 import type { ContentTable, ContentText, TDocumentDefinitions } from "pdfmake/interfaces";
+import { currencyFormatter } from "$lib/utils/currencyFormatter";
 import type { Address, Invoice, User } from "../../../generated/prisma/client";
 import { PUBLIC_COMPANY_NAME } from "$env/static/public";
-import { currencyFormatter, printer, styles } from "./pdfMake";
+import { printer, styles } from "./pdfMake";
 import BlobStream, { type IBlobStream } from "blob-stream";
 import { makeNamePlate } from "./makeNamePlate";
 import { makeAddress } from "./makeAddress";
@@ -36,9 +37,9 @@ export async function makeMultipleInvoicesPDF(invoices:Invoice[], customer:User,
          [
             invoice.invoiceNum, 
             invoice.invoiceNotes ? invoice.invoiceNotes : '', 
-            currencyFormatter.format(invoice.invoiceAmount),
+            currencyFormatter(invoice.invoiceAmount),
             dayjs(invoice.invoiceDue).format('MMMM D YYYY'),
-            currencyFormatter.format(invoice.amountPaid),
+            currencyFormatter(invoice.amountPaid),
          ]
       );
       console.log(invoices.length)
@@ -58,8 +59,8 @@ export async function makeMultipleInvoicesPDF(invoices:Invoice[], customer:User,
       table: {
          widths: [ 50, '*', 50, 100, 50],
          body: [
-            ['', '', '', 'Total invoiced', currencyFormatter.format(totalInvoiced)],
-            ['', '', '', 'Total paid', currencyFormatter.format(totalPaid)]
+            ['', '', '', 'Total invoiced', currencyFormatter(totalInvoiced)],
+            ['', '', '', 'Total paid', currencyFormatter(totalPaid)]
          ]
       },
       layout: 'noBorders'

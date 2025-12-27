@@ -19,6 +19,7 @@
    import { PaymentType } from '../../generated/prisma/enums';
 	import Button from '$lib/core/Button.svelte';
 	import NumberInput from '$lib/formComponents/NumberInput.svelte';
+   import { currencyFormatter } from "$lib/utils/currencyFormatter";
 
    let { data }: { data: PageData } = $props();
    let modalOpen = $state(false);
@@ -36,7 +37,6 @@
       label: `${customer.givenName} ${customer.familyName} (${customer.email})`,
       value: customer.id
    })));
-   const currencyFormatter = new Intl.NumberFormat('en-US', {style: 'currency', currency: 'USD'})
    const paymentTypes = Object.values(PaymentType);
    let customerSelectForm:HTMLFormElement | undefined = $state();
    let customerSelectSubmit:HTMLButtonElement | undefined = $state();
@@ -157,7 +157,7 @@
             {#if data.discount.percentage}
                <div in:fade={{duration:600}} class="grid grid-cols-2 w-80 gap-x-2">
                   <div class="text-right">Discount</div><div class="text-green-700 dark:text-green-500">{data.discount.amountOff}%</div>
-                  <div class="text-right">Monthly Rent</div><div class="text-green-700 dark:text-green-500">{currencyFormatter.format(data.unit.advertisedPrice - (data.unit.advertisedPrice * (data.discount.amountOff / 100)))}</div>
+                  <div class="text-right">Monthly Rent</div><div class="text-green-700 dark:text-green-500">{currencyFormatter(data.unit.advertisedPrice - (data.unit.advertisedPrice * (data.discount.amountOff / 100)))}</div>
                </div>
             {:else}
                <div class="grid grid-cols-2 w-80 gap-x-2" in:fade={{duration:300}}>

@@ -1,5 +1,6 @@
 <script lang='ts'>
    import type { Lease } from '../../../generated/prisma/browser';
+   import { currencyFormatter } from "$lib/utils/currencyFormatter";
 	import dayjs from "dayjs";
 	import HorizontalDivider from "../HorizontalDivider.svelte";
    interface Props {
@@ -7,7 +8,6 @@
       classes?: string;
    }
    let { lease, classes }:Props = $props();
-   const currencyFormatter = new Intl.NumberFormat('en-US', {style:'currency', currency:'USD'});
 </script>
 
 <div class="{classes} grid grid-cols-2 gap-x-2 items-start">
@@ -19,7 +19,7 @@
    <div class="font-medium">{dayjs(lease.leaseEffectiveDate).format('M/D/YYYY')}</div>
    <HorizontalDivider classes="col-span-2"/>
    <div class="text-right">Price:</div>
-   <div class="font-medium">{currencyFormatter.format(lease.price)}</div>
+   <div class="font-medium">{currencyFormatter(lease.price)}</div>
    <HorizontalDivider classes="col-span-2"/>
    {#if lease.leaseEnded}
       <div class="text-right">Lease end date:</div>

@@ -1,5 +1,6 @@
 <script lang='ts'>
 	import type { PaymentRecord } from '../../../generated/prisma/browser';
+   import { currencyFormatter } from "$lib/utils/currencyFormatter";
 	import dayjs from "dayjs";
 	import HorizontalDivider from "../HorizontalDivider.svelte";
 
@@ -9,7 +10,6 @@
       classes?: string
    }
    let { paymentRecord, classes }:Props =$props();
-   const currencyFormatter = new Intl.NumberFormat('en-US', {style:'currency', currency:'USD'});
 </script>
 
 <div class="{classes} grid grid-cols-2 gap-x-2 ">
@@ -18,7 +18,7 @@
    <div class="font-medium"><a href="/paymentRecords/{paymentRecord.paymentNumber}" class="anchor">{paymentRecord.paymentNumber}</a></div>
    <HorizontalDivider classes='col-span-2'/>
    <div class="text-right">Amount</div> 
-   <div class="font-medium">{currencyFormatter.format(paymentRecord.paymentAmount)}</div>
+   <div class="font-medium">{currencyFormatter(paymentRecord.paymentAmount)}</div>
    <HorizontalDivider classes='col-span-2' />
    <div class="text-right">Created</div>
    <div class="font-medium">{dayjs(paymentRecord.paymentCreated).format('M/D/YYYY')}</div>

@@ -12,12 +12,11 @@
 	import { fade, } from 'svelte/transition';
 	import UserCustomer from '$lib/displayComponents/customerViews/UserCustomer.svelte';
    import FormModal from '$lib/displayComponents/Modals/FormModal.svelte';
-    
+   import { currencyFormatter } from "$lib/utils/currencyFormatter";
    let { data }: {data:PageData} = $props();
    // svelte-ignore state_referenced_locally
    let { form, message, errors, constraints, enhance, delayed, timeout } = superForm(data.leaseForm);
    let addressModalOpen = $state(false);
-   const currencyFormatter = new Intl.NumberFormat('en-US', {style: 'currency', currency: 'USD'})
 </script>
 <Header title='New lease'/>
 <div in:fade={{duration:600}} class="mx-2 mt-14 sm:mt-10">
@@ -56,10 +55,10 @@
             <div class="py-2" in:fade={{duration:300}}>
                {#if data.discount.percentage}
                   Discount: <span class="text-green-700 dark:text-green-500">{data.discount.amountOff}%</span>
-                  Monthly Rent: <span class="text-green-700 dark:text-green-500">{currencyFormatter.format(data.unit.advertisedPrice - (data.unit.advertisedPrice * (data.discount.amountOff / 100)))}</span>
+                  Monthly Rent: <span class="text-green-700 dark:text-green-500">{currencyFormatter(data.unit.advertisedPrice - (data.unit.advertisedPrice * (data.discount.amountOff / 100)))}</span>
                {:else}
-                  Discount: <span class="text-green-700 dark:text-green-500">{currencyFormatter.format(data.discount.amountOff)}</span>
-                  Monthly Rent: <span class="text-green-700 dark:text-green-500">{currencyFormatter.format(data.unit.advertisedPrice - data.discount.amountOff)}</span>
+                  Discount: <span class="text-green-700 dark:text-green-500">{currencyFormatter(data.discount.amountOff)}</span>
+                  Monthly Rent: <span class="text-green-700 dark:text-green-500">{currencyFormatter(data.unit.advertisedPrice - data.discount.amountOff)}</span>
                {/if}
             </div>
          {/if}

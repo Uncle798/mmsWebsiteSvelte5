@@ -1,5 +1,6 @@
 <script lang='ts'>
 	import type { PaymentRecord } from "../../generated/prisma/browser";
+   import { currencyFormatter } from "$lib/utils/currencyFormatter";
 	import dayjs from "dayjs";
 	import HorizontalDivider from "./HorizontalDivider.svelte";
 	import { page } from "$app/state";
@@ -10,7 +11,6 @@
       classes?: string
    }
    let { paymentRecord, classes }:Props =$props();
-   const currencyFormatter = new Intl.NumberFormat('en-US', {style:'currency', currency:'USD'});
    const url = page.url.pathname;
 </script>
 
@@ -20,7 +20,7 @@
    <div class=""><a href="/paymentRecords/{paymentRecord.paymentNumber}" class="font-medium text-right anchor">{paymentRecord.paymentNumber}</a></div>
    <HorizontalDivider classes='col-span-2'/>
    <div class="text-right">Amount</div> 
-   <div class="font-medium">{currencyFormatter.format(paymentRecord.paymentAmount)}</div>
+   <div class="font-medium">{currencyFormatter(paymentRecord.paymentAmount)}</div>
    <HorizontalDivider classes='col-span-2' />
    <div class="text-right">Created</div>
    <div class="font-medium">{dayjs(paymentRecord.paymentCreated).format('M/D/YYYY')}</div>
@@ -56,9 +56,9 @@
       <HorizontalDivider classes='col-span-2' />
       <div class="text-right">Amount Refunded</div>
       {#if url !== `/paymentRecords/${paymentRecord.paymentNumber}`}
-         <div class="font-medium"><a href="/paymentRecords/{paymentRecord.paymentNumber}" class="anchor">{currencyFormatter.format(paymentRecord.refundedAmount)}</a></div>
+         <div class="font-medium"><a href="/paymentRecords/{paymentRecord.paymentNumber}" class="anchor">{currencyFormatter(paymentRecord.refundedAmount)}</a></div>
       {:else}
-         <div class="font-medium">{currencyFormatter.format(paymentRecord.refundedAmount)}</div>
+         <div class="font-medium">{currencyFormatter(paymentRecord.refundedAmount)}</div>
       {/if}
    {/if}
 </div>

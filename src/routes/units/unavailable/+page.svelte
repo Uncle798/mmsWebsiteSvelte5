@@ -8,6 +8,7 @@
 	import Header from '$lib/Header.svelte';
    import SearchDrawer from '$lib/displayComponents/Modals/SearchDrawer.svelte';
    import Combobox from '$lib/formComponents/Combobox.svelte';
+   import { currencyFormatter } from "$lib/utils/currencyFormatter";
 
 	import { page } from '$app/state';
    let { data }: { data: PageData } = $props();
@@ -26,7 +27,6 @@
       }
       return revenue
    });
-   const currencyFormatter = new Intl.NumberFormat('en-US', {style:'currency', currency:'USD'});
    interface ComboboxData {
       label: string;
       value: string;
@@ -52,7 +52,7 @@
 <div class="flex fixed bg-tertiary-50-950 w-full rounded-b-lg top-7 pt-2" transition:fade={{duration:600}}>
    <span class="m-2">Unavailable: {data.units.length} of {data.unitCount}</span>
    <span class="m-2">Unavailable percentage {Math.round((data.units.length*100)/data.unitCount)}%</span>
-   <span class="m-2">Unavailable revenue per month: {currencyFormatter.format(lostRevenue)}</span>
+   <span class="m-2">Unavailable revenue per month: {currencyFormatter(lostRevenue)}</span>
 </div>
 <SearchDrawer
    modalOpen={searchDrawerOpen}

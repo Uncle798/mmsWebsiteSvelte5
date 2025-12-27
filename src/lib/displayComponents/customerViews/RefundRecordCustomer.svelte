@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { RefundRecord } from '../../../generated/prisma/browser';
+   import { currencyFormatter } from "$lib/utils/currencyFormatter";
 	import dayjs from 'dayjs';
 	import HorizontalDivider from '../HorizontalDivider.svelte';
 
@@ -8,7 +9,6 @@
 		classes?: string;
 	}
 	let { refundRecord, classes }: Props = $props();
-	const currencyFormatter = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
 </script>
 
 <div class="grid grid-cols-2 gap-x-2 {classes}">
@@ -17,7 +17,7 @@
 	<div class="font-medium"><a href="/refundRecords/{refundRecord.refundNumber}">{refundRecord.refundNumber}</a></div>
 	<HorizontalDivider classes='col-span-2' />
 	<div class="text-right">Amount</div>
-	<div class="font-medium">{currencyFormatter.format(refundRecord.refundAmount)}</div>
+	<div class="font-medium">{currencyFormatter(refundRecord.refundAmount)}</div>
 	<HorizontalDivider classes='col-span-2' />
 	{#if refundRecord.refundCompleted}
 		<div class="text-right">Completed</div>

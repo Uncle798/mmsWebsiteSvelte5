@@ -5,7 +5,8 @@ import type { ContentText, ContentTable, TDocumentDefinitions } from "pdfmake/in
 import type { RefundRecord, User, Address } from "../../../generated/prisma/client";
 import { makeAddress } from "./makeAddress";
 import { makeNamePlate } from "./makeNamePlate";
-import { currencyFormatter, styles, printer } from "./pdfMake";
+import { styles, printer } from "./pdfMake";
+import { currencyFormatter } from "$lib/utils/currencyFormatter";
 
 
 export async function makeRefundPdf(refund: RefundRecord, customer: User, address: Address, download?: boolean): Promise<Blob | PDFKit.PDFDocument> {
@@ -19,7 +20,7 @@ export async function makeRefundPdf(refund: RefundRecord, customer: User, addres
          headerRows: 0,
          widths: [150, '*'],
          body: [
-            ['Amount', currencyFormatter.format(refund.refundAmount),],
+            ['Amount', currencyFormatter(refund.refundAmount),],
             ['Date Created', dayjs(refund.refundCompleted).format('MMMM D YYYY')],
             ['Type', refund.refundType]
          ]

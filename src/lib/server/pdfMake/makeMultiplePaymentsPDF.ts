@@ -5,7 +5,8 @@ import BlobStream, { type IBlobStream } from "blob-stream";
 import { makeNamePlate } from "./makeNamePlate";
 import { makeAddress } from "./makeAddress";
 import { PUBLIC_COMPANY_NAME } from "$env/static/public";
-import { currencyFormatter, printer, styles } from "./pdfMake";
+import { printer, styles } from "./pdfMake";
+import { currencyFormatter } from "$lib/utils/currencyFormatter";
 
 export async function makeMultiplePaymentsPDF(payments:PaymentRecord[], customer:User, address:Address, download?:boolean): Promise<Blob | PDFKit.PDFDocument> {
    const header:ContentText = {
@@ -36,7 +37,7 @@ export async function makeMultiplePaymentsPDF(payments:PaymentRecord[], customer
          [
             payment.paymentNumber,
             payment.paymentNotes ? payment.paymentNotes : '',
-            currencyFormatter.format(payment.paymentAmount),
+            currencyFormatter(payment.paymentAmount),
             dayjs(payment.paymentCompleted).format('MMMM D YYYY')
          ]
       )
@@ -45,7 +46,7 @@ export async function makeMultiplePaymentsPDF(payments:PaymentRecord[], customer
       table: {
          widths: [ 50, '*', 50, 100 ],
          body: [
-            [ '', '', 'Total paid', currencyFormatter.format(totalPaid) ]
+            [ '', '', 'Total paid', currencyFormatter(totalPaid) ]
          ]
       },
       layout: 'noBorders'

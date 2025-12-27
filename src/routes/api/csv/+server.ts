@@ -5,7 +5,7 @@ import { prisma } from '$lib/server/prisma';
 import type { Invoice, User } from '../../../generated/prisma/client';
 import dayjs from 'dayjs';
 import { stringify } from 'csv';
-import { sortUsers } from '$lib/userSort';
+import { sortUsers } from '$lib/utils/userSort';
 
 export const POST: RequestHandler = async (event) => {
    if(!event.locals.user){

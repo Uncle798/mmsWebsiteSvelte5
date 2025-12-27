@@ -7,12 +7,11 @@
 	import UnitNotesForm from '$lib/forms/UnitNotesForm.svelte';
 	import UnitCustomer from '$lib/displayComponents/customerViews/UnitCustomer.svelte';
    import Combobox from '$lib/formComponents/Combobox.svelte';
-	import { SearchIcon, PanelTopClose } from 'lucide-svelte';
+   import { currencyFormatter } from "$lib/utils/currencyFormatter";
 	import { onMount } from 'svelte';
 	import { page } from '$app/state';
 	import SearchDrawer from '$lib/displayComponents/Modals/SearchDrawer.svelte';
    let { data }:{data:PageData} = $props();
-   const currencyFormatter = new Intl.NumberFormat('en-US', {style: 'currency', currency:'USD'});
    let sizeFilter = $state('');
    const filterSize = $derived((units:Unit[]) => units.filter((unit) => unit.size.includes(sizeFilter)))
    interface ComboboxData {
@@ -98,7 +97,7 @@
       <div class="flex fixed bg-tertiary-50-950 rounded-b-lg z-40 w-full top-11 sm:top-8">
          <span class="m-1">Available: {availableUnits.length} of {data.unitCount}</span>
          <span class="m-1">Percentage: {Math.round((availableUnits.length*100)/data.unitCount)}%</span>
-         <span class="m-1">Open revenue per month: {currencyFormatter.format(lostRevenue(availableUnits))}</span>
+         <span class="m-1">Open revenue per month: {currencyFormatter(lostRevenue(availableUnits))}</span>
       </div>
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 m-1 sm:m-2 bg-surface-50-950 mt-28 sm:mt-18">
          {#each filteredUnits(availableUnits) as unit}

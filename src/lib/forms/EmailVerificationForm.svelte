@@ -5,6 +5,7 @@
    import FormProgress from "$lib/formComponents/FormSubmitWithProgress.svelte";
    import FormMessage from "$lib/formComponents/FormMessage.svelte";
 	import { onMount } from "svelte";
+	import Button from "$lib/core/Button.svelte";
    
    interface Props {
       data: SuperValidated<Infer<EmailVerificationFormSchema>>; 
@@ -71,9 +72,14 @@
          constraints={$constraints.code}
          placeholder='12345678'
          />
-         <FormProgress delayed={$delayed} timeout={$timeout}/>
+         <FormProgress delayed={$delayed} timeout={$timeout} classes='mt-2'/>
       </form>
-      <button class="btn preset-filled-primary-50-950 rounded-lg" onclick={()=>resend()}>Resend email</button>
+      <Button
+         label='Resend email'
+         type='button'
+         onClick={() => resend()}
+         classes='mt-2'
+      />
    {:else}
       Sending verification...
    {/if}
