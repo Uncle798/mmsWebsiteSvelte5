@@ -31,15 +31,15 @@
    let emailAddress = $state('');
    let mounted = $state(false)
    onMount(async () => {
-      // const response = await fetch('/api/sendEmailVerification', {
-      //    method: 'POST',
-      //    body: JSON.stringify({userId})
-      // })
-      // const body = await response.json();
-      // if(body.email){
-      //    emailAddress = body.email
-      // }
-      // mounted = true;
+      const response = await fetch('/api/sendEmailVerification', {
+         method: 'POST',
+         body: JSON.stringify({userId})
+      })
+      const body = await response.json();
+      if(body.email){
+         emailAddress = body.email
+      }
+      mounted = true;
    })
    async function resend(){
       mounted = false
