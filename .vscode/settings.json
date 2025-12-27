@@ -5,8 +5,10 @@
    "scm.compactFolders": false,
    "workbench.tree.indent": 8,
    "cSpell.words": [
+      "anvilco",
       "autoincrement",
       "cuid",
+      "pdfmake",
       "superforms"
    ]
 }
