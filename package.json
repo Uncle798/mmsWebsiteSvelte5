@@ -86,6 +86,7 @@
 		"payment": "^2.4.7",
 		"pdfmake": "^0.2.20",
 		"restricted-input": "^4.1.4",
+		"stripe": "^20.1.0",
 		"sveltekit-sse": "^0.14.3",
 		"valibot": "^1.2.0",
 		"xml-js": "^1.6.11",

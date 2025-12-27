@@ -13,12 +13,20 @@
 	import UserCustomer from '$lib/displayComponents/customerViews/UserCustomer.svelte';
    import FormModal from '$lib/displayComponents/Modals/FormModal.svelte';
    import { currencyFormatter } from "$lib/utils/currencyFormatter";
+	import Button from '$lib/core/Button.svelte';
    let { data }: {data:PageData} = $props();
    // svelte-ignore state_referenced_locally
    let { form, message, errors, constraints, enhance, delayed, timeout } = superForm(data.leaseForm);
-   let addressModalOpen = $state(false);
+   let modalOpen = $state(false);
 </script>
 <Header title='New lease'/>
+<FormModal
+   bind:modalOpen={modalOpen}
+>
+   {#snippet content()}
+      <AddressForm data={data.addressForm} bind:addressModalOpen={modalOpen} userId={data.user?.id}/>
+   {/snippet}
+</FormModal>
 <div in:fade={{duration:600}} class="mx-2 mt-14 sm:mt-10">
    {#if data.user}
       <UserCustomer user={data.user} />
@@ -39,16 +47,17 @@
       {#if data.address}
          <AddressCustomer address={data.address} />
       {:else}
-         <FormModal
-            bind:modalOpen={addressModalOpen}
-         >
-            {#snippet content()}
-               <AddressForm data={data.addressForm} bind:addressModalOpen={addressModalOpen} userId={data.user?.id}/>
-            {/snippet}
-         </FormModal>
+         <Button
+            type='button'
+            label='Add address'
+            onClick={() => {
+               modalOpen = true;
+            }}
+            classes='my-2'
+         />
       {/if}
       {#if data.unit}
-         <UnitCustomer unit={data.unit} classes='py-2 w-64'/>
+         <UnitCustomer unit={data.unit} classes='py-2 w-72'/>
          <input type="hidden" name="unitNum" value={data.unit.num}>
          {#if data.discount}
             <input type="hidden" name="discountId" value={data.discount.discountId}>
@@ -65,7 +74,7 @@
       {/if}
       <div class="flex">
          {#if data.unit && data.address}
-            <FormProgress delayed={$delayed} timeout={$timeout} buttonText='The above is correct I would like to pay my deposit'/>
+            <FormProgress delayed={$delayed} timeout={$timeout} buttonText='The above is correct I would like to pay my deposit' classes='my-2'/>
          {/if}
       </div>
    </form>

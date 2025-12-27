@@ -38,14 +38,7 @@
    })))
 
 	let searchDrawerOpen = $state(false);
-   let descriptionModalOpen = $state(data.cookie ? false : true);
    onMount(()=>{
-      if(data.cookie){
-         descriptionModalOpen=false
-      } else {
-         fetch('/api/demoSetCookie?demoPage=unitsUnavailable');
-         setTimeout(()=>(descriptionModalOpen = false), 5000)
-      }
       comboboxData.unshift({label: 'All', value: 'all'})
    });
    const url = page.url.pathname

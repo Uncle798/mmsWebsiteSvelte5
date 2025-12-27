@@ -9,6 +9,7 @@
 		data: PageData;
 	}
 	let { data }: Props = $props();
+	// svelte-ignore state_referenced_locally
 	const toastReason = data.toastReason;
 	onMount(()=>{
 		if(toastReason === 'register'){

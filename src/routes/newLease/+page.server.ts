@@ -8,8 +8,7 @@ import { addressFormSchema } from '$lib/formSchemas/addressFormSchema';
 import { valibot } from 'sveltekit-superforms/adapters';
 import { error, redirect } from "@sveltejs/kit";
 import { ratelimit } from "$lib/server/rateLimit";
-import { qStash } from "$lib/server/qStash";
-import { PUBLIC_PHONE, PUBLIC_URL } from "$env/static/public";
+import { PUBLIC_PHONE } from "$env/static/public";
 import { invoiceNoteDeposit } from "$lib/utils/invoiceNoteDeposit";
 
 export const load:PageServerLoad = (async (event) =>{
@@ -165,11 +164,6 @@ export const actions:Actions = {
             invoiceDue: new Date()
          }
       });
-      await qStash.trigger({
-         url: `https://${PUBLIC_URL}/api/upstash/workflow`,
-         body:  { leaseId:lease.leaseId },
-         workflowRunId: lease.leaseId
-      })
       redirect(303, `/makePayment?invoiceNum=${invoice.invoiceNum}&newLease=true&leaseId=${lease.leaseId}`)
    }
 }

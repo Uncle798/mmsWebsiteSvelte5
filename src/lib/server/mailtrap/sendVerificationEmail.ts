@@ -10,7 +10,7 @@ export async function sendVerificationEmail(verificationCode: string, email: str
          to: [{ email }],
          subject: "Please verify your email",
          html: `Verification code: ${verificationCode}`
-      }).catch((err) => {
+      }).catch(async(err) => {
          console.error(err);
       });
       return response;
