@@ -5,6 +5,7 @@ import dayjs from 'dayjs';
 import type { RequestHandler} from './$types';
 import type { Invoice } from '../../../generated/prisma/client';
 import { makeTodaysInvoicesReport } from '$lib/server/pdfMake/makeTodaysInvoicesReport';
+import { invoiceRentNote } from '$lib/utils/invoiceNoteRent';
 export const GET:RequestHandler = async (event) => {
    const authHeader = event.request.headers.get('authorization');
    if(authHeader !== `Bearer ${CRON_SECRET}`){
@@ -52,7 +53,7 @@ export const GET:RequestHandler = async (event) => {
                   invoiceAmount: lease.price,
                   customerId: lease.customerId,
                   invoiceDue: today.add(1, 'month').toDate(),
-                  invoiceNotes: `Rent for unit ${lease.unitNum.replace(/^0/gm, '')} for ${today.add(1, 'month').format('MMMM D YYYY')} - ${today.add(2,'month').format('MMMM D YYYY')}`
+                  invoiceNotes: invoiceRentNote(lease.unitNum, lease.leaseEffectiveDate),
                }
             })
          )
