@@ -43,7 +43,7 @@
 			"   <FormMessage message={\\$message} />",
 			"   <form action=\"$2\" method=\"POST\" use:enhance>",
 			"      $0",
-			"      <FormSubmitWithProgress delayed={\\$delayed} timeout={\\$timeout} buttonText='$3'/>",\
+			"      <FormSubmitWithProgress delayed={\\$delayed} timeout={\\$timeout} buttonText='$3'/>",
 			"   </form>",
 			"</div>"
 		]
