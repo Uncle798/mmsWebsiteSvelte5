@@ -15,6 +15,7 @@ import { ratelimit } from '$lib/server/rateLimit';
 import { sendPaymentReceipt } from "$lib/server/mailtrap/sendPaymentReceipt";
 import { inngest } from '$lib/server/inngest/inngest';
 import { alternativeContactFormSchema } from '$lib/formSchemas/alternativeContactFormSchema';
+import { invoiceNoteDeposit } from '$lib/utils/invoiceNoteDeposit';
 
 export const load = (async (event) => {
    if(!event.locals.user?.employee){
@@ -221,7 +222,7 @@ export const actions: Actions = {
                invoiceAmount: lease.depositAmount ? lease.depositAmount : unit.deposit,
                customerId: lease.customerId,
                leaseId: lease.leaseId,
-               invoiceNotes:'Deposit for unit ' + lease.unitNum.replace(/^0+/gm,''), 
+               invoiceNotes: invoiceNoteDeposit(lease.unitNum), 
                deposit: true,
                invoiceDue: new Date(),
             }

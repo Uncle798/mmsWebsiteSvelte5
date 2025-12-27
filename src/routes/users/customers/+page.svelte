@@ -19,7 +19,7 @@
 	import UserRevenue from '$lib/displayComponents/UserRevenue.svelte';
 	import { PUBLIC_COMPANY_NAME } from '$env/static/public';
 	import dayjs from 'dayjs';
-	import { sortUsers } from '$lib/userSort';
+	import { sortUsers } from '$lib/utils/userSort';
    import { fromStore } from 'svelte/store';
 	import Button from '$lib/core/Button.svelte';
    import { source } from 'sveltekit-sse';

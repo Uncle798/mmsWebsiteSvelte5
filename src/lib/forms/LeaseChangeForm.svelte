@@ -9,6 +9,7 @@
 	import NumberInput from "$lib/formComponents/NumberInput.svelte";
 	import FormMessage from "$lib/formComponents/FormMessage.svelte";
 	import FormSubmitWithProgress from "$lib/formComponents/FormSubmitWithProgress.svelte";
+	import { humanUnitNum } from "$lib/utils/humanUnitNum";
 
    interface Props {
       data: SuperValidated<Infer<LeaseChangeFormSchema>>;
@@ -31,7 +32,7 @@
          value={$form.price}
          errors={$errors.price}
          constraints={$constraints.price}
-         label='Change price of unit {lease.unitNum.replace(/^0+/gm, '')}'
+         label='Change price of unit {humanUnitNum(lease.unitNum)}'
          name='price'
          placeholder={lease.price.toString()}
       />

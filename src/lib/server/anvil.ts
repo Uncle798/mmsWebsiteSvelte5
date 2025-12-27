@@ -2,6 +2,8 @@ import Anvil from "@anvilco/anvil";
 import { PUBLIC_COMPANY_NAME } from '$env/static/public';
 import { ANVIL_API_KEY } from "$env/static/private";
 import type { Address, Lease, Unit, User } from "../../generated/prisma/client";
+import { humanUnitNum } from "$lib/utils/humanUnitNum";
+import { humanUnitSize } from "$lib/utils/humanUnitSize";
 
 export const anvilClient = new Anvil({apiKey:ANVIL_API_KEY});
 
@@ -12,7 +14,7 @@ export function getPacketVariables(customer:User, lease:Lease, unit:Unit, employ
    if(!customerName){
       customerName = `${customer.givenName} ${customer.familyName}`
    }
-   const unitNum = unit.num.replace(/^0+/gm,'')
+   const unitNum = humanUnitNum(unit.num)
    return {
       isDraft: false,
       isTest: true,
@@ -32,7 +34,7 @@ export function getPacketVariables(customer:User, lease:Lease, unit:Unit, employ
                   'companyName': PUBLIC_COMPANY_NAME,
                   'leaseEffectiveDate': lease.leaseEffectiveDate,
                   'unitNum': unitNum,
-                  'size': unit.size.replace(/^0+/gm,'').replace(/x0/gm,'x'),
+                  'size': humanUnitSize(unit.size),
                   'price': lease.price,
                   'address':{
                      "street1": address.address1,

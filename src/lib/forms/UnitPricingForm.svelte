@@ -8,6 +8,7 @@
 	import Switch from "$lib/formComponents/Switch.svelte";
 	import FormSubmitWithProgress from "$lib/formComponents/FormSubmitWithProgress.svelte";
 	import { onMount } from "svelte";
+	import { humanUnitSize } from "$lib/utils/humanUnitSize";
 
    interface Props {
       data: SuperValidated<Infer<UnitPricingFormSchema>>;
@@ -60,7 +61,7 @@
 <div class={classes}>
    <FormMessage message={$message} />
    <form action="/forms/unitPricingForm" method="POST" use:enhance>
-      <p class="">Change all {size.replace(/^0+/gm,'').replace(/x0/gm,'x')} units from ${oldPrice} to </p>
+      <p class="">Change all {humanUnitSize(size)} units from ${oldPrice} to </p>
       <NumberInput
          bind:value={$form.price}
          errors={$errors.price}

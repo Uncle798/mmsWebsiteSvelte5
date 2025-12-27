@@ -4,6 +4,8 @@ import { PUBLIC_COMPANY_NAME } from "$env/static/public";
 import dayjs from "dayjs";
 import { printer, styles } from "./pdfMake";
 import BlobStream, { type IBlobStream } from "blob-stream";
+import { humanUnitNum } from "$lib/utils/humanUnitNum";
+import { humanUnitSize } from "$lib/utils/humanUnitSize";
 
 export async function makeAvailableUnitsReport(units:Unit[], download?:boolean): Promise<Blob | PDFKit.PDFDocument>{
    const header:ContentText = {
@@ -22,7 +24,7 @@ export async function makeAvailableUnitsReport(units:Unit[], download?:boolean):
    for(const unit of units){
       if(!unit.leasedPrice && !unit.unavailable){
          table.table.body.push(
-            [unit.num.toString().replace(/^0+/gm, ''), unit.size, unit.advertisedPrice]
+            [ humanUnitNum(unit.num), humanUnitSize(unit.size), unit.advertisedPrice ]
          )
       }
    }

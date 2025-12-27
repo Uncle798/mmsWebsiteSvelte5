@@ -8,6 +8,7 @@
 	import { onMount } from 'svelte';
 	import Revenue from '$lib/displayComponents/Revenue.svelte';
    import type { Unit } from '../../../generated/prisma/browser';
+	import { humanUnitSize } from '$lib/utils/humanUnitSize';
 
    let { data }: { data: PageData } = $props();
    interface ComboboxData {
@@ -15,7 +16,7 @@
       value: string;
    }
    const comboboxData:ComboboxData[] = $derived(data.sizes.map(size => ({
-      label: size.replace(/^0+/gm, '').replace(/x0/gm, 'x'),
+      label: humanUnitSize(size),
       value: size
    })))
    onMount(() => {

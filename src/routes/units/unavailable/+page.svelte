@@ -11,6 +11,7 @@
    import { currencyFormatter } from "$lib/utils/currencyFormatter";
 
 	import { page } from '$app/state';
+	import { humanUnitSize } from '$lib/utils/humanUnitSize';
    let { data }: { data: PageData } = $props();
    let sizeFilter = $state('');
    const filterSize = $derived((units:Unit[]) => units.filter((unit) => {
@@ -32,7 +33,7 @@
       value: string;
    }
    const comboboxData:ComboboxData[] = $derived(data.sizes.map(size => ({
-      label: size.replace(/^0+/gm, '').replace(/x0/gm, 'x'),
+      label: humanUnitSize(size),
       value: size      
    })))
 

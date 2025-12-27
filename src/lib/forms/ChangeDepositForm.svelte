@@ -7,6 +7,7 @@
 	import FormSubmitWithProgress from "$lib/formComponents/FormSubmitWithProgress.svelte";
 	import type { Unit } from "../../generated/prisma/browser";
 	import Switch from "$lib/formComponents/Switch.svelte";
+	import { humanUnitSize } from "$lib/utils/humanUnitSize";
 
    interface Props {
       data: SuperValidated<Infer<ChangeDepositFormSchema>>;
@@ -50,7 +51,7 @@
          onCheckedChange={(e) => {
             $form.changeAll = e.checked
          }}
-         label='Change all {unit.size.replace(/^0+/gm, '').replace(/x0/gm, '')} deposits?'
+         label='Change all {humanUnitSize(unit.size)} deposits?'
          name='changeAll'
       />
       <input type="hidden" value={unit.num} name='unitNum'/>

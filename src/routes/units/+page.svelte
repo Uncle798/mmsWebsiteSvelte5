@@ -29,6 +29,8 @@
 	import type { SourceSelected, Source } from 'sveltekit-sse';
 	import { Menu, Portal } from '@skeletonlabs/skeleton-svelte';
 	import { MenuIcon } from 'lucide-svelte';
+	import { humanUnitSize } from '$lib/utils/humanUnitSize';
+	import { humanUnitNum } from '$lib/utils/humanUnitNum';
 
 	let { data }: { data: PageData } = $props();
 	let modalOpen = $state(false);
@@ -128,7 +130,7 @@
       value: string;
    }
    const comboboxData:ComboboxData[] = $derived(data.sizes.map(size => ({
-		label: size.replace(/^0+/gm, '').replace(/x0/gm, 'x'),
+		label: humanUnitSize(size),
 		value: size
 	})))
 	onMount(() => {
@@ -238,8 +240,6 @@
                	{#each slicedUnits(filteredUnits(searchedUnits(units))) as unit (unit.num)}
                	{@const lease = leases?.find((lease) => lease.unitNum === unit.num)}
 						{@const unitNotesForm = data.unitNotesForms.find((formData) => formData.id === unit.num)}
-						{@const humanUnitNum = unit.num.replace(/^0+/gm, '')}
-						{@const humanUnitSize = unit.size.replace(/^0+/gm,'').replace(/x0/gm,'x')}
 							<div class="border-2 border-primary-50-950 rounded-lg grid grid-cols-1 sm:grid-cols-2 my-2 gap-2">
 								<div class="relative">
 									<UnitEmployee {unit} classes=''/>
@@ -264,10 +264,10 @@
 											<Menu.Positioner>
 												<Menu.Content>
 													<Menu.Item value='changeAllPrice'>
-														<Menu.ItemText>Change all {humanUnitSize} prices</Menu.ItemText>
+														<Menu.ItemText>Change all {humanUnitSize(unit.size)} prices</Menu.ItemText>
 													</Menu.Item>
 													<Menu.Item value='changeDeposit'>
-														<Menu.ItemText>Change the deposit for unit {humanUnitNum}</Menu.ItemText>
+														<Menu.ItemText>Change the deposit for unit {humanUnitNum(unit.num)}</Menu.ItemText>
 													</Menu.Item>
 												</Menu.Content>
 											</Menu.Positioner>

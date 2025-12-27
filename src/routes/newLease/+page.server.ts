@@ -10,6 +10,7 @@ import { error, redirect } from "@sveltejs/kit";
 import { ratelimit } from "$lib/server/rateLimit";
 import { qStash } from "$lib/server/qStash";
 import { PUBLIC_PHONE, PUBLIC_URL } from "$env/static/public";
+import { invoiceNoteDeposit } from "$lib/utils/invoiceNoteDeposit";
 
 export const load:PageServerLoad = (async (event) =>{
    const unitNum = event.url.searchParams.get('unitNum');
@@ -159,7 +160,7 @@ export const actions:Actions = {
             invoiceAmount: unit.deposit,
             customerId: lease.customerId,
             leaseId: lease.leaseId,
-            invoiceNotes:'Deposit for unit ' + lease.unitNum.replace(/^0+/gm,''),
+            invoiceNotes: invoiceNoteDeposit(lease.unitNum),
             deposit: true,  
             invoiceDue: new Date()
          }

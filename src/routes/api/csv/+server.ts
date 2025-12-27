@@ -6,6 +6,8 @@ import type { Invoice, User } from '../../../generated/prisma/client';
 import dayjs from 'dayjs';
 import { stringify } from 'csv';
 import { sortUsers } from '$lib/utils/userSort';
+import { humanUnitNum } from '$lib/utils/humanUnitNum';
+import { humanUnitSize } from '$lib/utils/humanUnitSize';
 
 export const POST: RequestHandler = async (event) => {
    if(!event.locals.user){
@@ -81,8 +83,8 @@ export const POST: RequestHandler = async (event) => {
                sortingName = 'unavailable';
             }
             const json = {
-               'Unit number': unit.num.toString().replace(/^0+/gm, ''),
-               'Size': unit.size.replace(/0/gm,'').replace(/x0/gm, 'x'),
+               'Unit number': humanUnitNum(unit.num),
+               'Size': humanUnitSize(unit.size),
                'Family name': sortingName,
                'Given name': customer?.givenName ? customer.givenName : '',
                'Invoice due': customerInvoices[0]?.invoiceDue ? dayjs(customerInvoices[0].invoiceDue).format('MM/DD/YYYY') : '',
@@ -169,7 +171,7 @@ export const POST: RequestHandler = async (event) => {
             let unitNumbers:string[] = [];
             const customerLeases = leases.filter((lease) => lease.customerId === customer.id)
             for(const lease of customerLeases){
-               unitNumbers.push(lease.unitNum.replace(/^0+/gm, ''));
+               unitNumbers.push(humanUnitNum(lease.unitNum));
             }
             const address = await prisma.address.findFirst({
                where: {

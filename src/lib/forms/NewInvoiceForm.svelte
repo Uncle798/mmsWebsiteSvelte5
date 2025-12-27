@@ -23,6 +23,7 @@
 	import { Portal, Tooltip, useTooltip } from "@skeletonlabs/skeleton-svelte";
 	import TextArea from "$lib/formComponents/TextArea.svelte";
 	import DatePickerSingle from "$lib/formComponents/DatePickerSingle.svelte";
+	import { humanUnitNum } from "$lib/utils/humanUnitNum";
    
    interface Props {
       data: SuperValidated<Infer<NewInvoiceFormSchema>>;
@@ -75,7 +76,7 @@
       value: customer.id
    })));
    const leasesComboboxData:ComboboxData[] | undefined = $derived(leases?.map(lease => ({
-      label: lease.unitNum.replace(/^0+/gm, ''),
+      label: humanUnitNum(lease.unitNum),
       value: lease.leaseId
    })));
    const id = $props.id();
@@ -102,7 +103,7 @@
       }
       if(lease){
          $form.invoiceAmount=lease.price;
-         $form.invoiceNotes=`Rent for unit ${lease.unitNum.replace(/^0+/gm, '')} for ${dayjs().format('MMMM YYYY')}`;
+         $form.invoiceNotes=`Rent for unit ${humanUnitNum(lease.unitNum)} for ${dayjs().format('MMMM YYYY')}`;
       }
       if(customer){
          $form.customerId=customer.id;

@@ -9,9 +9,9 @@ import type { Unit } from '../../../generated/prisma/client';
 export const load:PageServerLoad = (async (event) => {
    const userId = event.url.searchParams.get('userId');
    const unitNotesForm = await superValidate(valibot(unitNotesFormSchema));
-   let availableUnits:Promise<Unit[]>;
+   let availableUnits:Unit[];
    if(event.locals.user?.employee){
-      availableUnits = prisma.unit.findMany({
+      availableUnits = await prisma.unit.findMany({
          where: {
             AND: [
                { unavailable: false },
@@ -30,7 +30,7 @@ export const load:PageServerLoad = (async (event) => {
          }
       })
    } else {
-      availableUnits = prisma.unit.findMany({
+      availableUnits = await prisma.unit.findMany({
          where: {
             AND: [
                { unavailable: false },
