@@ -8,6 +8,7 @@
       "anvilco",
       "autoincrement",
       "cuid",
+      "inngest",
       "pdfmake",
       "superforms"
    ]
