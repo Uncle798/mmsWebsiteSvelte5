@@ -12,7 +12,6 @@
 	import FormModal from '$lib/displayComponents/Modals/FormModal.svelte';
 	import AlternativeContactForm from '$lib/forms/AlternativeContactForm.svelte';
 	import AlternativeContactRemovalForm from '$lib/forms/AlternativeContactRemovalForm.svelte';
-	import { goto, } from '$app/navigation';
 	import LeaseChangeForm from '$lib/forms/LeaseChangeForm.svelte';
 	import Button from '$lib/core/Button.svelte';
 	import { Menu, Portal } from '@skeletonlabs/skeleton-svelte';
@@ -29,14 +28,14 @@
       bind:modalOpen={modalOpen}
    >
       {#snippet content()}
-         {#if modalReason === 'leaseEnd'}
-            <LeaseEndForm data={data.leaseEndForm} leaseId={data.lease!.leaseId} bind:leaseEndModalOpen={modalOpen} />
+         {#if modalReason === 'leaseEnd' && data.lease}
+            <LeaseEndForm data={data.leaseEndForm} leaseId={data.lease.leaseId} bind:leaseEndModalOpen={modalOpen} />
          {:else if modalReason === 'alternativeContact'}
             <AlternativeContactForm data={data.alternativeContactForm} leaseId={data.lease!.leaseId} bind:modalOpen={modalOpen} />
          {:else if modalReason === 'alternativeContactRemoval'}
             <AlternativeContactRemovalForm data={data.removeAlternativeContactForm} alternativeContactId={currentAlternativeContactId} bind:modalOpen={modalOpen} />
-         {:else if modalReason === 'leaseChange'}
-            <LeaseChangeForm data={data.leaseChangeForm} lease={data.lease!} bind:modalOpen={modalOpen}/>
+         {:else if modalReason === 'leaseChange' && data.lease}
+            <LeaseChangeForm data={data.leaseChangeForm} lease={data.lease} bind:modalOpen={modalOpen}/>
          {/if}
       {/snippet}
    </FormModal>
@@ -44,8 +43,8 @@
 {#if data.user?.employee}   
    <div class="mt-14 sm:mt-10 mb-8 mx-2">
       {#if data.lease}
-         <div class="border-2 rounded-lg border-primary-50-950 relative">
-            <LeaseEmployee lease={data.lease} open={true} classes=''/>
+         <div class="border-2 rounded-lg border-primary-50-950 relative flex flex-col sm:flex-row">
+            <LeaseEmployee lease={data.lease} open={true} classes='place-self-start mx-2'/>
             <Menu onSelect={(e) => {
                switch (e.value) {
                   default:
@@ -73,22 +72,17 @@
             </Menu>
             <div class="m-1 sm:m-2">
                {#if data.customer}
-                  <UserEmployee user={data.customer} classes='mx-2'/>
+                  <UserEmployee user={data.customer} classes=''/>
                {/if}
                {#if data.address}
                   {#if data.currentAddress}
-                  <label class="label-text">Lease Address:
-                     <AddressEmployee address={data.address} classes='text-base mx-2' />
-                  </label>
+                     <AddressEmployee address={data.address} classes='' />
                   {:else}
-                     <AddressEmployee address={data.address} classes='mx-2'/>
+                     <AddressEmployee address={data.address} classes=''/>
                   {/if}
                {/if}
                {#if data.currentAddress}
-                  <label >Current address
-                     <AddressEmployee address={data.currentAddress} classes='mx-2'/>
-                  </label>
-                  
+                  <AddressEmployee address={data.currentAddress} classes=''/>
                {/if}
             </div>
             <div>             
