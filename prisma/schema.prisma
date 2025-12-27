@@ -39,7 +39,7 @@ model User {
   employeeDiscountCode     DiscountCode[]
   PropertyWithLien         PropertyWithLien[]
   leaseAlternativeContacts LeaseAlternativeContacts[]
-  expenseses               Expense[]                  @relation("employee")
+  expenses                 Expense[]                  @relation("employee")
   transactions             Expense[]                  @relation("vendor")
 
   @@unique([id, email])

@@ -20,11 +20,6 @@ Thumbs.db
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 app.log
-<<<<<<< HEAD
-.vscode/settings.json
-seed.log
-=======
->>>>>>> origin/main
 prisma/migrations/0_init/migration.sql
 log.txt
 app2.log

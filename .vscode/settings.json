@@ -1,0 +1,12 @@
+{
+   "workbench.editor.labelFormat": "short",
+   "explorer.sortOrder": "filesFirst",
+   "explorer.compactFolders": false,
+   "scm.compactFolders": false,
+   "workbench.tree.indent": 8,
+   "cSpell.words": [
+      "autoincrement",
+      "cuid",
+      "superforms"
+   ]
+}
