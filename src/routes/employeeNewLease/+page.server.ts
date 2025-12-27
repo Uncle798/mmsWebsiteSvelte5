@@ -121,7 +121,7 @@ export const actions: Actions = {
       }
       const leaseForm = await superValidate(event.request, valibot(newLeaseSchema));
       if(!leaseForm.valid){
-         return message(leaseForm, 'Not valid');
+         return message(leaseForm, 'Form invalid');
       }
       const { success, reset } = await ratelimit.employeeForm.limit(event.locals.user.id);
 		if(!success) {
@@ -145,7 +145,7 @@ export const actions: Actions = {
          }
       });
       if(!unit){
-         return message(leaseForm, 'unit not found');
+         return message(leaseForm, 'Unit not found');
       }
       const currentLease = await prisma.lease.findFirst({
          where:{
