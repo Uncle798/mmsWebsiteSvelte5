@@ -1,5 +1,5 @@
-<!-- <script lang="ts">
-    import { PUBLIC_STRIPE_TEST, PUBLIC_URL } from '$env/static/public';
+<script lang="ts">
+    import { PUBLIC_STRIPE_PUBLISHABLE_KEY, PUBLIC_URL } from '$env/static/public';
     import { onMount } from 'svelte';
     import { loadStripe } from '@stripe/stripe-js'
 	import Header from '$lib/Header.svelte';
@@ -17,8 +17,7 @@
     let mounted = $state(false);
     let checkoutElement = $state<StripeEmbeddedCheckout>();
     onMount(async () =>{
-
-        stripe = await loadStripe(PUBLIC_STRIPE_TEST);
+        stripe = await loadStripe(PUBLIC_STRIPE_PUBLISHABLE_KEY);
         clientSecret = await createCheckout();
         stripe?.initEmbeddedCheckout({clientSecret}).then((element) => {
 
@@ -98,4 +97,4 @@
         {:else}
         <div bind:this={wrapper} class="mt-14 sm:mt-10 m-2" in:fade={{duration:600}}></div>
     {/if}
-{/if} -->
+{/if}

@@ -16,7 +16,7 @@ export const load:PageServerLoad = (async (event) => {
    }
    const invoice = await prisma.invoice.findUnique({
       where: {
-         invoiceNum:parseInt(invoiceNum!, 10),
+         invoiceNum:parseInt(invoiceNum, 10),
       }
    })
    if(!invoice){
@@ -24,15 +24,18 @@ export const load:PageServerLoad = (async (event) => {
    }
    const customer = await prisma.user.findFirst({
       where: {
-         id: invoice.customerId!, 
+         id: invoice.customerId, 
       }
-   })
+   });
+   if(!customer){
+      throw error(500, 'Customer not found');
+   }
    const stripeId = event.url.searchParams.get('stripeId');
    const sessionsList = await stripe.checkout.sessions.list({status:'open'});
    if(sessionsList){
       for(const session of sessionsList.data){
          console.log(session)
-         if(session.customer?.toString() === customer?.stripeId){
+         if(session.customer?.toString() === customer.stripeId){
             console.log(session)
             await stripe.checkout.sessions.expire(session.id)
          }
