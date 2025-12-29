@@ -25,6 +25,7 @@ model User {
   customerNotes            String?
   doNotRent                Boolean                    @default(false)
   alternative              Boolean                    @default(false)
+  stripeId                 String?
   address                  Address[]
   customerInvoices         Invoice[]                  @relation("customer")
   employeeInvoices         Invoice[]                  @relation("employee")
@@ -166,6 +167,7 @@ model PaymentRecord {
   paymentNotes     String?
   deposit          Boolean        @default(false)
   refundedAmount   Float          @default(0.0)
+  stripeId         String?
   paymentType      PaymentType
   invoice          Invoice?       @relation(fields: [invoiceNum], references: [invoiceNum])
   customer         User           @relation("customer", fields: [customerId], references: [id])
@@ -183,6 +185,7 @@ model RefundRecord {
   refundCompleted  DateTime?
   paymentRecordNum Int
   deposit          Boolean         @default(false)
+  stripe           String?
   refundType       PaymentType
   paymentRecord    PaymentRecord[]
   customer         User            @relation("customer", fields: [customerId], references: [id])
