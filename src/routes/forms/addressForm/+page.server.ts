@@ -45,7 +45,7 @@ export const actions: Actions = {
          let phoneNum1;
          let phoneNum1Country;
          if(data.phoneNum1){
-            const phoneValidResponse = await fetch(`https://api.dev.me/v1-get-phone-details?phone=${addressForm.data.phoneNum1Country}${addressForm.data.phoneNum1}`,
+            const phoneValidResponse = await fetch(`https://api.phone-check.app/v1-get-phone-details?phone=${addressForm.data.phoneNum1Country}${addressForm.data.phoneNum1}`,
                {
                   headers: {
                      'Accept': 'application/json',
@@ -54,6 +54,7 @@ export const actions: Actions = {
                }
             )
             phoneValid = await phoneValidResponse.json();
+            console.log(phoneValid)
             if(!phoneValid.valid){
                return message(addressForm, 'Phone number not valid')
             }
