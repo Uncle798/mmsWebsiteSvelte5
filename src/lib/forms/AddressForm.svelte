@@ -10,16 +10,18 @@
 	import FormMessage from '$lib/formComponents/FormMessage.svelte';
 	import { onMount, untrack } from 'svelte';
 	import { page } from '$app/state';
+	import type { Address } from '../../generated/prisma/browser';
 
    interface Props {
       data: SuperValidated<Infer<AddressFormSchema>>, 
+      address?: Address;
       addressModalOpen?: boolean,
       userId?: string,
       redirectTo?: string,
       classes?: string
    }
 
-   let {data, addressModalOpen=$bindable(false), userId, redirectTo, classes }:Props = $props();
+   let {data, address, addressModalOpen=$bindable(false), userId, redirectTo, classes }:Props = $props();
    // svelte-ignore state_referenced_locally
    let { form, message, errors, constraints, enhance, delayed, timeout, capture, restore, } = superForm(data, {
       onChange(event) {
@@ -51,6 +53,16 @@
    }
    const url = page.url.pathname
    onMount(() =>{
+      if(address){
+         $form.address1 = address.address1 ? address.address1 : undefined;
+         $form.address2 = address.address2 ? address.address2 : undefined;
+         $form.city = address.city ? address.city : undefined;
+         $form.state = address.state ? address.state : undefined;
+         $form.postalCode = address.postalCode ? address.postalCode : undefined;
+         $form.country = address.country ? address.country : undefined;
+         $form.phoneNum1 = address.phoneNum1 ? address.phoneNum1 : undefined;
+         $form.phoneNum1Country = address.phoneNum1Country ? address.phoneNum1Country : undefined;
+      }
       for(const key in $form){
          const fullKey = `${url}/addressForm/userId=${userId}:${key}`;
          const storedValue = sessionStorage.getItem(fullKey)

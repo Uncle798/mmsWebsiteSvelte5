@@ -41,9 +41,7 @@ export const load:PageServerLoad = (async (event) =>{
       where:{
          userId:event.locals.user.id
       }
-   }).catch((err) =>{
-      console.error(err);
-   });
+   })
    if(discountId){
       const discount = await prisma.discountCode.findUnique({
          where: {

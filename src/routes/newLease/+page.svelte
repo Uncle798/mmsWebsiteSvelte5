@@ -14,17 +14,19 @@
    import FormModal from '$lib/displayComponents/Modals/FormModal.svelte';
    import { currencyFormatter } from "$lib/utils/currencyFormatter";
 	import Button from '$lib/core/Button.svelte';
+	import type { Address } from '../../generated/prisma/browser';
    let { data }: {data:PageData} = $props();
    // svelte-ignore state_referenced_locally
    let { form, message, errors, constraints, enhance, delayed, timeout } = superForm(data.leaseForm);
    let modalOpen = $state(false);
+   let currentAddress = $state<Address>();
 </script>
 <Header title='New lease'/>
 <FormModal
    bind:modalOpen={modalOpen}
 >
    {#snippet content()}
-      <AddressForm data={data.addressForm} bind:addressModalOpen={modalOpen} userId={data.user?.id}/>
+      <AddressForm data={data.addressForm} bind:addressModalOpen={modalOpen} userId={data.user?.id} address={currentAddress}/>
    {/snippet}
 </FormModal>
 <div in:fade={{duration:600}} class="mx-2 mt-14 sm:mt-10">
@@ -46,6 +48,14 @@
       {/if}
       {#if data.address}
          <AddressCustomer address={data.address} />
+         <Button
+            type='button'
+            label='Edit address'
+            onClick={() => {
+               currentAddress=data.address ? data.address : undefined;
+               modalOpen=true;
+            }}
+         />
       {:else}
          <Button
             type='button'
