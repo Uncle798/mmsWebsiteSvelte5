@@ -64,6 +64,7 @@
 		"@pilcrowjs/object-parser": "^0.0.4",
 		"@prisma/adapter-neon": "^7.1.0",
 		"@prisma/client": "7.1.0",
+		"@stripe/stripe-js": "^8.6.0",
 		"@tailwindcss/vite": "^4.1.18",
 		"@types/pdfmake": "^0.2.12",
 		"@upstash/qstash": "^2.8.4",
