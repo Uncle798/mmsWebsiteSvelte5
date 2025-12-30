@@ -4,7 +4,7 @@ import { decryptRSA } from '@anvilco/encryption';
 import { ANVIL_RSA_PRIVATE_KEY_BASE64 } from '$env/static/private';
 import type { RequestHandler } from './$types';
 import { error } from '@sveltejs/kit';
-import { invoiceRentNote } from '$lib/utils/invoiceNoteRent';
+import { invoiceNoteRent } from '$lib/utils/invoiceNoteRent';
 
 const key = Buffer.from(ANVIL_RSA_PRIVATE_KEY_BASE64, 'base64').toString('ascii');
 
@@ -47,7 +47,7 @@ export const POST: RequestHandler = async (event) => {
                   data: {
                      customerId: lease.customerId,
                      invoiceAmount: lease.price,
-                     invoiceNotes: invoiceRentNote(lease.unitNum, lease.leaseEffectiveDate),
+                     invoiceNotes: invoiceNoteRent(lease.unitNum, lease.leaseEffectiveDate),
                      invoiceDue: lease.leaseEffectiveDate,
                      leaseId: lease.leaseId
                   }

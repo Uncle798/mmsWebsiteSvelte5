@@ -8,6 +8,7 @@
 	import PhoneInput from '$lib/formComponents/PhoneInput.svelte';
 	import FormSubmitWithProgress from '$lib/formComponents/FormSubmitWithProgress.svelte';
 	import EmailInput from '$lib/formComponents/EmailInput.svelte';
+	import FormMessage from "$lib/formComponents/FormMessage.svelte";
 
    interface Props {
       data: SuperValidated<Infer<PropertySubjectToLienSchema>>;
@@ -16,14 +17,16 @@
       addressId?: string;
       redirectTo?: string; 
       classes?: string;
+      modalOpen?: boolean;
    }
-   let { data, leaseId, userId, addressId, redirectTo, classes}:Props = $props();
+   let { data, leaseId, userId, addressId, redirectTo, modalOpen=$bindable(), classes}:Props = $props();
    // svelte-ignore state_referenced_locally
-   let { form, errors, constraints, enhance, delayed, timeout } = superForm(data)
+   let { form, errors, constraints, enhance, delayed, timeout, message } = superForm(data)
 </script>
 
 <div class={classes}>
-   <form action="/forms/propertySubjectToLienForm?leaseId={leaseId}&userId={userId}&addressId={addressId}&redirectTo={redirectTo}" method="POST">  
+   <FormMessage message={$message} />
+   <form action="/forms/propertySubjectToLienForm?leaseId={leaseId}&userId={userId}&addressId={addressId}&redirectTo={redirectTo}" method="POST" use:enhance>  
       <TextArea
          value={$form.description}
          label='Property description'
@@ -147,7 +150,7 @@
             </div>
          </div>
          <input type="hidden" value={leaseId} name='leaseId'/>
-         <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} />
+         <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} classes='my-2' buttonText='Add property'/>
       </div>
    </form>
 </div>

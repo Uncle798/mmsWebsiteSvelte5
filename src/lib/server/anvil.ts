@@ -4,6 +4,7 @@ import { ANVIL_API_KEY } from "$env/static/private";
 import type { Address, Lease, Unit, User } from "../../generated/prisma/client";
 import { humanUnitNum } from "$lib/utils/humanUnitNum";
 import { humanUnitSize } from "$lib/utils/humanUnitSize";
+import dayjs from "dayjs";
 
 export const anvilClient = new Anvil({apiKey:ANVIL_API_KEY});
 
@@ -14,7 +15,8 @@ export function getPacketVariables(customer:User, lease:Lease, unit:Unit, employ
    if(!customerName){
       customerName = `${customer.givenName} ${customer.familyName}`
    }
-   const unitNum = humanUnitNum(unit.num)
+   const unitNum = humanUnitNum(unit.num);
+   const filename = `${PUBLIC_COMPANY_NAME} Lease unit ${unitNum} ${customerName}.pdf`
    return {
       isDraft: false,
       isTest: true,
@@ -23,27 +25,32 @@ export function getPacketVariables(customer:User, lease:Lease, unit:Unit, employ
       signatureEmailBody: `Please sign the attached lease for unit ${unitNum} from ${PUBLIC_COMPANY_NAME}`,
       files:[
          {
+            id: 'leaseTemplate',
             castEid: leaseTemplateId,
+            filename,
          }
       ],
       data: {
          payloads: {
             leaseTemplate:{
                data: {
-                  'customerName':customerName,
-                  'companyName': PUBLIC_COMPANY_NAME,
-                  'leaseEffectiveDate': lease.leaseEffectiveDate,
-                  'unitNum': unitNum,
-                  'size': humanUnitSize(unit.size),
-                  'price': lease.price,
-                  'address':{
-                     "street1": address.address1,
-                     "street2": address.address2,
-                     "city": address.city,
-                     'state': address.state,
-                     'zip': address.postalCode,
-                     'country': address.country
-                  }
+                  customerName,
+                  companyName: PUBLIC_COMPANY_NAME,
+                  leaseStartDay: lease.leaseCreatedAt.getDate(),
+                  leaseStartMonth: dayjs(lease.leaseCreatedAt).format('MMMM'),
+                  leaseStartYear: dayjs(lease.leaseCreatedAt).format('YYYY'),
+                  unitNum,
+                  unitSize: humanUnitSize(unit.size),
+                  rentDueDate: lease.leaseCreatedAt.getDate(),
+                  unitPrice: lease.price,
+                  address1: address.address1,
+                  address2: address.address2,
+                  city: address.city,
+                  state: address.state,
+                  postalCode: address.postalCode,
+                  country: address.country,
+                  phoneNum: address.phoneNum1,
+                  numberOfKeys: lease.keysProvided,
                }
             }
          }
@@ -74,11 +81,11 @@ export function getPacketVariables(customer:User, lease:Lease, unit:Unit, employ
             fields: [
                {
                   fileId: 'leaseTemplate',
-                  fieldId: 'companySignDate',
+                  fieldId: 'managerSignature',
                },
                {
                   fileId: 'leaseTemplate',
-                  fieldId: 'companySign'
+                  fieldId: 'managerSignatureDate'
                }
             ]
          }
