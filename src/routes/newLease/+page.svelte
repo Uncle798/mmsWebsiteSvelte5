@@ -20,6 +20,7 @@
    let { form, message, errors, constraints, enhance, delayed, timeout } = superForm(data.leaseForm);
    let modalOpen = $state(false);
    let currentAddress = $state<Address>();
+   let lienFormNeeded = $state(false)
 </script>
 <Header title='New lease'/>
 <FormModal
@@ -82,11 +83,20 @@
             </div>
          {/if}
       {/if}
-      <div class="flex">
-         {#if data.unit && data.address}
-            <FormProgress delayed={$delayed} timeout={$timeout} buttonText='The above is correct I would like to pay my deposit' classes='my-2'/>
-         {/if}
+      <Checkbox
+         label='No property being stored has a lien'
+         name='propertySubjectToLien'
+         bind:value={$form.propertySubjectToLien}
+      />
+      <div class="font-bold w-72"> 
+         IDAHO CODE SECTION 55-2304 REQUIRES TENANT TO NOTIFY
+         LESSOR OF ANY LIEN HOLDERS OR SECURED PARTIES WHO
+         HAVE AN INTEREST IN PROPERTY THAT IS STORED IN THE
+         UNIT.
       </div>
+      {#if data.unit && data.address}
+         <FormProgress delayed={$delayed} timeout={$timeout} buttonText='The above is correct I would like to pay my deposit' classes='my-2'/>
+      {/if}
    </form>
    {#if !data.discount}
       <div in:fade={{duration:600}} out:fade={{duration:0}}>

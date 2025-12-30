@@ -162,6 +162,9 @@ export const actions:Actions = {
             invoiceDue: new Date()
          }
       });
+      if(!leaseForm.data.propertySubjectToLien){
+         redirect(303, `/newLease/lienForm?leaseId=${lease.leaseId}&invoiceNum=${invoice.invoiceNum}`);
+      }
       redirect(303, `/makePayment?invoiceNum=${invoice.invoiceNum}&newLease=true&leaseId=${lease.leaseId}`)
    }
 }
