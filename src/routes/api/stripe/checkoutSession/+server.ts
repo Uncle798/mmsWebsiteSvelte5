@@ -22,7 +22,7 @@ export const POST: RequestHandler = async (event) => {
    }
    const customer = await prisma.user.findUnique({
       where: {
-         id: invoice!.customerId
+         id: invoice.customerId
       }
    });
    if(!customer){
@@ -84,7 +84,7 @@ export const POST: RequestHandler = async (event) => {
    } else {
       let returnUrl = `${PUBLIC_URL}/thanks?customerId=${customer.id}`;
       if(newLease){
-         returnUrl = `${PUBLIC_URL}/newLease/leaseSent?leaseId=${leaseId}`;
+         returnUrl = `${PUBLIC_URL}/newLease/leaseSent?leaseId=${leaseId}&invoiceNum=${invoice.invoiceNum}`;
       }
       const session = await stripe.checkout.sessions.create({
          currency: 'usd',

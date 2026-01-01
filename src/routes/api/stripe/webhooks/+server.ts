@@ -189,17 +189,19 @@ export const POST: RequestHandler = async (event) => {
                   });
                   if(invoice){
                      if(invoice.amountPaid){
-                        const paymentRecord = await prisma.paymentRecord.findUnique({
+                        const paymentRecords = await prisma.paymentRecord.findMany({
                            where: {
-                              paymentNumber: invoice.paymentRecordNum
+                              invoiceNum: invoice.invoiceNum
                            }
-                        })
-                        if(paymentRecord){
-                           await prisma.paymentRecord.delete({
-                              where: {
-                                 paymentNumber: paymentRecord.paymentNumber
-                              }
-                           })
+                        });
+                        for(const payment of paymentRecords){
+                           if(payment.paymentType === 'CREDIT'){
+                              await prisma.paymentRecord.delete({
+                                 where: {
+                                    paymentNumber: payment.paymentNumber
+                                 }
+                              })
+                           }
                         }
                      }
                      await prisma.invoice.delete({
@@ -230,7 +232,7 @@ export const POST: RequestHandler = async (event) => {
                      }
                   }
                }
-               handlePaymentIntent(paymentIntent);
+               // handlePaymentIntent(paymentIntent);
                return new Response(JSON.stringify('ok'), {status:200});
             }
             case 'customer.subscription.created': {
@@ -373,7 +375,7 @@ export const POST: RequestHandler = async (event) => {
                            customerId: paymentRecord.customerId,
                            refundAmount: r.amount,
                            stripeId: r.id,
-                           refundType: 'STRIPE'
+                           refundType: 'CREDIT'
                         }
                      })
                   }
