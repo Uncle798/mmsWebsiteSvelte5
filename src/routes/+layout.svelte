@@ -49,7 +49,8 @@
 		{link: '/employeeNewLease', label:'New lease', toolTip: 'Rent a unit here'},
 		{link: '/employeeNewCustomer', label:'New customer', toolTip: 'Create a new customer'},
 		{link: '/expenses', label: 'Expenses'},
-		{link: '/expenses/new', label: 'New expense'}
+		{link: '/expenses/new', label: 'New expense'},
+		{link: '/leases/new', label: 'Upload new lease template'}
 	]
 	let adminLinks:Link[] = [
 		{link: '/users', label:'All Users', toolTip: 'Change the employment status of a user here'},
