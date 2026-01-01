@@ -33,6 +33,7 @@
 		{link: '/discounts', label: 'Discounts', toolTip: 'Manage discounts here'},
 		{link: '/users/customers', label: 'Customers', toolTip: 'View all current customers here'},
 		{link: '/leases', label: 'All Leases', toolTip: 'Find every lease old and new here'},
+		{link: '/leases/templates', label: 'Lease templates'},
 		{link: '/invoices', label: 'Invoices', toolTip: 'All invoices, may take a second to load'},
 		{link: '/invoices/new', label: 'New Invoice', toolTip: 'Create a new invoice, the first step in getting paid'},
 		{link: '/invoices/createdToday', label: 'Invoices created today'},
@@ -50,7 +51,6 @@
 		{link: '/employeeNewCustomer', label:'New customer', toolTip: 'Create a new customer'},
 		{link: '/expenses', label: 'Expenses'},
 		{link: '/expenses/new', label: 'New expense'},
-		{link: '/leases/new', label: 'Upload new lease template'}
 	]
 	let adminLinks:Link[] = [
 		{link: '/users', label:'All Users', toolTip: 'Change the employment status of a user here'},
