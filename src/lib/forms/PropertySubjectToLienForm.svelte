@@ -16,17 +16,18 @@
       userId?: string;
       addressId?: string;
       redirectTo?: string; 
+      invoiceNum?: string | null;
       classes?: string;
       modalOpen?: boolean;
    }
-   let { data, leaseId, userId, addressId, redirectTo, modalOpen=$bindable(), classes}:Props = $props();
+   let { data, leaseId, userId, addressId, redirectTo, invoiceNum, modalOpen=$bindable(), classes}:Props = $props();
    // svelte-ignore state_referenced_locally
    let { form, errors, constraints, enhance, delayed, timeout, message } = superForm(data)
 </script>
 
 <div class={classes}>
    <FormMessage message={$message} />
-   <form action="/forms/propertySubjectToLienForm?leaseId={leaseId}&userId={userId}&addressId={addressId}&redirectTo={redirectTo}" method="POST" use:enhance>  
+   <form action="/forms/propertySubjectToLienForm?leaseId={leaseId}&userId={userId}&addressId={addressId}&redirectTo={redirectTo}&invoiceNum={invoiceNum}" method="POST" use:enhance>  
       <TextArea
          value={$form.description}
          label='Property description'
