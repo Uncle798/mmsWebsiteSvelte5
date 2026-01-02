@@ -1,5 +1,5 @@
 import { prisma } from '$lib/server/prisma';
-import { anvilClient,  getPacketVariables, } from '$lib/server/anvil';
+import { anvilClient,  createLease,  getPacketVariables, } from '$lib/server/anvil';
 import { error, redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 
@@ -54,10 +54,28 @@ export const load:PageServerLoad = (async (event) => {
       if(!address){
          error(500, {message: 'Address not found'})
       }
-      let variables = getPacketVariables(customer, lease, unit, employee, address)
-      const { data, errors } = await anvilClient.createEtchPacket({
-         variables
+      const alternativeContact = await prisma.user.findFirst({
+         where: {
+            AND: [
+               {
+                  alternative: true,
+                  leaseAlternativeContacts: {
+                     some: {
+                        lease: {
+                           leaseId: lease.leaseId
+                        }
+                     }
+                  }
+               }
+            ]
+         }
+      });
+      const alternateAddress = await prisma.address.findFirst({
+         where: {
+            userId: alternativeContact?.id
+         }
       })
+      const { data, errors } = await createLease(customer, lease, unit, employee, address, alternativeContact!, alternateAddress!)
       if (errors) {
          // Note: because of the nature of GraphQL, statusCode may be a 200 even when
          // there are errors.
