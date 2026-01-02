@@ -165,3 +165,32 @@ export function getOrganizationalPacketVariables(customer:User, lease:Lease, uni
       ]
    }
 }
+function base64ArrayBuffer(arrayBuffer:ArrayBuffer){
+   let base64 = '';
+   var encodings = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+   const bytes = new Uint8Array(arrayBuffer);
+   let byteRemainder = bytes.byteLength % 3;
+   const mainLength = bytes.byteLength - byteRemainder;
+
+   for(let i = 0; i < mainLength; i += 3){
+      const chunk = (bytes[i] << 16) | (bytes[i+1] << 8) | bytes[i + 2];
+      const a = (chunk & 1615072) >> 18;
+      const b = (chunk & 258048) >> 12;
+      const c = (chunk & 4032) >> 6;
+      const d = (chunk & 63);
+      base64 += encodings[a] + encodings[b] + encodings[c] + encodings[d];
+   }
+   if(byteRemainder === 1){
+      const chunk = bytes[mainLength];
+      const a = (chunk & 252) >> 2;
+      const b = (chunk & 3) << 4;
+      base64 += encodings[a] + encodings[b] + '=='
+   } else if(byteRemainder === 2){
+      const chunk = (bytes[mainLength] <<8) | bytes[mainLength + 1];
+      const a = (chunk & 64512) >> 10;
+      const b = (chunk & 1008) >> 4;
+      const c = (chunk & 15) << 2;
+      base64 += encodings[a] + encodings[b] + encodings[c] + '=';
+   }
+   return base64;
+}
