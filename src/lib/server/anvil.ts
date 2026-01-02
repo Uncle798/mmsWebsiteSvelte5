@@ -165,6 +165,7 @@ export function getOrganizationalPacketVariables(customer:User, lease:Lease, uni
       ]
    }
 }
+// from https://gist.github.com/jonleighton/958841
 function base64ArrayBuffer(arrayBuffer:ArrayBuffer){
    let base64 = '';
    var encodings = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
