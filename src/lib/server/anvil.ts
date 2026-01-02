@@ -16,35 +16,38 @@ const fields = [
    {
       "id": "leaseStartDay",
       "name": "Lease Start Day",
-      "type": "date",
+      "type": "shortText",
       "pageNum": 0,
       "rect": {
-         "x": 144,
-         "y": 150,
+         "x": 148,
+         "y": 148,
          "height": 15,
          "width": 28
-      }
+      },
+      fontSize: 12,
+      fontWeight: 'bold',
+      textColor: '#FFFFFF'
    },
    {
       "id": "leaseStartMonth",
       "name": "Lease Start Month",
-      "type": "date",
+      "type": "shortText",
       "pageNum": 0,
       "rect": {
          "x": 212,
-         "y": 150,
+         "y": 148,
          "height": 15,
-         "width": 34
+         "width": 45
       }
    },
    {
       "id": "leaseStartYear",
       "name": "Lease Start Year",
-      "type": "date",
+      "type": "shortText",
       "pageNum": 0,
       "rect": {
-         "x": 250,
-         "y": 150,
+         "x": 255,
+         "y": 148,
          "height": 15,
          "width": 19
       }
@@ -52,11 +55,11 @@ const fields = [
    {
       "id": "tenantName",
       "name": "Tenant Name",
-      "type": "fullName",
+      "type": "shortText",
       "pageNum": 0,
       "rect": {
-         "x": 332,
-         "y": 165,
+         "x": 350,
+         "y": 160,
          "height": 15,
          "width": 160
       }
@@ -68,7 +71,7 @@ const fields = [
       "pageNum": 0,
       "rect": {
          "x": 264,
-         "y": 263,
+         "y": 250,
          "height": 15,
          "width": 44
       }
@@ -79,8 +82,8 @@ const fields = [
       "type": "shortText",
       "pageNum": 0,
       "rect": {
-         "x": 381,
-         "y": 263,
+         "x": 385,
+         "y": 250,
          "height": 15,
          "width": 52
       }
@@ -88,11 +91,11 @@ const fields = [
    {
       "id": "leaseStartDay",
       "name": "Lease Start Day",
-      "type": "date",
+      "type": "shortText",
       "pageNum": 0,
       "rect": {
          "x": 436,
-         "y": 407,
+         "y": 400,
          "height": 15,
          "width": 27
       }
@@ -100,11 +103,11 @@ const fields = [
    {
       "id": "leaseStartMonth",
       "name": "Lease Start Month",
-      "type": "date",
+      "type": "shortText",
       "pageNum": 0,
       "rect": {
          "x": 77,
-         "y": 423,
+         "y": 415,
          "height": 15,
          "width": 103
       }
@@ -112,11 +115,11 @@ const fields = [
    {
       "id": "leaseStartYear",
       "name": "Lease Start Year",
-      "type": "date",
+      "type": "shortText",
       "pageNum": 0,
       "rect": {
          "x": 185,
-         "y": 423,
+         "y": 415,
          "height": 15,
          "width": 32
       }
@@ -128,7 +131,7 @@ const fields = [
       "pageNum": 0,
       "rect": {
          "x": 335,
-         "y": 521,
+         "y": 500,
          "height": 15,
          "width": 51
       }
@@ -136,11 +139,11 @@ const fields = [
    {
     "id": "leaseStartDay",
     "name": "Lease Start Day",
-    "type": "date",
+    "type": "shortText",
     "pageNum": 0,
     "rect": {
       "x": 164,
-      "y": 537,
+      "y": 510,
       "height": 15,
       "width": 38
     }
@@ -148,7 +151,7 @@ const fields = [
    {
     "id": "tenantsName",
     "name": "Tenants Name",
-    "type": "fullName",
+    "type": "shortText",
     "pageNum": 4,
     "rect": {
       "x": 340,
@@ -190,7 +193,7 @@ const fields = [
          "x": 424,
          "y": 200,
          "height": 15,
-         "width": 26
+         "width": 30
       }
    },
    {
@@ -259,7 +262,7 @@ const fields = [
       "type": "signature",
       "pageNum": 4,
       "rect": {
-      "x": (60 + 200 + 20),
+      "x": (60 + 200 + 40),
       "y": 300,
       "height": 40,
       "width": 200
@@ -501,16 +504,28 @@ function base64ArrayBuffer(arrayBuffer:ArrayBuffer){
    return base64;
 }
 
+
+function arrayBufferToBase64(buffer:ArrayBuffer){
+   let binary = '';
+   const bytes = new Uint8Array(buffer);
+   let length = bytes.byteLength;
+   for(let i =0; i < length; i++){
+      binary += String.fromCharCode(bytes[i]);
+   }
+   return btoa(binary);
+}
+
 export async function createLease(customer:User, lease:Lease, unit:Unit, employee:User, address:Address, alternateContact?:User, alternateAddress?:Address){
    const templateFiles = await list({
       token: BLOB_READ_WRITE_TOKEN,
       prefix: 'MMS Lease'
    });
    
-   const file = await (await fetch(templateFiles.blobs[0].url)).arrayBuffer();
+   const file = await fetch(templateFiles.blobs[0].url);
+   const arrayBuffer = await file.arrayBuffer();
    let base64 = '';
    if(file){
-      base64 = base64ArrayBuffer(file);
+      base64 = arrayBufferToBase64(arrayBuffer);
    }
    const properties = await prisma.propertyWithLien.findMany({
       where: {
@@ -668,7 +683,7 @@ export async function createLease(customer:User, lease:Lease, unit:Unit, employe
       signers.push({
          id: 'tenantSigner',
          routingOrder: 1, 
-         name: customer.organizationName ? customer.organizationName : `${customer.givenName, customer.familyName}`,
+         name: tenantName,
          email: customer.email!,
          fields: [
             {
@@ -678,7 +693,6 @@ export async function createLease(customer:User, lease:Lease, unit:Unit, employe
          ]
       })
    }
-   console.log(base64.length)
    return anvilClient.createEtchPacket({
       variables: {
          isDraft: false,
@@ -688,7 +702,7 @@ export async function createLease(customer:User, lease:Lease, unit:Unit, employe
             file: {
                data: base64,
                filename: `${PUBLIC_COMPANY_NAME} lease unit ${humanUnitNum(unit.num)} - ${tenantName}.pdf`,
-               mimetype: 'application/pdf'
+               mimetype: 'application/pdf',
             },
             fields,
          },
