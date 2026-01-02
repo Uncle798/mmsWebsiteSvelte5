@@ -1,5 +1,5 @@
 import { prisma } from '$lib/server/prisma';
-import { anvilClient,  createLease,  getPacketVariables, } from '$lib/server/anvil';
+import { createLease, } from '$lib/server/anvil';
 import { error, redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 
@@ -83,6 +83,7 @@ export const load:PageServerLoad = (async (event) => {
          console.error(JSON.stringify(errors, null, 2));
          console.error(data?.data['createEtchPacket'])
       } else {
+         console.log(data)
          const packetDetails = data?.data['createEtchPacket']
          const anvilEID = packetDetails['eid']
          await prisma.lease.update({
