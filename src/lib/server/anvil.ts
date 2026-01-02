@@ -35,7 +35,7 @@ const fields = [
       "pageNum": 0,
       "rect": {
          "x": 212,
-         "y": 148,
+         "y": 150,
          "height": 15,
          "width": 45
       }
@@ -46,8 +46,8 @@ const fields = [
       "type": "shortText",
       "pageNum": 0,
       "rect": {
-         "x": 255,
-         "y": 148,
+         "x": 260,
+         "y": 150,
          "height": 15,
          "width": 19
       }
@@ -58,8 +58,8 @@ const fields = [
       "type": "shortText",
       "pageNum": 0,
       "rect": {
-         "x": 350,
-         "y": 160,
+         "x": 370,
+         "y": 170,
          "height": 15,
          "width": 160
       }
@@ -71,7 +71,7 @@ const fields = [
       "pageNum": 0,
       "rect": {
          "x": 264,
-         "y": 250,
+         "y": 260,
          "height": 15,
          "width": 44
       }
@@ -83,7 +83,7 @@ const fields = [
       "pageNum": 0,
       "rect": {
          "x": 385,
-         "y": 250,
+         "y": 260,
          "height": 15,
          "width": 52
       }
@@ -95,7 +95,7 @@ const fields = [
       "pageNum": 0,
       "rect": {
          "x": 436,
-         "y": 400,
+         "y": 405,
          "height": 15,
          "width": 27
       }
@@ -107,7 +107,7 @@ const fields = [
       "pageNum": 0,
       "rect": {
          "x": 77,
-         "y": 415,
+         "y": 420,
          "height": 15,
          "width": 103
       }
@@ -119,7 +119,7 @@ const fields = [
       "pageNum": 0,
       "rect": {
          "x": 185,
-         "y": 415,
+         "y": 420,
          "height": 15,
          "width": 32
       }
@@ -131,7 +131,7 @@ const fields = [
       "pageNum": 0,
       "rect": {
          "x": 335,
-         "y": 500,
+         "y": 515,
          "height": 15,
          "width": 51
       }
@@ -143,14 +143,14 @@ const fields = [
     "pageNum": 0,
     "rect": {
       "x": 164,
-      "y": 510,
+      "y": 525,
       "height": 15,
       "width": 38
     }
    },
    {
-    "id": "tenantsName",
-    "name": "Tenants Name",
+    "id": "tenantName",
+    "name": "Tenant Name",
     "type": "shortText",
     "pageNum": 4,
     "rect": {
@@ -262,7 +262,7 @@ const fields = [
       "type": "signature",
       "pageNum": 4,
       "rect": {
-      "x": (60 + 200 + 40),
+      "x": (60 + 200 + 50),
       "y": 300,
       "height": 40,
       "width": 200
@@ -317,193 +317,6 @@ const fields = [
     }
   },
 ]
-
-export function getPacketVariables(customer:User, lease:Lease, unit:Unit, employee:User, address:Address){
-   let customerName = customer.organizationName;
-   if(!customerName){
-      customerName = `${customer.givenName} ${customer.familyName}`
-   }
-   const unitNum = humanUnitNum(unit.num);
-   const filename = `${PUBLIC_COMPANY_NAME} Lease unit ${unitNum} ${customerName}.pdf`
-   return {
-      isDraft: false,
-      isTest: true,
-      name: `${PUBLIC_COMPANY_NAME} Lease unit ${unitNum} ${customerName}`,
-      signatureEmailSubject: `Lease for Unit ${unitNum} at ${PUBLIC_COMPANY_NAME}`,
-      signatureEmailBody: `Please sign the attached lease for unit ${unitNum} from ${PUBLIC_COMPANY_NAME}`,
-      files:[
-         {
-            id: 'leaseTemplate',
-            castEid: leaseTemplateId,
-            filename,
-         }
-      ],
-      data: {
-         payloads: {
-            leaseTemplate:{
-               data: {
-                  customerName,
-                  companyName: PUBLIC_COMPANY_NAME,
-                  leaseStartDay: lease.leaseCreatedAt.getDate(),
-                  leaseStartMonth: dayjs(lease.leaseCreatedAt).format('MMMM'),
-                  leaseStartYear: dayjs(lease.leaseCreatedAt).format('YYYY'),
-                  unitNum,
-                  unitSize: humanUnitSize(unit.size),
-                  rentDueDate: lease.leaseCreatedAt.getDate(),
-                  unitPrice: lease.price,
-                  address1: address.address1,
-                  address2: address.address2,
-                  city: address.city,
-                  state: address.state,
-                  postalCode: address.postalCode,
-                  country: address.country,
-                  phoneNum: address.phoneNum1,
-                  numberOfKeys: lease.keysProvided,
-               }
-            }
-         }
-      },
-      signers: [
-         {
-            id: 'customer', 
-            name: customerName,
-            email: customer.email,
-            signerType: 'email',
-            fields: [
-               {
-                  fileId: 'leaseTemplate',
-                  fieldId: 'customerSignDate'
-               },
-               {
-                  fileId: 'leaseTemplate',
-                  fieldId: 'customerSign', 
-               }
-
-            ]
-         },
-         {
-            id: 'manager',
-            name: `${employee.givenName}, ${employee.familyName}`,
-            email: employee.email,
-            signerType: 'email',
-            fields: [
-               {
-                  fileId: 'leaseTemplate',
-                  fieldId: 'managerSignature',
-               },
-               {
-                  fileId: 'leaseTemplate',
-                  fieldId: 'managerSignatureDate'
-               }
-            ]
-         }
-      ]
-   }
-}
-export function getOrganizationalPacketVariables(customer:User, lease:Lease, unit:Unit, employee:User, address:Address){
-   return {
-      isDraft: false,
-      isTest: true,
-      name: `Fake Lease ${customer.organizationName} unit ${unit.num.replace(/^0+/gm,'')} at ${PUBLIC_COMPANY_NAME}`,
-      signatureEmailSubject: `Lease for Unit ${unit.num.replace(/^0+/gm,'')} at ${PUBLIC_COMPANY_NAME}`,
-      signatureEmailBody: `Please sign the attached lease for unit ${unit.num.replace(/^0+/gm,'')} from ${PUBLIC_COMPANY_NAME}`,
-      files:[
-         {
-            id:'leaseTemplate',
-            castEid: leaseTemplateId,
-         }
-      ],
-      data: {
-         payloads: {
-            leaseTemplate:{
-               data: {
-                  'customerName':customer.organizationName,
-                  'representativeName':customer.givenName + ' ' + customer.familyName,
-                  'companyName': PUBLIC_COMPANY_NAME,
-                  'leaseEffectiveDate': lease.leaseEffectiveDate,
-                  'unitNum': unit.num.replace(/^0+/gm,''),
-                  'size': unit.size,
-                  'price': lease.price,
-                  'address':{
-                     "street1": address.address1,
-                     "street2": address.address2,
-                     "city": address.city,
-                     'state': address.state,
-                     'zip': address.postalCode,
-                     'country': address.country
-                  }
-               }
-            }
-         }
-      },
-      signers: [
-         {
-            id: 'customer', 
-            name: `${customer.givenName}, ${customer.familyName}`,
-            email: customer.email,
-            signerType: 'email',
-            fields: [
-               {
-                  fileId: 'leaseTemplate',
-                  fieldId: 'customerSignDate'
-               },
-               {
-                  fileId: 'leaseTemplate',
-                  fieldId: 'customerSign', 
-               }
-
-            ]
-         },
-         {
-            id: 'manager',
-            name: `${employee.givenName}, ${employee.familyName}`,
-            email: employee.email,
-            signerType: 'email',
-            fields: [
-               {
-                  fileId: 'leaseTemplate',
-                  fieldId: 'companySignDate',
-               },
-               {
-                  fileId: 'leaseTemplate',
-                  fieldId: 'companySign'
-               }
-            ]
-         }
-      ]
-   }
-}
-// from https://gist.github.com/jonleighton/958841
-function base64ArrayBuffer(arrayBuffer:ArrayBuffer){
-   let base64 = '';
-   var encodings = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
-   const bytes = new Uint8Array(arrayBuffer);
-   let byteRemainder = bytes.byteLength % 3;
-   const mainLength = bytes.byteLength - byteRemainder;
-
-   for(let i = 0; i < mainLength; i += 3){
-      const chunk = (bytes[i] << 16) | (bytes[i+1] << 8) | bytes[i + 2];
-      const a = (chunk & 1615072) >> 18;
-      const b = (chunk & 258048) >> 12;
-      const c = (chunk & 4032) >> 6;
-      const d = (chunk & 63);
-      base64 += encodings[a] + encodings[b] + encodings[c] + encodings[d];
-   }
-   if(byteRemainder === 1){
-      const chunk = bytes[mainLength];
-      const a = (chunk & 252) >> 2;
-      const b = (chunk & 3) << 4;
-      base64 += encodings[a] + encodings[b] + '=='
-   } else if(byteRemainder === 2){
-      const chunk = (bytes[mainLength] <<8) | bytes[mainLength + 1];
-      const a = (chunk & 64512) >> 10;
-      const b = (chunk & 1008) >> 4;
-      const c = (chunk & 15) << 2;
-      base64 += encodings[a] + encodings[b] + encodings[c] + '=';
-   }
-   return base64;
-}
-
 
 function arrayBufferToBase64(buffer:ArrayBuffer){
    let binary = '';
@@ -705,6 +518,8 @@ export async function createLease(customer:User, lease:Lease, unit:Unit, employe
                mimetype: 'application/pdf',
             },
             fields,
+            fontSize: 12,
+            textColor: '#000000'
          },
          data,
          signers,
