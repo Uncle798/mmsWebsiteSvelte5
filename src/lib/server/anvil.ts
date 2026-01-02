@@ -470,6 +470,36 @@ export function getOrganizationalPacketVariables(customer:User, lease:Lease, uni
       ]
    }
 }
+// from https://gist.github.com/jonleighton/958841
+function base64ArrayBuffer(arrayBuffer:ArrayBuffer){
+   let base64 = '';
+   var encodings = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+   const bytes = new Uint8Array(arrayBuffer);
+   let byteRemainder = bytes.byteLength % 3;
+   const mainLength = bytes.byteLength - byteRemainder;
+
+   for(let i = 0; i < mainLength; i += 3){
+      const chunk = (bytes[i] << 16) | (bytes[i+1] << 8) | bytes[i + 2];
+      const a = (chunk & 1615072) >> 18;
+      const b = (chunk & 258048) >> 12;
+      const c = (chunk & 4032) >> 6;
+      const d = (chunk & 63);
+      base64 += encodings[a] + encodings[b] + encodings[c] + encodings[d];
+   }
+   if(byteRemainder === 1){
+      const chunk = bytes[mainLength];
+      const a = (chunk & 252) >> 2;
+      const b = (chunk & 3) << 4;
+      base64 += encodings[a] + encodings[b] + '=='
+   } else if(byteRemainder === 2){
+      const chunk = (bytes[mainLength] <<8) | bytes[mainLength + 1];
+      const a = (chunk & 64512) >> 10;
+      const b = (chunk & 1008) >> 4;
+      const c = (chunk & 15) << 2;
+      base64 += encodings[a] + encodings[b] + encodings[c] + '=';
+   }
+   return base64;
+}
 
 export async function createLease(customer:User, lease:Lease, unit:Unit, employee:User, address:Address, alternateContact?:User, alternateAddress?:Address){
    const templateFiles = await list({
@@ -477,8 +507,11 @@ export async function createLease(customer:User, lease:Lease, unit:Unit, employe
       prefix: 'MMS Lease'
    });
    
-   const file = await (await fetch(templateFiles.blobs[0].url)).text();
-   console.log(file)
+   const file = await (await fetch(templateFiles.blobs[0].url)).arrayBuffer();
+   let base64 = '';
+   if(file){
+      base64 = base64ArrayBuffer(file);
+   }
    const properties = await prisma.propertyWithLien.findMany({
       where: {
          leaseId: lease.leaseId
@@ -645,13 +678,18 @@ export async function createLease(customer:User, lease:Lease, unit:Unit, employe
          ]
       })
    }
+   console.log(base64.length)
    return anvilClient.createEtchPacket({
       variables: {
          isDraft: false,
          isTest: true, 
          files: {
             id: 'leaseTemplate',
-            file: file,
+            file: {
+               data: base64,
+               filename: `${PUBLIC_COMPANY_NAME} lease unit ${humanUnitNum(unit.num)} - ${tenantName}.pdf`,
+               mimetype: 'application/pdf'
+            },
             fields,
          },
          data,
@@ -662,34 +700,4 @@ export async function createLease(customer:User, lease:Lease, unit:Unit, employe
          replyToEmail: PUBLIC_COMPANY_EMAIL,
       }
    })
-}
-// from https://gist.github.com/jonleighton/958841
-function base64ArrayBuffer(arrayBuffer:ArrayBuffer){
-   let base64 = '';
-   var encodings = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
-   const bytes = new Uint8Array(arrayBuffer);
-   let byteRemainder = bytes.byteLength % 3;
-   const mainLength = bytes.byteLength - byteRemainder;
-
-   for(let i = 0; i < mainLength; i += 3){
-      const chunk = (bytes[i] << 16) | (bytes[i+1] << 8) | bytes[i + 2];
-      const a = (chunk & 1615072) >> 18;
-      const b = (chunk & 258048) >> 12;
-      const c = (chunk & 4032) >> 6;
-      const d = (chunk & 63);
-      base64 += encodings[a] + encodings[b] + encodings[c] + encodings[d];
-   }
-   if(byteRemainder === 1){
-      const chunk = bytes[mainLength];
-      const a = (chunk & 252) >> 2;
-      const b = (chunk & 3) << 4;
-      base64 += encodings[a] + encodings[b] + '=='
-   } else if(byteRemainder === 2){
-      const chunk = (bytes[mainLength] <<8) | bytes[mainLength + 1];
-      const a = (chunk & 64512) >> 10;
-      const b = (chunk & 1008) >> 4;
-      const c = (chunk & 15) << 2;
-      base64 += encodings[a] + encodings[b] + encodings[c] + '=';
-   }
-   return base64;
 }
