@@ -328,7 +328,7 @@ function arrayBufferToBase64(buffer:ArrayBuffer){
    return btoa(binary);
 }
 
-export async function createLease(customer:User, lease:Lease, unit:Unit, employee:User, address:Address, alternateContact?:User, alternateAddress?:Address){
+export async function createLease(customer:User, lease:Lease, unit:Unit, employee:User, address:Address, alternateContact?:User, alternateAddress?:Address, testing?:boolean){
    const templateFiles = await list({
       token: BLOB_READ_WRITE_TOKEN,
       prefix: 'MMS Lease'
@@ -349,7 +349,8 @@ export async function createLease(customer:User, lease:Lease, unit:Unit, employe
          lienHolderAddress: true,
       }
    });
-   const tenantName = customer.organizationName ? customer.organizationName : `${customer.givenName} ${customer.familyName}`
+   const tenantName = customer.organizationName ? customer.organizationName : `${customer.givenName} ${customer.familyName}`;
+   const signerType = testing ? 'embedded' : 'email';
    let data: {
       payloads: {
          leaseTemplate: {
@@ -394,7 +395,8 @@ export async function createLease(customer:User, lease:Lease, unit:Unit, employe
          {
             fileId: string,
             fieldId: string
-         }[]
+         }[],
+      signerType: string | undefined;
    }[] = [
       {
          id: 'managerSigner',
@@ -406,7 +408,8 @@ export async function createLease(customer:User, lease:Lease, unit:Unit, employe
                fileId: 'leaseTemplate', 
                fieldId: 'managerSignature',
             }
-         ]
+         ],
+         signerType,
       }
    ]
    if(address.address2){
@@ -487,7 +490,8 @@ export async function createLease(customer:User, lease:Lease, unit:Unit, employe
                      fileId: 'leaseTemplate',
                      fieldId: 'lienSignature'
                   }
-               ]
+               ],
+               signerType,
             });
          }
          index ++;
@@ -503,10 +507,11 @@ export async function createLease(customer:User, lease:Lease, unit:Unit, employe
                fileId: 'leaseTemplate', 
                fieldId: 'tenantSignature'
             },
-         ]
+         ],
+         signerType,
       })
    }
-   return anvilClient.createEtchPacket({
+   const contract = await anvilClient.createEtchPacket({
       variables: {
          isDraft: false,
          isTest: true, 
@@ -528,5 +533,16 @@ export async function createLease(customer:User, lease:Lease, unit:Unit, employe
          replyToName: PUBLIC_COMPANY_NAME,
          replyToEmail: PUBLIC_COMPANY_EMAIL,
       }
-   })
+   });
+   if(testing){
+      const { url, errors, } = await anvilClient.generateEtchSignUrl({
+         variables: {
+            clientUserId: customer.id,
+            signerEid: contract.data?.data.createEtchPacket.documentGroup.signers[0].eid
+         }
+      });
+      return { url, errors }
+   } 
+   return contract 
+
 }
