@@ -1,8 +1,9 @@
 import { redirect, error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { prisma } from '$lib/server/prisma';
-import { anvilClient, getPacketVariables, } from '$lib/server/anvil';
+import { createLease, } from '$lib/server/anvil';
 import { inngest } from '$lib/server/inngest/inngest';
+import type { GraphQLResponse } from '@anvilco/anvil';
 
 export const load = (async (event) => {
    if(!event.locals.user?.employee){
@@ -50,8 +51,7 @@ export const load = (async (event) => {
       if(!employee){
          return error(500, 'Employee not found');
       }
-      const variables = getPacketVariables( customer, lease, unit, employee, address);
-      const { data, errors } = await anvilClient.createEtchPacket({variables})
+      const {data, errors} = await createLease(customer, lease, unit, event.locals.user, address) as GraphQLResponse;
       if (errors) {
          // Note: because of the nature of GraphQL, statusCode may be a 200 even when
          // there are errors.

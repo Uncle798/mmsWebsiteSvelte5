@@ -2,6 +2,7 @@ import { prisma } from '$lib/server/prisma';
 import { createLease, } from '$lib/server/anvil';
 import { error, redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
+import type { GraphQLResponse } from '@anvilco/anvil';
 
 export const load:PageServerLoad = (async (event) => {
    if(!event.locals.user){
@@ -75,7 +76,7 @@ export const load:PageServerLoad = (async (event) => {
             userId: alternativeContact?.id
          }
       })
-      const { data, errors } = await createLease(customer, lease, unit, employee, address, alternativeContact!, alternateAddress!)
+      const { data, errors } = await createLease(customer, lease, unit, employee, address, alternativeContact!, alternateAddress!) as GraphQLResponse;
       if (errors) {
          // Note: because of the nature of GraphQL, statusCode may be a 200 even when
          // there are errors.
