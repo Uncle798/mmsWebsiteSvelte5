@@ -10,8 +10,6 @@ import { list } from "@vercel/blob";
 
 export const anvilClient = new Anvil({apiKey:ANVIL_API_KEY});
 
-export const leaseTemplateId = 'xpTVlW1pfNrWdfdsBV2a'
-
 const fields = [
    {
       "id": "leaseStartDay",
@@ -19,8 +17,8 @@ const fields = [
       "type": "shortText",
       "pageNum": 0,
       "rect": {
-         "x": 148,
-         "y": 155,
+         "x": 140,
+         "y": 152,
          "height": 15,
          "width": 28
       },
@@ -32,10 +30,10 @@ const fields = [
       "type": "shortText",
       "pageNum": 0,
       "rect": {
-         "x": 212,
-         "y": 155,
+         "x": 211,
+         "y": 152,
          "height": 15,
-         "width": 45
+         "width": 50
       },
       fontWeight: 'bold'
    },
@@ -45,12 +43,13 @@ const fields = [
       "type": "shortText",
       "pageNum": 0,
       "rect": {
-         "x": 270,
-         "y": 155,
+         "x": 271,
+         "y": 152,
          "height": 15,
-         "width": 19
+         "width": 18
       },
-      fontWeight: 'bold'
+      fontWeight: 'bold',
+      alignment: 'right'
    },
    {
       "id": "tenantName",
@@ -58,12 +57,13 @@ const fields = [
       "type": "shortText",
       "pageNum": 0,
       "rect": {
-         "x": 385,
-         "y": 170,
+         "x": 360,
+         "y": 167,
          "height": 15,
-         "width": 160
+         "width": 200
       },
-      fontWeight: 'bold'
+      fontWeight: 'bold',
+      alignment: 'right'
    },
    {
       "id": "unitNum",
@@ -97,8 +97,8 @@ const fields = [
       "type": "shortText",
       "pageNum": 0,
       "rect": {
-         "x": 436,
-         "y": 410,
+         "x": 437,
+         "y": 408,
          "height": 15,
          "width": 27
       },
@@ -137,7 +137,7 @@ const fields = [
       "pageNum": 0,
       "rect": {
          "x": 335,
-         "y": 520,
+         "y": 522,
          "height": 15,
          "width": 51
       },
@@ -150,7 +150,7 @@ const fields = [
     "pageNum": 0,
     "rect": {
       "x": 164,
-      "y": 535,
+      "y": 538,
       "height": 15,
       "width": 38
       },
@@ -163,11 +163,12 @@ const fields = [
     "pageNum": 4,
     "rect": {
       "x": 340,
-      "y": 135,
+      "y": 138,
       "height": 15,
       "width": 200
       },
-      fontWeight: 'bold'
+      fontWeight: 'bold',
+      alignment: 'right'
    },
    {
    "name": "Street 1 - Tenant Address",
@@ -176,11 +177,12 @@ const fields = [
    "pageNum": 4,
    "rect": {
       "x": 340,
-      "y": 160,
+      "y": 158,
       "height": 15,
-      "width": 198
+      "width": 200
       },
-      fontWeight: 'bold'
+      fontWeight: 'bold',
+      alignment: 'right',
    },
    {
       "name": "City - Tenant Address",
@@ -214,12 +216,13 @@ const fields = [
       "type": 'shortText',
       "pageNum": 4,
       "rect": {
-         "x": 455,
+         "x": 465,
          "y": 200,
          "height": 15,
          "width": 73
       },
-      fontWeight: 'bold'
+      fontWeight: 'bold',
+      alignment: 'right'
    },
   {
     "id": "tenantPhone",
@@ -232,7 +235,8 @@ const fields = [
       "height": 15,
       "width": 200
       },
-      fontWeight: 'bold'
+      fontWeight: 'bold',
+      alignment: 'right'
   },
   {
     "id": "tenantEmail",
@@ -240,12 +244,13 @@ const fields = [
     "type": "email",
     "pageNum": 4,
     "rect": {
-      "x": 340,
+      "x": 280,
       "y": 236,
       "height": 15,
-      "width": 200
+      "width": 250
       },
-   fontWeight: 'bold'
+   fontWeight: 'bold',
+   alignment: 'right'
   },
   {
     "id": "numKeysProvided",
@@ -254,10 +259,11 @@ const fields = [
     "pageNum": 4,
     "rect": {
       "x": 207,
-      "y": 275,
+      "y": 274,
       "height": 15,
       "width": 64
-    }
+    },
+    fontWeight: 'bold'
   },
    {
       "id": "managerSignature",
@@ -277,7 +283,7 @@ const fields = [
       "type": "signature",
       "pageNum": 4,
       "rect": {
-      "x": (60 + 200 + 50),
+      "x": 320,
       "y": 300,
       "height": 40,
       "width": 200
@@ -366,6 +372,18 @@ export async function createLease(customer:User, lease:Lease, unit:Unit, employe
    });
    const tenantName = customer.organizationName ? customer.organizationName : `${customer.givenName} ${customer.familyName}`;
    const signerType = testing ? 'embedded' : 'email';
+   const pr = new Intl.PluralRules('en-US', { type: 'ordinal'});
+   const suffixes = new Map([
+      ["one", "st"],
+      ["two", "nd"],
+      ["few", "rd"],
+      ["other", "th"],
+   ]);
+   const formatOrdinals = (n:number) => {
+      const rule = pr.select(n);
+      const suffix = suffixes.get(rule);
+      return `${n}${suffix}`;
+   }
    let data: {
       payloads: {
          leaseTemplate: {
@@ -378,7 +396,7 @@ export async function createLease(customer:User, lease:Lease, unit:Unit, employe
       payloads: {
          leaseTemplate: {
             data: {
-               leaseStartDay: lease.leaseCreatedAt.getDate(),
+               leaseStartDay: formatOrdinals(lease.leaseCreatedAt.getDate()),
                leaseStartMonth: dayjs(lease.leaseCreatedAt).format('MMMM'),
                leaseStartYear: dayjs(lease.leaseCreatedAt).format('YYYY'),
                tenantName,
