@@ -20,13 +20,11 @@ const fields = [
       "pageNum": 0,
       "rect": {
          "x": 148,
-         "y": 148,
+         "y": 155,
          "height": 15,
          "width": 28
       },
-      fontSize: 12,
-      fontWeight: 'bold',
-      textColor: '#FFFFFF'
+      fontWeight: 'bold'
    },
    {
       "id": "leaseStartMonth",
@@ -35,10 +33,11 @@ const fields = [
       "pageNum": 0,
       "rect": {
          "x": 212,
-         "y": 150,
+         "y": 155,
          "height": 15,
          "width": 45
-      }
+      },
+      fontWeight: 'bold'
    },
    {
       "id": "leaseStartYear",
@@ -46,11 +45,12 @@ const fields = [
       "type": "shortText",
       "pageNum": 0,
       "rect": {
-         "x": 260,
-         "y": 150,
+         "x": 270,
+         "y": 155,
          "height": 15,
          "width": 19
-      }
+      },
+      fontWeight: 'bold'
    },
    {
       "id": "tenantName",
@@ -58,11 +58,12 @@ const fields = [
       "type": "shortText",
       "pageNum": 0,
       "rect": {
-         "x": 370,
+         "x": 385,
          "y": 170,
          "height": 15,
          "width": 160
-      }
+      },
+      fontWeight: 'bold'
    },
    {
       "id": "unitNum",
@@ -71,10 +72,11 @@ const fields = [
       "pageNum": 0,
       "rect": {
          "x": 264,
-         "y": 260,
+         "y": 265,
          "height": 15,
          "width": 44
-      }
+      },
+      fontWeight: 'bold'
    },
    {
       "id": "unitSize",
@@ -83,10 +85,11 @@ const fields = [
       "pageNum": 0,
       "rect": {
          "x": 385,
-         "y": 260,
+         "y": 265,
          "height": 15,
          "width": 52
-      }
+      },
+      fontWeight: 'bold'
    },
    {
       "id": "leaseStartDay",
@@ -95,10 +98,11 @@ const fields = [
       "pageNum": 0,
       "rect": {
          "x": 436,
-         "y": 405,
+         "y": 410,
          "height": 15,
          "width": 27
-      }
+      },
+      fontWeight: 'bold'
    },
    {
       "id": "leaseStartMonth",
@@ -107,10 +111,11 @@ const fields = [
       "pageNum": 0,
       "rect": {
          "x": 77,
-         "y": 420,
+         "y": 425,
          "height": 15,
          "width": 103
-      }
+      },
+      fontWeight: 'bold'
    },
    {
       "id": "leaseStartYear",
@@ -118,11 +123,12 @@ const fields = [
       "type": "shortText",
       "pageNum": 0,
       "rect": {
-         "x": 185,
-         "y": 420,
+         "x": 188,
+         "y": 425,
          "height": 15,
          "width": 32
-      }
+      },
+      fontWeight: 'bold'
    },
    {
       "id": "unitPrice",
@@ -131,10 +137,11 @@ const fields = [
       "pageNum": 0,
       "rect": {
          "x": 335,
-         "y": 515,
+         "y": 520,
          "height": 15,
          "width": 51
-      }
+      },
+      fontWeight: 'bold'
    },
    {
     "id": "leaseStartDay",
@@ -143,10 +150,11 @@ const fields = [
     "pageNum": 0,
     "rect": {
       "x": 164,
-      "y": 525,
+      "y": 535,
       "height": 15,
       "width": 38
-    }
+      },
+      fontWeight: 'bold'
    },
    {
     "id": "tenantName",
@@ -158,7 +166,8 @@ const fields = [
       "y": 135,
       "height": 15,
       "width": 200
-    }
+      },
+      fontWeight: 'bold'
    },
    {
    "name": "Street 1 - Tenant Address",
@@ -170,7 +179,8 @@ const fields = [
       "y": 160,
       "height": 15,
       "width": 198
-   }
+      },
+      fontWeight: 'bold'
    },
    {
       "name": "City - Tenant Address",
@@ -181,8 +191,9 @@ const fields = [
          "x": 340,
          "y": 200,
          "height": 15,
-         "width": 93
-      }
+         "width": 100
+      },
+      fontWeight: 'bold'
    },
    {
       "name": "State - Tenant Address",
@@ -190,11 +201,12 @@ const fields = [
       "type": 'shortText',
       "pageNum": 4,
       "rect": {
-         "x": 424,
+         "x": 440,
          "y": 200,
          "height": 15,
          "width": 30
-      }
+      },
+      fontWeight: 'bold'
    },
    {
       "name": "Postal Code - Tenant Address",
@@ -206,7 +218,8 @@ const fields = [
          "y": 200,
          "height": 15,
          "width": 73
-      }
+      },
+      fontWeight: 'bold'
    },
   {
     "id": "tenantPhone",
@@ -218,7 +231,8 @@ const fields = [
       "y": 220,
       "height": 15,
       "width": 200
-    }
+      },
+      fontWeight: 'bold'
   },
   {
     "id": "tenantEmail",
@@ -230,7 +244,8 @@ const fields = [
       "y": 236,
       "height": 15,
       "width": 200
-    }
+      },
+   fontWeight: 'bold'
   },
   {
     "id": "numKeysProvided",
@@ -372,7 +387,7 @@ export async function createLease(customer:User, lease:Lease, unit:Unit, employe
                tenantAddress1: address.address1,
                tenantAddress2: address.address2,
                tenantAddressCity: address.city,
-               tenantAddressState: address.state,
+               tenantAddressState: address.state?.substring(0, 3).toUpperCase(),
                tenantAddressPostalCode: address.postalCode,
                tenantPhone: address.phoneNum1,
                tenantEmail: customer.email,
@@ -519,7 +534,7 @@ export async function createLease(customer:User, lease:Lease, unit:Unit, employe
             },
             fields,
             fontSize: 12,
-            textColor: '#000000'
+            textColor: '#000000',
          },
          data,
          signers,
