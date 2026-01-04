@@ -10,6 +10,8 @@ import { error, redirect } from "@sveltejs/kit";
 import { ratelimit } from "$lib/server/rateLimit";
 import { PUBLIC_PHONE } from "$env/static/public";
 import { invoiceNoteDeposit } from "$lib/utils/invoiceNoteDeposit";
+import { alternativeContactFormSchema } from "$lib/formSchemas/alternativeContactFormSchema";
+import type { DiscountCode, User, Address } from "../../generated/prisma/client";
 
 export const load:PageServerLoad = (async (event) =>{
    const unitNum = event.url.searchParams.get('unitNum');
@@ -26,9 +28,11 @@ export const load:PageServerLoad = (async (event) =>{
    const nameForm = await superValidate(valibot(nameFormSchema));
    const addressForm = await superValidate(valibot(addressFormSchema));
    const leaseDiscountForm = await superValidate(valibot(leaseDiscountFormSchema));
+   const alternativeContactForm = await superValidate(valibot(alternativeContactFormSchema));
    const discountId = event.url.searchParams.get('discountId');
    const redirectTo = event.url.searchParams.get('redirectTo');
-   
+   const altContactId = event.url.searchParams.get('altContactId');
+   const altAddressId = event.url.searchParams.get('altAddressId');
    const unit = await prisma.unit.findUnique({
       where: {
          num: unitNum,
@@ -42,15 +46,44 @@ export const load:PageServerLoad = (async (event) =>{
          userId:event.locals.user.id
       }
    })
+   let discount:DiscountCode | null = null;
    if(discountId){
-      const discount = await prisma.discountCode.findUnique({
+      discount = await prisma.discountCode.findUnique({
          where: {
             discountId
          }
       })
-      return { leaseForm, address, addressForm, nameForm, unit, leaseDiscountForm, redirectTo, discount }
    }
-   return { leaseForm, address, addressForm, nameForm, unit, leaseDiscountForm, unitNum, redirectTo }
+   let altContact:User | null = null;
+   if(altContactId){
+      altContact = await prisma.user.findUnique({
+         where: {
+            id: altContactId
+         }
+      })
+   }
+   let altAddress:Address | null = null;
+   if(altAddressId){
+      altAddress = await prisma.address.findUnique({
+         where: {
+            addressId: altAddressId
+         }
+      })
+   }
+   return { 
+      leaseForm, 
+      address, 
+      addressForm, 
+      nameForm, 
+      unit, 
+      leaseDiscountForm, 
+      unitNum, 
+      redirectTo, 
+      alternativeContactForm, 
+      discount,
+      altAddress, 
+      altContact, 
+   }
 })
 
 
@@ -142,6 +175,12 @@ export const actions:Actions = {
             leaseEffectiveDate: new Date(),
             discountId: discount?.discountId,
             discountedAmount: discountedAmount
+         }
+      });
+      const leaseAlternativeContact = await prisma.leaseAlternativeContacts.create({
+         data: {
+            leaseId: lease.leaseId,
+            userId: leaseForm.data.altContactId
          }
       })
       await prisma.unit.update({

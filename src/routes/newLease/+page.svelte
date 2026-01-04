@@ -15,6 +15,7 @@
    import { currencyFormatter } from "$lib/utils/currencyFormatter";
 	import Button from '$lib/core/Button.svelte';
 	import type { Address } from '../../generated/prisma/browser';
+	import AlternativeContactForm from '$lib/forms/AlternativeContactForm.svelte';
    let { data }: {data:PageData} = $props();
    // svelte-ignore state_referenced_locally
    let { form, message, errors, constraints, enhance, delayed, timeout } = superForm(data.leaseForm);
@@ -30,7 +31,7 @@
       <AddressForm data={data.addressForm} bind:addressModalOpen={modalOpen} userId={data.user?.id} address={currentAddress}/>
    {/snippet}
 </FormModal>
-<div in:fade={{duration:600}} class="mx-2 mt-14 sm:mt-10">
+<div in:fade={{duration:600}} class="mx-2 mt-14 sm:mt-12 mb-16 sm:mb-16 md:mb-16 lg:mb-8">
    {#if data.user}
       <UserCustomer user={data.user} />
    {/if}
@@ -94,7 +95,20 @@
          HAVE AN INTEREST IN PROPERTY THAT IS STORED IN THE
          UNIT.
       </div>
-      {#if data.unit && data.address}
+      <div>
+         {#if data.altContact}
+            Alternative Contact
+            <UserCustomer user={data.altContact} />
+            {#if data.altAddress}
+               <AddressCustomer address={data.altAddress} />
+            {/if}
+         {:else}
+            For your protection, in case we lose contact, please provide an alternate contact (parent, sibling, friend) who would know how to contact you.
+            <AlternativeContactForm data={data.alternativeContactForm} redirectTo='newLease' userId={data.user?.id} addressId={data.address?.addressId} unitNum={data.unitNum}/>
+         {/if}
+      </div>
+      {#if data.unit && data.address && data.altContact}
+         <input type="hidden" value={data.altContact.id} name="altContactId" />
          <FormProgress delayed={$delayed} timeout={$timeout} buttonText='The above is correct I would like to pay my deposit' classes='my-2'/>
       {/if}
    </form>

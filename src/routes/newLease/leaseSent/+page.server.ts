@@ -76,7 +76,7 @@ export const load:PageServerLoad = (async (event) => {
             userId: alternativeContact?.id
          }
       })
-      const { data, errors } = await createLease(customer, lease, unit, employee, address, alternativeContact!, alternateAddress!) as GraphQLResponse;
+      const { data, errors } = await createLease(customer, lease, unit, employee, address, alternativeContact, alternateAddress) as GraphQLResponse;
       if (errors) {
          // Note: because of the nature of GraphQL, statusCode may be a 200 even when
          // there are errors.

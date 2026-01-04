@@ -248,7 +248,7 @@ function arrayBufferToBase64(buffer:ArrayBuffer){
    return btoa(binary);
 }
 
-export async function createLease(customer:User, lease:Lease, unit:Unit, employee:User, address:Address, alternateContact?:User, alternateAddress?:Address, testing?:boolean){
+export async function createLease(customer:User, lease:Lease, unit:Unit, employee:User, address:Address, alternateContact?:User | null, alternateAddress?:Address | null, testing?:boolean){
    const templateFiles = await list({
       token: BLOB_READ_WRITE_TOKEN,
       prefix: 'MMS Lease'
@@ -305,7 +305,7 @@ export async function createLease(customer:User, lease:Lease, unit:Unit, employe
                tenantAddress1: address.address1,
                tenantAddress2: address.address2,
                tenantAddressCity: address.city,
-               tenantAddressState: address.state?.substring(0, 3).toUpperCase(),
+               tenantAddressState: address.state,
                tenantAddressPostalCode: address.postalCode,
                tenantPhone: address.phoneNum1,
                tenantEmail: customer.email,
@@ -345,6 +345,7 @@ export async function createLease(customer:User, lease:Lease, unit:Unit, employe
          signerType,
       }
    ]
+   console.log(address.address2)
    if(address.address2){
       fields.push({
          "name": "Street 2 - Tenant Address",
