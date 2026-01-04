@@ -51,4 +51,6 @@
       </FileUpload>
       <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} classes='mt-2'/>
    </form>
+
+   <a href="/leases/templates/testing" class="anchor my-2">Testing</a>
 </div>

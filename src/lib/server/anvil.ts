@@ -17,8 +17,8 @@ const fields = [
       "type": "shortText",
       "pageNum": 0,
       "rect": {
-         "x": 140,
-         "y": 152,
+         "x": 142,
+         "y": 151,
          "height": 15,
          "width": 28
       },
@@ -30,12 +30,13 @@ const fields = [
       "type": "shortText",
       "pageNum": 0,
       "rect": {
-         "x": 211,
-         "y": 152,
+         "x": 215,
+         "y": 151,
          "height": 15,
          "width": 50
       },
-      fontWeight: 'bold'
+      fontWeight: 'bold',
+      alignment: 'right'
    },
    {
       "id": "leaseStartYear",
@@ -43,8 +44,8 @@ const fields = [
       "type": "shortText",
       "pageNum": 0,
       "rect": {
-         "x": 271,
-         "y": 152,
+         "x": 295,
+         "y": 151,
          "height": 15,
          "width": 18
       },
@@ -57,10 +58,10 @@ const fields = [
       "type": "shortText",
       "pageNum": 0,
       "rect": {
-         "x": 360,
+         "x": 385,
          "y": 167,
          "height": 15,
-         "width": 200
+         "width": 140,
       },
       fontWeight: 'bold',
       alignment: 'right'
@@ -84,12 +85,13 @@ const fields = [
       "type": "shortText",
       "pageNum": 0,
       "rect": {
-         "x": 385,
+         "x": 375,
          "y": 265,
          "height": 15,
-         "width": 52
+         "width": 50
       },
-      fontWeight: 'bold'
+      fontWeight: 'bold',
+      alignment: 'center',
    },
    {
       "id": "leaseStartDay",
@@ -98,7 +100,7 @@ const fields = [
       "pageNum": 0,
       "rect": {
          "x": 437,
-         "y": 408,
+         "y": 407,
          "height": 15,
          "width": 27
       },
@@ -115,7 +117,8 @@ const fields = [
          "height": 15,
          "width": 103
       },
-      fontWeight: 'bold'
+      fontWeight: 'bold',
+      alignment: 'center'
    },
    {
       "id": "leaseStartYear",
@@ -123,7 +126,7 @@ const fields = [
       "type": "shortText",
       "pageNum": 0,
       "rect": {
-         "x": 188,
+         "x": 170,
          "y": 425,
          "height": 15,
          "width": 32
@@ -136,10 +139,10 @@ const fields = [
       "type": "shortText",
       "pageNum": 0,
       "rect": {
-         "x": 335,
-         "y": 522,
+         "x": 331,
+         "y": 505,
          "height": 15,
-         "width": 51
+         "width": 50
       },
       fontWeight: 'bold'
    },
@@ -150,7 +153,7 @@ const fields = [
     "pageNum": 0,
     "rect": {
       "x": 164,
-      "y": 538,
+      "y": 522,
       "height": 15,
       "width": 38
       },
@@ -163,7 +166,7 @@ const fields = [
     "pageNum": 4,
     "rect": {
       "x": 340,
-      "y": 138,
+      "y": 139,
       "height": 15,
       "width": 200
       },
@@ -177,81 +180,13 @@ const fields = [
    "pageNum": 4,
    "rect": {
       "x": 340,
-      "y": 158,
+      "y": 155,
       "height": 15,
       "width": 200
       },
       fontWeight: 'bold',
       alignment: 'right',
    },
-   {
-      "name": "City - Tenant Address",
-      "id": 'tenantAddressCity',
-      "type": 'shortText',
-      "pageNum": 4,
-      "rect": {
-         "x": 340,
-         "y": 200,
-         "height": 15,
-         "width": 100
-      },
-      fontWeight: 'bold'
-   },
-   {
-      "name": "State - Tenant Address",
-      "id": 'tenantAddressState',
-      "type": 'shortText',
-      "pageNum": 4,
-      "rect": {
-         "x": 440,
-         "y": 200,
-         "height": 15,
-         "width": 30
-      },
-      fontWeight: 'bold'
-   },
-   {
-      "name": "Postal Code - Tenant Address",
-      "id": 'tenantAddressPostalCode',
-      "type": 'shortText',
-      "pageNum": 4,
-      "rect": {
-         "x": 465,
-         "y": 200,
-         "height": 15,
-         "width": 73
-      },
-      fontWeight: 'bold',
-      alignment: 'right'
-   },
-  {
-    "id": "tenantPhone",
-    "name": "Tenant Phone",
-    "type": "phone",
-    "pageNum": 4,
-    "rect": {
-      "x": 340,
-      "y": 220,
-      "height": 15,
-      "width": 200
-      },
-      fontWeight: 'bold',
-      alignment: 'right'
-  },
-  {
-    "id": "tenantEmail",
-    "name": "tenantEmail",
-    "type": "email",
-    "pageNum": 4,
-    "rect": {
-      "x": 280,
-      "y": 236,
-      "height": 15,
-      "width": 250
-      },
-   fontWeight: 'bold',
-   alignment: 'right'
-  },
   {
     "id": "numKeysProvided",
     "name": "Number of Keys",
@@ -283,60 +218,24 @@ const fields = [
       "type": "signature",
       "pageNum": 4,
       "rect": {
-      "x": 320,
-      "y": 300,
-      "height": 40,
-      "width": 200
+         "x": 340,
+         "y": 300,
+         "height": 40,
+         "width": 200
       }
    },
-  {
-    "id": "altName",
-    "name": "alt name",
-    "type": "shortText",
-    "pageNum": 5,
-    "rect": {
-      "x": 200,
-      "y": 140,
-      "height": 15,
-      "width": 260
-    }
-  },
-  {
-    "id": "altAddress",
-    "name": "altAddress",
-    "type": "shortText",
-    "pageNum": 5,
-    "rect": {
-      "x": 200,
-      "y": 158,
-      "height": 15,
-      "width": 260
-    }
-  },
-  {
-    "id": "altCity",
-    "name": "altCity",
-    "type": "shortText",
-    "pageNum": 5,
-    "rect": {
-      "x": 200,
-      "y": 177,
-      "height": 15,
-      "width": 260
-    }
-  },
-    {
-    "id": "altPhone",
-    "name": "altPhone",
-    "type": "shortText",
-    "pageNum": 5,
-    "rect": {
-      "x": 200,
-      "y": 191,
-      "height": 15,
-      "width": 260
-    }
-  },
+   {
+      id: 'testing',
+      name: 'testing',
+      type: 'shortText',
+      pageNum: 4,
+      rect: {
+         x: 500,
+         y: 750,
+         height: 15,
+         width: 10,
+      }
+   }
 ]
 
 function arrayBufferToBase64(buffer:ArrayBuffer){
@@ -412,9 +311,10 @@ export async function createLease(customer:User, lease:Lease, unit:Unit, employe
                tenantEmail: customer.email,
                numKeysProvided: lease.keysProvided,
                altName: `${alternateContact?.givenName} ${alternateContact?.familyName}`,
-               altAddress: `${alternateAddress?.address1} ${alternateAddress?.address2}`,
-               altCity: `${alternateAddress?.city, alternateAddress?.state, alternateAddress?.postalCode}`,
+               altAddress: `${alternateAddress?.address1} ${alternateAddress?.address2 ? alternateAddress.address2 : ''}`,
+               altCity: `${alternateAddress?.city} ${alternateAddress?.state} ${alternateAddress?.postalCode}`,
                altPhone: alternateAddress?.phoneNum1,
+               testing: 'x'
             }
          }
       }, 
@@ -446,18 +346,160 @@ export async function createLease(customer:User, lease:Lease, unit:Unit, employe
       }
    ]
    if(address.address2){
+      fields.push({
+         "name": "Street 2 - Tenant Address",
+         "id": 'tenantAddress2',
+         "type": 'shortText',
+         "pageNum": 4,
+         "rect": {
+            "x": 340,
+            "y": 178,
+            "height": 15,
+            "width": 196
+         },
+         alignment: 'right',
+         fontWeight: 'regular'
+      });
+      fields.push({
+         "name": "City - Tenant Address",
+         "id": 'tenantAddressCity',
+         "type": 'shortText',
+         "pageNum": 4,
+         "rect": {
+            "x": 340,
+            "y": 200,
+            "height": 15,
+            "width": 100
+         },
+         fontWeight: 'bold',
+         alignment: 'right'
+      });
+      fields.push({
+         "name": "State - Tenant Address",
+         "id": 'tenantAddressState',
+         "type": 'shortText',
+         "pageNum": 4,
+         "rect": {
+            "x": 440,
+            "y": 200,
+            "height": 15,
+            "width": 30
+         },
+         fontWeight: 'bold'
+      });
+      fields.push({
+         "name": "Postal Code - Tenant Address",
+         "id": 'tenantAddressPostalCode',
+         "type": 'shortText',
+         "pageNum": 4,
+         "rect": {
+            "x": 468,
+            "y": 200,
+            "height": 15,
+            "width": 73
+         },
+         fontWeight: 'bold',
+         alignment: 'right'
+      });
+      fields.push({
+         "id": "tenantPhone",
+         "name": "Tenant Phone",
+         "type": "phone",
+         "pageNum": 4,
+         "rect": {
+            "x": 340,
+            "y": 218,
+            "height": 15,
+            "width": 200
+            },
+            fontWeight: 'bold',
+            alignment: 'right'
+      });
       fields.push(
          {
-            "name": "Street 2 - Tenant Address",
-            "id": 'tenantAddress2',
-            "type": 'shortText',
-            "pageNum": 4,
-            "rect": {
-               "x": 340,
-               "y": 178,
-               "height": 15,
-               "width": 196
-            }
+           "id": "tenantEmail",
+           "name": "tenantEmail",
+           "type": "email",
+           "pageNum": 4,
+           "rect": {
+             "x": 290,
+             "y": 236,
+             "height": 15,
+             "width": 250
+             },
+          fontWeight: 'bold',
+          alignment: 'right'
+         }
+      );
+   } else {
+      fields.push({
+         "name": "City - Tenant Address",
+         "id": 'tenantAddressCity',
+         "type": 'shortText',
+         "pageNum": 4,
+         "rect": {
+            "x": 340,
+            "y": 170,
+            "height": 15,
+            "width": 100
+         },
+         fontWeight: 'bold'
+      });
+      fields.push({
+         "name": "State - Tenant Address",
+         "id": 'tenantAddressState',
+         "type": 'shortText',
+         "pageNum": 4,
+         "rect": {
+            "x": 440,
+            "y": 170,
+            "height": 15,
+            "width": 30
+         },
+         fontWeight: 'bold'
+      });
+      fields.push({
+         "name": "Postal Code - Tenant Address",
+         "id": 'tenantAddressPostalCode',
+         "type": 'shortText',
+         "pageNum": 4,
+         "rect": {
+            "x": 468,
+            "y": 170,
+            "height": 15,
+            "width": 73
+         },
+         fontWeight: 'bold',
+         alignment: 'right'
+      });
+      fields.push({
+         "id": "tenantPhone",
+         "name": "Tenant Phone",
+         "type": "phone",
+         "pageNum": 4,
+         "rect": {
+            "x": 340,
+            "y": 183,
+            "height": 15,
+            "width": 200
+            },
+            fontWeight: 'bold',
+            alignment: 'right'
+      });
+      fields.push(
+         {
+           "id": "tenantEmail",
+           "name": "tenantEmail",
+           "type": "email",
+           "pageNum": 4,
+           "rect": {
+             "x": 290,
+             "y": 204,
+             "height": 15,
+             "width": 250
+             },
+          fontWeight: 'bold',
+          alignment: 'right'
          }
       );
    }
@@ -544,6 +586,88 @@ export async function createLease(customer:User, lease:Lease, unit:Unit, employe
          signerType,
       })
    }
+   if(alternateContact?.givenName && !alternateAddress?.address1){
+      fields.push({
+         "id": "altName",
+         "name": "alt name",
+         "type": "shortText",
+         "pageNum": 5,
+         "rect": {
+            "x": 200,
+            "y": 150,
+            "height": 15,
+            "width": 140
+         }
+      });
+   } else {
+      fields.push({
+         "id": "altName",
+         "name": "alt name",
+         "type": "shortText",
+         "pageNum": 5,
+         "rect": {
+            "x": 200,
+            "y": 170,
+            "height": 15,
+            "width": 140
+         }
+      });
+   }
+   if(alternateAddress?.address1){
+      fields.push({
+         "id": "altAddress",
+         "name": "altAddress",
+         "type": "shortText",
+         "pageNum": 5,
+         "rect": {
+            "x": 200,
+            "y": 158,
+            "height": 15,
+            "width": 260
+         }
+      });
+   }
+   if(alternateAddress?.city){
+      fields.push({
+         "id": "altCity",
+         "name": "altCity",
+         "type": "shortText",
+         "pageNum": 5,
+         "rect": {
+            "x": 200,
+            "y": 177,
+            "height": 15,
+            "width": 260
+         }
+      })
+   }
+   if(alternateAddress?.phoneNum1 && !alternateAddress.address1){
+      fields.push({
+         "id": "altPhone",
+         "name": "altPhone",
+         "type": "shortText",
+         "pageNum": 5,
+         "rect": {
+            "x": 200,
+            "y": 176,
+            "height": 15,
+            "width": 200
+         }
+      });
+   } else {
+      fields.push({
+         "id": "altPhone",
+         "name": "altPhone",
+         "type": "shortText",
+         "pageNum": 5,
+         "rect": {
+            "x": 200,
+            "y": 191,
+            "height": 15,
+            "width": 200
+         }
+      });
+   }
    const contract = await anvilClient.createEtchPacket({
       variables: {
          isDraft: false,
@@ -567,6 +691,10 @@ export async function createLease(customer:User, lease:Lease, unit:Unit, employe
          replyToEmail: PUBLIC_COMPANY_EMAIL,
       }
    });
+   if(contract.errors){
+      console.error('There were errors!')
+      console.error(JSON.stringify(contract.errors, null, 2));
+   }
    if(testing){
       const { url, errors, } = await anvilClient.generateEtchSignUrl({
          variables: {
