@@ -13,6 +13,8 @@
 	import type { Readable } from 'svelte/store';
 	import type { SourceSelected, Source } from 'sveltekit-sse';
    import { fromStore } from 'svelte/store';
+   import { PUBLIC_COMPANY_NAME } from '$env/static/public';
+   import dayjs from 'dayjs';
 
    let { data }: { data: PageData } = $props();
    let search = $state('');
@@ -64,7 +66,30 @@
          return -1
       }
       return 0
-   }))
+   }));
+   $effect(() => {
+      if(csvState && csvState?.current !== '' && csvPurpose === 'currentCustomers'){
+			const blob = new Blob([csvState.current], {
+				type: 'application/csv'
+			});
+			const url = URL.createObjectURL(blob);
+			const filename = `${PUBLIC_COMPANY_NAME} current leases report ${dayjs().format('MMMM D YYYY')}.csv`
+			const a = document.createElement('a');
+			a.download = filename;
+			a.href = url;
+			document.body.append(a);
+			a.click();
+			document.body.removeChild(a);
+			URL.revokeObjectURL(url);
+		}
+		if(valueState && valueState.current === 'CSV ready'){
+         setTimeout(() => {
+            connection?.close();
+				valueState = undefined;
+            connection = undefined;
+			}, 1500);
+		}
+   })
 </script>
 <Header title='All leases' />
 
