@@ -254,6 +254,54 @@ export const POST: RequestHandler = async (event) => {
          emit('message', 'CSV ready');
          return function cancel(){};
       }
+      const currentLeaseReport = event.url.searchParams.get('currentLeaseReport');
+      if(currentLeaseReport === 'true'){
+         const leases = await prisma.lease.findMany({
+            where: {
+               leaseEnded: null
+            }
+         });
+         emit('message', 'Leases gathered');
+         const customers = await prisma.user.findMany({
+            where: {
+               customerLeases: {
+                  some: {
+                     leaseEnded: null
+                  }
+               }
+            }
+         });
+         emit('message', 'Customers gathered');
+         const data: any[] = [];
+         const csv = stringify(
+            {
+               header: true,
+               columns: [{key: 'Lease ID'}, {key: 'Customer name'}, {key: 'Unit num'}, {key: 'Lease effective day'}, {key: 'Price'}]
+            },
+         );
+         csv.on('readable', () => {
+            let row;
+            while((row = csv.read()) !== null){
+               data.push(row);
+            }
+         });
+         for(const lease of leases){
+            const customer = customers.find((customer) => customer.id === lease.customerId);
+            const customerName = customer?.organizationName ? customer.organizationName : `${customer?.givenName} ${customer?.familyName}`
+            const json = {
+               'Lease ID': lease.leaseId,
+               'Customer name': customerName,
+               'Unit num': humanUnitNum(lease.unitNum),
+               'Lease effective day': dayjs(lease.leaseEffectiveDate).format('D'),
+               'Price': lease.price,
+            }
+            csv.write(json);
+         }         
+         csv.end();
+         emit('csv', data.join(''));
+         emit('message', 'CSV ready');
+         return function cancel(){};
+      }
       return function cancel(){};
    })
 };

@@ -8,10 +8,22 @@
 	import Pagination from '$lib/displayComponents/Pagination.svelte';
 	import AddressEmployee from '$lib/displayComponents/AddressEmployee.svelte';
 	import SearchDrawer from '$lib/displayComponents/Modals/SearchDrawer.svelte';
+	import Button from '$lib/core/Button.svelte';
+   import { source } from 'sveltekit-sse';
+	import type { Readable } from 'svelte/store';
+	import type { SourceSelected, Source } from 'sveltekit-sse';
+   import { fromStore } from 'svelte/store';
+
    let { data }: { data: PageData } = $props();
    let search = $state('');
    let pageNum = $state(1);
    let size = $state(25);
+   let connection = $state<Source>();
+	let csv = $state<Readable<string> & SourceSelected >();
+	let value = $state<Readable<string> & SourceSelected>();
+	let valueState = $state<{readonly current: string;}>();
+	let csvState = $state<{readonly current: string;}>();
+   let csvPurpose = $state('');
    let searchedLeases = $derived((leases:Lease[]) => leases.filter((lease) => lease.leaseId.includes(search)))
    let slicedLeases = $derived((leases:Lease[]) => leases.slice((pageNum-1)*size, pageNum*size));
    const currentCustomers = $derived((users:User[]) => {
@@ -76,9 +88,29 @@
             height='h-[180px]'
          >
             {#snippet content()}
-               <Search bind:search={search} searchType='lease id' data={data.searchForm} classes='mt-10 mx-1'/>
+               <Search bind:search={search} searchType='lease id' data={data.searchForm} classes='mx-1'/>
                <Search bind:search={customerSearch} searchType='customer name' data={data.searchForm} classes='mx-1' />
-               <button class="btn preset-filled-primary-50-950 " onclick={() => sortBy = !sortBy}>Sort by unit number {sortBy ? 'ascending' : 'descending'}</button>
+               <Button
+                  label='Sort by unit number {sortBy ? 'ascending' : 'descending'}'
+                  type='button'
+                  onClick={() => sortBy = !sortBy}
+               />
+               <div class="flex flex-col">
+                  <Button
+                     label='Download lease report CSV'
+                     type='button'
+                     onClick={async () => {
+                        connection = source('/api/csv?currentLeaseReport=true');
+                        value = connection.select('message');
+                        valueState = fromStore(value);
+                        csv = connection.select('csv');
+                        csvState = fromStore(csv);
+                     }}
+                  />
+                  <div class='place-self-center'>
+                     {valueState?.current}
+                  </div>
+               </div>
             {/snippet}
          </SearchDrawer>
          <div class="rounded-lg mt-14 sm:mt-10 mb-20 sm:mb-12 lg:mb-8">
