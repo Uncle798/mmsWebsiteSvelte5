@@ -57,23 +57,25 @@ export const load:PageServerLoad = (async (event) => {
       }
       const alternativeContact = await prisma.user.findFirst({
          where: {
-            AND: [
-               {
-                  alternative: true,
-                  leaseAlternativeContacts: {
-                     some: {
-                        lease: {
-                           leaseId: lease.leaseId
-                        }
-                     }
+            leaseAlternativeContacts: {
+               some: {
+                  lease: {
+                     leaseId: lease.leaseId
                   }
                }
-            ]
+            }
          }
       });
       const alternateAddress = await prisma.address.findFirst({
          where: {
-            userId: alternativeContact?.id
+            AND: [
+               {
+                  userId: alternativeContact?.id
+               },
+               {
+                  softDelete: false,
+               }
+            ]
          }
       })
       const { data, errors } = await createLease(customer, lease, unit, employee, address, alternativeContact, alternateAddress) as GraphQLResponse;

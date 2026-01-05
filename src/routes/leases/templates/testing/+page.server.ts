@@ -23,8 +23,8 @@ export const load:PageServerLoad = (async (event) => {
    if(!customer){
       customer = await prisma.user.create({
          data: {
-            givenName: `Fake`,
-            familyName: `Customer`,
+            givenName: faker.person.firstName(),
+            familyName: faker.person.lastName(),
             email: `fakeCustomer@veryFakeEmail.com`,
          }
       });
@@ -64,8 +64,8 @@ export const load:PageServerLoad = (async (event) => {
       });
       alternateContact = await prisma.user.create({
          data: {
-            givenName: 'FakeAlt',
-            familyName: 'Contact',
+            givenName: faker.person.firstName(),
+            familyName: faker.person.lastName(),
             email: 'fakeAltContact@veryFakeEmail.com',
          }
       });
@@ -130,7 +130,7 @@ export const load:PageServerLoad = (async (event) => {
       console.error('There were errors!')
       console.error(JSON.stringify(contract.errors, null, 2));
    } 
-   return { contract, customer, address, lease, };
+   return { contract, customer, address, lease, alternateAddress, alternateContact};
 });
 
 export const actions: Actions = {

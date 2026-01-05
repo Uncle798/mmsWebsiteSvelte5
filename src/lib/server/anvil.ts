@@ -224,18 +224,6 @@ const fields = [
          "width": 200
       }
    },
-   {
-      id: 'testing',
-      name: 'testing',
-      type: 'shortText',
-      pageNum: 4,
-      rect: {
-         x: 500,
-         y: 750,
-         height: 15,
-         width: 10,
-      }
-   }
 ]
 
 function arrayBufferToBase64(buffer:ArrayBuffer){
@@ -253,7 +241,6 @@ export async function createLease(customer:User, lease:Lease, unit:Unit, employe
       token: BLOB_READ_WRITE_TOKEN,
       prefix: 'MMS Lease'
    });
-   
    const file = await fetch(templateFiles.blobs[0].url);
    const arrayBuffer = await file.arrayBuffer();
    let base64 = '';
@@ -283,6 +270,10 @@ export async function createLease(customer:User, lease:Lease, unit:Unit, employe
       const suffix = suffixes.get(rule);
       return `${n}${suffix}`;
    }
+   const altAddress = alternateAddress?.address1 ? `${alternateAddress.address1} ${alternateAddress.address2}` : '';
+   const altName = alternateContact?.givenName || alternateContact?.familyName ? `${alternateContact.givenName} ${alternateContact.familyName}` : '';
+   const altCity = alternateAddress?.city || alternateAddress?.state || alternateAddress?.postalCode ? `${alternateAddress.city} ${alternateAddress.state} ${alternateAddress.phoneNum1}` : '';
+   const altPhone = alternateAddress?.phoneNum1 ? alternateAddress.phoneNum1 : '';
    let data: {
       payloads: {
          leaseTemplate: {
@@ -310,11 +301,6 @@ export async function createLease(customer:User, lease:Lease, unit:Unit, employe
                tenantPhone: address.phoneNum1,
                tenantEmail: customer.email,
                numKeysProvided: lease.keysProvided,
-               altName: `${alternateContact?.givenName} ${alternateContact?.familyName}`,
-               altAddress: `${alternateAddress?.address1} ${alternateAddress?.address2 ? alternateAddress.address2 : ''}`,
-               altCity: `${alternateAddress?.city} ${alternateAddress?.state} ${alternateAddress?.postalCode}`,
-               altPhone: alternateAddress?.phoneNum1,
-               testing: 'x'
             }
          }
       }, 
@@ -346,7 +332,7 @@ export async function createLease(customer:User, lease:Lease, unit:Unit, employe
       }
    ]
    console.log(address.address2)
-   if(address.address2){
+   if(address.address2 !== null){
       fields.push({
          "name": "Street 2 - Tenant Address",
          "id": 'tenantAddress2',
@@ -367,10 +353,10 @@ export async function createLease(customer:User, lease:Lease, unit:Unit, employe
          "type": 'shortText',
          "pageNum": 4,
          "rect": {
-            "x": 340,
+            "x": 300,
             "y": 200,
             "height": 15,
-            "width": 100
+            "width": 140
          },
          fontWeight: 'bold',
          alignment: 'right'
@@ -439,10 +425,10 @@ export async function createLease(customer:User, lease:Lease, unit:Unit, employe
          "type": 'shortText',
          "pageNum": 4,
          "rect": {
-            "x": 340,
+            "x": 300,
             "y": 170,
             "height": 15,
-            "width": 100
+            "width": 140
          },
          fontWeight: 'bold'
       });
@@ -509,7 +495,7 @@ export async function createLease(customer:User, lease:Lease, unit:Unit, employe
       let pageNum = 5;
       for(const property of properties){
          let y = 240 + (index * 20);
-         if(y >= 3300-60){
+         if(y >= 750){
             y = 60 + (index*20)
             pageNum ++;
          }
@@ -597,10 +583,13 @@ export async function createLease(customer:User, lease:Lease, unit:Unit, employe
             "x": 200,
             "y": 150,
             "height": 15,
-            "width": 140
-         }
+            "width": 200
+         },
+         alignment: 'center',
+         fontWeight: 'regular',
       });
-   } else {
+      data.payloads.leaseTemplate.data.altName = altName;
+   } else if (alternateContact?.givenName){
       fields.push({
          "id": "altName",
          "name": "alt name",
@@ -611,8 +600,11 @@ export async function createLease(customer:User, lease:Lease, unit:Unit, employe
             "y": 170,
             "height": 15,
             "width": 140
-         }
+         },
+         alignment: 'center',
+         fontWeight: 'regular'
       });
+      data.payloads.leaseTemplate.data.altName = altName;
    }
    if(alternateAddress?.address1){
       fields.push({
@@ -627,6 +619,7 @@ export async function createLease(customer:User, lease:Lease, unit:Unit, employe
             "width": 260
          }
       });
+      data.payloads.leaseTemplate.data.altAddress = altAddress;
    }
    if(alternateAddress?.city){
       fields.push({
@@ -641,6 +634,7 @@ export async function createLease(customer:User, lease:Lease, unit:Unit, employe
             "width": 260
          }
       })
+      data.payloads.leaseTemplate.data.altCity = altCity;
    }
    if(alternateAddress?.phoneNum1 && !alternateAddress.address1){
       fields.push({
@@ -655,7 +649,8 @@ export async function createLease(customer:User, lease:Lease, unit:Unit, employe
             "width": 200
          }
       });
-   } else {
+      data.payloads.leaseTemplate.data.altPhone = altPhone;
+   } else if(alternateAddress?.phoneNum1){
       fields.push({
          "id": "altPhone",
          "name": "altPhone",
@@ -668,6 +663,7 @@ export async function createLease(customer:User, lease:Lease, unit:Unit, employe
             "width": 200
          }
       });
+      data.payloads.leaseTemplate.data.altPhone = altPhone;
    }
    const contract = await anvilClient.createEtchPacket({
       variables: {
