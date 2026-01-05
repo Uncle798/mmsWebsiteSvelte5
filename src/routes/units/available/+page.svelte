@@ -19,35 +19,13 @@
       label: string,
       value: string,
    }
-   const comboboxData:ComboboxData[] = [{
-      label: 'All',
-      value: 'All'
-   }];
-   onMount(async () => {
-      let units = await data.availableUnits;
-      const sizes:string[] = [];
-      for(const unit of units){
-         if(sizes.find((size) => size === unit.size)){
-            continue;
-         } else {
-            sizes.push(unit.size)
-         }
+   const comboboxData = $derived(data.sizes.map((size) => {
+      return {
+         label: humanUnitSize(size),
+         value: size,
       }
-      for(const size of sizes.sort((a, b) => {
-         if(a > b){
-            return 1;
-         } else if (a === b ){
-            return 0;
-         } else {
-            return -1;
-         }
-      })){
-         comboboxData.push({
-            value: size,
-            label: humanUnitSize(size)
-         })
-      }
-   })
+   }))
+
    let selectedSize = $state([''])
    const lostRevenue = $derived((units:Unit[]) => {
       let revenue = 0;
