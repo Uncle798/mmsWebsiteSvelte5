@@ -13,5 +13,6 @@ export const alternativeContactFormSchema = v.object({
    country: v.optional(v.pipe(v.string(), v.minLength(2), v.maxLength(2))),
    phoneNum1: v.optional(v.pipe(v.string(), v.minLength(10), v.maxLength(14))),
    phoneNum1Country: v.optional(v.pipe(v.string(), v.minLength(2), v.maxLength(2))),
+   leaseId: v.optional(v.pipe(v.string(), v.cuid2())),
 });
 export type AlternativeContactFormSchema = typeof alternativeContactFormSchema;
