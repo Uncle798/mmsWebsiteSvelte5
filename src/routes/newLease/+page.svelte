@@ -84,30 +84,29 @@
             </div>
          {/if}
       {/if}
-      <Checkbox
-         label='No property being stored has a lien'
-         name='propertySubjectToLien'
-         bind:value={$form.propertySubjectToLien}
-      />
-      <div class="font-bold w-72"> 
-         IDAHO CODE SECTION 55-2304 REQUIRES TENANT TO NOTIFY
-         LESSOR OF ANY LIEN HOLDERS OR SECURED PARTIES WHO
-         HAVE AN INTEREST IN PROPERTY THAT IS STORED IN THE
-         UNIT.
-      </div>
       <div>
          {#if data.altContact}
             Alternative Contact
-            <UserCustomer user={data.altContact} />
-            {#if data.altAddress}
-               <AddressCustomer address={data.altAddress} />
-            {/if}
+            <div class="flex flex-col">
+               <UserCustomer user={data.altContact} />
+               {#if data.altAddress}
+                  <AddressCustomer address={data.altAddress} />
+               {/if}
+            </div>
          {:else}
-            For your protection, in case we lose contact, please provide an alternate contact (parent, sibling, friend) who would know how to contact you.
+            For your protection, in case we lose contact, please provide an alternate contact (parent, sibling, friend) who would know how to contact you. Any information will be kept confidential. You do not need to fill out the whole form but any information is helpful.
             <AlternativeContactForm data={data.alternativeContactForm} redirectTo='newLease' userId={data.user?.id} addressId={data.address?.addressId} unitNum={data.unitNum}/>
          {/if}
       </div>
       {#if data.unit && data.address && data.altContact}
+         <Checkbox
+            label='No property being stored has a lien'
+            name='propertySubjectToLien'
+            bind:value={$form.propertySubjectToLien}
+         />
+         <div class="font-bold w-72"> 
+            IDAHO CODE SECTION 55-2304 REQUIRES TENANT TO NOTIFY LESSOR OF ANY LIEN HOLDERS OR SECURED PARTIES WHO HAVE AN INTEREST IN PROPERTY THAT IS STORED IN THE UNIT.
+         </div>
          <input type="hidden" value={data.altContact.id} name="altContactId" />
          <FormProgress delayed={$delayed} timeout={$timeout} buttonText='The above is correct I would like to pay my deposit' classes='my-2'/>
       {/if}
