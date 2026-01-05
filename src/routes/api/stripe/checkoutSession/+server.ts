@@ -32,7 +32,6 @@ export const POST: RequestHandler = async (event) => {
       customer: customer.stripeId ? customer.stripeId : undefined,
       status: 'open'
    })
-   console.log(previousSessions);
    if(previousSessions){
       for(const session of previousSessions.data){
          await stripe.checkout.sessions.expire(session.id)
