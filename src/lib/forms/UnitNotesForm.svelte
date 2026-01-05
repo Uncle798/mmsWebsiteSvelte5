@@ -85,7 +85,7 @@
             }}
          />
          <input type="hidden" name="unitNum" id="unitNum" value={unit.num} />
-         <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} buttonText='Update notes'/>
+         <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} buttonText='Update notes' classes='mb-2'/>
       </div>
    </form>
 </div>
