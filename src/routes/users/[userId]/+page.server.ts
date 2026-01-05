@@ -79,7 +79,7 @@ export const load: PageServerLoad = async (event) => {
       orderBy: {
          refundCreated: 'desc'
       }
-   })
+   });
    return { 
       dbUser, 
       address, 
