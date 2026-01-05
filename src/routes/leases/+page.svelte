@@ -68,7 +68,7 @@
       return 0
    }));
    $effect(() => {
-      if(csvState && csvState?.current !== '' && csvPurpose === 'currentCustomers'){
+      if(csvState && csvState?.current !== ''){
 			const blob = new Blob([csvState.current], {
 				type: 'application/csv'
 			});
