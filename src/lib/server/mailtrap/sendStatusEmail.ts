@@ -2,12 +2,17 @@ import { PUBLIC_COMPANY_NAME } from "$env/static/public";
 import { currencyFormatter } from "$lib/utils/currencyFormatter";
 import dayjs from "dayjs";
 import { buffer } from "stream/consumers";
-import type { User } from "../../../generated/prisma/client";
+import type { User, Lease } from "../../../generated/prisma/client";
 import { mailtrap, sender } from "./mailtrap";
 
-export async function sendStatusEmail(admin: User, invoiceCount: number, totalInvoice: number, emptyUnits: number, pdf: PDFKit.PDFDocument) {
+export async function sendStatusEmail(admin: User, invoiceCount: number, totalInvoice: number, emptyUnits: number, leases:Lease[], pdf: PDFKit.PDFDocument) {
    if (admin.email?.includes('veryFakeEmail.com'.toLowerCase()) || admin.email?.includes('yetAnotherFakeEmail.com'.toLowerCase())) {
       return null;
+   }
+   let html = `Hello ${admin.givenName}<br/> ${invoiceCount} invoices were created this morning totaling ${currencyFormatter(totalInvoice)}.\
+      There are ${emptyUnits} empty units as of this morning. <br/>`;
+   for(const lease of leases){
+      html += `${lease.unitNum} <br/>`
    }
    const buf = await buffer(pdf);
    if (admin.admin) {
@@ -16,8 +21,7 @@ export async function sendStatusEmail(admin: User, invoiceCount: number, totalIn
             from: sender,
             to: [{ email: admin.email! }],
             subject: `${PUBLIC_COMPANY_NAME} Daily email`,
-            html: `Hello ${admin.givenName}<br/> ${invoiceCount} invoices were created this morning totaling ${currencyFormatter(totalInvoice)}.\
-            There are ${emptyUnits} empty units as of this morning. <br/>`,
+            html,
             attachments: [
                {
                   filename: `${PUBLIC_COMPANY_NAME} Invoices ${dayjs().format('MMMM D YYYY')}`,

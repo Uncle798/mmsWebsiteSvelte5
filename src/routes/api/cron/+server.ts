@@ -77,14 +77,14 @@ export const GET:RequestHandler = async (event) => {
             }
          }
       }
-   })
+   });
    const admins = await prisma.user.findMany({
       where: {
          admin: true
       }
    });
    for(const admin of admins){
-      await sendStatusEmail(admin, todaysInvoices.length, totalInvoiced, units.length - leasedCount, (await makeTodaysInvoicesReport(todaysInvoices, customers, false) as PDFKit.PDFDocument))
+      await sendStatusEmail(admin, todaysInvoices.length, totalInvoiced, units.length - leasedCount, todaysLeases, (await makeTodaysInvoicesReport(todaysInvoices, customers, false) as PDFKit.PDFDocument));
    }
    return new Response(JSON.stringify({success:true}), { status: 200 })
 }
