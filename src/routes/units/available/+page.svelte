@@ -102,12 +102,15 @@
       </div>
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 m-1 sm:m-2 bg-surface-50-950 mt-28 sm:mt-18">
          {#each filteredUnits(availableUnits) as unit}
+         {@const unitNotesForm = data.unitNotesForms.find((form) => form.id === unit.num)}
             <div class="border-2 border-primary-50-950 rounded-lg">
                <UnitEmployee {unit}/>
                <div class="text-center sm:col-span-2">
                   <a href="/employeeNewLease?unitNum={unit.num}&userId={data.userId}" class="btn preset-filled-primary-50-950 rounded-lg m-2 text-wrap">Rent this unit</a>
                </div>
-               <UnitNotesForm {unit} data={data.unitNotesForm} classes='mx-2' />
+               {#if unitNotesForm}
+                  <UnitNotesForm {unit} data={unitNotesForm} classes='mx-2' />
+               {/if}
             </div>
          {/each}
       </div>
