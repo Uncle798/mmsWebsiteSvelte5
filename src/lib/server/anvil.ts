@@ -331,7 +331,6 @@ export async function createLease(customer:User, lease:Lease, unit:Unit, employe
          signerType,
       }
    ]
-   console.log(address.address2)
    if(address.address2 !== null){
       fields.push({
          "name": "Street 2 - Tenant Address",
@@ -418,6 +417,7 @@ export async function createLease(customer:User, lease:Lease, unit:Unit, employe
           alignment: 'right'
          }
       );
+      console.log('address.address2 !== null')
    } else {
       fields.push({
          "name": "City - Tenant Address",
@@ -489,6 +489,7 @@ export async function createLease(customer:User, lease:Lease, unit:Unit, employe
           alignment: 'right'
          }
       );
+      console.log('address.address2 === null')
    }
    if(properties.length > 0){
       let index = 0;
@@ -635,6 +636,7 @@ export async function createLease(customer:User, lease:Lease, unit:Unit, employe
          }
       })
       data.payloads.leaseTemplate.data.altCity = altCity;
+      console.log('alternateAddress.city === true')
    }
    if(alternateAddress?.phoneNum1 && !alternateAddress.address1){
       fields.push({
