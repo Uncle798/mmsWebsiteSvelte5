@@ -122,7 +122,7 @@ export const load:PageServerLoad = (async (event) => {
          num: lease?.unitNum
       }
    });
-
+   console.log(alternateAddress)
    const contract = await createLease(customer, lease!, unit!, event.locals.user, address!, alternateContact!, alternateAddress!, true) as  { url:string, errors: (ResponseError | NodeError)[] | undefined};
    if (contract.errors) {
       // Note: because of the nature of GraphQL, statusCode may be a 200 even when
