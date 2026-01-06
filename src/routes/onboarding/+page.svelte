@@ -82,8 +82,7 @@
                   <h3 class="h3">Enter the alternative contact info</h3>
                </div>
                <AlternativeContactForm
-                  data={data.alternativeContactForm} 
-                  leaseId={data.lease.leaseId} 
+                  data={data.alternativeContactForm}
                   addressId={data.address.addressId}
                   userId={data.customer.id}
                   redirectTo='onboarding'
