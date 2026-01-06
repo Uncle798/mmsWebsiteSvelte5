@@ -110,30 +110,32 @@
       {:then addresses}
          <SearchDrawer
             modalOpen={searchDrawerOpen}
-            height='h-[180px]'
+            height='h-[320px] sm:h-[160px]'
          >
             {#snippet content()}
                <Search bind:search={search} searchType='lease id' data={data.searchForm} classes='mx-1'/>
                <Search bind:search={customerSearch} searchType='customer name' data={data.searchForm} classes='mx-1' />
-               <Button
-                  label='Sort by unit number {sortBy ? 'ascending' : 'descending'}'
-                  type='button'
-                  onClick={() => sortBy = !sortBy}
-               />
-               <div class="flex flex-col">
+               <div class="flex flex-col sm:flex-row gap-2">
                   <Button
-                     label='Download lease report CSV'
+                     label='Sort by unit number {sortBy ? 'ascending' : 'descending'}'
                      type='button'
-                     onClick={async () => {
-                        connection = source('/api/csv?currentLeaseReport=true');
-                        value = connection.select('message');
-                        valueState = fromStore(value);
-                        csv = connection.select('csv');
-                        csvState = fromStore(csv);
-                     }}
+                     onClick={() => sortBy = !sortBy}
                   />
-                  <div class='place-self-center'>
-                     {valueState?.current}
+                  <div class="flex flex-col gap-2">
+                     <Button
+                        label='Download lease report CSV'
+                        type='button'
+                        onClick={async () => {
+                           connection = source('/api/csv?currentLeaseReport=true');
+                           value = connection.select('message');
+                           valueState = fromStore(value);
+                           csv = connection.select('csv');
+                           csvState = fromStore(csv);
+                        }}
+                     />
+                     <div class='place-self-center'>
+                        {valueState?.current}
+                     </div>
                   </div>
                </div>
             {/snippet}

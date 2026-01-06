@@ -149,6 +149,6 @@
          </div>
       </div>
       <input type="hidden" value={userId} name="userId"/>
-      <FormProgress delayed={$delayed} timeout={$timeout}/>
+      <FormProgress delayed={$delayed} timeout={$timeout} classes='mt-2'/>
    </form>
 </div>

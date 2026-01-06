@@ -36,8 +36,8 @@
       <LeaseEmployee lease={data.lease} />
    {/if}
    {#if data.contract.url}
-   <div class="relative w-full h-auto my-2">
-      <iframe src={data.contract.url} frameborder="0" title='Lease' class="sm:w-11/12 sm:h-screen place-self-center"></iframe>
-   </div>
+      <div class="relative w-full min-h-155 my-2">
+         <iframe src={data.contract.url} frameborder="0" title='Lease' class="sm:w-11/12 sm:h-screen place-self-center"></iframe>
+      </div>
    {/if}
 </div>
