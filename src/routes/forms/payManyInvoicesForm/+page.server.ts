@@ -75,13 +75,12 @@ export const actions: Actions = {
                      paymentCompleted: new Date(),
                   }
                });
-               const totalAmountPaid = invoice.amountPaid += payment.paymentAmount;
                await prisma.invoice.update({
                   where: {
                      invoiceNum: invoice.invoiceNum
                   },
                   data: {
-                     amountPaid: totalAmountPaid
+                     amountPaid: invoice.amountPaid + payment.paymentAmount
                   }
                })
             }
