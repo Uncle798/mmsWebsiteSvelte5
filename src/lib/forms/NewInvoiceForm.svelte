@@ -24,6 +24,7 @@
 	import TextArea from "$lib/formComponents/TextArea.svelte";
 	import DatePickerSingle from "$lib/formComponents/DatePickerSingle.svelte";
 	import { humanUnitNum } from "$lib/utils/humanUnitNum";
+	import { invoiceNoteRent } from "$lib/utils/invoiceNoteRent";
    
    interface Props {
       data: SuperValidated<Infer<NewInvoiceFormSchema>>;
@@ -84,26 +85,9 @@
    let registerFormModalOpen = $state(false);
    onMount(()=>{
       $form.invoiceDue=new Date();
-      for(const key in $form){
-         const fullKey = `newInvoiceForm:${key}`;
-         const storedValue = sessionStorage.getItem(fullKey);
-         if(storedValue){
-            if(isNaN(parseInt(storedValue, 10))){
-               if(storedValue === 'true'){
-                  $form[key as keyof typeof $form] = true as never;
-               } else if(storedValue === 'false'){
-                  $form[key as keyof typeof $form] = false as never;
-               } else {
-                  $form[key as keyof typeof $form] = storedValue as never;
-               }
-            } else {
-               $form[key as keyof typeof $form] = parseInt(storedValue, 10) as never;
-            }
-         }
-      }
       if(lease){
          $form.invoiceAmount=lease.price;
-         $form.invoiceNotes=`Rent for unit ${humanUnitNum(lease.unitNum)} for ${dayjs().format('MMMM YYYY')}`;
+         $form.invoiceNotes=invoiceNoteRent(lease.unitNum, $form.invoiceDue);
       }
       if(customer){
          $form.customerId=customer.id;
@@ -278,7 +262,7 @@
          <input type="hidden" name='employeeId' value={employeeId}/>
          <input type="hidden" name="customerId" value={customer?.id} />
          <input type="hidden" name='leaseId' value={lease?.leaseId} />
-         <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} buttonText='Create Invoice'/>
+         <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} buttonText='Create Invoice' classes='mt-2'/>
       </form>
    {/if}
 </div>
