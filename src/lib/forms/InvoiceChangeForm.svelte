@@ -31,6 +31,8 @@
    });
    onMount(() => {
       $form.invoiceNotes = invoice.invoiceNotes ? invoice.invoiceNotes : undefined;
+      $form.amountPaid = invoice.amountPaid;
+      $form.invoiceAmount = invoice.invoiceAmount;
    })
 </script>
 <div class={classes}>
@@ -42,6 +44,13 @@
          constraints={$constraints.invoiceAmount}
          label='Invoice amount'
          name='invoiceAmount'
+      />
+      <NumberInput
+         bind:value={$form.amountPaid}
+         errors={$errors.amountPaid}
+         constraints={$constraints.amountPaid}
+         label='Amount paid'
+         name='amountPaid'
       />
       <DatePickerSingle
          bind:value={$form.invoiceDue}
@@ -58,6 +67,6 @@
          constraints={$constraints.invoiceNotes}
       />
       <input type="hidden" name="invoiceNum" id="invoiceNum" value={invoice.invoiceNum} />
-      <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} />
+      <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} classes='mt-2' />
    </form>
 </div>

@@ -5,5 +5,6 @@ export const invoiceChangeFormSchema = v.object({
    invoiceNotes: v.optional(v.string()),
    invoiceAmount: v.optional(v.number()),
    invoiceDue: v.optional(v.date()),
+   amountPaid: v.optional(v.number())
 });
 export type InvoiceChangeFormSchema = typeof invoiceChangeFormSchema;
