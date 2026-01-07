@@ -192,7 +192,7 @@
                      id={paymentType}
                      errors={$errors.paymentType}
                      constraints={$constraints.paymentType}
-                     label={paymentType.substring(0,1)+paymentType.substring(1).toLowerCase()}
+                     label={paymentType.substring(0,1)+paymentType.substring(1).toLowerCase().replaceAll('_', ' ')}
                      disabled={true}
                   />
                {:else}
@@ -202,7 +202,7 @@
                      id={paymentType}
                      errors={$errors.paymentType}
                      constraints={$constraints.paymentType}
-                     label={paymentType.substring(0,1)+paymentType.substring(1).toLowerCase()}
+                     label={paymentType.substring(0,1)+paymentType.substring(1).toLowerCase().replaceAll('_', ' ')}
                   />
                {/if}
             {/each}
@@ -230,7 +230,7 @@
          <input type="hidden" name="invoiceNum" id="invoiceNum" value={invoice.invoiceNum}>
          <input type="hidden" name="customerId" id="customerId" value={customer?.id}>
          <input type="hidden" name="employeeId" id="employeeId" value={employeeId}>
-         <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} />
+         <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} classes='mt-2' />
       </form>
    {/if}
 </div>
