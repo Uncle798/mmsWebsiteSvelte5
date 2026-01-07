@@ -102,7 +102,11 @@
                   <Menu.Positioner>
                      <Menu.Content class='backdrop-blur-sm'>
                         {#if data.invoice.amountPaid < data.invoice.invoiceAmount}
-                           <Menu.Item value='newPayment'>Make a payment for invoice {data.invoice.invoiceNum}</Menu.Item>
+                           <Menu.Item value='newPayment'>
+                              <Menu.ItemText>
+                                 Make a payment for invoice {data.invoice.invoiceNum}
+                              </Menu.ItemText>
+                           </Menu.Item>
                         {:else}   
                            <Menu.Item value='newPayment' disabled={true}>Make a payment for invoice {data.invoice.invoiceNum}</Menu.Item>
                         {/if}
@@ -128,20 +132,28 @@
                         </Menu.Item>
                         {#if data.invoice.amountPaid < data.invoice.invoiceAmount}                           
                            <Menu.Item value='editInvoice'>
-                              Edit invoice {data.invoice.invoiceNum}
+                              <Menu.ItemText>
+                                 Edit invoice {data.invoice.invoiceNum}
+                              </Menu.ItemText>
                            </Menu.Item>
                         {:else}
                            <Menu.Item value='editInvoice' disabled={true}>
-                              Edit invoice {data.invoice.invoiceNum}
+                              <Menu.ItemText>
+                                 Edit invoice {data.invoice.invoiceNum}
+                              </Menu.ItemText>
                            </Menu.Item>
                         {/if}
                         {#if data.invoice.amountPaid < data.invoice.invoiceAmount}
                            <Menu.Item value='deleteInvoice'>
-                              Delete invoice {data.invoice.invoiceNum}
+                              <Menu.ItemText>
+                                 Delete invoice {data.invoice.invoiceNum}
+                              </Menu.ItemText>
                            </Menu.Item>
                         {:else}
                            <Menu.Item value='deleteInvoice' disabled={true}>
-                              Delete invoice {data.invoice.invoiceNum}
+                              <Menu.ItemText>
+                                 Delete invoice {data.invoice.invoiceNum}
+                              </Menu.ItemText>
                            </Menu.Item>
                         {/if}
                      </Menu.Content>
