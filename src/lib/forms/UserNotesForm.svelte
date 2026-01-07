@@ -46,7 +46,7 @@
             label='Do not Rent to {user.organizationName ? user.organizationName : `${user.givenName} ${user.familyName}`}'
             classes='my-2'
          />
-         <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} buttonText='Update notes'/>
+         <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} buttonText='Update notes' classes='mt-2'/>
       </div>
       <input type="hidden" name="userId" id="userId" value={user.id}>
    </form>

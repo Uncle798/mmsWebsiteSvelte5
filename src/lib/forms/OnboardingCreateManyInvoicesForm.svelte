@@ -48,6 +48,6 @@
          placeholder='Ending date'
       />
       <input type="hidden" name="leaseId" value={lease.leaseId} />
-      <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} />
+      <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} classes='mt-2'/>
    </form>
 </div>
