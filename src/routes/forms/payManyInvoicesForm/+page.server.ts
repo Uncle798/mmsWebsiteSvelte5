@@ -42,7 +42,7 @@ export const actions: Actions = {
             return message(payManyInvoicesForm, 'No invoice found');
          }
          for(const invoice of invoices){
-            if(invoice.invoiceAmount <= paidAmount && paidAmount > 0){
+            if(paidAmount > 0 && (invoice.invoiceAmount - invoice.amountPaid) < paidAmount){
                const payment = await prisma.paymentRecord.create({
                   data: {
                      invoiceNum: invoice.invoiceNum,
@@ -63,7 +63,8 @@ export const actions: Actions = {
                   }
                })
                paidAmount -= payment.paymentAmount;
-            } else if(paidAmount > 0){
+               console.log(paidAmount)
+            } else if(paidAmount > 0 && (invoice.invoiceAmount - invoice.amountPaid) >= paidAmount){
                const payment = await prisma.paymentRecord.create({
                   data: {
                      invoiceNum: invoice.invoiceNum,
@@ -71,18 +72,20 @@ export const actions: Actions = {
                      customerId: invoice.customerId,
                      paymentAmount: paidAmount,
                      paymentType: data.paymentType,
-                     paymentNotes: `Payment for invoice ${invoice.invoiceNum}, ${invoice.invoiceNotes}`,
-                     paymentCompleted: new Date(),
+                     paymentNotes: `Payment for invoice ${invoice.invoiceNum} ${invoice.invoiceNotes}`,
+                     paymentCompleted: new Date()
                   }
                });
                await prisma.invoice.update({
                   where: {
-                     invoiceNum: invoice.invoiceNum
+                     invoiceNum: invoice.invoiceNum,
                   },
                   data: {
-                     amountPaid: invoice.amountPaid + payment.paymentAmount
+                     amountPaid: payment.paymentAmount,
                   }
-               })
+               });
+               paidAmount -= payment.paymentAmount;
+               console.log(paidAmount)
             }
          }
          return message(payManyInvoicesForm, 'Payments created');
