@@ -50,6 +50,6 @@
       />
       <input type="hidden" name="recordNum" id="recordNum" value={recordNum} />
       <input type="hidden" name="recordType" value={recordType} />
-      <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} />
+      <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} classes='mt-2'/>
    </form>
 </div>
