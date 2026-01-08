@@ -15,6 +15,7 @@ import { newInvoiceFormSchema } from "$lib/formSchemas/newInvoiceFormSchema";
 import { registerFormSchema } from "$lib/formSchemas/registerFormSchema";
 import { newPaymentRecordFormSchema } from "$lib/formSchemas/newPaymentRecordFormSchema";
 import { searchFormSchema } from "$lib/formSchemas/searchFormSchema";
+import { sortUsers } from "$lib/utils/userSort";
 
 export const load: PageServerLoad = async (event) => {
    if(!event.locals.user?.employee){
@@ -82,7 +83,7 @@ export const load: PageServerLoad = async (event) => {
          refundCreated: 'desc'
       }
    });
-   const customers = await prisma.user.findMany({
+   let customers = await prisma.user.findMany({
       where: {
          customerLeases:{
             some: {
@@ -91,6 +92,7 @@ export const load: PageServerLoad = async (event) => {
          }
       }
    });
+   customers = sortUsers(customers);
    return { 
       dbUser, 
       address, 
