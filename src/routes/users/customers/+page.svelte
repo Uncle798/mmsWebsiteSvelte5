@@ -40,18 +40,6 @@
       || customer.givenName?.toLowerCase().includes(search.toLowerCase())
       || customer.organizationName?.toLowerCase().includes(search.toLowerCase())
    }));
-   let phoneSearch = $state('');
-   let phoneSearcher = $derived((customers:User[], addresses:Address[]) => {
-      const searchedAddresses = addresses.filter((add) => add.phoneNum1?.toLowerCase().includes(phoneSearch.toLowerCase()));
-      const users:User[] = [];
-      for(const address of searchedAddresses){
-         const user = customers.find((customer) => customer.id === address.userId)
-         if(user){
-            users.push(user);
-         }
-      }
-      return users;
-   })
    let totalLeased = $derived((leases:Lease[]) => {
       let totalLeased = 0;
       leases.forEach((lease) => {
@@ -201,7 +189,6 @@
                      >
                         {#snippet content()}
                            <Search bind:search={search} searchType='customer name' data={data.userSearchForm} classes='' />
-                           <Search bind:search={phoneSearch} searchType='phone number' data={data.userSearchForm}  />
                            <div class="flex flex-col">
                               <div class="flex flex-col sm:flex-row gap-2 justify-center align-middle">
                                  <Button
@@ -236,7 +223,7 @@
                         {/snippet}
                      </SearchDrawer>
                      <div class="grid grid-cols-1 mx-1 sm:mx-2 gap-y-2 gap-x-1 ">
-                        {#each slicedSource(searchedSource(phoneSearcher(sortedUsers(customers), addresses))) as customer (customer.id)}
+                        {#each slicedSource(searchedSource(sortedUsers(customers))) as customer (customer.id)}
                         {@const address = addresses.find((address) => address.userId === customer.id)}
                         {@const customerLeases = leases.filter((lease) => lease.customerId === customer.id)}
                         {@const customerInvoices = invoices.filter((invoice) => invoice.customerId === customer.id)}
