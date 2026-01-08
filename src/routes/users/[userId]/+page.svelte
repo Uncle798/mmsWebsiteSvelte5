@@ -174,7 +174,7 @@
          data={comboboxData}
          label='Search customers'
          onValueChange={(e) => {
-            goto(`/user/${e.value[0]}`)
+            goto(`/users/${e.value[0]}`)
          }}
       />
    {/snippet}
