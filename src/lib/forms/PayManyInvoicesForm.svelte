@@ -22,6 +22,11 @@
          if(!$message && !$errors){
             modalOpen = false;
          }
+         if($message){
+            setTimeout(() => {
+               modalOpen = false;
+            }, 1000)
+         }
       },
    });
 </script>
