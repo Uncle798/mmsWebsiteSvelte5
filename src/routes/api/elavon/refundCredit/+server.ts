@@ -39,6 +39,7 @@ export const POST: RequestHandler = async (event) => {
       })
       const responseBody = await response.text();
       try { 
+         xmlJs.
          parseString(responseBody,async (err, result) => {
             if(result.txn.ssl_issuer_result[0] === '00'){
                const refund = await prisma.refundRecord.create({
