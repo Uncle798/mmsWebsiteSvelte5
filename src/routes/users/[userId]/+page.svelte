@@ -97,7 +97,7 @@
          value: customer.id
       }
    }));
-   let SearchDrawerOpen = $state(false);
+   let searchDrawerOpen = $state(false);
 </script>
 <FormModal
    bind:modalOpen={globalModalOpen}
@@ -167,7 +167,7 @@
    {/snippet}
 </FormModal>
 <SearchDrawer
-   modalOpen={SearchDrawerOpen}
+   modalOpen={searchDrawerOpen}
    height='h-[120px]'
 >
    {#snippet content()}
@@ -175,7 +175,8 @@
          data={comboboxData}
          label='Search customers'
          onValueChange={(e) => {
-            goto(`/users/${e.value[0]}`)
+            searchDrawerOpen = false;
+            goto(`/users/${e.value[0]}`);
          }}
       />
    {/snippet}
