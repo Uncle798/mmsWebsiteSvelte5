@@ -50,7 +50,7 @@ export const actions: Actions = {
             employeeId: event.locals.user.id,
             deposit: false,
             amountPaid: 0,
-            invoiceNotes: invoiceNoteRent(lease.unitNum, lease.leaseEffectiveDate)
+            invoiceNotes: invoiceNoteRent(lease.unitNum, month)
          }
          invoices.push(invoice);
       }
