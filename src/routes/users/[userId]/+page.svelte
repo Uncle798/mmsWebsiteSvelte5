@@ -20,7 +20,7 @@
 	import Button from '$lib/core/Button.svelte';
 	import type { Lease } from '../../../generated/prisma/client';
 	import PayManyInvoicesForm from '$lib/forms/PayManyInvoicesForm.svelte';
-	import { Accordion } from '@skeletonlabs/skeleton-svelte';
+	import { Accordion, Menu, Portal } from '@skeletonlabs/skeleton-svelte';
 	import NewInvoiceForm from '$lib/forms/NewInvoiceForm.svelte';
 	import NewPaymentRecordForm from '$lib/forms/NewPaymentRecordForm.svelte';
 	import { PUBLIC_COMPANY_NAME } from '$env/static/public';
@@ -28,6 +28,7 @@
 	import Search from '$lib/forms/Search.svelte';
 	import Combobox from '$lib/formComponents/Combobox.svelte';
 	import { goto } from '$app/navigation';
+	import { MenuIcon } from 'lucide-svelte';
 
    let { data }: { data: PageData } = $props();
    let globalModalOpen = $state(false);
@@ -182,35 +183,38 @@
 
 {#if data.dbUser}
    <Header title='{data.dbUser.givenName} {data.dbUser.familyName}' />
-   <div class="grid grid-cols-1 sm:grid-cols-2 mt-14 sm:mt-10 mx-1 sm:mx-2">
-      <UserEmployee user={data.dbUser} classes='mx-2' />
-      <div class="gap-2 flex flex-col sm:flex-row mx-2">
-         <Button
-            label='Change email address'
-            type='button'
-            onClick={() => {
-               emailChangeModal()
+   <div class="grid grid-cols-1 mt-14 sm:mt-10 mx-1 sm:mx-2">
+      <UserEmployee user={data.dbUser} classes='place-self-center'/>
+         <Menu
+            onSelect={(d) => {
+               switch (d.value) {
+                  case 'emailChange':
+                     emailChangeModal()
+                     break;
+                  default:
+                     modalReason = d.value;
+                     globalModalOpen = true;
+                     break;
+               }
             }}
-         />
-         {#if !data.dbUser.emailVerified}
-            <Button
-               label='Verify email address'
-               type='button'
-               onClick={() => {
-                  modalReason='emailVerify';
-                  globalModalOpen=true;
-               }}
-            />
-         {/if}
-         <Button
-            label='Change name'
-            type='button'
-            onClick={() => {
-               modalReason='nameChange'
-               globalModalOpen=true
-            }}
-         />
-      </div>
+         >
+            <Menu.Trigger class='btn preset-filled-primary-50-950 size-8'><MenuIcon class='size-6'/></Menu.Trigger>
+            <Portal>
+               <Menu.Positioner>
+                  <Menu.Content>
+                     <Menu.Item value='emailChange'>
+                        <Menu.ItemText>Change email address</Menu.ItemText>
+                     </Menu.Item>
+                     <Menu.Item value='emailVerify'>
+                        <Menu.ItemText>Verify email address</Menu.ItemText>
+                     </Menu.Item>
+                     <Menu.Item value='nameChange'>
+                        <Menu.ItemText>Change Name</Menu.ItemText>
+                     </Menu.Item>
+                  </Menu.Content>
+               </Menu.Positioner>
+            </Portal>
+         </Menu>
       <UserNotesForm user={data.dbUser} data={data.userNotesForm} classes='m-2'/>
    </div>
 {:else}
