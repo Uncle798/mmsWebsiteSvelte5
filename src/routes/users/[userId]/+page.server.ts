@@ -14,6 +14,7 @@ import { payManyInvoicesFormSchema } from "$lib/formSchemas/payManyInvoicesFormS
 import { newInvoiceFormSchema } from "$lib/formSchemas/newInvoiceFormSchema";
 import { registerFormSchema } from "$lib/formSchemas/registerFormSchema";
 import { newPaymentRecordFormSchema } from "$lib/formSchemas/newPaymentRecordFormSchema";
+import { searchFormSchema } from "$lib/formSchemas/searchFormSchema";
 
 export const load: PageServerLoad = async (event) => {
    if(!event.locals.user?.employee){
@@ -30,6 +31,7 @@ export const load: PageServerLoad = async (event) => {
    const newInvoiceForm = await superValidate(valibot(newInvoiceFormSchema));
    const registerForm = await superValidate(valibot(registerFormSchema));
    const newPaymentRecordForm = await superValidate(valibot(newPaymentRecordFormSchema));
+   const searchForm = await superValidate(valibot(searchFormSchema));
    const userId = event.params.userId;
 
    const dbUser = await prisma.user.findUnique({
@@ -80,6 +82,15 @@ export const load: PageServerLoad = async (event) => {
          refundCreated: 'desc'
       }
    });
+   const customers = await prisma.user.findMany({
+      where: {
+         customerLeases:{
+            some: {
+               leaseEnded: null,
+            }
+         }
+      }
+   });
    return { 
       dbUser, 
       address, 
@@ -90,6 +101,7 @@ export const load: PageServerLoad = async (event) => {
       leaseEndForm, 
       userId, 
       refunds, 
+      customers,
       nameChangeForm, 
       emailChangeForm, 
       emailVerificationForm, 
@@ -99,5 +111,6 @@ export const load: PageServerLoad = async (event) => {
       newInvoiceForm,
       registerForm,
       newPaymentRecordForm,
+      searchForm,
    }
 };

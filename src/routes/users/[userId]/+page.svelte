@@ -24,6 +24,10 @@
 	import NewInvoiceForm from '$lib/forms/NewInvoiceForm.svelte';
 	import NewPaymentRecordForm from '$lib/forms/NewPaymentRecordForm.svelte';
 	import { PUBLIC_COMPANY_NAME } from '$env/static/public';
+	import SearchDrawer from '$lib/displayComponents/Modals/SearchDrawer.svelte';
+	import Search from '$lib/forms/Search.svelte';
+	import Combobox from '$lib/formComponents/Combobox.svelte';
+	import { goto } from '$app/navigation';
 
    let { data }: { data: PageData } = $props();
    let globalModalOpen = $state(false);
@@ -86,6 +90,13 @@
          return undefined
       }
    })
+   const comboboxData = $derived(data.customers.map((customer) => {
+      return {
+         label: customer.organizationName ? customer.organizationName : `${customer.givenName} ${customer.familyName}`,
+         value: customer.id
+      }
+   }));
+   let SearchDrawerOpen = $state(false);
 </script>
 <FormModal
    bind:modalOpen={globalModalOpen}
@@ -154,6 +165,20 @@
       {/if}
    {/snippet}
 </FormModal>
+<SearchDrawer
+   modalOpen={SearchDrawerOpen}
+   height='h-[120px]'
+>
+   {#snippet content()}
+      <Combobox
+         data={comboboxData}
+         label='Search customers'
+         onValueChange={(e) => {
+            goto(`/user/${e.value[0]}`)
+         }}
+      />
+   {/snippet}
+</SearchDrawer>
 
 {#if data.dbUser}
    <Header title='{data.dbUser.givenName} {data.dbUser.familyName}' />
