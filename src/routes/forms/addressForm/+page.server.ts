@@ -60,7 +60,6 @@ export const actions: Actions = {
             phoneNum1 = phoneValid.phone_number;
             phoneNum1Country = phoneValid.phone_location.country_prefix;
          }
-
          if(oldAddress){
             oldAddress = await prisma.address.update({
                where:{
