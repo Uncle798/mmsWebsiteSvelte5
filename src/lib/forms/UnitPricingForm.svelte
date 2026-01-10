@@ -71,7 +71,7 @@
          classes='w-32'
          placeholder={oldPrice.toString()}
       />
-      <div class="flex flex-col sm:flex-row">
+      <div class="flex flex-col sm:flex-row gap-2 my-2">
          <Switch
             bind:checked={$form.changeDeposit}
             name='changeDeposit'
