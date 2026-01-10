@@ -123,14 +123,18 @@ export const load:PageServerLoad = (async (event) => {
       }
    });
    console.log(alternateAddress)
-   const contract = await createLease(customer, lease!, unit!, event.locals.user, address!, alternateContact!, alternateAddress!, true) as  { url:string, errors: (ResponseError | NodeError)[] | undefined};
-   if (contract.errors) {
-      // Note: because of the nature of GraphQL, statusCode may be a 200 even when
-      // there are errors.
-      console.error('There were errors!')
-      console.error(JSON.stringify(contract.errors, null, 2));
-   } 
-   return { contract, customer, address, lease, alternateAddress, alternateContact};
+   if(lease && unit && address && alternateContact && alternateAddress){
+      const contract = await createLease(customer, lease, unit, event.locals.user, address, alternateContact, alternateAddress, true) as  { url:string, errors: (ResponseError | NodeError)[] | undefined};
+      if (contract.errors) {
+         // Note: because of the nature of GraphQL, statusCode may be a 200 even when
+         // there are errors.
+         console.error('There were errors!')
+         console.error(JSON.stringify(contract.errors, null, 2));
+      } 
+      return { contract, customer, address, lease, alternateAddress, alternateContact};
+   } else {
+      console.error('something was missing')
+   }
 });
 
 export const actions: Actions = {

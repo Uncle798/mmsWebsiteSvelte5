@@ -35,7 +35,7 @@
    {#if data.lease}
       <LeaseEmployee lease={data.lease} />
    {/if}
-   {#if data.contract.url}
+   {#if data.contract?.url}
       <div class="relative w-full min-h-155 my-2">
          <iframe src={data.contract.url} frameborder="0" title='Lease' class="sm:w-11/12 sm:h-screen place-self-center"></iframe>
       </div>
