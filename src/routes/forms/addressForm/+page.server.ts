@@ -84,9 +84,9 @@ export const actions: Actions = {
             }
             const dbAddress = await prisma.address.create({
                data: newAddress
-            })
+            });
             if(redirectTo){
-               redirect(303, `/${redirectTo}?addressId=${dbAddress.addressId}&userId=${data.userId}`)
+               redirect(303, `/${redirectTo}?addressId=${dbAddress.addressId}&userId=${data.userId}`);
             }
          } else {
             if(phoneValid){
