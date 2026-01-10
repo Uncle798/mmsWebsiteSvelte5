@@ -8,9 +8,10 @@
 	import { invalidateAll } from '$app/navigation';
 	import FormProgress from '$lib/formComponents/FormSubmitWithProgress.svelte';
 	import FormMessage from '$lib/formComponents/FormMessage.svelte';
-	import { onMount, untrack } from 'svelte';
+	import { onMount} from 'svelte';
 	import { page } from '$app/state';
-	import type { Address } from '../../generated/prisma/browser';
+	import { States, type Address } from '../../generated/prisma/browser';
+	import Combobox from '$lib/formComponents/Combobox.svelte';
 
    interface Props {
       data: SuperValidated<Infer<AddressFormSchema>>, 
@@ -20,7 +21,10 @@
       redirectTo?: string,
       classes?: string
    }
-
+   const comboboxData = $derived(Object.values(States).map((State) => ({
+      label: State,
+      value: State
+   })));
    let {data, address, addressModalOpen=$bindable(false), userId, redirectTo, classes }:Props = $props();
    // svelte-ignore state_referenced_locally
    let { form, message, errors, constraints, enhance, delayed, timeout, capture, restore, } = superForm(data, {
@@ -57,7 +61,7 @@
          $form.address1 = address.address1 ? address.address1 : undefined;
          $form.address2 = address.address2 ? address.address2 : undefined;
          $form.city = address.city ? address.city : undefined;
-         $form.state = address.state ? address.state : undefined;
+         $form.state = address.state ? address.state as States : undefined;
          $form.postalCode = address.postalCode ? address.postalCode : undefined;
          $form.country = address.country ? address.country : undefined;
          $form.phoneNum1 = address.phoneNum1 ? address.phoneNum1 : undefined;
@@ -65,9 +69,9 @@
       }
       for(const key in $form){
          const fullKey = `${url}/addressForm/userId=${userId}:${key}`;
-         const storedValue = sessionStorage.getItem(fullKey)
+         const storedValue = sessionStorage.getItem(fullKey);
          if(storedValue){
-            $form[key as keyof typeof $form] = storedValue;
+            $form[key as keyof typeof $form] = storedValue as States;
          }
       }
    })
@@ -103,14 +107,12 @@
          placeholder='Moscow'
          autocomplete='address-level2'
       />
-      <TextInput
+      <Combobox
+         data={comboboxData}
          label='State'
-         name='state'
-         bind:value={$form.state}
-         errors={$errors.state}
-         constraints={$constraints.state}
-         placeholder='ID'
-         autocomplete='address-level1'
+         onValueChange={(e) => {
+            $form.state = e.value[0] as States
+         }}
       />
       <TextInput
          label='Zip Code'
@@ -159,6 +161,6 @@
          </div>
       </div>
       <input type="hidden" value={userId} name="userId"/>
-      <FormProgress delayed={$delayed} timeout={$timeout}/>
+      <FormProgress delayed={$delayed} timeout={$timeout} classes='mt-2'/>
    </form>
 </div>
