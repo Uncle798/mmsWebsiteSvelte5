@@ -40,6 +40,21 @@
       || customer.givenName?.toLowerCase().includes(search.toLowerCase())
       || customer.organizationName?.toLowerCase().includes(search.toLowerCase())
    }));
+   let addressSearch = $state('');
+   let addressSearcher = $derived((customers:User[], addresses:Address[]) => {
+      const returnedCustomers:User[] = [];
+      const searchedAddresses = addresses.filter((address) => {
+         return address.address1?.includes(addressSearch) ||
+         address.phoneNum1?.includes(addressSearch)
+      });
+      for(const customer of customers){
+         const address = searchedAddresses.find((address) => address.userId === customer.id);
+         if(address){
+            returnedCustomers.push(customer)
+         }
+      }
+      return returnedCustomers;
+   })
    let totalLeased = $derived((leases:Lease[]) => {
       let totalLeased = 0;
       leases.forEach((lease) => {
@@ -189,6 +204,7 @@
                      >
                         {#snippet content()}
                            <Search bind:search={search} searchType='customer name' data={data.userSearchForm} classes='' />
+                           <Search bind:search={addressSearch} searchType='address or phone' data={data.userSearchForm}/>
                            <div class="flex flex-col">
                               <div class="flex flex-col sm:flex-row gap-2 justify-center align-middle">
                                  <Button
@@ -223,7 +239,7 @@
                         {/snippet}
                      </SearchDrawer>
                      <div class="grid grid-cols-1 mx-1 sm:mx-2 gap-y-2 gap-x-1 ">
-                        {#each slicedSource(searchedSource(sortedUsers(customers))) as customer (customer.id)}
+                        {#each slicedSource(addressSearcher(searchedSource(sortedUsers(customers)), addresses)) as customer (customer.id)}
                         {@const address = addresses.find((address) => address.userId === customer.id)}
                         {@const customerLeases = leases.filter((lease) => lease.customerId === customer.id)}
                         {@const customerInvoices = invoices.filter((invoice) => invoice.customerId === customer.id)}
@@ -250,7 +266,7 @@
                                     {#each customerLeases as lease}
                                     {@const unit = units.find((unit) => unit.num === lease.unitNum)}
                                        <div class='relative border border-primary-50-950 m-2 rounded-lg w-87 sm:w-110'>
-                                          <LeaseEmployee {lease} open={true} classes='self-start p-2'/>
+                                          <LeaseEmployee {lease} open={true} classes='p-2'/>
                                           <Menu onSelect={(e) => {
                                              switch (e.value) {
                                                 case 'endLease':

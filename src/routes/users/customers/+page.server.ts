@@ -31,7 +31,7 @@ export const load = (async (event) => {
          }
       }
    })
-   const customers = prisma.user.findMany({
+   let customers = prisma.user.findMany({
       where: {
          OR:[
             { 
@@ -52,17 +52,6 @@ export const load = (async (event) => {
             }
          ]
       },
-      orderBy: [
-         {  
-            organizationName: {sort: 'asc', nulls: 'last'}
-         },
-         {
-            familyName: 'asc'
-         },
-         {
-            givenName: 'asc'
-         }
-      ]
    });
    const leases = prisma.lease.findMany({
       where: {
