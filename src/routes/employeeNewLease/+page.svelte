@@ -132,7 +132,7 @@
       {#if data.address}
          <Address address={data.address} />
          <Button
-            label='Add address'
+            label='Edit address'
             type='button'
             onClick={() => {
                modalReason = 'address';
