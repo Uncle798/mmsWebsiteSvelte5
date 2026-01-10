@@ -180,34 +180,22 @@
                }}
             />
                <div class="flex bg-primary-50-950 mt-2 p-2 rounded-lg justify-between">
-                  {#each paymentTypes as paymentType}
-                     {#if paymentType === 'CREDIT'}                        
-                        <RadioButton
-                           value={paymentType}
-                           errors={$errors.paymentType}
-                           constraints={$constraints.paymentType}
-                           groupName='paymentType'
-                           id={paymentType}
-                           label={paymentType.substring(0,1) + paymentType.substring(1).toLowerCase()}
-                           disabled={true}
-                        />
-                     {:else}
-                        <RadioButton
-                           value={paymentType}
-                           errors={$errors.paymentType}
-                           constraints={$constraints.paymentType}
-                           groupName='paymentType'
-                           id={paymentType}
-                           label={paymentType.substring(0,1) + paymentType.substring(1).toLowerCase().replace(/_/gm, ' ')}
-                        />
-                     {/if}
+                  {#each paymentTypes as paymentType}           
+                     <RadioButton
+                        value={paymentType}
+                        errors={$errors.paymentType}
+                        constraints={$constraints.paymentType}
+                        groupName='paymentType'
+                        id={paymentType}
+                        label={paymentType.substring(0,1) + paymentType.substring(1).toLowerCase().replaceAll('_', ' ')}
+                     />
                   {/each}
                </div>
                <FormSubmitWithProgress 
                   delayed={$delayed} 
                   timeout={$timeout} 
                   buttonText='The above is correct charge ${$form.depositAmount} deposit'
-                  classes=''  
+                  classes='mt-2'  
                />
             {:else if data.unit}
                <div class="font-bold text-2xl">Please add address.</div>
