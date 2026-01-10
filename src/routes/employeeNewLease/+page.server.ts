@@ -122,6 +122,7 @@ export const actions: Actions = {
       }
       const leaseForm = await superValidate(event.request, valibot(newLeaseSchema));
       if(!leaseForm.valid){
+         console.error(leaseForm)
          return message(leaseForm, 'Form invalid');
       }
       const { success, reset } = await ratelimit.employeeForm.limit(event.locals.user.id);
