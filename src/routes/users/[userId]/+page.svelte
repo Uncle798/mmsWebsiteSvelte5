@@ -29,9 +29,10 @@
 	import Combobox from '$lib/formComponents/Combobox.svelte';
 	import { goto } from '$app/navigation';
 	import { MenuIcon } from 'lucide-svelte';
+	import { humanUnitNum } from '$lib/utils/humanUnitNum';
 
    let { data }: { data: PageData } = $props();
-   let globalModalOpen = $state(false);
+   let modalOpen = $state(false);
    let modalReason = $state('');
    let currentLeaseId = $state('');
    let pageNum = $state(1);
@@ -71,14 +72,9 @@
          return 0;
       }
    });
-   function leaseModal(leaseId:string) {
-      currentLeaseId = leaseId;
-      modalReason = 'leaseEnd';
-      globalModalOpen = true;
-   }
    function emailChangeModal(){
       modalReason='emailChange'
-      globalModalOpen=true;
+      modalOpen=true;
    }
    let currentLease = $state<Lease>();
    let currentInvoice = $state<Invoice>();
@@ -100,47 +96,47 @@
    let searchDrawerOpen = $state(false);
 </script>
 <FormModal
-   bind:modalOpen={globalModalOpen}
+   bind:modalOpen={modalOpen}
 >
    {#snippet content()}
       {#if modalReason === 'emailChange'}
-         <EmailChangeForm data={data.emailChangeForm} bind:emailModalOpen={globalModalOpen} user={data.dbUser}/>
+         <EmailChangeForm data={data.emailChangeForm} bind:emailModalOpen={modalOpen} user={data.dbUser}/>
       {:else if modalReason === 'emailVerification'}
          <EmailVerificationForm 
             data={data.emailVerificationForm}
             userId={data.dbUser.id}
-            bind:emailVerificationModalOpen={globalModalOpen}
+            bind:emailVerificationModalOpen={modalOpen}
             redirect='false'
          />
       {:else if modalReason === 'addressChange'}
          <AddressForm
             data={data.addressForm}
             userId={data.dbUser.id}
-            bind:addressModalOpen={globalModalOpen}
+            bind:addressModalOpen={modalOpen}
          />
-      {:else if modalReason === 'leaseEnd'}
+      {:else if modalReason === 'endLease'}
          <LeaseEndForm
             data={data.leaseEndForm}
-            bind:leaseEndModalOpen={globalModalOpen}
-            leaseId={currentLeaseId}
+            bind:leaseEndModalOpen={modalOpen}
+            leaseId={currentLease!.leaseId}
          />
       {:else if modalReason === 'nameChange'}
          <NameChangeForm
             data={data.nameChangeForm}
             userId={data.userId}
-            bind:nameModalOpen={globalModalOpen}
+            bind:nameModalOpen={modalOpen}
          />
-      {:else if modalReason === 'onboardingCreateManyInvoices' && currentLease}
+      {:else if modalReason === 'manyInvoices' && currentLease}
          <OnboardingCreateManyInvoicesForm 
             data={data.onboardingCreateManyInvoicesForm} 
             lease={currentLease} 
-            bind:modalOpen={globalModalOpen} 
+            bind:modalOpen={modalOpen} 
          />
       {:else if modalReason === 'payManyInvoices'}
          <PayManyInvoicesForm
             data={data.payManyInvoicesForm}
             customerId={data.userId}
-            bind:modalOpen={globalModalOpen}
+            bind:modalOpen={modalOpen}
          />
       {:else if modalReason === 'newInvoice'}
          <NewInvoiceForm
@@ -150,7 +146,7 @@
             registerFormData={data.registerForm}
             lease={currentLease}
             customer={data.dbUser}
-            bind:modalOpen={globalModalOpen}
+            bind:modalOpen={modalOpen}
          />
       {:else if modalReason === 'newPayment'}
          <NewPaymentRecordForm
@@ -161,13 +157,13 @@
             employeeId={data.user!.id}
             invoice={currentInvoice}
             customer={data.dbUser}
-            bind:modalOpen={globalModalOpen}
+            bind:modalOpen={modalOpen}
          />
       {/if}
    {/snippet}
 </FormModal>
 <SearchDrawer
-   modalOpen={searchDrawerOpen}
+   bind:modalOpen={searchDrawerOpen}
    height='h-[120px]'
 >
    {#snippet content()}
@@ -183,7 +179,7 @@
 </SearchDrawer>
 
 {#if data.dbUser}
-   <Header title='{data.dbUser.givenName} {data.dbUser.familyName}' />
+   <Header title={ data.dbUser.organizationName ? data.dbUser.organizationName : `${data.dbUser.givenName} ${data.dbUser.familyName}`} />
    <div class="grid grid-cols-1 mt-14 sm:mt-10 mx-1 sm:mx-2">
       <UserEmployee user={data.dbUser} classes='place-self-center'/>
          <Menu
@@ -194,12 +190,12 @@
                      break;
                   default:
                      modalReason = d.value;
-                     globalModalOpen = true;
+                     modalOpen = true;
                      break;
                }
             }}
          >
-            <Menu.Trigger class='btn preset-filled-primary-50-950 size-8'><MenuIcon class='size-6'/></Menu.Trigger>
+            <Menu.Trigger class='btn preset-filled-primary-50-950 absolute top-10 left-2'><MenuIcon class='size-6' /></Menu.Trigger>
             <Portal>
                <Menu.Positioner>
                   <Menu.Content>
@@ -229,7 +225,7 @@
          label='Change address'
          onClick={() => {
             modalReason='addressChange';
-            globalModalOpen=true;
+            modalOpen=true;
          }}
       />
    {:else}
@@ -238,7 +234,7 @@
             label='Add address'
             onClick={() => {
                modalReason='addressChange';
-               globalModalOpen=true;
+               modalOpen=true;
             }}
          />
    {/if}
@@ -250,34 +246,38 @@
 {:then leases}
    <div class="grid grid-cols-1 sm:grid-cols-2">
       {#each leases as lease}
-         <div class="rounded-lg border-2 border-primary-50 dark:border-primary-950 flex flex-col m-2">
-            <LeaseEmployee lease={lease} classes='m-2'/>
+         <div class="rounded-lg border-2 border-primary-50 dark:border-primary-950 flex flex-col m-2 relative">
+            <LeaseEmployee lease={lease} classes='m-2' open={true} />
             {#if !lease?.leaseEnded}
-               <div class="m-2 gap-2 flex flex-col">
-                  <Button
-                     label='End lease'
-                     type='button'
-                     onClick={() => leaseModal(lease.leaseId)}
-                  />
-                  <Button
-                     label='Make an invoice for this lease'
-                     type='button'
-                     onClick={() => {
-                        modalReason='newInvoice';
-                        currentLease=lease;
-                        globalModalOpen=true;
-                     }}
-                  />
-                  <Button
-                     label='Create many invoices for this lease'
-                     type='button'
-                     onClick={() => {
-                        modalReason='onboardingCreateManyInvoices'
+            <Menu
+               onSelect={(e) => {
+                  switch (e.value) {
+
+                     default:
+                        modalReason = e.value;
                         currentLease = lease;
-                        globalModalOpen = true;
-                     }}
-                  />
-               </div>
+                        modalOpen = true;
+                        break;
+                  }
+               }}
+            >
+               <Menu.Trigger class='btn preset-filled-primary-50-950 absolute top-2 left-2'><MenuIcon aria-label='Lease menu unit number {humanUnitNum(lease.unitNum)}'/></Menu.Trigger>
+               <Portal>
+                  <Menu.Positioner>
+                     <Menu.Content>
+                        <Menu.Item value='endLease'>
+                           <Menu.ItemText>End lease</Menu.ItemText>
+                        </Menu.Item>
+                        <Menu.Item value='newInvoice'>
+                           <Menu.ItemText>Make single invoice for this lease</Menu.ItemText>
+                        </Menu.Item>
+                        <Menu.Item value='manyInvoices'>
+                           <Menu.ItemText>Create many invoices for this lease</Menu.ItemText>
+                        </Menu.Item>
+                     </Menu.Content>
+                  </Menu.Positioner>
+               </Portal>
+            </Menu>
             {/if}
          </div>
       {/each}
@@ -306,146 +306,121 @@
             customer={data.dbUser}
             classes='m-2'
          />
-         {#if refunds.length > 0}
-            <div class="grid grid-cols-1 lg:grid-cols-2` gap-x-1 gap-y-3 mx-2 ">
-               {#each slicedInvoices(invoices) as invoice}
-               {@const invoicePaymentRecords = paymentRecords.filter((payment) => payment.invoiceNum === invoice.invoiceNum)}
-                  <div class="flex flex-col">
-                     <InvoiceEmployee invoice={invoice} classes='rounded-lg border-2 border-primary-50-950' />
-                     {#if overDueInvoice(invoice) > 0 }
-                        <Button
-                           label='Make a payment record for invoice {invoice.invoiceNum}'
-                           type='button'
-                           onClick={() => {
-                              currentInvoice=invoice;
-                              modalReason='newPayment';
-                              globalModalOpen=true;
-                           }}
-                        />
-                     {/if}
-                  </div>   
-                  {#each invoicePaymentRecords as paymentRecord (paymentRecord.paymentNumber)}
-                     <PaymentRecordEmployee paymentRecord={paymentRecord} classes='rounded-lg border-2 border-primary-50-950'/>
-                  {/each}
-               {/each}
-            </div>
-         {:else}
-            <div class="flex flex-col sm:flex-row gap-2 m-2">
-               <label for="selectAllInovices" class="label-text">Select all invoices
-                  <input 
-                     type="checkbox" 
-                     name="selectAllInvoices" 
-                     class="input checkbox"
-                     onchange={(e) => {
-                        if(e.currentTarget.checked){
-                           for(const invoice of invoices){
-                              const alreadyThere = selectedInvoices.find((inv) => inv.invoiceNum === invoice.invoiceNum)
-                              if(!alreadyThere){
-                                 selectedInvoices.push(invoice);
-                              }
+         <div class="flex flex-col sm:flex-row gap-2 m-2">
+            <label for="selectAllInovices" class="label-text">Select all invoices
+               <input 
+                  type="checkbox" 
+                  name="selectAllInvoices" 
+                  class="input checkbox"
+                  onchange={(e) => {
+                     if(e.currentTarget.checked){
+                        for(const invoice of invoices){
+                           const alreadyThere = selectedInvoices.find((inv) => inv.invoiceNum === invoice.invoiceNum)
+                           if(!alreadyThere){
+                              selectedInvoices.push(invoice);
                            }
-                        } else {
-                           for(const invoice of invoices){
+                        }
+                     } else {
+                        for(const invoice of invoices){
+                           const index = selectedInvoices.map((inv) => inv.invoiceNum).indexOf(invoice.invoiceNum);
+                           if(index > -1){
+                              selectedInvoices.splice(index, 1);
+                           }
+                        }
+                     }
+                  }}
+                  checked={selectedInvoices.length === invoices.length ? true : undefined}
+               />
+            </label>
+            <Button
+               type='button'
+               label='Take a payment'
+               onClick={() => {
+                  modalReason='payManyInvoices';
+                  modalOpen=true;
+               }}
+               classes=''
+            />
+            <Button
+               type='button'
+               label='Download PDF of selected invoices'
+               onClick={async() => {
+                  let url = '/api/downloadPDF?';
+                  const invoiceNums:number[] = []
+                  for(const invoice of selectedInvoices){
+                     url += `invoiceNum=${invoice.invoiceNum}&`;
+                     invoiceNums.push(invoice.invoiceNum);
+                  }
+                  const res = await fetch(url);
+                  const blob = await res.blob();
+                  url = URL.createObjectURL(blob);
+                  let fileName = `${PUBLIC_COMPANY_NAME} invoices `;
+                  for(const num of invoiceNums){
+                     fileName += `${num} `
+                  }
+                  const a = document.createElement('a');
+                  a.href = url;
+                  a.download = fileName
+                  document.body.append(a);
+                  a.click();
+                  document.body.removeChild(a);
+                  URL.revokeObjectURL(url)
+               }}
+               disabled={selectedInvoices.length > 0 ? undefined : true}
+            />
+         </div>
+         <div class="mx-2">
+            {#each slicedInvoices(invoices) as invoice}
+            {@const invoicePaymentRecords = paymentRecords.filter((payment) => payment.invoiceNum === invoice.invoiceNum)}
+               <div class="flex flex-row">
+                  <label for={invoice.invoiceNum.toString()} class="label-text mx-2 self-center">
+                     Select {invoice.invoiceNum}
+                     <input 
+                        type="checkbox" 
+                        group={selectedInvoices}
+                        name={invoice.invoiceNum.toString()}
+                        value={invoice.invoiceNum.toString()} 
+                        class='input checkbox justify-self-center self-center'
+                        onchange={(e) => {
+                           if(e.currentTarget.checked){
+                              selectedInvoices.push(invoice);
+                           } else {
                               const index = selectedInvoices.map((inv) => inv.invoiceNum).indexOf(invoice.invoiceNum);
                               if(index > -1){
                                  selectedInvoices.splice(index, 1);
                               }
                            }
-                        }
-                     }}
-                     checked={selectedInvoices.length === invoices.length ? true : undefined}
-                  />
-               </label>
-               <Button
-                  type='button'
-                  label='Take a payment'
-                  onClick={() => {
-                     modalReason='payManyInvoices';
-                     globalModalOpen=true;
-                  }}
-                  classes=''
-               />
-               <Button
-                  type='button'
-                  label='Download PDF of selected invoices'
-                  onClick={async() => {
-                     let url = '/api/downloadPDF?';
-                     const invoiceNums:number[] = []
-                     for(const invoice of selectedInvoices){
-                        url += `invoiceNum=${invoice.invoiceNum}&`;
-                        invoiceNums.push(invoice.invoiceNum);
-                     }
-                     const res = await fetch(url);
-                     const blob = await res.blob();
-                     url = URL.createObjectURL(blob);
-                     let fileName = `${PUBLIC_COMPANY_NAME} invoices `;
-                     for(const num of invoiceNums){
-                        fileName += `${num} `
-                     }
-                     const a = document.createElement('a');
-                     a.href = url;
-                     a.download = fileName
-                     document.body.append(a);
-                     a.click();
-                     document.body.removeChild(a);
-                     URL.revokeObjectURL(url)
-                  }}
-                  disabled={selectedInvoices.length > 0 ? undefined : true}
-               />
-            </div>
-            <div class="mx-2">
-               {#each slicedInvoices(invoices) as invoice}
-               {@const invoicePaymentRecords = paymentRecords.filter((payment) => payment.invoiceNum === invoice.invoiceNum)}
-                  <div class="flex flex-row">
-                     <label for={invoice.invoiceNum.toString()} class="label-text mx-2 self-center">
-                        Select {invoice.invoiceNum}
-                        <input 
-                           type="checkbox" 
-                           group={selectedInvoices}
-                           name={invoice.invoiceNum.toString()}
-                           value={invoice.invoiceNum.toString()} 
-                           class='input checkbox justify-self-center self-center'
-                           onchange={(e) => {
-                              if(e.currentTarget.checked){
-                                 selectedInvoices.push(invoice);
-                              } else {
-                                 const index = selectedInvoices.map((inv) => inv.invoiceNum).indexOf(invoice.invoiceNum);
-                                 if(index > -1){
-                                    selectedInvoices.splice(index, 1);
-                                 }
-                              }
-                           }}
-                           checked={ isInvoiceSelected(invoice) }
-                        />
-                     </label>
-                     <InvoiceEmployee invoice={invoice} classes=''/>
-                     {#if overDueInvoice(invoice) > 0 }
-                        <Button
-                           label='Make a payment record for invoice {invoice.invoiceNum}'
-                           type='button'
-                           onClick={() => {
-                              currentInvoice=invoice;
-                              modalReason='newPayment';
-                              globalModalOpen=true;
-                           }}
-                        />
-                     {/if}
-                     <Accordion multiple>
-                        {#each invoicePaymentRecords as paymentRecord (paymentRecord.paymentNumber)}
-                           <Accordion.Item value={paymentRecord.paymentNumber.toString()} >
-                              <Accordion.ItemTrigger>
-                                 Payment record {paymentRecord.paymentNumber}
-                              </Accordion.ItemTrigger>
-                              <Accordion.ItemContent>
-                                 <PaymentRecordEmployee paymentRecord={paymentRecord} classes='rounded-lg border-2 border-primary-50-950'/>
-                              </Accordion.ItemContent>
-                           </Accordion.Item>
-                        {/each}      
-                     </Accordion>
-                  </div>
-               {/each}
-            </div>
-         {/if}
+                        }}
+                        checked={ isInvoiceSelected(invoice) }
+                     />
+                  </label>
+                  <InvoiceEmployee invoice={invoice} classes='w-100'/>
+                  {#if overDueInvoice(invoice) > 0 }
+                     <Button
+                        label='Make a payment record for invoice {invoice.invoiceNum}'
+                        type='button'
+                        onClick={() => {
+                           currentInvoice=invoice;
+                           modalReason='newPayment';
+                           modalOpen=true;
+                        }}
+                     />
+                  {/if}
+                  <Accordion multiple>
+                     {#each invoicePaymentRecords as paymentRecord (paymentRecord.paymentNumber)}
+                        <Accordion.Item value={paymentRecord.paymentNumber.toString()} >
+                           <Accordion.ItemTrigger>
+                              Payment record {paymentRecord.paymentNumber}
+                           </Accordion.ItemTrigger>
+                           <Accordion.ItemContent>
+                              <PaymentRecordEmployee paymentRecord={paymentRecord} classes='rounded-lg border-2 border-primary-50-950'/>
+                           </Accordion.ItemContent>
+                        </Accordion.Item>
+                     {/each}      
+                  </Accordion>
+               </div>
+            {/each}
+         </div>
          {#if invoices.length > size}
             <Pagination bind:pageNum={pageNum} bind:size={size} label='invoices' array={invoices} />
          {/if}
