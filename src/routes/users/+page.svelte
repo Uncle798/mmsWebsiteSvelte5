@@ -11,7 +11,6 @@
 	import { invalidateAll } from '$app/navigation';
 	import SearchDrawer from '$lib/displayComponents/Modals/SearchDrawer.svelte';
 	import Button from '$lib/core/Button.svelte';
-	import UserEmployee from '$lib/displayComponents/UserEmployee.svelte';
 
    let { data }: { data: PageData } = $props();
    let search = $state('')
@@ -135,7 +134,7 @@
    </SearchDrawer>
    <div in:fade={{duration:600}} class="m-2 mt-14 sm:mt-10 mb-8 sm:mb-8">
       <div class="grid grid-cols-1 gap-y-3 gap-x-1">
-         {#each slicedSource(searchedUsers(filterAlternative(filterAdmin(filterEmployee(sortedUsers(users)))))) as user, i (user.id)}
+         {#each slicedSource(searchedUsers(filterAlternative(filterAdmin(filterEmployee(sortedUsers(users)))))) as user (user.id)}
             <div class="rounded-lg border border-primary-50-950 flex flex-col sm:flex-row">
                <UserAdmin {user} classes=" p-2 w-1/2"/>
                <div class="mb-2">
