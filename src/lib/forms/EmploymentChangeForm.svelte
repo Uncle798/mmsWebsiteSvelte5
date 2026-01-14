@@ -4,48 +4,53 @@
    import FormSubmitWithProgress from "$lib/formComponents/FormSubmitWithProgress.svelte";
    import type { EmploymentFormSchema } from "$lib/formSchemas/employmentFormSchema";
 	import Switch from "$lib/formComponents/Switch.svelte"
+	import type { User } from "../../generated/prisma/client";
 
    interface Props {
       data: SuperValidated<Infer<EmploymentFormSchema>>;
-      employeeChecked: boolean;
-      adminChecked: boolean;
-      userId: string;
+      user: User;
       classes?: string;
+      modalOpen?: boolean;
    }
-   let { data,  employeeChecked=$bindable(false), adminChecked=$bindable(false), userId, classes }:Props = $props();
+   let { data, user, classes, modalOpen=$bindable() }:Props = $props();
    // svelte-ignore state_referenced_locally
    let { form, message, enhance, delayed, timeout, submit, } = superForm(data, {
-      id: userId,
-      onSubmit: (input) => {
+      onUpdated(){
+         if($message){
+            setTimeout(() => {
+               modalOpen = false
+            }, 1500)
+         }
       }
    });
 </script>
-<div class="my-2 {classes}">
-   <FormMessage message={$message} />
-   <form action="/forms/employmentChangeForm" method="POST" use:enhance>
-      <Switch 
-         name='employee' 
-         checked={employeeChecked} 
-         label='Employee' 
-         onCheckedChange={(e) => {
-            employeeChecked = e.checked;
-            $form.employee = e.checked; 
-            submit();
-         }}
-      />
-      <Switch 
-         name='admin' 
-         checked={adminChecked} 
-         label='Admin' 
-         onCheckedChange={(e) => {
-            adminChecked = e.checked; 
-            employeeChecked = e.checked;
-            $form.admin = e.checked;
-            $form.employee = e.checked;
-            submit();
-         }}
-      />
-      <input type="hidden" name='userId' value={userId} />
-      <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} buttonText="Change employment status"/>
+<div class="{classes}">
+   {#if $message}
+      <FormMessage message={$message} />
+   {:else}
+      <div class="h-8"></div>
+   {/if}
+   <form action="/forms/employmentChangeForm" method="POST" use:enhance >
+      <div class="gap-4"> 
+         <Switch 
+            name='employee' 
+            checked={user.employee} 
+            label='Employee' 
+            onCheckedChange={(e) => {
+               $form.employee = e.checked; 
+               submit();
+            }}
+         />
+         <Switch 
+            name='admin' 
+            checked={user.admin} 
+            label='Admin' 
+            onCheckedChange={(e) => {
+               $form.admin = e.checked;
+               submit();
+            }}
+         />
+      </div>
+      <input type="hidden" name='userId' value={user.id} />
    </form>
 </div>
