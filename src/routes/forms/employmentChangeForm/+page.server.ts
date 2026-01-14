@@ -29,15 +29,46 @@ export const actions:Actions = {
       if(employmentChangeForm.data.userId === event.locals.user.id){
          return message(employmentChangeForm, 'Unable to change own employment status'); 
       }
-      await prisma.user.update({
+      const { data } = employmentChangeForm;
+      const user = await prisma.user.findUnique({
          where: {
-            id: employmentChangeForm.data.userId,
-         },
-         data: {
-            admin: employmentChangeForm.data.admin ? true : false,
-            employee: employmentChangeForm.data.employee ? true : false,
+            id: data.userId
          }
-      })
+      });
+      if(!user){
+         return message(employmentChangeForm, 'User not found');
+      }
+      if(data.admin && !user.admin){
+         await prisma.user.update({
+            where: {
+               id: data.userId
+            },
+            data: {
+               employee: true,
+               admin: true,
+            }
+         });
+      } else if(data.employee && !user.employee && !user.admin){
+         await prisma.user.update({
+            where: {
+               id: employmentChangeForm.data.userId,
+            },
+            data: {
+               admin: false,
+               employee: true,
+            }
+         });
+      } else if(user.admin || user.employee){
+         await prisma.user.update({
+            where: {
+               id: data.userId,
+            },
+            data: {
+               admin: false,
+               employee: false,
+            }
+         });
+      }
       return message(employmentChangeForm, 'Employment changed successfully ')
    }
 }
