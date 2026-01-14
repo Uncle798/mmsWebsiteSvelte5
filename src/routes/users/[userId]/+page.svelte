@@ -178,8 +178,8 @@
 
 {#if data.dbUser}
    <Header title={ data.dbUser.organizationName ? data.dbUser.organizationName : `${data.dbUser.givenName} ${data.dbUser.familyName}`} />
-   <div class="grid grid-cols-1 mt-14 sm:mt-10 mx-1 sm:mx-2">
-      <UserEmployee user={data.dbUser} classes='place-self-center text-lg'/>
+   <div class="relative mt-12 sm:mt-10 mx-2 sm:mx-2">
+      <UserEmployee user={data.dbUser} classes=''/>
          <Menu
             onSelect={(d) => {
                switch (d.value) {
@@ -242,14 +242,13 @@
       Loading leases...
    </div>
 {:then leases}
-   <div class="grid grid-cols-1 sm:grid-cols-2">
+   <div class=" columns-2">
       {#each leases as lease}
-         <div class="rounded-lg border-2 border-primary-50 dark:border-primary-950 flex flex-col m-2 relative">
+         <div class="rounded-lg border-2 border-primary-50-950 flex flex-col m-2 relative">
             <LeaseEmployee lease={lease} classes='m-2' open={true} />
             <Menu
                onSelect={(e) => {
                   switch (e.value) {
-
                      default:
                         modalReason = e.value;
                         currentLease = lease;
@@ -265,10 +264,10 @@
                         <Menu.Item value='endLease' disabled={lease.leaseEnded ? true : undefined}>
                            <Menu.ItemText>End lease</Menu.ItemText>
                         </Menu.Item>
-                        <Menu.Item value='newInvoice'>
+                        <Menu.Item value='newInvoice' disabled={lease.leaseEnded ? true : undefined}>
                            <Menu.ItemText>Make single invoice for this lease</Menu.ItemText>
                         </Menu.Item>
-                        <Menu.Item value='manyInvoices'>
+                        <Menu.Item value='manyInvoices' disabled={lease.leaseEnded ? true : undefined}>
                            <Menu.ItemText>Create many invoices for this lease</Menu.ItemText>
                         </Menu.Item>
                      </Menu.Content>
