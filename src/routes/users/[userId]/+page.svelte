@@ -24,8 +24,7 @@
 	import NewInvoiceForm from '$lib/forms/NewInvoiceForm.svelte';
 	import NewPaymentRecordForm from '$lib/forms/NewPaymentRecordForm.svelte';
 	import { PUBLIC_COMPANY_NAME } from '$env/static/public';
-	import SearchDrawer from '$lib/displayComponents/Modals/SearchDrawer.svelte';
-	import Search from '$lib/forms/Search.svelte';
+	import SearchDrawer from '$lib/displayComponents/Modals/SearchDrawer.svelte'; 
 	import Combobox from '$lib/formComponents/Combobox.svelte';
 	import { goto } from '$app/navigation';
 	import { MenuIcon } from 'lucide-svelte';
@@ -34,7 +33,6 @@
    let { data }: { data: PageData } = $props();
    let modalOpen = $state(false);
    let modalReason = $state('');
-   let currentLeaseId = $state('');
    let pageNum = $state(1);
    let size = $state(5);
    const slicedInvoices = $derived((invoices:Invoice[]) => invoices.slice((pageNum - 1) * size, pageNum * size));
@@ -181,7 +179,7 @@
 {#if data.dbUser}
    <Header title={ data.dbUser.organizationName ? data.dbUser.organizationName : `${data.dbUser.givenName} ${data.dbUser.familyName}`} />
    <div class="grid grid-cols-1 mt-14 sm:mt-10 mx-1 sm:mx-2">
-      <UserEmployee user={data.dbUser} classes='place-self-center'/>
+      <UserEmployee user={data.dbUser} classes='place-self-center text-lg'/>
          <Menu
             onSelect={(d) => {
                switch (d.value) {
@@ -195,7 +193,7 @@
                }
             }}
          >
-            <Menu.Trigger class='btn preset-filled-primary-50-950 absolute top-10 left-2'><MenuIcon class='size-6' /></Menu.Trigger>
+            <Menu.Trigger class='btn preset-filled-primary-50-950 absolute top-10 left-82'><MenuIcon class='size-6' aria-label='User menu' /></Menu.Trigger>
             <Portal>
                <Menu.Positioner>
                   <Menu.Content>
@@ -248,7 +246,6 @@
       {#each leases as lease}
          <div class="rounded-lg border-2 border-primary-50 dark:border-primary-950 flex flex-col m-2 relative">
             <LeaseEmployee lease={lease} classes='m-2' open={true} />
-            {#if !lease?.leaseEnded}
             <Menu
                onSelect={(e) => {
                   switch (e.value) {
@@ -265,7 +262,7 @@
                <Portal>
                   <Menu.Positioner>
                      <Menu.Content>
-                        <Menu.Item value='endLease'>
+                        <Menu.Item value='endLease' disabled={lease.leaseEnded ? true : undefined}>
                            <Menu.ItemText>End lease</Menu.ItemText>
                         </Menu.Item>
                         <Menu.Item value='newInvoice'>
@@ -278,7 +275,6 @@
                   </Menu.Positioner>
                </Portal>
             </Menu>
-            {/if}
          </div>
       {/each}
    </div>
