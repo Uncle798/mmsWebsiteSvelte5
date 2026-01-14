@@ -37,7 +37,7 @@ export const ratelimit = {
       redis,
       analytics: false,
       prefix: 'ratelimit:employeeForm',
-      limiter: Ratelimit.slidingWindow(1, '5s'),
+      limiter: Ratelimit.slidingWindow(1, '1s'),
    }),
    customerForm: new Ratelimit({
       redis,
