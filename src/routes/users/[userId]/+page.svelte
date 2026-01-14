@@ -29,6 +29,7 @@
 	import { goto } from '$app/navigation';
 	import { MenuIcon } from 'lucide-svelte';
 	import { humanUnitNum } from '$lib/utils/humanUnitNum';
+	import EmploymentChangeForm from '$lib/forms/EmploymentChangeForm.svelte';
 
    let { data }: { data: PageData } = $props();
    let modalOpen = $state(false);
@@ -157,6 +158,12 @@
             customer={data.dbUser}
             bind:modalOpen={modalOpen}
          />
+      {:else if modalReason === 'employmentChange'}
+         <EmploymentChangeForm
+            data={data.employmentForm}
+            user={data.dbUser}
+            classes='min-w-80'
+         />
       {/if}
    {/snippet}
 </FormModal>
@@ -179,7 +186,7 @@
 {#if data.dbUser}
    <Header title={ data.dbUser.organizationName ? data.dbUser.organizationName : `${data.dbUser.givenName} ${data.dbUser.familyName}`} />
    <div class="relative mt-12 sm:mt-10 mx-2 sm:mx-2">
-      <UserEmployee user={data.dbUser} classes=''/>
+      <UserEmployee user={data.dbUser} classes='ml-18'/>
          <Menu
             onSelect={(d) => {
                switch (d.value) {
@@ -193,7 +200,7 @@
                }
             }}
          >
-            <Menu.Trigger class='btn preset-filled-primary-50-950 absolute top-10 left-82'><MenuIcon class='size-6' aria-label='User menu' /></Menu.Trigger>
+            <Menu.Trigger class='btn preset-filled-primary-50-950 absolute top-0 left-2'><MenuIcon class='size-5' aria-label='User menu' /></Menu.Trigger>
             <Portal>
                <Menu.Positioner>
                   <Menu.Content>
@@ -206,6 +213,11 @@
                      <Menu.Item value='nameChange'>
                         <Menu.ItemText>Change Name</Menu.ItemText>
                      </Menu.Item>
+                     {#if data.user?.admin}
+                        <Menu.Item value='employmentChange'>
+                           <Menu.ItemText>Change Employment</Menu.ItemText>
+                        </Menu.Item>
+                     {/if}
                   </Menu.Content>
                </Menu.Positioner>
             </Portal>
