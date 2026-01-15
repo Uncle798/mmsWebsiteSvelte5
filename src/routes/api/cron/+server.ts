@@ -37,8 +37,7 @@ export const GET:RequestHandler = async (event) => {
       });
       if(invoice){
          todaysInvoices.push(invoice)
-      }
-      if(!invoice){
+      } else if(!invoice){
          invoice = await prisma.invoice.findFirst({
             where: {
                AND: [
@@ -61,8 +60,7 @@ export const GET:RequestHandler = async (event) => {
          if(invoice){
             todaysInvoices.push(invoice);
          }
-      }
-      if(!invoice){
+      } else if(!invoice){
          todaysInvoices.push(
             await prisma.invoice.create({
                data: {
