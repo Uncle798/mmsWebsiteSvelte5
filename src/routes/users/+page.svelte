@@ -6,11 +6,13 @@
    import type { User } from '../../generated/prisma/browser';
    import { fade } from 'svelte/transition';
 	import UserAdmin from '$lib/displayComponents/UserAdmin.svelte';
-	import Search from '$lib/forms/Search.svelte';
 	import Switch from '$lib/formComponents/Switch.svelte';
-	import { invalidateAll } from '$app/navigation';
+	import { goto, invalidateAll } from '$app/navigation';
 	import SearchDrawer from '$lib/displayComponents/Modals/SearchDrawer.svelte';
 	import Button from '$lib/core/Button.svelte';
+	import { userName } from '$lib/utils/userName';
+	import Combobox from '$lib/formComponents/Combobox.svelte';
+   import { userSort } from '$lib/utils/userSort'
 
    let { data }: { data: PageData } = $props();
    let search = $state('')
@@ -102,6 +104,10 @@
       })
       invalidateAll();
    }
+   const comboboxData = $derived(userSort(await data.users).map((user) => ({
+      label: userName(user),
+      value: user.id
+   })))
 </script>
 <Header title='All users' />
 {#await data.users}
@@ -111,7 +117,14 @@
 {:then users }
    <SearchDrawer modalOpen={searchDrawerOpen} height='h-[180px]'>
       {#snippet content()}
-         <Search data={data.searchForm} bind:search={search} searchType='user' />
+         <Combobox
+            data={comboboxData}
+            label='Search users'
+            onValueChange={(e) => {
+               searchDrawerOpen = false;
+               goto(`/users/${e.value}`)
+            }}
+         />
          <div class="flex flex-row gap-2">
             Filter by 
             <Switch
@@ -140,9 +153,7 @@
                <div class="mb-2">
                   <EmploymentChangeForm 
                      data={data.employmentChangeForm} 
-                     employeeChecked={user.employee} 
-                     adminChecked={user.admin}
-                     userId={user.id}
+                     user={user}
                      classes="flex flex-col sm:flex-row"
                   />
                   <Button
