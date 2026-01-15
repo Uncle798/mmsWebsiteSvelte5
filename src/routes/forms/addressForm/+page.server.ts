@@ -57,7 +57,7 @@ export const actions: Actions = {
             if(phoneValid.phone_risk.risk_level !== 'low'){
                return message(addressForm, 'Phone number is to risky')
             }
-            phoneNum1 = phoneValid.phone_number;
+            phoneNum1 = phoneValid.phone_format.national.replace(/\D/g, '');
             phoneNum1Country = phoneValid.phone_location.country_prefix;
          }
          if(oldAddress){
@@ -81,6 +81,7 @@ export const actions: Actions = {
                country: data.country ? data.country : oldAddress.country,
                userId: data.userId
             }
+            console.log(newAddress);
             const dbAddress = await prisma.address.create({
                data: newAddress
             });

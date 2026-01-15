@@ -185,7 +185,7 @@
 
 {#if data.dbUser}
    <Header title={ data.dbUser.organizationName ? data.dbUser.organizationName : `${data.dbUser.givenName} ${data.dbUser.familyName}`} />
-   <div class="relative mt-12 sm:mt-10 mx-2 sm:mx-2">
+   <div class="relative mt-12 sm:mt-10 mx-2 sm:mx-2 border-2 rounded-lg border-primary-50-950">
       <UserEmployee user={data.dbUser} classes='ml-18'/>
          <Menu
             onSelect={(d) => {
@@ -227,7 +227,7 @@
 {:else}
 ...loading user
 {/if}
-<div class="mx-2">
+<div class="mx-2 relative">
    {#if data.address}
       <Address address={data.address} classes=''/>
       <Button
