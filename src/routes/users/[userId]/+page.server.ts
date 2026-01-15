@@ -15,7 +15,7 @@ import { newInvoiceFormSchema } from "$lib/formSchemas/newInvoiceFormSchema";
 import { registerFormSchema } from "$lib/formSchemas/registerFormSchema";
 import { newPaymentRecordFormSchema } from "$lib/formSchemas/newPaymentRecordFormSchema";
 import { searchFormSchema } from "$lib/formSchemas/searchFormSchema";
-import { sortUsers } from "$lib/utils/userSort";
+import { userSort } from "$lib/utils/userSort";
 import { employmentFormSchema } from "$lib/formSchemas/employmentFormSchema";
 
 export const load: PageServerLoad = async (event) => {
@@ -94,7 +94,7 @@ export const load: PageServerLoad = async (event) => {
          }
       }
    });
-   customers = sortUsers(customers);
+   customers = userSort(customers);
    return { 
       dbUser, 
       address, 

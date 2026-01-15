@@ -1,6 +1,6 @@
 import type { User } from "../../generated/prisma/client";
 
-export function sortUsers(users:User[]){
+export function userSort(users:User[]){
    return users.sort((a, b) => {
       if(a.organizationName && b.organizationName){
          if(a.organizationName > b.organizationName){

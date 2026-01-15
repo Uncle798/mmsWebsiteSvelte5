@@ -19,7 +19,7 @@
 	import UserRevenue from '$lib/displayComponents/UserRevenue.svelte';
 	import { PUBLIC_COMPANY_NAME } from '$env/static/public';
 	import dayjs from 'dayjs';
-	import { sortUsers } from '$lib/utils/userSort';
+	import { userSort } from '$lib/utils/userSort';
    import { fromStore } from 'svelte/store';
 	import Button from '$lib/core/Button.svelte';
    import { source } from 'sveltekit-sse';
@@ -76,7 +76,7 @@
       }
       return total;
    });
-   let sortedUsers = $derived((customers:User[]) => sortUsers(customers));
+   let sortedUsers = $derived((customers:User[]) => userSort(customers));
    let overdueInvoices = $derived((invoices:Invoice[]) => invoices.filter((invoice) => {
       return invoice.invoiceDue <= new Date() && (invoice.invoiceAmount > invoice.amountPaid);
    }))
