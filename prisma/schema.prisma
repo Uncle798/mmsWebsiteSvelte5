@@ -240,6 +240,7 @@ enum PaymentType {
   CHECK
   ONBOARDING_CREDIT
   OVER_THE_PHONE_CREDIT
+  PAYPAL
 }
 
 model Expense {
