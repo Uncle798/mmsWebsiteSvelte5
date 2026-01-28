@@ -122,7 +122,6 @@ export const load:PageServerLoad = (async (event) => {
          num: lease?.unitNum
       }
    });
-   console.log(alternateAddress)
    customer = await prisma.user.findUnique({
       where: {
          email: 'bransonschlegelmove@gmail.com'
