@@ -7,6 +7,7 @@ import { humanUnitSize } from "$lib/utils/humanUnitSize";
 import dayjs from "dayjs";
 import { prisma } from "./prisma";
 import { list } from "@vercel/blob";
+import { userName } from "$lib/utils/userName";
 
 export const anvilClient = new Anvil({apiKey:ANVIL_API_KEY});
 
@@ -247,6 +248,7 @@ export async function createLease(customer:User, lease:Lease, unit:Unit, employe
    if(file){
       base64 = arrayBufferToBase64(arrayBuffer);
    }
+   console.log('base64 length:', base64.length)
    const properties = await prisma.propertyWithLien.findMany({
       where: {
          leaseId: lease.leaseId
@@ -256,7 +258,6 @@ export async function createLease(customer:User, lease:Lease, unit:Unit, employe
          lienHolderAddress: true,
       }
    });
-   const tenantName = customer.organizationName ? customer.organizationName : `${customer.givenName} ${customer.familyName}`;
    const signerType = testing ? 'embedded' : 'email';
    const pr = new Intl.PluralRules('en-US', { type: 'ordinal'});
    const suffixes = new Map([
@@ -289,7 +290,7 @@ export async function createLease(customer:User, lease:Lease, unit:Unit, employe
                leaseStartDay: formatOrdinals(lease.leaseCreatedAt.getDate()),
                leaseStartMonth: dayjs(lease.leaseCreatedAt).format('MMMM'),
                leaseStartYear: dayjs(lease.leaseCreatedAt).format('YYYY'),
-               tenantName,
+               tenantName: userName(customer),
                unitNum: humanUnitNum(unit.num),
                unitSize: humanUnitSize(unit.size),
                unitPrice: lease.price,
@@ -328,7 +329,7 @@ export async function createLease(customer:User, lease:Lease, unit:Unit, employe
                fieldId: 'managerSignature',
             }
          ],
-         signerType,
+         signerType: 'email',
       }
    ]
    if(address.address2 !== null){
@@ -417,7 +418,6 @@ export async function createLease(customer:User, lease:Lease, unit:Unit, employe
           alignment: 'right'
          }
       );
-      console.log('address.address2 !== null')
    } else {
       fields.push({
          "name": "City - Tenant Address",
@@ -489,7 +489,6 @@ export async function createLease(customer:User, lease:Lease, unit:Unit, employe
           alignment: 'right'
          }
       );
-      console.log('address.address2 === null')
    }
    if(properties.length > 0){
       let index = 0;
@@ -563,7 +562,7 @@ export async function createLease(customer:User, lease:Lease, unit:Unit, employe
       signers.push({
          id: 'tenantSigner',
          routingOrder: 1, 
-         name: tenantName,
+         name: userName(customer),
          email: customer.email!,
          fields: [
             {
@@ -636,7 +635,6 @@ export async function createLease(customer:User, lease:Lease, unit:Unit, employe
          }
       })
       data.payloads.leaseTemplate.data.altCity = altCity;
-      console.log('alternateAddress.city === true')
    }
    if(alternateAddress?.phoneNum1 && !alternateAddress.address1){
       fields.push({
@@ -675,7 +673,7 @@ export async function createLease(customer:User, lease:Lease, unit:Unit, employe
             id: 'leaseTemplate',
             file: {
                data: base64,
-               filename: `${PUBLIC_COMPANY_NAME} lease unit ${humanUnitNum(unit.num)} - ${tenantName}.pdf`,
+               filename: `${PUBLIC_COMPANY_NAME} lease unit ${humanUnitNum(unit.num)} - ${userName(customer)}.pdf`,
                mimetype: 'application/pdf',
             },
             fields,
@@ -684,12 +682,13 @@ export async function createLease(customer:User, lease:Lease, unit:Unit, employe
          },
          data,
          signers,
-         signatureEmailSubject: `Lease for unit ${humanUnitNum(unit.num)} at ${PUBLIC_COMPANY_NAME}`,
-         signatureEmailBody: `Please sign the lease for unit number ${humanUnitNum(unit.num)} at ${PUBLIC_COMPANY_NAME}.`,
-         replyToName: PUBLIC_COMPANY_NAME,
-         replyToEmail: PUBLIC_COMPANY_EMAIL,
+         // signatureEmailSubject: `Lease for unit ${humanUnitNum(unit.num)} at ${PUBLIC_COMPANY_NAME}`,
+         // signatureEmailBody: `Please sign the lease for unit number ${humanUnitNum(unit.num)} at ${PUBLIC_COMPANY_NAME}.`,
+         // replyToName: PUBLIC_COMPANY_NAME,
+         // replyToEmail: PUBLIC_COMPANY_EMAIL,
       }
    });
+   console.log(contract)
    if(contract.errors){
       console.error('There were errors!')
       console.error(JSON.stringify(contract.errors, null, 2));

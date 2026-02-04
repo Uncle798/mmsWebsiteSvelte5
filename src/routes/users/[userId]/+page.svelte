@@ -200,7 +200,7 @@
                }
             }}
          >
-            <Menu.Trigger class='btn preset-filled-primary-50-950 absolute top-0 left-2'><MenuIcon class='size-5' aria-label='User menu' /></Menu.Trigger>
+            <Menu.Trigger class='btn preset-filled-primary-50-950 absolute top-2 left-2'><MenuIcon class='size-5' aria-label='User menu' /></Menu.Trigger>
             <Portal>
                <Menu.Positioner>
                   <Menu.Content>
