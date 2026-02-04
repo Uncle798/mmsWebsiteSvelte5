@@ -1,14 +1,14 @@
 import type { ContentText, ContentTable, TDocumentDefinitions } from "pdfmake/interfaces";
 import type { Address, RefundRecord, User } from "../../../generated/prisma/client";
 import { PUBLIC_COMPANY_NAME } from "$env/static/public";
-import { styles, printer } from "./pdfMake";
-import BlobStream, { type IBlobStream } from "blob-stream";
+import * as pdfmake from 'pdfmake';
+import { styles, fonts } from "./pdfMake";
 import dayjs from "dayjs";
 import { makeNamePlate } from "./makeNamePlate";
 import { makeAddress } from "./makeAddress";
 import { currencyFormatter } from "$lib/utils/currencyFormatter";
 
-export async function makeMultipleRefundsPDF(refunds:RefundRecord[], customer:User, address:Address, download?:boolean): Promise<Blob | PDFKit.PDFDocument>{
+export async function makeMultipleRefundsPDF(refunds:RefundRecord[], customer:User, address:Address, download?:boolean): Promise<Blob | string>{
    const header:ContentText = {
       text: `${PUBLIC_COMPANY_NAME} refunds`,
       style: 'header',
@@ -69,18 +69,10 @@ export async function makeMultipleRefundsPDF(refunds:RefundRecord[], customer:Us
          title,
       }
    }
-   const pdf = printer.createPdfKitDocument(reportDocDef);
+   pdfmake.addFonts(fonts);
+   const pdf = pdfmake.createPdf(reportDocDef);
    if(download){
-      return new Promise((resolve, reject) => {
-         pdf.pipe(BlobStream()).on('finish', function(this:IBlobStream){
-            resolve(this.toBlob('application/pdf'));
-         }).on('error', (err) =>{
-            console.error('err', err);
-            reject(err);
-         })
-         pdf.end();
-      });
+      return pdf.getBlob();
    }
-   pdf.end();
-   return pdf;
+   return pdf.getBase64();
 }

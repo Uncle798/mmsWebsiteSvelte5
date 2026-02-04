@@ -1,14 +1,14 @@
 import type { ContentTable, ContentText, TDocumentDefinitions } from "pdfmake/interfaces";
 import type { Address, PaymentRecord, User } from "../../../generated/prisma/client";
 import dayjs from "dayjs";
-import BlobStream, { type IBlobStream } from "blob-stream";
 import { makeNamePlate } from "./makeNamePlate";
 import { makeAddress } from "./makeAddress";
 import { PUBLIC_COMPANY_NAME } from "$env/static/public";
-import { printer, styles } from "./pdfMake";
+import { fonts, styles } from "./pdfMake";
+import * as pdfmake from 'pdfmake';
 import { currencyFormatter } from "$lib/utils/currencyFormatter";
 
-export async function makeMultiplePaymentsPDF(payments:PaymentRecord[], customer:User, address:Address, download?:boolean): Promise<Blob | PDFKit.PDFDocument> {
+export async function makeMultiplePaymentsPDF(payments:PaymentRecord[], customer:User, address:Address, download?:boolean): Promise<Blob | string> {
    const header:ContentText = {
       text: `${PUBLIC_COMPANY_NAME} payments`,
       style: 'header'
@@ -69,18 +69,10 @@ export async function makeMultiplePaymentsPDF(payments:PaymentRecord[], customer
          title,
       }
    }
-   const pdf = printer.createPdfKitDocument(reportDocDef);
+   pdfmake.addFonts(fonts)
+   const pdf = pdfmake.createPdf(reportDocDef);
    if(download){
-      return new Promise((resolve, reject) => {
-         pdf.pipe(BlobStream()).on('finish', function(this:IBlobStream){
-            resolve(this.toBlob('application/pdf'));
-         }).on('error', (err) =>{
-            console.error('err', err);
-            reject(err);
-         })
-         pdf.end();
-      });
+      return pdf.getBlob();
    }
-   pdf.end();
-   return pdf;
+   return pdf.getBase64();
 }

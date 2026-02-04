@@ -1,14 +1,14 @@
 import { PUBLIC_COMPANY_NAME } from "$env/static/public";
-import BlobStream, { type IBlobStream } from "blob-stream";
 import dayjs from "dayjs";
 import type { ContentText, ContentTable, TDocumentDefinitions } from "pdfmake/interfaces";
 import type { PaymentRecord, User, Address } from "../../../generated/prisma/client";
 import { makeAddress } from "./makeAddress";
 import { makeNamePlate } from "./makeNamePlate";
-import { styles, printer } from "./pdfMake";
+import * as pdfmake from 'pdfmake';
+import { styles, fonts } from "./pdfMake";
 import { currencyFormatter } from "$lib/utils/currencyFormatter";
 
-export async function makeReceiptPdf(paymentRecord: PaymentRecord, customer: User, address: Address, download?: boolean): Promise<Blob | PDFKit.PDFDocument> {
+export async function makeReceiptPdf(paymentRecord: PaymentRecord, customer: User, address: Address, download?: boolean): Promise<Blob | string> {
    const header: ContentText = {
       text: `${PUBLIC_COMPANY_NAME} Payment receipt number ${paymentRecord.paymentNumber}`,
       style: 'header'
@@ -61,18 +61,10 @@ export async function makeReceiptPdf(paymentRecord: PaymentRecord, customer: Use
       },
       styles: styles,
    };
-   const pdf = printer.createPdfKitDocument(receiptDocDef, {});
+   pdfmake.addFonts(fonts);
+   const pdf = pdfmake.createPdf(receiptDocDef);
    if (download) {
-      return new Promise((resolve, reject) => {
-         pdf.pipe(BlobStream()).on('finish', function (this: IBlobStream) {
-            resolve(this.toBlob('application/pdf'));
-         }).on('error', (err) => {
-            console.error(err);
-            reject(err);
-         });
-         pdf.end();
-      });
+      return pdf.getBlob()
    }
-   pdf.end();
-   return pdf;
+   return pdf.getBase64();
 }

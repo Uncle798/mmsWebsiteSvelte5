@@ -7,17 +7,13 @@ export function makeNamePlate(user: User) {
    };
    if (user.givenName) {
       pdfNamePlate = {
-         text: [
-            user.givenName,
-         ],
+         text: user.givenName,
          style: 'basic'
       };
    }
    if (user.familyName) {
       pdfNamePlate = {
-         text: [
-            user.familyName,
-         ],
+         text: user.familyName,
          style: 'basic'
       };
    }
@@ -26,6 +22,14 @@ export function makeNamePlate(user: User) {
          text: `${user.givenName} ${user.familyName}`,
          style: 'basic'
       };
+   }
+   if(user.organizationName && user.givenName && user.familyName){
+      pdfNamePlate = {
+         text: [
+            user.organizationName,
+            `${user.givenName} ${user.familyName}`
+         ]
+      }
    }
    return pdfNamePlate;
 }

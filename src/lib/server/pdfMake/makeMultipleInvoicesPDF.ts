@@ -2,14 +2,15 @@ import type { ContentTable, ContentText, TDocumentDefinitions } from "pdfmake/in
 import { currencyFormatter } from "$lib/utils/currencyFormatter";
 import type { Address, Invoice, User } from "../../../generated/prisma/client";
 import { PUBLIC_COMPANY_NAME } from "$env/static/public";
-import { printer, styles } from "./pdfMake";
+import * as pdfmake from 'pdfmake'
+import { fonts, styles } from "./pdfMake";
 import BlobStream, { type IBlobStream } from "blob-stream";
 import { makeNamePlate } from "./makeNamePlate";
 import { makeAddress } from "./makeAddress";
 import dayjs from "dayjs";
 import  utc  from "dayjs";
 dayjs.extend(utc);
-export async function makeMultipleInvoicesPDF(invoices:Invoice[], customer:User, address:Address, download?:boolean): Promise<Blob | PDFKit.PDFDocument> {
+export async function makeMultipleInvoicesPDF(invoices:Invoice[], customer:User, address:Address, download?:boolean): Promise<Blob | string> {
 
    const table:ContentTable = {
       table: {
@@ -83,18 +84,10 @@ export async function makeMultipleInvoicesPDF(invoices:Invoice[], customer:User,
          title,
       }
    }
-   const pdf = printer.createPdfKitDocument(reportDocDef);
+   pdfmake.addFonts(fonts);
+   const pdf = pdfmake.createPdf(reportDocDef);
    if(download){
-      return new Promise((resolve, reject) => {
-         pdf.pipe(BlobStream()).on('finish', function(this:IBlobStream){
-            resolve(this.toBlob('application/pdf'));
-         }).on('error', (err) =>{
-            console.error('err', err);
-            reject(err);
-         })
-         pdf.end();
-      });
+      return pdf.getBlob();
    }
-   pdf.end();
-   return pdf;
+   return pdf.getBase64()
 }

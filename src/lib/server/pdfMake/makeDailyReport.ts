@@ -1,14 +1,14 @@
 import type { ContentText, TDocumentDefinitions } from "pdfmake/interfaces";
 import type { User } from "../../../generated/prisma/client";
-import { printer, styles } from "./pdfMake";
+import { fonts, styles } from "./pdfMake";
+import * as pdfmake from 'pdfmake'
 import { PUBLIC_COMPANY_NAME } from "$env/static/public";
-
-import BlobStream, { type IBlobStream } from "blob-stream";
 import dayjs from "dayjs";
 
-export async function makeDailyReport(customers:User[], download?:boolean): Promise<Blob | PDFKit.PDFDocument>{
+export async function makeDailyReport(customers:User[], download?:boolean): Promise<Blob | string>{
+   const docTitle = `${PUBLIC_COMPANY_NAME} daily report ${dayjs().format('MMMM D YYYY')}`
    const header:ContentText = {
-      text: `${PUBLIC_COMPANY_NAME} daily report ${dayjs().format('MMMM D YYYY')}`,
+      text: docTitle,
       style: 'header'
    }
    const reportDocDef: TDocumentDefinitions = {
@@ -20,18 +20,11 @@ export async function makeDailyReport(customers:User[], download?:boolean): Prom
          font: 'Helvetica'
       }
    }
-   const pdf = printer.createPdfKitDocument(reportDocDef);
+   pdfmake.addFonts(fonts);
+   const pdf = pdfmake.createPdf(reportDocDef);
    if(download){
-      return new Promise((resolve, reject) => {
-         pdf.pipe(BlobStream()).on('finish', function(this:IBlobStream){
-            resolve(this.toBlob('application/pdf'));
-         }).on('error', (err) =>{
-            console.error('err', err);
-            reject(err);
-         })
-         pdf.end();
-      });
+      return pdf.getBlob()
+   } else {
+      return await pdf.getBase64();
    }
-   pdf.end();
-   return pdf;
 }

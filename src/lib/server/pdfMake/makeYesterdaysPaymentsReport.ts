@@ -3,10 +3,10 @@ import type { PaymentRecord, User } from "../../../generated/prisma/client";
 import { PUBLIC_COMPANY_NAME } from "$env/static/public";
 import dayjs from "dayjs";
 import { currencyFormatter } from "$lib/utils/currencyFormatter";
-import { printer, styles } from "./pdfMake";
-import BlobStream, { type IBlobStream } from "blob-stream";
+import { fonts, styles } from "./pdfMake";
+import * as pdfmake from 'pdfmake';
 
-export async function makeYesterdaysPaymentsReport(payments:PaymentRecord[], customers:User[], download?:boolean):Promise<Blob | PDFKit.PDFDocument> {
+export async function makeYesterdaysPaymentsReport(payments:PaymentRecord[], customers:User[], download?:boolean):Promise<Blob | Base64URLString> {
    const header: ContentText ={
       text: `${PUBLIC_COMPANY_NAME} payments created ${dayjs().format('MMMM D YYYY')}`,
       style: 'header'
@@ -50,18 +50,10 @@ export async function makeYesterdaysPaymentsReport(payments:PaymentRecord[], cus
             font: 'Helvetica'
          }
       }
-      const pdf = printer.createPdfKitDocument(reportDocDef);
+      pdfmake.addFonts(fonts);
+      const pdf = pdfmake.createPdf(reportDocDef);
       if(download){
-         return new Promise((resolve, reject) => {
-            pdf.pipe(BlobStream()).on('finish', function(this:IBlobStream){
-               resolve(this.toBlob('application/pdf'));
-            }).on('error', (err) =>{
-               console.error('err', err);
-               reject(err);
-            })
-            pdf.end();
-         });
+         return pdf.getBlob();
       }
-      pdf.end();
-      return pdf;
+      return pdf.getBase64();
 }
