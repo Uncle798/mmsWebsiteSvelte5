@@ -17,7 +17,9 @@ export const actions: Actions = {
       if(!onboardingExistingLeaseForm.valid){
          return message(onboardingExistingLeaseForm, 'Form not valid');
       }
-      const { success, reset } = await ratelimit.employeeForm.limit(event.locals.user.id);
+      const limit = await ratelimit.employeeForm.limit(event.locals.user.id);
+      console.log(limit);
+      const { success, reset } = limit;
       if(!success){
          const timeRemaining = Math.floor((reset - Date.now()) / 1000);
          return message(onboardingExistingLeaseForm, `Please wait ${timeRemaining} seconds before trying again`)
