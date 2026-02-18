@@ -86,7 +86,7 @@
 		"lucide-svelte": "^0.563.0",
 		"mailtrap": "^4.4.0",
 		"payment": "^2.4.7",
-		"pdfmake": "0.3.3",
+		"pdfmake": "0.2.2",
 		"restricted-input": "^4.1.4",
 		"stripe": "^20.3.0",
 		"sveltekit-sse": "^0.14.3",
