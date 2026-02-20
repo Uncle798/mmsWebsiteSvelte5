@@ -4,9 +4,7 @@ import { prisma } from '$lib/server/prisma';
 import dayjs from 'dayjs';
 import type { RequestHandler} from './$types';
 import type { Invoice } from '../../../generated/prisma/client';
-import { makeTodaysInvoicesReport } from '$lib/server/pdfMake/makeTodaysInvoicesReport';
 import { invoiceNoteRent } from '$lib/utils/invoiceNoteRent';
-import { makeYesterdaysPaymentsReport } from '$lib/server/pdfMake/makeYesterdaysPaymentsReport';
 export const GET:RequestHandler = async (event) => {
    const authHeader = event.request.headers.get('authorization');
    if(authHeader !== `Bearer ${CRON_SECRET}`){
@@ -116,7 +114,7 @@ export const GET:RequestHandler = async (event) => {
       }
    });
    for(const admin of admins){
-      await sendStatusEmail(admin, todaysInvoices.length, totalInvoiced, units.length - leasedCount, todaysLeases, (await makeTodaysInvoicesReport(todaysInvoices, customers, false) as PDFKit.PDFDocument), payments, (await makeYesterdaysPaymentsReport(payments, customers, false) as PDFKit.PDFDocument));
+      await sendStatusEmail(admin, todaysInvoices.length, totalInvoiced, units.length - leasedCount, todaysLeases, payments);
    }
    return new Response(JSON.stringify({success:true}), { status: 200 })
 }
