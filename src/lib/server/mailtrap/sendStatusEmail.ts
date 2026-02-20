@@ -5,7 +5,7 @@ import { buffer } from "stream/consumers";
 import type { User, Lease, PaymentRecord } from "../../../generated/prisma/client";
 import { mailtrap, sender } from "./mailtrap";
 
-export async function sendStatusEmail(admin: User, invoiceCount: number, totalInvoice: number, emptyUnits: number, leases:Lease[], invoicePdf: PDFKit.PDFDocument, payments:PaymentRecord[], paymentsPdf: PDFKit.PDFDocument) {
+export async function sendStatusEmail(admin: User, invoiceCount: number, totalInvoice: number, emptyUnits: number, leases:Lease[], payments:PaymentRecord[]) {
    if (admin.email?.includes('veryFakeEmail.com'.toLowerCase()) || admin.email?.includes('yetAnotherFakeEmail.com'.toLowerCase())) {
       return null;
    }
@@ -19,8 +19,6 @@ export async function sendStatusEmail(admin: User, invoiceCount: number, totalIn
    for(const lease of leases){
       html += `${lease.unitNum} <br/>`
    }
-   const buf = await buffer(invoicePdf);
-   const buf2 = await buffer(paymentsPdf);
    if (admin.admin) {
       try {
          const response = await mailtrap.send({
@@ -28,18 +26,6 @@ export async function sendStatusEmail(admin: User, invoiceCount: number, totalIn
             to: [{ email: admin.email! }],
             subject: `${PUBLIC_COMPANY_NAME} Daily email`,
             html,
-            attachments: [
-               {
-                  filename: `${PUBLIC_COMPANY_NAME} invoices ${dayjs().format('MMMM D YYYY')}.pdf`,
-                  content: buf.toString('base64'),
-                  type: 'application/pdf'
-               },
-               {
-                  filename: `${PUBLIC_COMPANY_NAME} payments ${dayjs().subtract(1, 'day').format('MMMM D YYYY')}.pdf`,
-                  content: buf2.toString('base64'),
-                  type: 'application/pdf'
-               }
-            ]
          });
          return response;
       } catch (error) {
