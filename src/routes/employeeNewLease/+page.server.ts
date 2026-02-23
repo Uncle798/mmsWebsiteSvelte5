@@ -1,266 +1,267 @@
-
 import { redirect } from '@sveltejs/kit';
-import { message, superValidate} from 'sveltekit-superforms';
-import { valibot } from 'sveltekit-superforms/adapters';
-import { newLeaseSchema  } from '$lib/formSchemas/newLeaseSchema'
+import { message, superValidate } from 'sveltekit-superforms';
+//import { valibot } from 'sveltekit-superforms/adapters';
+import { valibot } from '$lib/valibot';
+import { newLeaseSchema } from '$lib/formSchemas/newLeaseSchema';
 import { cuidIdFormSchema } from '$lib/formSchemas/cuidIdFormSchema';
 import { leaseDiscountFormSchema } from '$lib/formSchemas/leaseDiscountFormSchema';
 import { emailVerificationFormSchema } from '$lib/formSchemas/emailVerificationFormSchema';
 import { registerFormSchema } from '$lib/formSchemas/registerFormSchema';
 import { addressFormSchema } from '$lib/formSchemas/addressFormSchema';
 import type { PageServerLoad, Actions } from './$types';
-import { prisma } from '$lib/server/prisma'; 
+import { prisma } from '$lib/server/prisma';
 import type { Address, DiscountCode, User } from '../../generated/prisma/client';
 import { ratelimit } from '$lib/server/rateLimit';
-import { sendPaymentReceipt } from "$lib/server/mailtrap/sendPaymentReceipt";
+import { sendPaymentReceipt } from '$lib/server/mailtrap/sendPaymentReceipt';
 import { inngest } from '$lib/server/inngest/inngest';
 import { alternativeContactFormSchema } from '$lib/formSchemas/alternativeContactFormSchema';
 import { invoiceNoteDeposit } from '$lib/utils/invoiceNoteDeposit';
 
 export const load = (async (event) => {
-   if(!event.locals.user?.employee){
-      redirect(302, '/login?toast=employee')
-   } 
-   const unitNum = event.url.searchParams.get('unitNum');
-   const userId = event.url.searchParams.get('userId');
-   if(!unitNum){
-      redirect(302, `/units/available?userId=${userId}`);
-   }
-   const leaseForm = await superValidate(valibot(newLeaseSchema));
-   const registerForm = await superValidate(valibot(registerFormSchema));
-   const emailVerificationForm = await superValidate(valibot(emailVerificationFormSchema))
-   const addressForm = await superValidate(valibot(addressFormSchema));
-   const leaseDiscountForm = await superValidate(valibot(leaseDiscountFormSchema));
-   const customerSelectForm = await superValidate(valibot(cuidIdFormSchema));
-   const alternativeContactForm = await superValidate(valibot(alternativeContactFormSchema));
-   const discountId = event.url.searchParams.get('discountId');
-   const redirectTo = event.url.searchParams.get('redirectTo');
-   const alternativeContactId = event.url.searchParams.get('alternativeContactId');
-   const demoCookie = event.cookies.get('employeeNewLease');
-   const unit = await prisma.unit.findUnique({
-      where: {
-         num: unitNum
-      }
-   })
-   let customer:User | null = null;
-   let customers:User[] = [];
-   let address:Address | null = null;
-   let discount:DiscountCode | null = null;
-   let alternativeContact:User | null = null;
-   if(userId && userId !== 'null'){
-      customer = await prisma.user.findUnique({
-         where: {
-            id: userId
-         }
-      })
-      address = await prisma.address.findFirst({
-         where: {
-            AND:[
-               { softDelete: false },
-               { userId: customer?.id }
-            ]
-         }
-      })
-   }
-   if(discountId){
-      discount = await prisma.discountCode.findUnique({
-         where: {
-            discountId
-         }
-      })
-   }
-   if(alternativeContactId){
-      alternativeContact = await prisma.user.findUnique({
-         where: {
-            id: alternativeContactId
-         }
-      })
-   }
-   if(!customer){
-      customers = await prisma.user.findMany({
-         where: {
-            AND: [
-               {
-                  employee: false
-               },
-               {
-                  doNotRent: false
-               },
-            ]
-         },
-         orderBy: {
-            familyName: 'asc'
-         },
-      })
-   }
-   return {
-      leaseDiscountForm,
-      customerSelectForm, 
-      emailVerificationForm,
-      alternativeContactForm,
-      leaseForm,
-      registerForm, 
-      addressForm, 
-      discountId,
-      alternativeContactId,
-      redirectTo,
-      customer,
-      unit,
-      address,
-      discount,
-      alternativeContact,
-      customers,
-      unitNum,
-      demoCookie,
-   };
+	if (!event.locals.user?.employee) {
+		redirect(302, '/login?toast=employee');
+	}
+	const unitNum = event.url.searchParams.get('unitNum');
+	const userId = event.url.searchParams.get('userId');
+	if (!unitNum) {
+		redirect(302, `/units/available?userId=${userId}`);
+	}
+	const leaseForm = await superValidate(valibot(newLeaseSchema));
+	const registerForm = await superValidate(valibot(registerFormSchema));
+	const emailVerificationForm = await superValidate(valibot(emailVerificationFormSchema));
+	const addressForm = await superValidate(valibot(addressFormSchema));
+	const leaseDiscountForm = await superValidate(valibot(leaseDiscountFormSchema));
+	const customerSelectForm = await superValidate(valibot(cuidIdFormSchema));
+	const alternativeContactForm = await superValidate(valibot(alternativeContactFormSchema));
+	const discountId = event.url.searchParams.get('discountId');
+	const redirectTo = event.url.searchParams.get('redirectTo');
+	const alternativeContactId = event.url.searchParams.get('alternativeContactId');
+	const demoCookie = event.cookies.get('employeeNewLease');
+	const unit = await prisma.unit.findUnique({
+		where: {
+			num: unitNum
+		}
+	});
+	let customer: User | null = null;
+	let customers: User[] = [];
+	let address: Address | null = null;
+	let discount: DiscountCode | null = null;
+	let alternativeContact: User | null = null;
+	if (userId && userId !== 'null') {
+		customer = await prisma.user.findUnique({
+			where: {
+				id: userId
+			}
+		});
+		address = await prisma.address.findFirst({
+			where: {
+				AND: [{ softDelete: false }, { userId: customer?.id }]
+			}
+		});
+	}
+	if (discountId) {
+		discount = await prisma.discountCode.findUnique({
+			where: {
+				discountId
+			}
+		});
+	}
+	if (alternativeContactId) {
+		alternativeContact = await prisma.user.findUnique({
+			where: {
+				id: alternativeContactId
+			}
+		});
+	}
+	if (!customer) {
+		customers = await prisma.user.findMany({
+			where: {
+				AND: [
+					{
+						employee: false
+					},
+					{
+						doNotRent: false
+					}
+				]
+			},
+			orderBy: {
+				familyName: 'asc'
+			}
+		});
+	}
+	return {
+		leaseDiscountForm,
+		customerSelectForm,
+		emailVerificationForm,
+		alternativeContactForm,
+		leaseForm,
+		registerForm,
+		addressForm,
+		discountId,
+		alternativeContactId,
+		redirectTo,
+		customer,
+		unit,
+		address,
+		discount,
+		alternativeContact,
+		customers,
+		unitNum,
+		demoCookie
+	};
 }) satisfies PageServerLoad;
 
 export const actions: Actions = {
-   newLease: async (event) => {
-      if(!event.locals.user?.employee){
-         redirect(302, '/login?toast=employee')
-      }
-      const leaseForm = await superValidate(event.request, valibot(newLeaseSchema));
-      if(!leaseForm.valid){
-         console.error(leaseForm)
-         return message(leaseForm, 'Form invalid');
-      }
-      const { success, reset } = await ratelimit.employeeForm.limit(event.locals.user.id);
-		if(!success) {
-			const timeRemaining = Math.floor((reset - Date.now()) /1000);
+	newLease: async (event) => {
+		if (!event.locals.user?.employee) {
+			redirect(302, '/login?toast=employee');
+		}
+		const leaseForm = await superValidate(event.request, valibot(newLeaseSchema));
+		if (!leaseForm.valid) {
+			console.error(leaseForm);
+			return message(leaseForm, 'Form invalid');
+		}
+		const { success, reset } = await ratelimit.employeeForm.limit(event.locals.user.id);
+		if (!success) {
+			const timeRemaining = Math.floor((reset - Date.now()) / 1000);
 			return message(leaseForm, `Please wait ${timeRemaining}s before trying again.`);
 		}
-      const customer = await prisma.user.findUnique({
-         where: {
-            id: leaseForm.data.customerId
-         }
-      })
-      if(!customer){
-         return message(leaseForm, 'Customer not found');
-      }
-      if(customer.doNotRent){
-         return message(leaseForm, `DO NO RENT TO ${customer.organizationName ? customer.organizationName.toUpperCase() : `${customer.givenName?.toUpperCase()} ${customer.familyName?.toUpperCase()}`}` )
-      }
-      const unit = await prisma.unit.findUnique({
-         where: {
-            num: leaseForm.data.unitNum
-         }
-      });
-      if(!unit){
-         return message(leaseForm, 'Unit not found');
-      }
-      const currentLease = await prisma.lease.findFirst({
-         where:{
-            AND:[
-               {unitNum: unit?.num},
-               {leaseEnded: null},
-            ]
-         }
-      }).catch((err) => {
-         console.error(err);
-      })
-      if(currentLease){
-         return message(leaseForm, 'That unit is already leased');
-      }
-      const address = await prisma.address.findFirst({
-         where: {
-            softDelete: false,
-            userId: customer.id
-         }
-      })
-      if(!address){
-         return message(leaseForm, 'Unable to find address'); 
-      }
-      const employee = await prisma.user.findUnique({
-         where:{
-            id: event.locals.user.id
-         }
-      })
-      let discount;
-      if(leaseForm.data.discountId){
-         discount = await prisma.discountCode.findFirst({
-            where: {
-               discountId: leaseForm.data.discountId
-            }
-         })
-      }
-      let price = unit!.advertisedPrice;
-      let discountAmount = 0;
-      if(discount){
-         if(discount.percentage){
-            discountAmount = (unit.advertisedPrice * (discount.amountOff / 100))
-         } else {
-            discountAmount = discount.amountOff
-         }
-      }
-      price = unit.advertisedPrice - discountAmount;
+		const customer = await prisma.user.findUnique({
+			where: {
+				id: leaseForm.data.customerId
+			}
+		});
+		if (!customer) {
+			return message(leaseForm, 'Customer not found');
+		}
+		if (customer.doNotRent) {
+			return message(
+				leaseForm,
+				`DO NO RENT TO ${customer.organizationName ? customer.organizationName.toUpperCase() : `${customer.givenName?.toUpperCase()} ${customer.familyName?.toUpperCase()}`}`
+			);
+		}
+		const unit = await prisma.unit.findUnique({
+			where: {
+				num: leaseForm.data.unitNum
+			}
+		});
+		if (!unit) {
+			return message(leaseForm, 'Unit not found');
+		}
+		const currentLease = await prisma.lease
+			.findFirst({
+				where: {
+					AND: [{ unitNum: unit?.num }, { leaseEnded: null }]
+				}
+			})
+			.catch((err) => {
+				console.error(err);
+			});
+		if (currentLease) {
+			return message(leaseForm, 'That unit is already leased');
+		}
+		const address = await prisma.address.findFirst({
+			where: {
+				softDelete: false,
+				userId: customer.id
+			}
+		});
+		if (!address) {
+			return message(leaseForm, 'Unable to find address');
+		}
+		const employee = await prisma.user.findUnique({
+			where: {
+				id: event.locals.user.id
+			}
+		});
+		let discount;
+		if (leaseForm.data.discountId) {
+			discount = await prisma.discountCode.findFirst({
+				where: {
+					discountId: leaseForm.data.discountId
+				}
+			});
+		}
+		let price = unit!.advertisedPrice;
+		let discountAmount = 0;
+		if (discount) {
+			if (discount.percentage) {
+				discountAmount = unit.advertisedPrice * (discount.amountOff / 100);
+			} else {
+				discountAmount = discount.amountOff;
+			}
+		}
+		price = unit.advertisedPrice - discountAmount;
 
-      const lease = await prisma.lease.create({
-         data:{
-            customerId: customer!.id,
-            employeeId: employee!.id,
-            unitNum: leaseForm.data.unitNum,
-            price: price,
-            addressId:address!.addressId,
-            leaseEffectiveDate: new Date(),
-            discountId: discount ? discount.discountId : undefined,
-            discountedAmount: discount ? discountAmount : undefined,
-            depositAmount: leaseForm.data.depositAmount
-         }
-      });
-      await prisma.unit.update({
-         where: {
-            num: lease.unitNum
-         },
-         data: {
-            leasedPrice: lease.price
-         }
-      });
-      if(lease.depositAmount && lease.depositAmount > 0){
-         inngest.send({name: 'leaseCreated', data: { leaseId: lease.leaseId }});
-         const invoice = await prisma.invoice.create({
-            data:{
-               invoiceAmount: lease.depositAmount ? lease.depositAmount : unit.deposit,
-               customerId: lease.customerId,
-               leaseId: lease.leaseId,
-               invoiceNotes: invoiceNoteDeposit(lease.unitNum), 
-               deposit: true,
-               invoiceDue: new Date(),
-            }
-         })
-         if(leaseForm.data.paymentType !== 'CREDIT') {
-            const paymentRecord = await prisma.paymentRecord.create({
-               data: {
-                  invoiceNum: invoice.invoiceNum,
-                  paymentType: leaseForm.data.paymentType,
-                  paymentAmount: invoice.invoiceAmount,
-                  customerId: invoice.customerId!,
-                  paymentNotes: 'Payment for invoice ' + invoice.invoiceNum + ', ' + invoice.invoiceNotes,
-                  deposit: invoice.deposit,
-                  paymentCompleted: new Date()
-               }
-            })
-            await prisma.invoice.update({
-               where: {
-                  invoiceNum: invoice.invoiceNum
-               },
-               data: {
-                  amountPaid: invoice.amountPaid + paymentRecord.paymentAmount
-               }
-            });
-            await sendPaymentReceipt(customer, paymentRecord, address);  
-            redirect(302, `/employeeNewLease/leaseSent?leaseId=${lease.leaseId}`);
-         }
-      } else {
-         redirect(302, `/employeeNewLease/leaseSent?leaseId=${lease.leaseId}`);
-      }
-   },
-   selectCustomer: async (event ) => {
-      if(!event.locals.user?.employee){
-         redirect(302, '/login?toast=employee');
-      }
-      const formData = await event.request.formData();
-      const unitNum = event.url.searchParams.get('unitNum')
-      redirect(303, `/employeeNewLease?userId=${formData.get('cuidId')}&unitNum=${unitNum}`)
-   }
+		const lease = await prisma.lease.create({
+			data: {
+				customerId: customer!.id,
+				employeeId: employee!.id,
+				unitNum: leaseForm.data.unitNum,
+				price: price,
+				addressId: address!.addressId,
+				leaseEffectiveDate: new Date(),
+				discountId: discount ? discount.discountId : undefined,
+				discountedAmount: discount ? discountAmount : undefined,
+				depositAmount: leaseForm.data.depositAmount
+			}
+		});
+		await prisma.unit.update({
+			where: {
+				num: lease.unitNum
+			},
+			data: {
+				leasedPrice: lease.price
+			}
+		});
+		if (lease.depositAmount && lease.depositAmount > 0) {
+			inngest.send({ name: 'leaseCreated', data: { leaseId: lease.leaseId } });
+			const invoice = await prisma.invoice.create({
+				data: {
+					invoiceAmount: lease.depositAmount ? lease.depositAmount : unit.deposit,
+					customerId: lease.customerId,
+					leaseId: lease.leaseId,
+					invoiceNotes: invoiceNoteDeposit(lease.unitNum),
+					deposit: true,
+					invoiceDue: new Date()
+				}
+			});
+			if (leaseForm.data.paymentType !== 'CREDIT') {
+				const paymentRecord = await prisma.paymentRecord.create({
+					data: {
+						invoiceNum: invoice.invoiceNum,
+						paymentType: leaseForm.data.paymentType,
+						paymentAmount: invoice.invoiceAmount,
+						customerId: invoice.customerId!,
+						paymentNotes: 'Payment for invoice ' + invoice.invoiceNum + ', ' + invoice.invoiceNotes,
+						deposit: invoice.deposit,
+						paymentCompleted: new Date()
+					}
+				});
+				await prisma.invoice.update({
+					where: {
+						invoiceNum: invoice.invoiceNum
+					},
+					data: {
+						amountPaid: invoice.amountPaid + paymentRecord.paymentAmount
+					}
+				});
+				// await sendPaymentReceipt(customer, paymentRecord, address);
+				// Fix usage of sendPaymentReceipt ( it accepts only 2 arguments but 3 are provided above)
+				await sendPaymentReceipt(customer, paymentRecord);
+				redirect(302, `/employeeNewLease/leaseSent?leaseId=${lease.leaseId}`);
+			}
+		} else {
+			redirect(302, `/employeeNewLease/leaseSent?leaseId=${lease.leaseId}`);
+		}
+	},
+	selectCustomer: async (event) => {
+		if (!event.locals.user?.employee) {
+			redirect(302, '/login?toast=employee');
+		}
+		const formData = await event.request.formData();
+		const unitNum = event.url.searchParams.get('unitNum');
+		redirect(303, `/employeeNewLease?userId=${formData.get('cuidId')}&unitNum=${unitNum}`);
+	}
 };

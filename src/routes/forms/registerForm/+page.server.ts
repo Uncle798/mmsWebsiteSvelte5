@@ -1,47 +1,53 @@
 import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
 import { message, superValidate } from 'sveltekit-superforms';
-import { valibot } from 'sveltekit-superforms/adapters';
-import { createSession, generateEmailVerificationRequest, generateSessionToken, setSessionTokenCookie } from "$lib/server/authUtils";
+//import { valibot } from 'sveltekit-superforms/adapters';
+import { valibot } from '$lib/valibot';
+import {
+	createSession,
+	generateEmailVerificationRequest,
+	generateSessionToken,
+	setSessionTokenCookie
+} from '$lib/server/authUtils';
 import { registerFormSchema } from '$lib/formSchemas/registerFormSchema';
 import { ratelimit } from '$lib/server/rateLimit';
 import { prisma } from '$lib/server/prisma';
-import { sendVerificationEmail } from "$lib/server/mailtrap/sendVerificationEmail";
+import { sendVerificationEmail } from '$lib/server/mailtrap/sendVerificationEmail';
 
 export const load = (async () => {
-    return {};
+	return {};
 }) satisfies PageServerLoad;
 
 export const actions: Actions = {
-   customer: async (event) => {
-      const formData = await event.request.formData();
-      const registerForm = await superValidate(formData, valibot(registerFormSchema));
-      if(!registerForm.valid){
-         message(registerForm, 'Unable to process');
-      }
-      const { success, reset } = await ratelimit.register.limit(event.getClientAddress());
-      if(!success){
-         const timeRemaining = Math.floor((reset - Date.now()) / 1000);
-         return message(registerForm, `Please wait ${timeRemaining} seconds before trying again`)
-      }
-      const validEmail = registerForm.data.email;
+	customer: async (event) => {
+		const formData = await event.request.formData();
+		const registerForm = await superValidate(formData, valibot(registerFormSchema));
+		if (!registerForm.valid) {
+			message(registerForm, 'Unable to process');
+		}
+		const { success, reset } = await ratelimit.register.limit(event.getClientAddress());
+		if (!success) {
+			const timeRemaining = Math.floor((reset - Date.now()) / 1000);
+			return message(registerForm, `Please wait ${timeRemaining} seconds before trying again`);
+		}
+		const validEmail = registerForm.data.email;
 		const userAlreadyExists = await prisma.user.findUnique({
-			where:{
+			where: {
 				email: validEmail
 			}
-		})
-      if(userAlreadyExists){
-			if(userAlreadyExists.emailVerified === false){
-				redirect(302, `/register/emailVerification?userId=${userAlreadyExists.id}`)
+		});
+		if (userAlreadyExists) {
+			if (userAlreadyExists.emailVerified === false) {
+				redirect(302, `/register/emailVerification?userId=${userAlreadyExists.id}`);
 			}
-			redirect(302, '/login?toast=userAlreadyExists')
+			redirect(302, '/login?toast=userAlreadyExists');
 		}
-      const user = await prisma.user.create({
-			data:{ 
-				email: validEmail, 
+		const user = await prisma.user.create({
+			data: {
+				email: validEmail,
 				givenName: registerForm.data.givenName,
 				familyName: registerForm.data.familyName,
-				organizationName: registerForm.data.organizationName,
+				organizationName: registerForm.data.organizationName
 			}
 		});
 		const token = generateSessionToken();
@@ -50,48 +56,50 @@ export const actions: Actions = {
 		const unitNum = event.url.searchParams.get('unitNum');
 		const code = await generateEmailVerificationRequest(user.id, user.email!);
 		sendVerificationEmail(code, user.email!);
-		if(unitNum){	
+		if (unitNum) {
 			redirect(302, `/register/emailVerification?unitNum=${unitNum}&userId=${user.id}`);
 		}
 		redirect(302, `/register/emailVerification?userId=${user.id}`);
-   },
-   employee: async (event) => {
-      if(!event.locals.user?.employee){
-         redirect(302, '/login?toast=employee')
-      }
-      const formData = await event.request.formData();
-      const registerForm = await superValidate(formData, valibot(registerFormSchema));
+	},
+	employee: async (event) => {
+		if (!event.locals.user?.employee) {
+			redirect(302, '/login?toast=employee');
+		}
+		const formData = await event.request.formData();
+		const registerForm = await superValidate(formData, valibot(registerFormSchema));
 		const redirectTo = event.url.searchParams.get('redirectTo');
-      if(!registerForm.valid){
-         message(registerForm, 'Unable to process');
-      }
-      const { success, reset } = await ratelimit.employeeForm.limit(event.locals.user.id);
-      if(!success){
-         const timeRemaining = Math.floor((reset - Date.now()) / 1000);
-         return message(registerForm, `Please wait ${timeRemaining} seconds before trying again`)
-      }
-		if(registerForm.data.email){
+		if (!registerForm.valid) {
+			message(registerForm, 'Unable to process');
+		}
+		const { success, reset } = await ratelimit.employeeForm.limit(event.locals.user.id);
+		if (!success) {
+			const timeRemaining = Math.floor((reset - Date.now()) / 1000);
+			return message(registerForm, `Please wait ${timeRemaining} seconds before trying again`);
+		}
+		if (registerForm.data.email) {
 			const userAlreadyExists = await prisma.user.findUnique({
-				where:{
+				where: {
 					email: registerForm.data.email
 				}
-			})
-			if(userAlreadyExists){
+			});
+			if (userAlreadyExists) {
 				return message(registerForm, 'User Already exists');
 			}
 		}
-      const user = await prisma.user.create({
-			data:{ 
-				email: registerForm.data.email ? registerForm.data.email : undefined, 
+		const user = await prisma.user.create({
+			data: {
+				email: registerForm.data.email ? registerForm.data.email : undefined,
 				givenName: registerForm.data.givenName ? registerForm.data.givenName : undefined,
 				familyName: registerForm.data.familyName ? registerForm.data.familyName : undefined,
-				organizationName: registerForm.data.organizationName ? registerForm.data.organizationName : undefined,
+				organizationName: registerForm.data.organizationName
+					? registerForm.data.organizationName
+					: undefined
 			}
 		});
 		const unitNum = event.url.searchParams.get('unitNum');
-		if(redirectTo !== 'false'){
-			redirect(303, `/${redirectTo}?userId=${user.id}&unitNum=${unitNum}`)
+		if (redirectTo !== 'false') {
+			redirect(303, `/${redirectTo}?userId=${user.id}&unitNum=${unitNum}`);
 		}
-      return { registerForm, unitNum }
-   }
+		return { registerForm, unitNum };
+	}
 };

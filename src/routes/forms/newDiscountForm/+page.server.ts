@@ -1,36 +1,36 @@
 import { superValidate, message } from 'sveltekit-superforms';
 import type { Actions } from './$types';
-import { valibot } from 'sveltekit-superforms/adapters';
+//import { valibot } from 'sveltekit-superforms/adapters';
+import { valibot } from '$lib/valibot';
 import { newDiscountFormSchema } from '$lib/formSchemas/newDiscountFormSchema';
 import { error, redirect } from '@sveltejs/kit';
 import { ratelimit } from '$lib/server/rateLimit';
 import { prisma } from '$lib/server/prisma';
 
-
 export const actions: Actions = {
-   default: async (event) =>{
-      if(!event.locals.user?.employee){
-         redirect(302, '/login?toast=employee')
-      }
-      const formData = await event.request.formData();
-      const newDiscountForm = await superValidate(formData, valibot(newDiscountFormSchema));
-      const { success, reset } = await ratelimit.employeeForm.limit( event.locals.user.id);
-      if(!success){
-         const timeRemaining = Math.floor((reset-Date.now()) / 1000);
-         return message(newDiscountForm, `Please wait ${timeRemaining}s before trying again.`)
-      }
-      if(!newDiscountForm.valid){
-         error(400);
-      }
-      await prisma.discountCode.create({
-         data: {
-            code:newDiscountForm.data.code,
-            notes: newDiscountForm.data.notes,
-            userId: event.locals.user.id,
-            amountOff: newDiscountForm.data.amountOff,
-            percentage: newDiscountForm.data.percentage,
-         }
-      })
-      return { newDiscountForm };
-   }
+	default: async (event) => {
+		if (!event.locals.user?.employee) {
+			redirect(302, '/login?toast=employee');
+		}
+		const formData = await event.request.formData();
+		const newDiscountForm = await superValidate(formData, valibot(newDiscountFormSchema));
+		const { success, reset } = await ratelimit.employeeForm.limit(event.locals.user.id);
+		if (!success) {
+			const timeRemaining = Math.floor((reset - Date.now()) / 1000);
+			return message(newDiscountForm, `Please wait ${timeRemaining}s before trying again.`);
+		}
+		if (!newDiscountForm.valid) {
+			error(400);
+		}
+		await prisma.discountCode.create({
+			data: {
+				code: newDiscountForm.data.code,
+				notes: newDiscountForm.data.notes,
+				userId: event.locals.user.id,
+				amountOff: newDiscountForm.data.amountOff,
+				percentage: newDiscountForm.data.percentage
+			}
+		});
+		return { newDiscountForm };
+	}
 };
