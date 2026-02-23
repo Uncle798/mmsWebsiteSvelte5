@@ -248,7 +248,7 @@ export const actions: Actions = {
                   amountPaid: invoice.amountPaid + paymentRecord.paymentAmount
                }
             });
-            await sendPaymentReceipt(customer, paymentRecord, address);  
+            await sendPaymentReceipt(customer, paymentRecord);  
             redirect(302, `/employeeNewLease/leaseSent?leaseId=${lease.leaseId}`);
          }
       } else {
