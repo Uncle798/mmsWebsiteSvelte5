@@ -2,7 +2,8 @@ import { redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 import { prisma } from '$lib/server/prisma';
 import { superValidate } from 'sveltekit-superforms';
-import { valibot } from 'sveltekit-superforms/adapters';
+//import { valibot } from 'sveltekit-superforms/adapters';
+import { valibot } from '$lib/valibot';
 import { userNotesFormSchema } from '$lib/formSchemas/userNotesFormSchema';
 import { leaseEndFormSchema } from '$lib/formSchemas/leaseEndFormSchema';
 import { unitNotesFormSchema } from '$lib/formSchemas/unitNotesFormSchema';
@@ -12,149 +13,151 @@ import { registerFormSchema } from '$lib/formSchemas/registerFormSchema';
 import { emailVerificationFormSchema } from '$lib/formSchemas/emailVerificationFormSchema';
 
 export const load = (async (event) => {
-   if(!event.locals.user?.employee){
-      redirect(302, '/login?toast=employee')
-   }
-   const userSearchForm = await superValidate(valibot(searchFormSchema));
-   const userNotesForm = await superValidate(valibot(userNotesFormSchema));
-   const leaseEndForm = await superValidate(valibot(leaseEndFormSchema));
-   const unitNotesForm = await superValidate(valibot(unitNotesFormSchema));
-   const newInvoiceForm = await superValidate(valibot(newInvoiceFormSchema));
-   const registerForm = await superValidate(valibot(registerFormSchema));
-   const emailVerificationForm = await superValidate(valibot(emailVerificationFormSchema));
-   const customerCount = await prisma.user.count({
-      where: {
-         customerLeases: {
-            some: {
-               leaseEnded: null
-            }
-         }
-      }
-   })
-   let customers = prisma.user.findMany({
-      where: {
-         OR:[
-            { 
-               customerLeases: {
-                  some: {
-                     leaseEnded: null
-                  }
-               }
-            }, 
-            {
-               customerInvoices: {
-                  some: {
-                     amountPaid: {
-                        lt: prisma.invoice.fields.invoiceAmount
-                     }
-                  }
-               }
-            }
-         ]
-      },
-   });
-   const leases = prisma.lease.findMany({
-      where: {
-         leaseEnded: null,
-      },
-      orderBy: {
-         unitNum: 'asc'
-      }
-   })
-   const addresses = prisma.address.findMany({
-      where: {
-         user: {
-            customerLeases: {
-               some: {
-                  leaseEnded: null,
-               }
-            }
-         }
-      }
-   })
-   const invoices = prisma.invoice.findMany({
-      where: {
-         OR: [
-            {AND: [
-               {
-                  customer: {
-                     customerLeases: {
-                        some: {
-                           leaseEnded: null
-                        }
-                     }
-                  }
-               },
-               {
-                  deposit: false
-               }
-            ]},
-            {
-               AND: [
-                  {
-                     invoiceAmount: {
-                        gt: prisma.invoice.fields.amountPaid
-                     }
-                  },
-                  {
-                     deposit: false
-                  }
-               ]
-            }
-         ]
-      }
-   })
-   const paymentRecords = prisma.paymentRecord.findMany({
-      where: {
-         AND: [
-            {
-               customer: {
-                  customerLeases: {
-                     some: {
-                        leaseEnded: null
-                     }
-                  }
-               }
-            },
-            {
-               deposit: false
-            }
-         ]
-      }
-   })
-   const units = prisma.unit.findMany({
-      where: {
-         lease: {
-            some: {
-               leaseEnded: null
-            }
-         }
-      }
-   })
-   const demoCookie = event.cookies.get('customers');
-   return { 
-      customers, 
-      leases, 
-      userSearchForm, 
-      customerCount, 
-      addresses, 
-      invoices, 
-      paymentRecords, 
-      userNotesForm, 
-      leaseEndForm, 
-      unitNotesForm, 
-      units, 
-      demoCookie, 
-      newInvoiceForm,
-      emailVerificationForm,
-      registerForm,
-   };
+	if (!event.locals.user?.employee) {
+		redirect(302, '/login?toast=employee');
+	}
+	const userSearchForm = await superValidate(valibot(searchFormSchema));
+	const userNotesForm = await superValidate(valibot(userNotesFormSchema));
+	const leaseEndForm = await superValidate(valibot(leaseEndFormSchema));
+	const unitNotesForm = await superValidate(valibot(unitNotesFormSchema));
+	const newInvoiceForm = await superValidate(valibot(newInvoiceFormSchema));
+	const registerForm = await superValidate(valibot(registerFormSchema));
+	const emailVerificationForm = await superValidate(valibot(emailVerificationFormSchema));
+	const customerCount = await prisma.user.count({
+		where: {
+			customerLeases: {
+				some: {
+					leaseEnded: null
+				}
+			}
+		}
+	});
+	let customers = prisma.user.findMany({
+		where: {
+			OR: [
+				{
+					customerLeases: {
+						some: {
+							leaseEnded: null
+						}
+					}
+				},
+				{
+					customerInvoices: {
+						some: {
+							amountPaid: {
+								lt: prisma.invoice.fields.invoiceAmount
+							}
+						}
+					}
+				}
+			]
+		}
+	});
+	const leases = prisma.lease.findMany({
+		where: {
+			leaseEnded: null
+		},
+		orderBy: {
+			unitNum: 'asc'
+		}
+	});
+	const addresses = prisma.address.findMany({
+		where: {
+			user: {
+				customerLeases: {
+					some: {
+						leaseEnded: null
+					}
+				}
+			}
+		}
+	});
+	const invoices = prisma.invoice.findMany({
+		where: {
+			OR: [
+				{
+					AND: [
+						{
+							customer: {
+								customerLeases: {
+									some: {
+										leaseEnded: null
+									}
+								}
+							}
+						},
+						{
+							deposit: false
+						}
+					]
+				},
+				{
+					AND: [
+						{
+							invoiceAmount: {
+								gt: prisma.invoice.fields.amountPaid
+							}
+						},
+						{
+							deposit: false
+						}
+					]
+				}
+			]
+		}
+	});
+	const paymentRecords = prisma.paymentRecord.findMany({
+		where: {
+			AND: [
+				{
+					customer: {
+						customerLeases: {
+							some: {
+								leaseEnded: null
+							}
+						}
+					}
+				},
+				{
+					deposit: false
+				}
+			]
+		}
+	});
+	const units = prisma.unit.findMany({
+		where: {
+			lease: {
+				some: {
+					leaseEnded: null
+				}
+			}
+		}
+	});
+	const demoCookie = event.cookies.get('customers');
+	return {
+		customers,
+		leases,
+		userSearchForm,
+		customerCount,
+		addresses,
+		invoices,
+		paymentRecords,
+		userNotesForm,
+		leaseEndForm,
+		unitNotesForm,
+		units,
+		demoCookie,
+		newInvoiceForm,
+		emailVerificationForm,
+		registerForm
+	};
 }) satisfies PageServerLoad;
 
 export const actions: Actions = {
-   default: async (event) => {
-      const formData = await event.request.formData();
-      const searchForm = await superValidate(formData, valibot(searchFormSchema));
-      return {searchForm}
-   }
+	default: async (event) => {
+		const formData = await event.request.formData();
+		const searchForm = await superValidate(formData, valibot(searchFormSchema));
+		return { searchForm };
+	}
 };
