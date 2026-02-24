@@ -28,6 +28,11 @@ const config = {
 				'https://relative-oryx-endlessly.ngrok-free.app'
 			]
 		}
+	},
+	compilerOptions: {
+		experimental: {
+			async: true
+		}
 	}
 };
 

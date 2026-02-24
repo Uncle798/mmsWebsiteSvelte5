@@ -19,12 +19,15 @@
    import { PaymentType } from '../../generated/prisma/enums';
 	import Button from '$lib/core/Button.svelte';
 	import NumberInput from '$lib/formComponents/NumberInput.svelte';
+   import { currencyFormatter } from "$lib/utils/currencyFormatter";
 
    let { data }: { data: PageData } = $props();
    let modalOpen = $state(false);
    let userId = $state('');
+   
+   // svelte-ignore state_referenced_locally
    let { form, errors, message, constraints, enhance, delayed, timeout, } = superForm(data.leaseForm, {
-
+      validators: false
    });
    let selectedCustomer = $state([''])
    interface ComboBoxData{
@@ -35,7 +38,6 @@
       label: `${customer.givenName} ${customer.familyName} (${customer.email})`,
       value: customer.id
    })));
-   const currencyFormatter = new Intl.NumberFormat('en-US', {style: 'currency', currency: 'USD'})
    const paymentTypes = Object.values(PaymentType);
    let customerSelectForm:HTMLFormElement | undefined = $state();
    let customerSelectSubmit:HTMLButtonElement | undefined = $state();
@@ -131,7 +133,7 @@
       {#if data.address}
          <Address address={data.address} />
          <Button
-            label='Add address'
+            label='Edit address'
             type='button'
             onClick={() => {
                modalReason = 'address';
@@ -156,7 +158,7 @@
             {#if data.discount.percentage}
                <div in:fade={{duration:600}} class="grid grid-cols-2 w-80 gap-x-2">
                   <div class="text-right">Discount</div><div class="text-green-700 dark:text-green-500">{data.discount.amountOff}%</div>
-                  <div class="text-right">Monthly Rent</div><div class="text-green-700 dark:text-green-500">{currencyFormatter.format(data.unit.advertisedPrice - (data.unit.advertisedPrice * (data.discount.amountOff / 100)))}</div>
+                  <div class="text-right">Monthly Rent</div><div class="text-green-700 dark:text-green-500">{currencyFormatter(data.unit.advertisedPrice - (data.unit.advertisedPrice * (data.discount.amountOff / 100)))}</div>
                </div>
             {:else}
                <div class="grid grid-cols-2 w-80 gap-x-2" in:fade={{duration:300}}>
@@ -179,34 +181,22 @@
                }}
             />
                <div class="flex bg-primary-50-950 mt-2 p-2 rounded-lg justify-between">
-                  {#each paymentTypes as paymentType}
-                     {#if paymentType === 'CREDIT'}                        
-                        <RadioButton
-                           value={paymentType}
-                           errors={$errors.paymentType}
-                           constraints={$constraints.paymentType}
-                           groupName='paymentType'
-                           id={paymentType}
-                           label={paymentType.substring(0,1) + paymentType.substring(1).toLowerCase()}
-                           disabled={true}
-                        />
-                     {:else}
-                        <RadioButton
-                           value={paymentType}
-                           errors={$errors.paymentType}
-                           constraints={$constraints.paymentType}
-                           groupName='paymentType'
-                           id={paymentType}
-                           label={paymentType.substring(0,1) + paymentType.substring(1).toLowerCase().replace(/_/gm, ' ')}
-                        />
-                     {/if}
+                  {#each paymentTypes as paymentType}           
+                     <RadioButton
+                        value={paymentType}
+                        errors={$errors.paymentType}
+                        constraints={$constraints.paymentType}
+                        groupName='paymentType'
+                        id={paymentType}
+                        label={paymentType.substring(0,1) + paymentType.substring(1).toLowerCase().replaceAll('_', ' ')}
+                     />
                   {/each}
                </div>
                <FormSubmitWithProgress 
                   delayed={$delayed} 
                   timeout={$timeout} 
                   buttonText='The above is correct charge ${$form.depositAmount} deposit'
-                  classes=''  
+                  classes='mt-2'  
                />
             {:else if data.unit}
                <div class="font-bold text-2xl">Please add address.</div>

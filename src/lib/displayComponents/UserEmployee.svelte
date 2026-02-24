@@ -30,4 +30,7 @@
 	{#if user.customerNotes}
 		<span>{user.customerNotes}</span>
 	{/if}
+	{#if user.vendor}
+		<div>Vendor</div>
+	{/if}
 </div>

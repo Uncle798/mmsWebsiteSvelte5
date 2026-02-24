@@ -18,6 +18,7 @@
       userId?: string;
    }
    let { data, registerFormModalOpen=$bindable(false), emailVerificationModalOpen=$bindable(false), formType, redirectTo, classes, unitNum, userId=$bindable('') }:Props = $props();
+   // svelte-ignore state_referenced_locally
    let { form, errors, constraints, message, enhance, delayed, timeout, capture, restore, } = superForm(data, {
       onChange(event) {
          if(event.target){
@@ -97,6 +98,6 @@
          constraints={$constraints.emailConfirm}
          placeholder='smokeybear@theforest.email'
       />
-      <FormSubmitWithProgress delayed={$delayed} timeout={$timeout}/>
+      <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} classes='my-2'/>
    </form>
 </div>

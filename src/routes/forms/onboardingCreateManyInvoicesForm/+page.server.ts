@@ -8,6 +8,7 @@ import { prisma } from '$lib/server/prisma';
 import type { Invoice } from '../../../generated/prisma/client';
 import { arrayOfMonths } from '$lib/server/utils';
 import dayjs from 'dayjs';
+import { invoiceNoteRent } from '$lib/utils/invoiceNoteRent';
 
 export const actions: Actions = {
    default: async (event) => {
@@ -49,7 +50,7 @@ export const actions: Actions = {
             employeeId: event.locals.user.id,
             deposit: false,
             amountPaid: 0,
-            invoiceNotes: `Rent for unit ${lease.unitNum.replace(/^0+/gm, '')} from ${dayjs(month).format('MMMM D YYYY')} - ${dayjs(month).add(1, 'month').format('MMMM D YYYY')}`
+            invoiceNotes: invoiceNoteRent(lease.unitNum, month)
          }
          invoices.push(invoice);
       }

@@ -11,8 +11,8 @@
       leaseEndModalOpen?: boolean;
       classes?: string;
    }
-
    let {data, leaseEndModalOpen=$bindable(false), leaseId, employee, classes}:Props = $props()
+   // svelte-ignore state_referenced_locally
    let { message, enhance, delayed, timeout} = superForm(data, {
       onUpdate(){
          leaseEndModalOpen = false;

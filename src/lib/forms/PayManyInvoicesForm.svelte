@@ -16,15 +16,20 @@
       classes?: string;
    }
    let { data, customerId, modalOpen=$bindable(), classes }:Props = $props();
+   // svelte-ignore state_referenced_locally
    let { form, message, errors, constraints, enhance, delayed, timeout } = superForm(data, {
       onUpdated () {
          if(!$message && !$errors){
             modalOpen = false;
          }
+         if($message){
+            setTimeout(() => {
+               modalOpen = false;
+            }, 1000)
+         }
       },
    });
 </script>
-<SuperDebug data={$form}/>
 <div class={classes}>
    <FormMessage message={$message} />
    <form action="/forms/payManyInvoicesForm" method="POST" use:enhance>
@@ -59,7 +64,7 @@
                   id={paymentType}
                   errors={$errors.paymentType}
                   constraints={$constraints.paymentType}
-                  label={paymentType.substring(0,1)+paymentType.substring(1).toLowerCase().replace('_', ' ')}
+                  label={paymentType.substring(0,1)+paymentType.substring(1).toLowerCase().replaceAll('_', ' ')}
                   onChange={(e) => {
                      if(e.currentTarget.checked){}{
                         $form.paymentType = paymentType
@@ -70,6 +75,6 @@
          {/each} 
       </div>
       <input type="hidden" name="customerId" id="customerId" value={customerId} />
-      <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} />
+      <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} classes='mt-2'/>
    </form>
 </div>

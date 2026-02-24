@@ -1,0 +1,7 @@
+version: "3"
+endpoints:
+    - name: basic
+      url: relative-oryx-endlessly.ngrok-free.app
+      upstream:
+        url: 5173
+        protocol: http1

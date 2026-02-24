@@ -1,6 +1,5 @@
 import * as v from 'valibot';
 
-
 export const registerFormSchema = v.pipe(
    v.object({
       familyName: v.pipe(v.string(), v.minLength(1), v.maxLength(255)),
@@ -9,6 +8,12 @@ export const registerFormSchema = v.pipe(
       email: v.pipe(v.string(), v.email()),
       emailConfirm: v.pipe(v.string(), v.email())
    }),
+   v.forward(v.partialCheck(
+      [['email'], ['emailConfirm']],
+      (input) => input.email === input.emailConfirm,
+      'Emails must match'
+   ), ['emailConfirm']),
+   /*
    v.rawCheck(({ dataset, addIssue }) => {
       if (dataset.typed) {
          if (dataset.value.email !== dataset.value.emailConfirm) {
@@ -24,6 +29,6 @@ export const registerFormSchema = v.pipe(
             });
          }
       }
-   })
+   })*/
 );
 export type RegisterFormSchema = typeof registerFormSchema;

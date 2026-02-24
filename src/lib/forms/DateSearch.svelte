@@ -21,7 +21,7 @@
 		maxDate,
 		classes
 	}: Props = $props();
-
+// svelte-ignore state_referenced_locally
 	let { form, message, enhance, constraints, errors } = superForm(data, {
 		onChange(event) {
 			startDate = dayjs(event.get('startDate')).toDate();

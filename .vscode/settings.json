@@ -1,0 +1,15 @@
+{
+   "workbench.editor.labelFormat": "short",
+   "explorer.sortOrder": "filesFirst",
+   "explorer.compactFolders": false,
+   "scm.compactFolders": false,
+   "workbench.tree.indent": 8,
+   "cSpell.words": [
+      "anvilco",
+      "autoincrement",
+      "cuid",
+      "inngest",
+      "pdfmake",
+      "superforms"
+   ]
+}

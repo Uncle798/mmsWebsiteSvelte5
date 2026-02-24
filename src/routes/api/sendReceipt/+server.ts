@@ -44,6 +44,6 @@ export const POST: RequestHandler = async (event) => {
    if(!address){
       return new Response(JSON.stringify('Address not found'), {status: 404})
    }
-   const res = await sendPaymentReceipt(customer, paymentRecord, address);
+   const res = await sendPaymentReceipt(customer, paymentRecord);
    return new Response(JSON.stringify(res), {status:200});
 };

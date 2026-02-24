@@ -15,6 +15,7 @@
       classes?: string;
    }
    let { data, recordNum, recordType, modalOpen=$bindable(), classes }:Props = $props();
+   // svelte-ignore state_referenced_locally
    let { form, errors, constraints, message, enhance, delayed, timeout} = superForm(data, {
       onUpdated(form){
          if(form.form.valid && !$message){
@@ -49,6 +50,6 @@
       />
       <input type="hidden" name="recordNum" id="recordNum" value={recordNum} />
       <input type="hidden" name="recordType" value={recordType} />
-      <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} />
+      <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} classes='mt-2'/>
    </form>
 </div>

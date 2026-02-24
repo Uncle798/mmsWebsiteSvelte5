@@ -8,10 +8,9 @@ import type { Unit } from '../../../generated/prisma/client';
 
 export const load:PageServerLoad = (async (event) => {
    const userId = event.url.searchParams.get('userId');
-   const unitNotesForm = await superValidate(valibot(unitNotesFormSchema));
-   let availableUnits:Promise<Unit[]>;
+   let availableUnits:Unit[];
    if(event.locals.user?.employee){
-      availableUnits = prisma.unit.findMany({
+      availableUnits = await prisma.unit.findMany({
          where: {
             AND: [
                { unavailable: false },
@@ -30,7 +29,7 @@ export const load:PageServerLoad = (async (event) => {
          }
       })
    } else {
-      availableUnits = prisma.unit.findMany({
+      availableUnits = await prisma.unit.findMany({
          where: {
             AND: [
                { unavailable: false },
@@ -50,6 +49,9 @@ export const load:PageServerLoad = (async (event) => {
          distinct: ['size'] 
       })
    }
+   const unitNotesForms = await Promise.all(availableUnits.map(async (unit) => {
+      return await superValidate(valibot(unitNotesFormSchema), {id: unit.num})
+   }))
    const unitCount = await prisma.unit.count();
    const sizes:string[] = []
    pricingData.forEach((datum) => {
@@ -57,5 +59,5 @@ export const load:PageServerLoad = (async (event) => {
          sizes.push(datum.size)
       }
    })
-   return { availableUnits, userId, unitCount, unitNotesForm, sizes }; 
+   return { availableUnits, userId, unitCount, unitNotesForms, sizes }; 
 }) 

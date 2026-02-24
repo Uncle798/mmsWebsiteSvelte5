@@ -12,7 +12,8 @@
       classes?: string;
    }
 
-   let { data, modalOpen=$bindable(false), alternativeContactId, classes }:Props = $props()
+   let { data, modalOpen=$bindable(false), alternativeContactId, classes }:Props = $props();
+   // svelte-ignore state_referenced_locally
    let { message, enhance, delayed, timeout } = superForm(data, {
       onUpdate(){
          modalOpen = false;

@@ -5,7 +5,7 @@ import { valibot } from 'sveltekit-superforms/adapters';
 import { addressFormSchema } from '$lib/formSchemas/addressFormSchema';
 import { prisma } from '$lib/server/prisma';
 import { error, redirect } from '@sveltejs/kit';
-import { DEV_ME_KEY } from '$env/static/private';
+import { ABSTRACT_API_KEY } from '$env/static/private';
 import type { Address } from '../../../generated/prisma/client';
 
 export const load:PageServerLoad = (async () => {
@@ -32,6 +32,9 @@ export const actions: Actions = {
          error(403, {message: 'Not your address to change'});
       }
       if(addressForm.valid){
+         if(!data.userId){
+            return error(400, 'User ID not provided');
+         }
          let oldAddress = await prisma.address.findFirst({
             where: {
                AND: [
@@ -45,22 +48,18 @@ export const actions: Actions = {
          let phoneNum1;
          let phoneNum1Country;
          if(data.phoneNum1){
-            const phoneValidResponse = await fetch(`https://api.dev.me/v1-get-phone-details?phone=${addressForm.data.phoneNum1Country}${addressForm.data.phoneNum1}`,
-               {
-                  headers: {
-                     'Accept': 'application/json',
-                     'x-api-key': DEV_ME_KEY
-                  }
-               }
-            )
+            const phoneValidResponse = await fetch(`https://phoneintelligence.abstractapi.com/v1?api_key=${ABSTRACT_API_KEY}&phone=${addressForm.data.phoneNum1Country}${addressForm.data.phoneNum1}`)
             phoneValid = await phoneValidResponse.json();
-            if(!phoneValid.valid){
+            console.log(phoneValid)
+            if(phoneValid && !phoneValid.phone_validation.is_valid){
                return message(addressForm, 'Phone number not valid')
             }
-            phoneNum1= phoneValid.nationalNumber;
-            phoneNum1Country= phoneValid.callingCode;
+            if(phoneValid.phone_risk.risk_level !== 'low'){
+               return message(addressForm, 'Phone number is to risky')
+            }
+            phoneNum1 = phoneValid.phone_format.national.replace(/\D/g, '');
+            phoneNum1Country = phoneValid.phone_location.country_prefix;
          }
-
          if(oldAddress){
             oldAddress = await prisma.address.update({
                where:{
@@ -82,11 +81,12 @@ export const actions: Actions = {
                country: data.country ? data.country : oldAddress.country,
                userId: data.userId
             }
+            console.log(newAddress);
             const dbAddress = await prisma.address.create({
                data: newAddress
-            })
+            });
             if(redirectTo){
-               redirect(303, `/${redirectTo}?addressId=${dbAddress.addressId}&userId=${data.userId}`)
+               redirect(303, `/${redirectTo}?addressId=${dbAddress.addressId}&userId=${data.userId}`);
             }
          } else {
             if(phoneValid){

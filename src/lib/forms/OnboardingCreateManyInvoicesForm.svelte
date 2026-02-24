@@ -14,6 +14,7 @@
       classes?: string;
    }
    let { data, lease, modalOpen=$bindable(), classes, }:Props = $props();
+   // svelte-ignore state_referenced_locally
    let { form, message, errors, constraints, enhance, delayed, timeout, capture, restore, } = superForm(data, {
       onUpdated() {
          if(!$message || !$errors){
@@ -47,6 +48,6 @@
          placeholder='Ending date'
       />
       <input type="hidden" name="leaseId" value={lease.leaseId} />
-      <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} />
+      <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} classes='mt-2'/>
    </form>
 </div>

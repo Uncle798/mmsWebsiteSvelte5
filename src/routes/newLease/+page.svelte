@@ -12,14 +12,26 @@
 	import { fade, } from 'svelte/transition';
 	import UserCustomer from '$lib/displayComponents/customerViews/UserCustomer.svelte';
    import FormModal from '$lib/displayComponents/Modals/FormModal.svelte';
-    
+   import { currencyFormatter } from "$lib/utils/currencyFormatter";
+	import Button from '$lib/core/Button.svelte';
+	import type { Address } from '../../generated/prisma/browser';
+	import AlternativeContactForm from '$lib/forms/AlternativeContactForm.svelte';
    let { data }: {data:PageData} = $props();
+   // svelte-ignore state_referenced_locally
    let { form, message, errors, constraints, enhance, delayed, timeout } = superForm(data.leaseForm);
-   let addressModalOpen = $state(false);
-   const currencyFormatter = new Intl.NumberFormat('en-US', {style: 'currency', currency: 'USD'})
+   let modalOpen = $state(false);
+   let currentAddress = $state<Address>();
+   let lienFormNeeded = $state(false)
 </script>
 <Header title='New lease'/>
-<div in:fade={{duration:600}} class="mx-2 mt-14 sm:mt-10">
+<FormModal
+   bind:modalOpen={modalOpen}
+>
+   {#snippet content()}
+      <AddressForm data={data.addressForm} bind:addressModalOpen={modalOpen} userId={data.user?.id} address={currentAddress}/>
+   {/snippet}
+</FormModal>
+<div in:fade={{duration:600}} class="mx-2 mt-14 sm:mt-12 mb-16 sm:mb-16 md:mb-16 lg:mb-8">
    {#if data.user}
       <UserCustomer user={data.user} />
    {/if}
@@ -38,36 +50,66 @@
       {/if}
       {#if data.address}
          <AddressCustomer address={data.address} />
+         <Button
+            type='button'
+            label='Edit address'
+            onClick={() => {
+               currentAddress=data.address ? data.address : undefined;
+               modalOpen=true;
+            }}
+         />
       {:else}
-         <FormModal
-            bind:modalOpen={addressModalOpen}
-         >
-            {#snippet content()}
-               <AddressForm data={data.addressForm} bind:addressModalOpen={addressModalOpen} userId={data.user?.id}/>
-            {/snippet}
-         </FormModal>
+         <Button
+            type='button'
+            label='Add address'
+            onClick={() => {
+               modalOpen = true;
+            }}
+            classes='my-2'
+         />
       {/if}
       {#if data.unit}
-         <UnitCustomer unit={data.unit} classes='py-2 w-64'/>
+         <UnitCustomer unit={data.unit} classes='py-2 w-72'/>
          <input type="hidden" name="unitNum" value={data.unit.num}>
          {#if data.discount}
             <input type="hidden" name="discountId" value={data.discount.discountId}>
             <div class="py-2" in:fade={{duration:300}}>
                {#if data.discount.percentage}
                   Discount: <span class="text-green-700 dark:text-green-500">{data.discount.amountOff}%</span>
-                  Monthly Rent: <span class="text-green-700 dark:text-green-500">{currencyFormatter.format(data.unit.advertisedPrice - (data.unit.advertisedPrice * (data.discount.amountOff / 100)))}</span>
+                  Monthly Rent: <span class="text-green-700 dark:text-green-500">{currencyFormatter(data.unit.advertisedPrice - (data.unit.advertisedPrice * (data.discount.amountOff / 100)))}</span>
                {:else}
-                  Discount: <span class="text-green-700 dark:text-green-500">{currencyFormatter.format(data.discount.amountOff)}</span>
-                  Monthly Rent: <span class="text-green-700 dark:text-green-500">{currencyFormatter.format(data.unit.advertisedPrice - data.discount.amountOff)}</span>
+                  Discount: <span class="text-green-700 dark:text-green-500">{currencyFormatter(data.discount.amountOff)}</span>
+                  Monthly Rent: <span class="text-green-700 dark:text-green-500">{currencyFormatter(data.unit.advertisedPrice - data.discount.amountOff)}</span>
                {/if}
             </div>
          {/if}
       {/if}
-      <div class="flex">
-         {#if data.unit && data.address}
-            <FormProgress delayed={$delayed} timeout={$timeout} buttonText='The above is correct I would like to pay my deposit'/>
+      <div>
+         {#if data.altContact}
+            Alternative Contact
+            <div class="flex flex-col">
+               <UserCustomer user={data.altContact} />
+               {#if data.altAddress}
+                  <AddressCustomer address={data.altAddress} />
+               {/if}
+            </div>
+         {:else}
+            For your protection, in case we lose contact, please provide an alternate contact (parent, sibling, friend) who would know how to contact you. Any information will be kept confidential. You do not need to fill out the whole form but any information is helpful.
+            <AlternativeContactForm data={data.alternativeContactForm} redirectTo='newLease' userId={data.user?.id} addressId={data.address?.addressId} unitNum={data.unitNum}/>
          {/if}
       </div>
+      {#if data.unit && data.address && data.altContact}
+         <Checkbox
+            label='No property being stored has a lien'
+            name='propertySubjectToLien'
+            bind:value={$form.propertySubjectToLien}
+         />
+         <div class="font-bold w-72"> 
+            IDAHO CODE SECTION 55-2304 REQUIRES TENANT TO NOTIFY LESSOR OF ANY LIEN HOLDERS OR SECURED PARTIES WHO HAVE AN INTEREST IN PROPERTY THAT IS STORED IN THE UNIT.
+         </div>
+         <input type="hidden" value={data.altContact.id} name="altContactId" />
+         <FormProgress delayed={$delayed} timeout={$timeout} buttonText='The above is correct I would like to pay my deposit' classes='my-2'/>
+      {/if}
    </form>
    {#if !data.discount}
       <div in:fade={{duration:600}} out:fade={{duration:0}}>

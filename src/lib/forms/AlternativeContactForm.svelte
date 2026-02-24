@@ -11,14 +11,15 @@
 
    interface Props {
       data: SuperValidated<Infer<AlternativeContactFormSchema>>;
-      leaseId: string;
       addressId?: string;
       redirectTo?: string;
       userId?: string;
+      unitNum?: string;
       modalOpen?: boolean;
       classes?: string;
    }
-   let { data, leaseId, addressId, redirectTo, userId, modalOpen=$bindable(), classes }:Props = $props();
+   let { data, addressId, redirectTo, userId, unitNum, modalOpen=$bindable(), classes }:Props = $props();
+   // svelte-ignore state_referenced_locally
    let { form, message, errors, constraints, enhance, delayed, timeout } = superForm(data, {
       onSubmit({formData}) {
          if($form.phoneNum1){
@@ -33,7 +34,7 @@
 
 <div class={classes}>
    <FormMessage message={$message} />
-   <form action="/forms/alternativeContactForm?leaseId={leaseId}&addressId={addressId}&redirectTo={redirectTo}&userId={userId}" method="POST" use:enhance>
+   <form action="/forms/alternativeContactForm?addressId={addressId}&redirectTo={redirectTo}&userId={userId}&unitNum={unitNum}" method="POST" use:enhance>
       <div class="flex flex-col sm:flex-row gap-2">
          <TextInput
             bind:value={$form.givenName}
@@ -140,7 +141,6 @@
             </div>
          </div>
       </div>
-      <input type="hidden" value={leaseId} name="leaseId"/>
-      <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} />
+      <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} classes='mt-2' buttonText='Submit alternative contact' />
    </form>
 </div>

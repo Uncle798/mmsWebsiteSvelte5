@@ -6,6 +6,8 @@
    import type { Unit } from '../generated/prisma/client'
 	import { fade } from "svelte/transition";
 	import Placeholder from "$lib/displayComponents/Placeholder.svelte";
+   import UnitCustomer from "$lib/displayComponents/customerViews/UnitCustomer.svelte";
+	import { humanUnitSize } from "$lib/utils/humanUnitSize";
 
    interface Props {
       data: PageData;
@@ -49,39 +51,27 @@
             </p>
          </div>
       </article>
-   <!-- <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-1 mx-2 mb-24 sm:mb-14 lg:mb-9" in:fade={{duration:600}}>
+   <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-1 mx-2 mb-24 sm:mb-14 lg:mb-9" in:fade={{duration:600}}>
       <h3 class="h3 text-center lg:col-start-2 lg:col-end-4 sm:col-span-2 md:col-start-2 md:col-end-3 ">Available Units</h3>
       <div class="col-span-1 sm:col-span-2 md:col-start-3 md:col-span-1 lg:col-start-4">
          <label for="size" class="label-text">Filter by size: 
             <select class="select rounded-lg" name='size' id='size' bind:value={sizeFilter} onchange={setSizeFilter}>
                <option value="">All</option>
                {#each data.sizes as size}
-                  <option value={size}>{size.replace(/^0+/gm,'').replace(/x0/gm,'x')}</option>
+                  <option value={size}>{humanUnitSize(size)}</option>
                {/each}
             </select>
          </label>
       </div>
       {#each filterSize(units) as unit, i}
          <div class="flex flex-col border rounded-lg border-primary-50-950 justify-between" in:fade={{duration:600}}>
-            {#if i === 0}
-               <UnitCustomer {unit} classes='firstUnit'/>
+               <UnitCustomer {unit}/>
                {#if data.user?.employee}
-                  <a class="btn preset-filled-primary-50-950 m-2 h-8 firstUnitButton" href="/employeeNewLease?unitNum={unit.num}">Rent this Unit</a>
+                  <a class="btn preset-filled-primary-50-950 m-2 h-8" href="/employeeNewLease?unitNum={unit.num}">Rent this Unit</a>
                {:else}
                   <a class="btn preset-filled-primary-50-950 m-2 h-8" href="/newLease?unitNum={unit.num}">Rent this Unit</a>
                {/if}
-            {:else}
-               <UnitCustomer {unit}/>
-               {#if data.user?.employee}
-                  <a class="btn preset-filled-primary-50-950 m-2 h-8 place-self-stretch" href="/employeeNewLease?unitNum={unit.num}">Rent this Unit</a>
-               {:else}
-                  <a class="btn preset-filled-primary-50-950 m-2 h-8 justify-end" href="/newLease?unitNum={unit.num}">Rent this Unit</a>
-               {/if}
-            {/if}
          </div>
       {/each}
    </div>
-   {#if data.demoCookie}
-      <button class="btn preset-filled-primary-50-950 h-8 mx-2" onclick={()=>{mainPageTour.drive()}}>Restart tour</button>
-   {/if} -->
 {/await}

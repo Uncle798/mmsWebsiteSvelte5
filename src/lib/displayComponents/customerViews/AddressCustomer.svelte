@@ -13,6 +13,18 @@
    {#if address.address2}
       <p>{address.address2}</p>
    {/if}
-   <p>{address.city}, {address.state}, {address.postalCode}</p>
-   <div>{formattedPhone}</div>
+   <p>
+      {#if address.city}
+         {address.city}, 
+      {/if}
+      {#if address.state}
+         {address.state},
+      {/if}
+      {#if address.postalCode}
+         {address.postalCode}
+      {/if}
+   </p>
+   {#if address.phoneNum1}   
+      <div>{formattedPhone}</div>
+   {/if}
 </div>

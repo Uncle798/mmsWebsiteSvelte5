@@ -1,154 +1,707 @@
 import Anvil from "@anvilco/anvil";
-import { PUBLIC_COMPANY_NAME } from '$env/static/public';
-import { ANVIL_API_KEY } from "$env/static/private";
+import { PUBLIC_COMPANY_EMAIL, PUBLIC_COMPANY_NAME } from '$env/static/public';
+import { ANVIL_API_KEY, BLOB_READ_WRITE_TOKEN } from "$env/static/private";
 import type { Address, Lease, Unit, User } from "../../generated/prisma/client";
+import { humanUnitNum } from "$lib/utils/humanUnitNum";
+import { humanUnitSize } from "$lib/utils/humanUnitSize";
+import dayjs from "dayjs";
+import { prisma } from "./prisma";
+import { list } from "@vercel/blob";
+import { userName } from "$lib/utils/userName";
 
 export const anvilClient = new Anvil({apiKey:ANVIL_API_KEY});
 
-export const leaseTemplateId = '3ABabYkvU2ySORZ7RKrw'
-
-export function getPersonalPacketVariables(customer:User, lease:Lease, unit:Unit, employee:User, address:Address){
-   return {
-      isDraft: false,
-      isTest: true,
-      name: `Fake Lease ${customer.familyName}, ${customer.givenName} unit ${unit.num.replace(/^0+/gm,'')}`,
-      signatureEmailSubject: `Lease for Unit ${unit.num.replace(/^0+/gm,'')} at ${PUBLIC_COMPANY_NAME}`,
-      signatureEmailBody: `Please sign the attached lease for unit ${unit.num.replace(/^0+/gm,'')} from ${PUBLIC_COMPANY_NAME}`,
-      files:[
-         {
-            id:'leaseTemplate',
-            castEid: leaseTemplateId,
-         }
-      ],
-      data: {
-         payloads: {
-            leaseTemplate:{
-               data: {
-                  'customerName':customer.givenName + ' ' + customer.familyName,
-                  'companyName': PUBLIC_COMPANY_NAME,
-                  'leaseEffectiveDate': lease.leaseEffectiveDate,
-                  'unitNum': unit.num.replace(/^0+/gm,''),
-                  'size': unit.size.replace(/^0+/gm,'').replace(/x0/gm,'x'),
-                  'price': lease.price,
-                  'address':{
-                     "street1": address.address1,
-                     "street2": address.address2,
-                     "city": address.city,
-                     'state': address.state,
-                     'zip': address.postalCode,
-                     'country': address.country
-                  }
-               }
-            }
-         }
+const fields = [
+   {
+      "id": "leaseStartDay",
+      "name": "Lease Start Day",
+      "type": "shortText",
+      "pageNum": 0,
+      "rect": {
+         "x": 142,
+         "y": 151,
+         "height": 15,
+         "width": 28
       },
-      signers: [
-         {
-            id: 'customer', 
-            name: `${customer.givenName} ${customer.familyName}`,
-            email: customer.email,
-            signerType: 'email',
-            fields: [
-               {
-                  fileId: 'leaseTemplate',
-                  fieldId: 'customerSignDate'
-               },
-               {
-                  fileId: 'leaseTemplate',
-                  fieldId: 'customerSign', 
-               }
+      fontWeight: 'bold'
+   },
+   {
+      "id": "leaseStartMonth",
+      "name": "Lease Start Month",
+      "type": "shortText",
+      "pageNum": 0,
+      "rect": {
+         "x": 215,
+         "y": 151,
+         "height": 15,
+         "width": 50
+      },
+      fontWeight: 'bold',
+      alignment: 'right'
+   },
+   {
+      "id": "leaseStartYear",
+      "name": "Lease Start Year",
+      "type": "shortText",
+      "pageNum": 0,
+      "rect": {
+         "x": 295,
+         "y": 151,
+         "height": 15,
+         "width": 18
+      },
+      fontWeight: 'bold',
+      alignment: 'right'
+   },
+   {
+      "id": "tenantName",
+      "name": "Tenant Name",
+      "type": "shortText",
+      "pageNum": 0,
+      "rect": {
+         "x": 385,
+         "y": 167,
+         "height": 15,
+         "width": 140,
+      },
+      fontWeight: 'bold',
+      alignment: 'right'
+   },
+   {
+      "id": "unitNum",
+      "name": "Unit Number",
+      "type": "shortText",
+      "pageNum": 0,
+      "rect": {
+         "x": 264,
+         "y": 265,
+         "height": 15,
+         "width": 44
+      },
+      fontWeight: 'bold'
+   },
+   {
+      "id": "unitSize",
+      "name": "Unit Size",
+      "type": "shortText",
+      "pageNum": 0,
+      "rect": {
+         "x": 375,
+         "y": 265,
+         "height": 15,
+         "width": 50
+      },
+      fontWeight: 'bold',
+      alignment: 'center',
+   },
+   {
+      "id": "leaseStartDay",
+      "name": "Lease Start Day",
+      "type": "shortText",
+      "pageNum": 0,
+      "rect": {
+         "x": 437,
+         "y": 407,
+         "height": 15,
+         "width": 27
+      },
+      fontWeight: 'bold'
+   },
+   {
+      "id": "leaseStartMonth",
+      "name": "Lease Start Month",
+      "type": "shortText",
+      "pageNum": 0,
+      "rect": {
+         "x": 77,
+         "y": 425,
+         "height": 15,
+         "width": 103
+      },
+      fontWeight: 'bold',
+      alignment: 'center'
+   },
+   {
+      "id": "leaseStartYear",
+      "name": "Lease Start Year",
+      "type": "shortText",
+      "pageNum": 0,
+      "rect": {
+         "x": 170,
+         "y": 425,
+         "height": 15,
+         "width": 32
+      },
+      fontWeight: 'bold'
+   },
+   {
+      "id": "unitPrice",
+      "name": "Unit Price",
+      "type": "shortText",
+      "pageNum": 0,
+      "rect": {
+         "x": 331,
+         "y": 505,
+         "height": 15,
+         "width": 50
+      },
+      fontWeight: 'bold'
+   },
+   {
+    "id": "leaseStartDay",
+    "name": "Lease Start Day",
+    "type": "shortText",
+    "pageNum": 0,
+    "rect": {
+      "x": 164,
+      "y": 522,
+      "height": 15,
+      "width": 38
+      },
+      fontWeight: 'bold'
+   },
+   {
+    "id": "tenantName",
+    "name": "Tenant Name",
+    "type": "shortText",
+    "pageNum": 4,
+    "rect": {
+      "x": 340,
+      "y": 139,
+      "height": 15,
+      "width": 200
+      },
+      fontWeight: 'bold',
+      alignment: 'right'
+   },
+   {
+   "name": "Street 1 - Tenant Address",
+   "id": 'tenantAddress1',
+   "type": 'shortText',
+   "pageNum": 4,
+   "rect": {
+      "x": 340,
+      "y": 155,
+      "height": 15,
+      "width": 200
+      },
+      fontWeight: 'bold',
+      alignment: 'right',
+   },
+  {
+    "id": "numKeysProvided",
+    "name": "Number of Keys",
+    "type": "shortText",
+    "pageNum": 4,
+    "rect": {
+      "x": 207,
+      "y": 274,
+      "height": 15,
+      "width": 64
+    },
+    fontWeight: 'bold'
+  },
+   {
+      "id": "managerSignature",
+      "name": "Manager Signature",
+      "type": "signature",
+      "pageNum": 4,
+      "rect": {
+      "x": 60,
+      "y": 300,
+      "height": 40,
+      "width": 200
+      }
+   },
+   {
+      "id": "tenantSignature",
+      "name": " Tenant Signature",
+      "type": "signature",
+      "pageNum": 4,
+      "rect": {
+         "x": 340,
+         "y": 300,
+         "height": 40,
+         "width": 200
+      }
+   },
+]
 
-            ]
-         },
-         {
-            id: 'manager',
-            name: `${employee.givenName}, ${employee.familyName}`,
-            email: employee.email,
-            signerType: 'email',
-            fields: [
-               {
-                  fileId: 'leaseTemplate',
-                  fieldId: 'companySignDate',
-               },
-               {
-                  fileId: 'leaseTemplate',
-                  fieldId: 'companySign'
-               }
-            ]
-         }
-      ]
+function arrayBufferToBase64(buffer:ArrayBuffer){
+   let binary = '';
+   const bytes = new Uint8Array(buffer);
+   let length = bytes.byteLength;
+   for(let i =0; i < length; i++){
+      binary += String.fromCharCode(bytes[i]);
    }
+   return btoa(binary);
 }
-export function getOrganizationalPacketVariables(customer:User, lease:Lease, unit:Unit, employee:User, address:Address){
-   return {
-      isDraft: false,
-      isTest: true,
-      name: `Fake Lease ${customer.organizationName} unit ${unit.num.replace(/^0+/gm,'')} at ${PUBLIC_COMPANY_NAME}`,
-      signatureEmailSubject: `Lease for Unit ${unit.num.replace(/^0+/gm,'')} at ${PUBLIC_COMPANY_NAME}`,
-      signatureEmailBody: `Please sign the attached lease for unit ${unit.num.replace(/^0+/gm,'')} from ${PUBLIC_COMPANY_NAME}`,
-      files:[
-         {
-            id:'leaseTemplate',
-            castEid: leaseTemplateId,
-         }
-      ],
-      data: {
-         payloads: {
-            leaseTemplate:{
-               data: {
-                  'customerName':customer.organizationName,
-                  'representativeName':customer.givenName + ' ' + customer.familyName,
-                  'companyName': PUBLIC_COMPANY_NAME,
-                  'leaseEffectiveDate': lease.leaseEffectiveDate,
-                  'unitNum': unit.num.replace(/^0+/gm,''),
-                  'size': unit.size,
-                  'price': lease.price,
-                  'address':{
-                     "street1": address.address1,
-                     "street2": address.address2,
-                     "city": address.city,
-                     'state': address.state,
-                     'zip': address.postalCode,
-                     'country': address.country
-                  }
-               }
+
+export async function createLease(customer:User, lease:Lease, unit:Unit, employee:User, address:Address, alternateContact?:User | null, alternateAddress?:Address | null, testing?:boolean){
+   const templateFiles = await list({
+      token: BLOB_READ_WRITE_TOKEN,
+      prefix: 'MMS Lease'
+   });
+   const file = await fetch(templateFiles.blobs[0].url);
+   const arrayBuffer = await file.arrayBuffer();
+   let base64 = '';
+   if(file){
+      base64 = arrayBufferToBase64(arrayBuffer);
+   }
+   console.log('base64 length:', base64.length)
+   const properties = await prisma.propertyWithLien.findMany({
+      where: {
+         leaseId: lease.leaseId
+      },
+      include: {
+         lienHolder: true,
+         lienHolderAddress: true,
+      }
+   });
+   const signerType = testing ? 'embedded' : 'email';
+   const pr = new Intl.PluralRules('en-US', { type: 'ordinal'});
+   const suffixes = new Map([
+      ["one", "st"],
+      ["two", "nd"],
+      ["few", "rd"],
+      ["other", "th"],
+   ]);
+   const formatOrdinals = (n:number) => {
+      const rule = pr.select(n);
+      const suffix = suffixes.get(rule);
+      return `${n}${suffix}`;
+   }
+   const altAddress = alternateAddress?.address1 ? `${alternateAddress.address1} ${alternateAddress.address2}` : '';
+   const altName = alternateContact?.givenName || alternateContact?.familyName ? `${alternateContact.givenName} ${alternateContact.familyName}` : '';
+   const altCity = alternateAddress?.city || alternateAddress?.state || alternateAddress?.postalCode ? `${alternateAddress.city} ${alternateAddress.state} ${alternateAddress.phoneNum1}` : '';
+   const altPhone = alternateAddress?.phoneNum1 ? alternateAddress.phoneNum1 : '';
+   let data: {
+      payloads: {
+         leaseTemplate: {
+            data: {
+               [key: string] : any
             }
          }
-      },
-      signers: [
-         {
-            id: 'customer', 
-            name: `${customer.givenName}, ${customer.familyName}`,
-            email: customer.email,
-            signerType: 'email',
-            fields: [
-               {
-                  fileId: 'leaseTemplate',
-                  fieldId: 'customerSignDate'
-               },
-               {
-                  fileId: 'leaseTemplate',
-                  fieldId: 'customerSign', 
-               }
-
-            ]
-         },
-         {
-            id: 'manager',
-            name: `${employee.givenName}, ${employee.familyName}`,
-            email: employee.email,
-            signerType: 'email',
-            fields: [
-               {
-                  fileId: 'leaseTemplate',
-                  fieldId: 'companySignDate',
-               },
-               {
-                  fileId: 'leaseTemplate',
-                  fieldId: 'companySign'
-               }
-            ]
+      }
+   } = {
+      payloads: {
+         leaseTemplate: {
+            data: {
+               leaseStartDay: formatOrdinals(lease.leaseCreatedAt.getDate()),
+               leaseStartMonth: dayjs(lease.leaseCreatedAt).format('MMMM'),
+               leaseStartYear: dayjs(lease.leaseCreatedAt).format('YYYY'),
+               tenantName: userName(customer),
+               unitNum: humanUnitNum(unit.num),
+               unitSize: humanUnitSize(unit.size),
+               unitPrice: lease.price,
+               tenantAddress1: address.address1,
+               tenantAddress2: address.address2,
+               tenantAddressCity: address.city,
+               tenantAddressState: address.state,
+               tenantAddressPostalCode: address.postalCode,
+               tenantPhone: address.phoneNum1,
+               tenantEmail: customer.email,
+               numKeysProvided: lease.keysProvided,
+            }
          }
-      ]
+      }, 
    }
+   let signers: {
+      id: string,
+      routingOrder: number,
+      name: string,
+      email: string,
+      fields:
+         {
+            fileId: string,
+            fieldId: string
+         }[],
+      signerType: string | undefined;
+   }[] = [
+      {
+         id: 'managerSigner',
+         routingOrder: 2,
+         name: `${employee.givenName} ${employee.familyName}`,
+         email: employee.email!,
+         fields: [
+            {
+               fileId: 'leaseTemplate', 
+               fieldId: 'managerSignature',
+            }
+         ],
+         signerType: 'email',
+      }
+   ]
+   if(address.address2 !== null){
+      fields.push({
+         "name": "Street 2 - Tenant Address",
+         "id": 'tenantAddress2',
+         "type": 'shortText',
+         "pageNum": 4,
+         "rect": {
+            "x": 340,
+            "y": 178,
+            "height": 15,
+            "width": 196
+         },
+         alignment: 'right',
+         fontWeight: 'regular'
+      });
+      fields.push({
+         "name": "City - Tenant Address",
+         "id": 'tenantAddressCity',
+         "type": 'shortText',
+         "pageNum": 4,
+         "rect": {
+            "x": 300,
+            "y": 200,
+            "height": 15,
+            "width": 140
+         },
+         fontWeight: 'bold',
+         alignment: 'right'
+      });
+      fields.push({
+         "name": "State - Tenant Address",
+         "id": 'tenantAddressState',
+         "type": 'shortText',
+         "pageNum": 4,
+         "rect": {
+            "x": 440,
+            "y": 200,
+            "height": 15,
+            "width": 30
+         },
+         fontWeight: 'bold'
+      });
+      fields.push({
+         "name": "Postal Code - Tenant Address",
+         "id": 'tenantAddressPostalCode',
+         "type": 'shortText',
+         "pageNum": 4,
+         "rect": {
+            "x": 468,
+            "y": 200,
+            "height": 15,
+            "width": 73
+         },
+         fontWeight: 'bold',
+         alignment: 'right'
+      });
+      fields.push({
+         "id": "tenantPhone",
+         "name": "Tenant Phone",
+         "type": "phone",
+         "pageNum": 4,
+         "rect": {
+            "x": 340,
+            "y": 218,
+            "height": 15,
+            "width": 200
+            },
+            fontWeight: 'bold',
+            alignment: 'right'
+      });
+      fields.push(
+         {
+           "id": "tenantEmail",
+           "name": "tenantEmail",
+           "type": "email",
+           "pageNum": 4,
+           "rect": {
+             "x": 290,
+             "y": 236,
+             "height": 15,
+             "width": 250
+             },
+          fontWeight: 'bold',
+          alignment: 'right'
+         }
+      );
+   } else {
+      fields.push({
+         "name": "City - Tenant Address",
+         "id": 'tenantAddressCity',
+         "type": 'shortText',
+         "pageNum": 4,
+         "rect": {
+            "x": 300,
+            "y": 170,
+            "height": 15,
+            "width": 140
+         },
+         fontWeight: 'bold'
+      });
+      fields.push({
+         "name": "State - Tenant Address",
+         "id": 'tenantAddressState',
+         "type": 'shortText',
+         "pageNum": 4,
+         "rect": {
+            "x": 440,
+            "y": 170,
+            "height": 15,
+            "width": 30
+         },
+         fontWeight: 'bold'
+      });
+      fields.push({
+         "name": "Postal Code - Tenant Address",
+         "id": 'tenantAddressPostalCode',
+         "type": 'shortText',
+         "pageNum": 4,
+         "rect": {
+            "x": 468,
+            "y": 170,
+            "height": 15,
+            "width": 73
+         },
+         fontWeight: 'bold',
+         alignment: 'right'
+      });
+      fields.push({
+         "id": "tenantPhone",
+         "name": "Tenant Phone",
+         "type": "phone",
+         "pageNum": 4,
+         "rect": {
+            "x": 340,
+            "y": 183,
+            "height": 15,
+            "width": 200
+            },
+            fontWeight: 'bold',
+            alignment: 'right'
+      });
+      fields.push(
+         {
+           "id": "tenantEmail",
+           "name": "tenantEmail",
+           "type": "email",
+           "pageNum": 4,
+           "rect": {
+             "x": 290,
+             "y": 204,
+             "height": 15,
+             "width": 250
+             },
+          fontWeight: 'bold',
+          alignment: 'right'
+         }
+      );
+   }
+   if(properties.length > 0){
+      let index = 0;
+      let pageNum = 5;
+      for(const property of properties){
+         let y = 240 + (index * 20);
+         if(y >= 750){
+            y = 60 + (index*20)
+            pageNum ++;
+         }
+         fields.push({
+            id: `${property.id}-description`,
+            name: 'Property Description',
+            type: 'shortText',
+            pageNum,
+            rect: {
+               x: 65,
+               y,
+               height: 15,
+               width: 250
+            }
+         });
+         fields.push({
+            id: `${property.id}-lienHolder`,
+            name: 'Property Lien Holder',
+            type: 'shortText',
+            pageNum,
+            rect: {
+               x: (65 + 250 + 20),
+               y,
+               height: 15,
+               width: 250
+            }
+         });
+         data.payloads.leaseTemplate.data[`${property.id}-description`] = property.descriptionOfProperty;
+         data.payloads.leaseTemplate.data[`${property.id}-lienHolder`] = `${property.lienHolder.organizationName ? property.lienHolder.organizationName : `${property.lienHolder.givenName} ${property.lienHolder.familyName}`} ${property.lienHolderAddress.address1}`;
+         if(index === properties.length - 1){
+            fields.push({
+               id: 'lienSignature',
+               name: 'Lien signature', 
+               type: 'signature',
+               pageNum,
+               rect: {
+                  x: (2550/2 - 250/2),
+                  y, 
+                  height: 15,
+                  width: 250
+               }
+            });
+            signers.push({
+               id: 'tenantSigner',
+               routingOrder: 1, 
+               name: customer.organizationName ? customer.organizationName : `${customer.givenName, customer.familyName}`,
+               email: customer.email!,
+               fields: [
+                  {
+                     fileId: 'leaseTemplate', 
+                     fieldId: 'tenantSignature'
+                  },
+                  {
+                     fileId: 'leaseTemplate',
+                     fieldId: 'lienSignature'
+                  }
+               ],
+               signerType,
+            });
+         }
+         index ++;
+      }
+   } else {
+      signers.push({
+         id: 'tenantSigner',
+         routingOrder: 1, 
+         name: userName(customer),
+         email: customer.email!,
+         fields: [
+            {
+               fileId: 'leaseTemplate', 
+               fieldId: 'tenantSignature'
+            },
+         ],
+         signerType,
+      })
+   }
+   if(alternateContact?.givenName && !alternateAddress?.address1){
+      fields.push({
+         "id": "altName",
+         "name": "alt name",
+         "type": "shortText",
+         "pageNum": 5,
+         "rect": {
+            "x": 200,
+            "y": 150,
+            "height": 15,
+            "width": 200
+         },
+         alignment: 'center',
+         fontWeight: 'regular',
+      });
+      data.payloads.leaseTemplate.data.altName = altName;
+   } else if (alternateContact?.givenName){
+      fields.push({
+         "id": "altName",
+         "name": "alt name",
+         "type": "shortText",
+         "pageNum": 5,
+         "rect": {
+            "x": 200,
+            "y": 170,
+            "height": 15,
+            "width": 140
+         },
+         alignment: 'center',
+         fontWeight: 'regular'
+      });
+      data.payloads.leaseTemplate.data.altName = altName;
+   }
+   if(alternateAddress?.address1){
+      fields.push({
+         "id": "altAddress",
+         "name": "altAddress",
+         "type": "shortText",
+         "pageNum": 5,
+         "rect": {
+            "x": 200,
+            "y": 158,
+            "height": 15,
+            "width": 260
+         }
+      });
+      data.payloads.leaseTemplate.data.altAddress = altAddress;
+   }
+   if(alternateAddress?.city){
+      fields.push({
+         "id": "altCity",
+         "name": "altCity",
+         "type": "shortText",
+         "pageNum": 5,
+         "rect": {
+            "x": 200,
+            "y": 177,
+            "height": 15,
+            "width": 260
+         }
+      })
+      data.payloads.leaseTemplate.data.altCity = altCity;
+   }
+   if(alternateAddress?.phoneNum1 && !alternateAddress.address1){
+      fields.push({
+         "id": "altPhone",
+         "name": "altPhone",
+         "type": "shortText",
+         "pageNum": 5,
+         "rect": {
+            "x": 200,
+            "y": 176,
+            "height": 15,
+            "width": 200
+         }
+      });
+      data.payloads.leaseTemplate.data.altPhone = altPhone;
+   } else if(alternateAddress?.phoneNum1){
+      fields.push({
+         "id": "altPhone",
+         "name": "altPhone",
+         "type": "shortText",
+         "pageNum": 5,
+         "rect": {
+            "x": 200,
+            "y": 191,
+            "height": 15,
+            "width": 200
+         }
+      });
+      data.payloads.leaseTemplate.data.altPhone = altPhone;
+   }
+   const contract = await anvilClient.createEtchPacket({
+      variables: {
+         isDraft: false,
+         isTest: true, 
+         files: {
+            id: 'leaseTemplate',
+            file: {
+               data: base64,
+               filename: `${PUBLIC_COMPANY_NAME} lease unit ${humanUnitNum(unit.num)} - ${userName(customer)}.pdf`,
+               mimetype: 'application/pdf',
+            },
+            fields,
+            fontSize: 12,
+            textColor: '#000000',
+         },
+         data,
+         signers,
+         // signatureEmailSubject: `Lease for unit ${humanUnitNum(unit.num)} at ${PUBLIC_COMPANY_NAME}`,
+         // signatureEmailBody: `Please sign the lease for unit number ${humanUnitNum(unit.num)} at ${PUBLIC_COMPANY_NAME}.`,
+         // replyToName: PUBLIC_COMPANY_NAME,
+         // replyToEmail: PUBLIC_COMPANY_EMAIL,
+      }
+   });
+   console.log(contract)
+   if(contract.errors){
+      console.error('There were errors!')
+      console.error(JSON.stringify(contract.errors, null, 2));
+   }
+   if(testing){
+      const { url, errors, } = await anvilClient.generateEtchSignUrl({
+         variables: {
+            clientUserId: customer.id,
+            signerEid: contract.data?.data.createEtchPacket.documentGroup.signers[0].eid
+         }
+      });
+      return { url, errors }
+   } 
+   return contract 
+
 }

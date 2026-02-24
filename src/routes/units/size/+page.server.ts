@@ -1,6 +1,7 @@
 import { redirect } from '@sveltejs/kit';
 import pricingData from '$lib/server/pricingData';
 import type { PageServerLoad } from './$types';
+import { prisma } from '$lib/server/prisma';
 
 export const load = (async (event) => {
    if(!event.locals.user?.employee){
@@ -11,6 +12,16 @@ export const load = (async (event) => {
       if(data.size !== 'ours'){
          sizes.push(data.size)
       }
-   })
-   return { sizes, };
+   });
+   const units = await prisma.unit.findMany({
+      orderBy: {
+         size: 'asc'
+      },
+      where: {
+         NOT: {
+            size: 'ours'
+         }
+      }
+   });
+   return { sizes, units };
 }) satisfies PageServerLoad;

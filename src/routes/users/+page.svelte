@@ -6,11 +6,13 @@
    import type { User } from '../../generated/prisma/browser';
    import { fade } from 'svelte/transition';
 	import UserAdmin from '$lib/displayComponents/UserAdmin.svelte';
-	import Search from '$lib/forms/Search.svelte';
 	import Switch from '$lib/formComponents/Switch.svelte';
-	import { invalidateAll } from '$app/navigation';
+	import { goto, invalidateAll } from '$app/navigation';
 	import SearchDrawer from '$lib/displayComponents/Modals/SearchDrawer.svelte';
 	import Button from '$lib/core/Button.svelte';
+	import { userName } from '$lib/utils/userName';
+	import Combobox from '$lib/formComponents/Combobox.svelte';
+   import { userSort } from '$lib/utils/userSort'
 
    let { data }: { data: PageData } = $props();
    let search = $state('')
@@ -102,6 +104,10 @@
       })
       invalidateAll();
    }
+   const comboboxData = $derived(userSort(await data.users).map((user) => ({
+      label: userName(user),
+      value: user.id
+   })))
 </script>
 <Header title='All users' />
 {#await data.users}
@@ -111,8 +117,15 @@
 {:then users }
    <SearchDrawer modalOpen={searchDrawerOpen} height='h-[180px]'>
       {#snippet content()}
-         <Search data={data.searchForm} bind:search={search} searchType='user' />
-         <div>
+         <Combobox
+            data={comboboxData}
+            label='Search users'
+            onValueChange={(e) => {
+               searchDrawerOpen = false;
+               goto(`/users/${e.value}`)
+            }}
+         />
+         <div class="flex flex-row gap-2">
             Filter by 
             <Switch
                bind:checked={employeeFilter}
@@ -134,44 +147,22 @@
    </SearchDrawer>
    <div in:fade={{duration:600}} class="m-2 mt-14 sm:mt-10 mb-8 sm:mb-8">
       <div class="grid grid-cols-1 gap-y-3 gap-x-1">
-         {#each slicedSource(searchedUsers(filterAlternative(filterAdmin(filterEmployee(sortedUsers(users)))))) as user, i (user.id)}
-            {#if i === 0}               
-               <div class="rounded-lg border border-primary-50-950 flex flex-col sm:flex-row firstUser">
-                  <UserAdmin {user} classes=" p-2 w-1/2"/>
-                  <div>
-                     <EmploymentChangeForm 
-                        data={data.employmentChangeForm} 
-                        employeeChecked={user.employee} 
-                        adminChecked={user.admin}
-                        userId={user.id}
-                        classes="flex flex-col sm:flex-row firstUserEmployment"
-                     />
-                     <Button
-                        label='Delete user'
-                        type='button'
-                        onClick={() => deleteUser(user.id)}
-                     />
-                  </div>
+         {#each slicedSource(searchedUsers(filterAlternative(filterAdmin(filterEmployee(sortedUsers(users)))))) as user (user.id)}
+            <div class="rounded-lg border border-primary-50-950 flex flex-col sm:flex-row">
+               <UserAdmin {user} classes=" p-2 w-1/2"/>
+               <div class="mb-2">
+                  <EmploymentChangeForm 
+                     data={data.employmentChangeForm} 
+                     user={user}
+                     classes="flex flex-col sm:flex-row"
+                  />
+                  <Button
+                     label='Delete user'
+                     type='button'
+                     onClick={() => deleteUser(user.id)}
+                  />
                </div>
-            {:else}
-               <div class="rounded-lg border border-primary-50-950 flex flex-col sm:flex-row">
-                  <UserAdmin {user} classes=" p-2 w-1/2"/>
-                  <div>
-                     <EmploymentChangeForm 
-                        data={data.employmentChangeForm} 
-                        employeeChecked={user.employee} 
-                        adminChecked={user.admin}
-                        userId={user.id}
-                        classes="flex flex-col sm:flex-row"
-                     />
-                     <Button
-                        label='Delete user'
-                        type='button'
-                        onClick={() => deleteUser(user.id)}
-                     />
-                  </div>
-               </div>
-            {/if}
+            </div>
          {/each}
       </div>
       <Pagination bind:size={size} bind:pageNum={pageNum} array={searchedUsers(users)} label='users'/>

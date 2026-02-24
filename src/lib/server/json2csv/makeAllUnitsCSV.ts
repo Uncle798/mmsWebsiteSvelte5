@@ -1,6 +1,8 @@
 import { json2csv } from 'json-2-csv';
 import type { Unit, User, Lease, Invoice } from '../../../generated/prisma/client';
 import dayjs from 'dayjs';
+import { humanUnitNum } from '$lib/utils/humanUnitNum';
+import { humanUnitSize } from '$lib/utils/humanUnitSize';
 
 export async function makeAllUnitsCSV(units:Unit[], leases:Lease[], customers:User[], invoices:Invoice[]) {
    const allJSON:{
@@ -36,8 +38,8 @@ export async function makeAllUnitsCSV(units:Unit[], leases:Lease[], customers:Us
          sortingName = ''
       }
       const json = {
-         unitNum: unit.num.replace(/^0+/gm, ''),
-         size: unit.size.replace(/0/gm,'').replace(/x0/gm, 'x'),
+         unitNum: humanUnitNum(unit.num),
+         size: humanUnitSize(unit.size),
          familyName: sortingName,
          givenName: customer?.givenName ? customer.givenName : '',
          nextDueDate: customerInvoices[0]?.invoiceDue ? dayjs(customerInvoices[0].invoiceDue).format('MM/DD/YYYY') : '',

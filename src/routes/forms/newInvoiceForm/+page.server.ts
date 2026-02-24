@@ -6,7 +6,6 @@ import { ratelimit } from '$lib/server/rateLimit';
 import { valibot } from 'sveltekit-superforms/adapters';
 import { newInvoiceFormSchema } from '$lib/formSchemas/newInvoiceFormSchema';
 
-
 export const actions: Actions = {
    default: async (event) => {
       if(!event.locals.user?.employee){

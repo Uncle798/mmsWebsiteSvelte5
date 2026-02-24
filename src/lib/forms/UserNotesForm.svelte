@@ -16,6 +16,7 @@
       classes?: string;
    }
    let { data, userNotesFormModalOpen=$bindable(), user, classes }:Props = $props();
+   // svelte-ignore state_referenced_locally
    let { form, message, errors, constraints, enhance, delayed, timeout, submit } = superForm(data, {
       onUpdated(){
          userNotesFormModalOpen = false;
@@ -45,7 +46,7 @@
             label='Do not Rent to {user.organizationName ? user.organizationName : `${user.givenName} ${user.familyName}`}'
             classes='my-2'
          />
-         <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} buttonText='Update notes'/>
+         <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} buttonText='Update notes' classes='mt-2'/>
       </div>
       <input type="hidden" name="userId" id="userId" value={user.id}>
    </form>

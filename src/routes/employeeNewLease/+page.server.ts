@@ -15,6 +15,7 @@ import { ratelimit } from '$lib/server/rateLimit';
 import { sendPaymentReceipt } from "$lib/server/mailtrap/sendPaymentReceipt";
 import { inngest } from '$lib/server/inngest/inngest';
 import { alternativeContactFormSchema } from '$lib/formSchemas/alternativeContactFormSchema';
+import { invoiceNoteDeposit } from '$lib/utils/invoiceNoteDeposit';
 
 export const load = (async (event) => {
    if(!event.locals.user?.employee){
@@ -121,7 +122,8 @@ export const actions: Actions = {
       }
       const leaseForm = await superValidate(event.request, valibot(newLeaseSchema));
       if(!leaseForm.valid){
-         return message(leaseForm, 'Not valid');
+         console.error(leaseForm)
+         return message(leaseForm, 'Form invalid');
       }
       const { success, reset } = await ratelimit.employeeForm.limit(event.locals.user.id);
 		if(!success) {
@@ -145,7 +147,7 @@ export const actions: Actions = {
          }
       });
       if(!unit){
-         return message(leaseForm, 'unit not found');
+         return message(leaseForm, 'Unit not found');
       }
       const currentLease = await prisma.lease.findFirst({
          where:{
@@ -221,7 +223,7 @@ export const actions: Actions = {
                invoiceAmount: lease.depositAmount ? lease.depositAmount : unit.deposit,
                customerId: lease.customerId,
                leaseId: lease.leaseId,
-               invoiceNotes:'Deposit for unit ' + lease.unitNum.replace(/^0+/gm,''), 
+               invoiceNotes: invoiceNoteDeposit(lease.unitNum), 
                deposit: true,
                invoiceDue: new Date(),
             }
@@ -246,7 +248,7 @@ export const actions: Actions = {
                   amountPaid: invoice.amountPaid + paymentRecord.paymentAmount
                }
             });
-            await sendPaymentReceipt(customer, paymentRecord, address);  
+            await sendPaymentReceipt(customer, paymentRecord);  
             redirect(302, `/employeeNewLease/leaseSent?leaseId=${lease.leaseId}`);
          }
       } else {

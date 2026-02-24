@@ -16,7 +16,7 @@
 	import { goto } from '$app/navigation';
 	import ProgressRing from '$lib/displayComponents/ProgressRing.svelte';
 	import { PUBLIC_COMPANY_NAME } from '$env/static/public';
-	import { EllipsisVertical } from 'lucide-svelte';
+	import { EllipsisVertical, MenuIcon } from 'lucide-svelte';
 
    let { data }: { data: PageData } = $props();
    let modalOpen = $state(false);
@@ -43,7 +43,7 @@
       {/if}    
       <Header title="Invoice number {data.invoice.invoiceNum}" />
       <div class="flex flex-col sm:flex-row gap-x-1 mx-1 sm:mx-2 mt-14 sm:mt-10 border-2 border-primary-50-950 rounded-lg">
-         <div class="flex flex-col w-1/2">
+         <div class="flex relative">
             <InvoiceEmployee invoice={data.invoice} classes="min-w-64 mx-2 " />
             <Menu 
                onSelect={async (e) => {
@@ -97,12 +97,16 @@
                   menuOpen = false;
                }}
             >
-               <Menu.Trigger class='btn preset-filled-primary-50-950 m-2 w-16' ><EllipsisVertical aria-label='Invoice Menu' /></Menu.Trigger>
+               <Menu.Trigger class='absolute top-1 left-1' ><MenuIcon aria-label='Invoice Menu' class='preset-filled-primary-50-950 rounded-sm size-8 p-1' /></Menu.Trigger>
                <Portal>
                   <Menu.Positioner>
                      <Menu.Content class='backdrop-blur-sm'>
                         {#if data.invoice.amountPaid < data.invoice.invoiceAmount}
-                           <Menu.Item value='newPayment'>Make a payment for invoice {data.invoice.invoiceNum}</Menu.Item>
+                           <Menu.Item value='newPayment'>
+                              <Menu.ItemText>
+                                 Make a payment for invoice {data.invoice.invoiceNum}
+                              </Menu.ItemText>
+                           </Menu.Item>
                         {:else}   
                            <Menu.Item value='newPayment' disabled={true}>Make a payment for invoice {data.invoice.invoiceNum}</Menu.Item>
                         {/if}
@@ -121,27 +125,35 @@
                         {/if}
                         <Menu.Item value='downloadPDF'>
                            <a href="/api/downloadPDF?invoiceNum={data.invoice.invoiceNum.toString()}" 
-                              download='{PUBLIC_COMPANY_NAME} invoice number {data.invoice.invoiceNum}'
+                              download='{PUBLIC_COMPANY_NAME} invoice number {data.invoice.invoiceNum}.pdf'
                            >
                               Download PDF
                            </a>
                         </Menu.Item>
                         {#if data.invoice.amountPaid < data.invoice.invoiceAmount}                           
                            <Menu.Item value='editInvoice'>
-                              Edit invoice {data.invoice.invoiceNum}
+                              <Menu.ItemText>
+                                 Edit invoice {data.invoice.invoiceNum}
+                              </Menu.ItemText>
                            </Menu.Item>
                         {:else}
                            <Menu.Item value='editInvoice' disabled={true}>
-                              Edit invoice {data.invoice.invoiceNum}
+                              <Menu.ItemText>
+                                 Edit invoice {data.invoice.invoiceNum}
+                              </Menu.ItemText>
                            </Menu.Item>
                         {/if}
                         {#if data.invoice.amountPaid < data.invoice.invoiceAmount}
                            <Menu.Item value='deleteInvoice'>
-                              Delete invoice {data.invoice.invoiceNum}
+                              <Menu.ItemText>
+                                 Delete invoice {data.invoice.invoiceNum}
+                              </Menu.ItemText>
                            </Menu.Item>
                         {:else}
                            <Menu.Item value='deleteInvoice' disabled={true}>
-                              Delete invoice {data.invoice.invoiceNum}
+                              <Menu.ItemText>
+                                 Delete invoice {data.invoice.invoiceNum}
+                              </Menu.ItemText>
                            </Menu.Item>
                         {/if}
                      </Menu.Content>

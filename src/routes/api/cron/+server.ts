@@ -4,7 +4,7 @@ import { prisma } from '$lib/server/prisma';
 import dayjs from 'dayjs';
 import type { RequestHandler} from './$types';
 import type { Invoice } from '../../../generated/prisma/client';
-import { makeTodaysInvoicesReport } from '$lib/server/pdfMake/makeTodaysInvoicesReport';
+import { invoiceNoteRent } from '$lib/utils/invoiceNoteRent';
 export const GET:RequestHandler = async (event) => {
    const authHeader = event.request.headers.get('authorization');
    if(authHeader !== `Bearer ${CRON_SECRET}`){
@@ -21,12 +21,21 @@ export const GET:RequestHandler = async (event) => {
    for(const lease of todaysLeases){
       let invoice = await prisma.invoice.findFirst({
          where: {
-            invoiceCreated: {
-               gte: new Date(new Date().setHours(0,0,0,0))
-            }
+            AND: [
+               {
+                  invoiceCreated: {
+                     gte: new Date(new Date().setHours(0,0,0,0))
+                  }
+               },
+               {
+                  leaseId: lease.leaseId
+               }
+            ]
          }
       });
-      if(!invoice){
+      if(invoice){
+         todaysInvoices.push(invoice)
+      } else if(!invoice){
          invoice = await prisma.invoice.findFirst({
             where: {
                AND: [
@@ -39,12 +48,17 @@ export const GET:RequestHandler = async (event) => {
                      invoiceDue: {
                         lte: today.add(1, 'month').set('hours', 24).set('minutes', 59).set('seconds', 59).set('milliseconds', 1000).toDate(),
                      }
+                  },
+                  {
+                     leaseId: lease.leaseId
                   }
                ]
             }
          })
-      }
-      if(!invoice){
+         if(invoice){
+            todaysInvoices.push(invoice);
+         }
+      } else if(!invoice){
          todaysInvoices.push(
             await prisma.invoice.create({
                data: {
@@ -52,12 +66,29 @@ export const GET:RequestHandler = async (event) => {
                   invoiceAmount: lease.price,
                   customerId: lease.customerId,
                   invoiceDue: today.add(1, 'month').toDate(),
-                  invoiceNotes: `Rent for unit ${lease.unitNum.replace(/^0/gm, '')} for ${today.add(1, 'month').format('MMMM D YYYY')} - ${today.add(2,'month').format('MMMM D YYYY')}`
+                  invoiceNotes: invoiceNoteRent(lease.unitNum, lease.leaseEffectiveDate),
                }
             })
          )
       }
    }
+   const yesterday = dayjs().subtract(1, 'day');
+   const payments = await prisma.paymentRecord.findMany({
+      where: {
+         AND: [
+            {
+               paymentCreated: {
+                  gte: yesterday.set('minutes', 0).set('hours', 0).set('seconds', 0).toDate(),
+               },
+            },
+            {
+               paymentCreated: {
+                  lte: today.toDate(),
+               }
+            }
+         ]
+      }
+   })
    let totalInvoiced = 0;
    for(const invoice of todaysInvoices){
       totalInvoiced += invoice.invoiceAmount;
@@ -76,14 +107,14 @@ export const GET:RequestHandler = async (event) => {
             }
          }
       }
-   })
+   });
    const admins = await prisma.user.findMany({
       where: {
          admin: true
       }
    });
    for(const admin of admins){
-      await sendStatusEmail(admin, todaysInvoices.length, totalInvoiced, units.length - leasedCount, (await makeTodaysInvoicesReport(todaysInvoices, customers, false) as PDFKit.PDFDocument))
+      await sendStatusEmail(admin, todaysInvoices.length, totalInvoiced, units.length - leasedCount, todaysLeases, payments);
    }
    return new Response(JSON.stringify({success:true}), { status: 200 })
 }

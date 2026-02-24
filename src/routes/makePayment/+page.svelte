@@ -1,61 +1,101 @@
-
 <script lang="ts">
-	import { onMount } from 'svelte';
+   import { PUBLIC_STRIPE_PUBLISHABLE_KEY, PUBLIC_URL } from '$env/static/public';
+   import { onMount } from 'svelte';
+   import { loadStripe } from '@stripe/stripe-js'
+	import Header from '$lib/Header.svelte';
+	import { fade } from 'svelte/transition';
+	import dayjs from 'dayjs';
+	import { goto } from '$app/navigation';
+	import { browser } from '$app/environment';
+   import type { Stripe, StripeEmbeddedCheckout } from '@stripe/stripe-js'
    import type { PageData } from './$types';
-	import CreditCardForm from '$lib/forms/CreditCardForm.svelte';
-	import { invalidate } from '$app/navigation';
-	import InvoiceCustomer from '$lib/displayComponents/customerViews/InvoiceCustomer.svelte';
-	import UserCustomer from '$lib/displayComponents/customerViews/UserCustomer.svelte';
 
    let { data }: { data: PageData } = $props();
-   let sessionToken = $state('');
+   let stripe:Stripe | null = $state(null);
+   let clientSecret: string = $state('');
+   let wrapper:string | HTMLElement = $state('');
    let mounted = $state(false);
-   onMount(async () => {
-      sessionToken = await getSessionToken();
-      setTimeout(() => {
-         invalidate('/api/elavon');
-      }, 15*60*1000)
-      mounted = true
+   let checkoutElement = $state<StripeEmbeddedCheckout>();
+   onMount(async () =>{
+      stripe = await loadStripe(PUBLIC_STRIPE_PUBLISHABLE_KEY);
+      clientSecret = await createCheckout();
+      stripe?.initEmbeddedCheckout({clientSecret}).then((element) => {
+         checkoutElement = element;
+         console.log(checkoutElement)
+         checkoutElement.mount(wrapper)
+      })
+      mounted = true;
    })
-
-   async function getSessionToken() {
-      const response = await fetch('/api/elavon/', {
+   async function createCheckout() {
+      const response = await fetch(`/api/stripe/checkoutSession`, {
          method: 'POST',
          headers: {
-            'content-type':'applications/json'
+               'content-type' : 'applications/json'
          },
-         body: JSON.stringify({
-            invoiceNum: data.invoice.invoiceNum,
+         body: JSON.stringify({ 
+            invoiceNum: data.invoice.invoiceNum, 
             subscription: data.subscription,
-            newLease: data.newLease, 
-            leaseId: data.leaseId
+            newLease: data.newLease,
+            leaseId: data.leaseId,
+            
          })
       })
       const body = await response.json();
-      return body
+      console.log(body)
+      return body;
+   }
+   async function createPaymentIntent() {
+      const response = await fetch(`/api/stripe/paymentIntent?invoiceNum=${data.invoice?.invoiceNum}`, {
+         method: 'POST',
+         headers: {
+               'content-type': 'applications/json'
+         },
+         body:JSON.stringify({ customerId:data.customer?.id, invoiceNum:data.invoice?.invoiceNum, subscription:data.subscription })
+      });
+      const body = await response.json();
+      console.log(body)
+      return clientSecret;
+   }
+   let now = $state(dayjs());
+   let end = dayjs().add(15, 'minute');
+   let remainder = $state(end.diff(dayjs(), 'seconds'));
+   let formattedRange = $state('')
+   if(browser){
+      const interval = setInterval(async ()=>{
+         now = dayjs();
+         remainder = end.diff(now, 'second');
+         if(remainder <= 0){
+               clearInterval(interval)
+               goto('/')
+         }
+         const mins = Math.floor(remainder / 60);
+         const seconds = remainder % 60;
+         if(seconds < 10 ){
+               formattedRange = `${mins}:0${seconds}`
+         } else {
+               formattedRange = `${mins}:${seconds}`
+         }
+      }, 1000)
    }
 </script>
+<Header title='Make a Payment'/>
+{#if data.newLease}
 {#if !mounted}
-   <div class="m-2 mt-14 sm:mt-10">
-      Loading...
-   </div>
+    <div in:fade={{duration:600}} class="mt-14 sm:mt-10 m-2">
+        ...loading
+    </div>
 {:else}
-   <div class="flex flex-col m-2 gap-2 mt-14 sm:mt-10">
-      {#if data.customer}    
-         <UserCustomer
-            user={data.customer}
-         />
-      {/if}
-      <InvoiceCustomer
-         invoice={data.invoice}
-         classes='border border-primary-50-950 rounded-lg'
-      />
-      <CreditCardForm
-         data={data.ccForm}
-         invoice={data.invoice}
-         sessionToken={sessionToken}
-         subscription={data.subscription ? true : false}
-         buttonText={`Pay $${data.invoice.invoiceAmount}`}
-      />
-   </div>
+    <div class="mt-14 sm:mt-10 mx-1 sm:mx-2" in:fade={{duration:600}}>
+        Please pay your deposit in the next {formattedRange} to hold your unit or your transaction will be canceled and you'll need to start again.
+    </div>
+    <div bind:this={wrapper} class="m-2"></div>
+    {/if}
+{:else}
+    {#if !mounted}
+        <div in:fade={{duration:600}} class=" m-2">
+            ...loading
+        </div>
+        {:else}
+        <div bind:this={wrapper} class="mt-14 sm:mt-10 m-2" in:fade={{duration:600}}></div>
+    {/if}
 {/if}

@@ -6,6 +6,7 @@
 	import NumberInput from "$lib/formComponents/NumberInput.svelte";
 	import Switch from "$lib/formComponents/Switch.svelte";
 	import type { OnboardingExistingLeaseSchema } from "$lib/formSchemas/onboardingExistingLeaseSchema";
+	import { humanUnitNum } from "$lib/utils/humanUnitNum";
 	import type { Unit, User, Address } from "../../generated/prisma/browser";
 	import dayjs from "dayjs";
 	import { superForm, type Infer, type SuperValidated } from "sveltekit-superforms";
@@ -18,14 +19,16 @@
       classes?: string;
    }
    let { data, units, customer, address, classes}:Props = $props();
+   // svelte-ignore state_referenced_locally
    let { form, message, errors, constraints, enhance, delayed, timeout } = superForm(data,{
       onSubmit(input) {
          input.formData.set('unitNum', $form.unitNum)
       },
    });
    const comboboxData:{label:string, value:string}[] = [];
+   // svelte-ignore state_referenced_locally
    for(const unit of units){
-      comboboxData.push({label: unit.num.replace(/^0+/gm, ''), value: unit.num})
+      comboboxData.push({label: humanUnitNum(unit.num), value: unit.num})
    }
 </script>
 

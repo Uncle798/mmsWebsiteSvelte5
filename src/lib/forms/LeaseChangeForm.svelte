@@ -9,6 +9,7 @@
 	import NumberInput from "$lib/formComponents/NumberInput.svelte";
 	import FormMessage from "$lib/formComponents/FormMessage.svelte";
 	import FormSubmitWithProgress from "$lib/formComponents/FormSubmitWithProgress.svelte";
+	import { humanUnitNum } from "$lib/utils/humanUnitNum";
 
    interface Props {
       data: SuperValidated<Infer<LeaseChangeFormSchema>>;
@@ -17,6 +18,7 @@
       classes?: string;
    }
    let { data, lease, modalOpen=$bindable(), classes }:Props =$props();
+   // svelte-ignore state_referenced_locally
    let { form, message, errors, constraints, enhance, delayed, timeout } = superForm(data, {
       onUpdate() {
          modalOpen = false
@@ -30,7 +32,7 @@
          value={$form.price}
          errors={$errors.price}
          constraints={$constraints.price}
-         label='Change price of unit {lease.unitNum.replace(/^0+/gm, '')}'
+         label='Change price of unit {humanUnitNum(lease.unitNum)}'
          name='price'
          placeholder={lease.price.toString()}
       />
@@ -58,6 +60,6 @@
          placeholder={dayjs(lease.leaseEffectiveDate).format('MM/DD/YYYY')}
       />
       <input type="hidden" value={lease.leaseId} name='leaseId'/>
-      <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} />  
+      <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} classes='mt-2'/>  
    </form>
 </div>

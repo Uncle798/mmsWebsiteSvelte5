@@ -10,9 +10,10 @@
    import { toaster } from '../../lib/toaster';
     
    let { data }: { data: PageData } = $props();
+      // svelte-ignore state_referenced_locally
    let { form, message, errors, constraints, enhance, delayed, timeout } = superForm(data.magicLinkForm);
    
-   const toastReason = data.toastReason;
+   const toastReason = $derived(data.toastReason);
    onMount(() => {
       if(toastReason === 'userAlreadyExists'){
          toaster.create({

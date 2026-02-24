@@ -16,6 +16,7 @@
 
    let { data, emailModalOpen=$bindable(false), user, classes }:Props = $props();
    const url = page.url.pathname;
+   // svelte-ignore state_referenced_locally
    let { form, message, errors, constraints, enhance, delayed, timeout, capture, restore} = superForm(data, {
       onUpdated(){
          emailModalOpen=false;

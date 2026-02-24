@@ -13,7 +13,7 @@ export const load = (async (event) => {
       redirect(302, '/login?toast=employee')
    }
    const newInvoiceForm = await superValidate(valibot(newInvoiceFormSchema));
-   const registerForm = await superValidate(valibot(registerFormSchema));
+   const registerForm = await superValidate(valibot(registerFormSchema, { ignoreActions: ['partial_check']} ));
    const emailVerificationForm = await superValidate(valibot(emailVerificationFormSchema));
    const addressForm = await superValidate(valibot(addressFormSchema));
    const userId = event.url.searchParams.get('userId');

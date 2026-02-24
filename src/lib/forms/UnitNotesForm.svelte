@@ -16,9 +16,10 @@
       unit:Unit
       classes?: string;
    }
-   let { data, unitNotesFormModalOpen, unit, classes }:Props = $props();
+   let { data, unitNotesFormModalOpen = $bindable(), unit, classes }:Props = $props();
    const id = $props.id();
    const url = page.url.pathname;
+   // svelte-ignore state_referenced_locally
    let { form, message, errors, constraints, enhance, delayed, timeout, submit } = superForm(data, {
       onChange(event) {
          if(event.target){
@@ -73,7 +74,7 @@
          label='Notes'
          name='notes'
       />
-      <div class="flex flex-col sm:flex-row gap-2 mt-2 justify-center">
+      <div class="flex flex-row gap-2 mt-2">
          <Switch 
             bind:checked={$form.unavailable}
             name='unavailable'
@@ -84,7 +85,7 @@
             }}
          />
          <input type="hidden" name="unitNum" id="unitNum" value={unit.num} />
-         <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} buttonText='Update notes'/>
+         <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} buttonText='Update notes' classes='mb-2'/>
       </div>
    </form>
 </div>

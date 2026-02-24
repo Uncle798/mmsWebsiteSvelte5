@@ -1,5 +1,6 @@
 <script lang='ts'>
-   import ProgressLine from "$lib/displayComponents/ProgressLine.svelte";
+   import Button from "$lib/core/Button.svelte";
+import ProgressLine from "$lib/displayComponents/ProgressLine.svelte";
    import ProgressRing from "$lib/displayComponents/ProgressRing.svelte";
 	import { Progress } from "@skeletonlabs/skeleton-svelte";
 	import { fade } from "svelte/transition";
@@ -11,8 +12,12 @@
    }
    let { delayed = $bindable(), timeout=$bindable(), buttonText=$bindable('Submit'), classes }:Props = $props();
 </script>
-<div class="flex py-2 {classes}">
-   <button class="btn rounded-lg preset-filled-primary-50-950 h-8 w-fit" >{buttonText}</button>
+<div class="flex {classes}">
+   <Button
+      label={buttonText}
+      type='submit'
+      classes=''
+   />
    {#if !delayed && !timeout}
       <div class="w-8 h-8"></div>
    {/if}

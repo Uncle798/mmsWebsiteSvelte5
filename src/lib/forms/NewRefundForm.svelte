@@ -22,7 +22,8 @@
       paymentRecord,
       classes
    }:Props = $props();
-   const url = page.url.pathname
+   const url = page.url.pathname;
+   // svelte-ignore state_referenced_locally
    let { form, errors, message, constraints, enhance, delayed, timeout} = superForm(data, {
       onChange(event) {
          if(event.target){

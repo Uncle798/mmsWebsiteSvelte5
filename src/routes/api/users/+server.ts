@@ -19,6 +19,23 @@ export const DELETE: RequestHandler = async (event) => {
       if(user.id === event.locals.user.id){
          return new Response(JSON.stringify('Can\'t delete self'), { status:401 })
       }
+      const leases = await prisma.lease.findMany({
+         where: {
+            customerId: user.id
+         }
+      });
+      for(const lease of leases){
+         await prisma.propertyWithLien.deleteMany({
+            where: {
+               leaseId: lease.leaseId
+            }
+         });
+         await prisma.leaseAlternativeContacts.deleteMany({
+            where: {
+               leaseId: lease.leaseId
+            }
+         })
+      }
       await prisma.propertyWithLien.deleteMany({
          where: {
             userId: user.id
@@ -53,7 +70,7 @@ export const DELETE: RequestHandler = async (event) => {
          where: {
             userId: user.id
          }
-      })
+      });
       await prisma.lease.deleteMany({
          where: {
             customerId: user.id

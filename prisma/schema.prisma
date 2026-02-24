@@ -1,6 +1,7 @@
 generator client {
   provider = "prisma-client"
   output   = "../src/generated/prisma"
+  runtime  = "nodejs"
 }
 
 datasource db {
@@ -17,6 +18,7 @@ model User {
   organizationName         String?
   emailVerified            Boolean?                   @map("email_verified")
   employee                 Boolean                    @default(false)
+  vendor                   Boolean                    @default(false)
   admin                    Boolean                    @default(false)
   archive                  Boolean                    @default(false)
   googleId                 String?
@@ -24,6 +26,7 @@ model User {
   customerNotes            String?
   doNotRent                Boolean                    @default(false)
   alternative              Boolean                    @default(false)
+  stripeId                 String?
   address                  Address[]
   customerInvoices         Invoice[]                  @relation("customer")
   employeeInvoices         Invoice[]                  @relation("employee")
@@ -38,6 +41,8 @@ model User {
   employeeDiscountCode     DiscountCode[]
   PropertyWithLien         PropertyWithLien[]
   leaseAlternativeContacts LeaseAlternativeContacts[]
+  expenses                 Expense[]                  @relation("employee")
+  transactions             Expense[]                  @relation("vendor")
 
   @@unique([id, email])
   @@unique([email, givenName, familyName])
@@ -163,6 +168,7 @@ model PaymentRecord {
   paymentNotes     String?
   deposit          Boolean        @default(false)
   refundedAmount   Float          @default(0.0)
+  stripeId         String?        @unique()
   paymentType      PaymentType
   invoice          Invoice?       @relation(fields: [invoiceNum], references: [invoiceNum])
   customer         User           @relation("customer", fields: [customerId], references: [id])
@@ -180,6 +186,7 @@ model RefundRecord {
   refundCompleted  DateTime?
   paymentRecordNum Int
   deposit          Boolean         @default(false)
+  stripeId         String?         @unique()
   refundType       PaymentType
   paymentRecord    PaymentRecord[]
   customer         User            @relation("customer", fields: [customerId], references: [id])
@@ -234,4 +241,72 @@ enum PaymentType {
   CHECK
   ONBOARDING_CREDIT
   OVER_THE_PHONE_CREDIT
+  PAYPAL
+}
+
+model Expense {
+  id            String   @id @default(cuid(2))
+  explanation   String
+  amount        Float
+  createdAt     DateTime @default(now())
+  datePurchased DateTime
+  receiptLink   String
+  boxFileId     String
+  employeeId    String
+  vendorId      String
+  employee      User     @relation("employee", fields: [employeeId], references: [id])
+  vendor        User     @relation("vendor", fields: [vendorId], references: [id])
+}
+
+enum States {
+  AL
+  AK
+  AZ
+  AR
+  CA
+  CO
+  CT
+  DE
+  FL
+  GA
+  HI
+  ID
+  IL
+  IN
+  IA
+  KS
+  KY
+  LA
+  ME
+  MD
+  MA
+  MI
+  MN
+  MS
+  MO
+  MT
+  NE
+  NV
+  NH
+  NJ
+  NM
+  NY
+  NC
+  ND
+  OH
+  OK
+  OR
+  PA
+  RI
+  SC
+  SD
+  TN
+  TX
+  UT
+  VT
+  VA
+  WA
+  WV
+  WI
+  WY
 }

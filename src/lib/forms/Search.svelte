@@ -12,7 +12,8 @@
 	}
 	let { data, search = $bindable(''), searchType, classes, formId }: Props = $props();
 	const id = $props.id();
-	const url = page.url.pathname
+	const url = page.url.pathname;
+	// svelte-ignore state_referenced_locally
 	let { form, enhance } = superForm(data, {
 		onChange(event) {
 			search = event.get('search');
@@ -24,8 +25,6 @@
             }
          }
 		},
-
-		id: formId ? formId : undefined
 	});
 
 	onMount(() => {
