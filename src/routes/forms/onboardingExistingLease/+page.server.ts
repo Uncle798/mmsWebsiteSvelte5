@@ -17,7 +17,9 @@ export const actions: Actions = {
       if(!onboardingExistingLeaseForm.valid){
          return message(onboardingExistingLeaseForm, 'Form not valid');
       }
-      const { success, reset } = await ratelimit.employeeForm.limit(event.locals.user.id);
+      const limit = await ratelimit.employeeForm.limit(event.locals.user.id);
+      console.log(limit);
+      const { success, reset } = limit;
       if(!success){
          const timeRemaining = Math.floor((reset - Date.now()) / 1000);
          return message(onboardingExistingLeaseForm, `Please wait ${timeRemaining} seconds before trying again`)
@@ -28,13 +30,22 @@ export const actions: Actions = {
             customerId: data.customerId,
             addressId: data.addressId,
             leaseCreatedAt: data.createdDate,
-            leaseEffectiveDate: data.leaseEffectiveDate,
+            leaseEffectiveDate: data.createdDate,
             price: data.price,
+            depositAmount: data.deposit,
             unitNum: data.unitNum,
             employeeId: event.locals.user.id,
             keysProvided: data.numKeys ? data.numKeys : undefined,
          }
-      })
+      });
+      await prisma.unit.update({
+         where: {
+            num: lease.unitNum,
+         },
+         data: {
+            leasedPrice: lease.price
+         }
+      });
       redirect(303, `/onboarding?leaseId=${lease.leaseId}&userId=${data.customerId}&addressId=${data.addressId}&lien=${data.propertySubjectToLien}`);
    }
 };

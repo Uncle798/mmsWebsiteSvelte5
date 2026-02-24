@@ -1,6 +1,6 @@
 <script lang="ts">
    import Header from '$lib/Header.svelte';
-	import type { User, Lease } from '@prisma/client';
+	import type { User, Lease } from "../../generated/prisma/browser"
    import type { PageData } from './$types';
 	import LeaseEmployee from '$lib/displayComponents/LeaseEmployee.svelte';
    import UserEmployee from '$lib/displayComponents/UserEmployee.svelte';
@@ -8,10 +8,24 @@
 	import Pagination from '$lib/displayComponents/Pagination.svelte';
 	import AddressEmployee from '$lib/displayComponents/AddressEmployee.svelte';
 	import SearchDrawer from '$lib/displayComponents/Modals/SearchDrawer.svelte';
+	import Button from '$lib/core/Button.svelte';
+   import { source } from 'sveltekit-sse';
+	import type { Readable } from 'svelte/store';
+	import type { SourceSelected, Source } from 'sveltekit-sse';
+   import { fromStore } from 'svelte/store';
+   import { PUBLIC_COMPANY_NAME } from '$env/static/public';
+   import dayjs from 'dayjs';
+
    let { data }: { data: PageData } = $props();
    let search = $state('');
    let pageNum = $state(1);
    let size = $state(25);
+   let connection = $state<Source>();
+	let csv = $state<Readable<string> & SourceSelected >();
+	let value = $state<Readable<string> & SourceSelected>();
+	let valueState = $state<{readonly current: string;}>();
+	let csvState = $state<{readonly current: string;}>();
+   let csvPurpose = $state('');
    let searchedLeases = $derived((leases:Lease[]) => leases.filter((lease) => lease.leaseId.includes(search)))
    let slicedLeases = $derived((leases:Lease[]) => leases.slice((pageNum-1)*size, pageNum*size));
    const currentCustomers = $derived((users:User[]) => {
@@ -52,7 +66,30 @@
          return -1
       }
       return 0
-   }))
+   }));
+   $effect(() => {
+      if(csvState && csvState?.current !== ''){
+			const blob = new Blob([csvState.current], {
+				type: 'application/csv'
+			});
+			const url = URL.createObjectURL(blob);
+			const filename = `${PUBLIC_COMPANY_NAME} current leases report ${dayjs().format('MMMM D YYYY')}.csv`
+			const a = document.createElement('a');
+			a.download = filename;
+			a.href = url;
+			document.body.append(a);
+			a.click();
+			document.body.removeChild(a);
+			URL.revokeObjectURL(url);
+		}
+		if(valueState && valueState.current === 'CSV ready'){
+         setTimeout(() => {
+            connection?.close();
+				valueState = undefined;
+            connection = undefined;
+			}, 1500);
+		}
+   })
 </script>
 <Header title='All leases' />
 
@@ -73,12 +110,34 @@
       {:then addresses}
          <SearchDrawer
             modalOpen={searchDrawerOpen}
-            height='h-[180px]'
+            height='h-[320px] sm:h-[160px]'
          >
             {#snippet content()}
-               <Search bind:search={search} searchType='lease id' data={data.searchForm} classes='mt-10 mx-1'/>
+               <Search bind:search={search} searchType='lease id' data={data.searchForm} classes='mx-1'/>
                <Search bind:search={customerSearch} searchType='customer name' data={data.searchForm} classes='mx-1' />
-               <button class="btn preset-filled-primary-50-950 " onclick={() => sortBy = !sortBy}>Sort by unit number {sortBy ? 'ascending' : 'descending'}</button>
+               <div class="flex flex-col sm:flex-row gap-2">
+                  <Button
+                     label='Sort by unit number {sortBy ? 'ascending' : 'descending'}'
+                     type='button'
+                     onClick={() => sortBy = !sortBy}
+                  />
+                  <div class="flex flex-col gap-2">
+                     <Button
+                        label='Download lease report CSV'
+                        type='button'
+                        onClick={async () => {
+                           connection = source('/api/csv?currentLeaseReport=true');
+                           value = connection.select('message');
+                           valueState = fromStore(value);
+                           csv = connection.select('csv');
+                           csvState = fromStore(csv);
+                        }}
+                     />
+                     <div class='place-self-center'>
+                        {valueState?.current}
+                     </div>
+                  </div>
+               </div>
             {/snippet}
          </SearchDrawer>
          <div class="rounded-lg mt-14 sm:mt-10 mb-20 sm:mb-12 lg:mb-8">
@@ -86,7 +145,7 @@
             {@const customer = customers.find((customer) => customer.id === lease.customerId)}
             {@const leaseAddress = addresses.find((address) => address.addressId === lease.addressId)}
                <div class="grid sm:grid-cols-2 border border-primary-50-950 m-2 rounded-lg">
-                  <LeaseEmployee lease={lease} classes='mx-2'/>
+                  <LeaseEmployee lease={lease} classes='mx-2' open={true}/>
                   {#if customer}
                      <div class='m-2'> 
                         <UserEmployee user={customer} />

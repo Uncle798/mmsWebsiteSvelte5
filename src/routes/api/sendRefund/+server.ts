@@ -1,4 +1,4 @@
-import { sendRefundEmail } from '$lib/server/mailtrap';
+import { sendRefundEmail } from "$lib/server/mailtrap/sendRefundEmail";
 import { prisma } from '$lib/server/prisma';
 import { ratelimit } from '$lib/server/rateLimit';
 import type { RequestHandler } from './$types';
@@ -44,6 +44,6 @@ export const POST: RequestHandler = async (event) => {
    if(!address){
       return new Response(JSON.stringify('Address not found'), {status:500})
    }
-   const res = sendRefundEmail(refund, customer, address);
+   const res = sendRefundEmail(refund, customer);
    return new Response(JSON.stringify(res), {status:200});
 };

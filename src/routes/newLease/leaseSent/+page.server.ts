@@ -1,8 +1,8 @@
 import { prisma } from '$lib/server/prisma';
-import { anvilClient, getOrganizationalPacketVariables, getPersonalPacketVariables } from '$lib/server/anvil';
+import { createLease, } from '$lib/server/anvil';
 import { error, redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { qStash } from '$lib/server/qStash';
+import type { GraphQLResponse } from '@anvilco/anvil';
 
 export const load:PageServerLoad = (async (event) => {
    if(!event.locals.user){
@@ -22,7 +22,10 @@ export const load:PageServerLoad = (async (event) => {
          where:{
             id: lease.customerId!,
          }
-      })
+      });
+      if(!customer){
+         throw error(500, 'Customer not found');
+      }
       if(lease.anvilEID){
          return { customer, lease}
       }
@@ -31,31 +34,51 @@ export const load:PageServerLoad = (async (event) => {
             num: lease?.unitNum,
          }
       });
+      if(!unit){
+         throw error(500, {message: 'Unit not found'});
+      }
       const employee = await prisma.user.findFirst({
          where: {
             AND:[
                {admin:true},
-               {familyName: 'Branson'}
             ]
          }
-      })
+      });
+      if(!employee){
+         throw error(500, {message: 'Employee not found'})
+      }
       const address = await prisma.address.findUnique({
          where: {
             addressId: lease?.addressId
          }
       });
       if(!address){
-         error(400)
+         error(500, {message: 'Address not found'})
       }
-      let variables ={};
-      if(customer?.organizationName){
-         variables = getOrganizationalPacketVariables( customer!, lease!, unit!, employee!, address! );
-      } else {
-         variables = getPersonalPacketVariables( customer!, lease!, unit!, employee!, address!);
-      }
-      const { data, errors } = await anvilClient.createEtchPacket({
-         variables
+      const alternativeContact = await prisma.user.findFirst({
+         where: {
+            leaseAlternativeContacts: {
+               some: {
+                  lease: {
+                     leaseId: lease.leaseId
+                  }
+               }
+            }
+         }
+      });
+      const alternateAddress = await prisma.address.findFirst({
+         where: {
+            AND: [
+               {
+                  userId: alternativeContact?.id
+               },
+               {
+                  softDelete: false,
+               }
+            ]
+         }
       })
+      const { data, errors } = await createLease(customer, lease, unit, employee, address, alternativeContact, alternateAddress) as GraphQLResponse;
       if (errors) {
          // Note: because of the nature of GraphQL, statusCode may be a 200 even when
          // there are errors.
@@ -63,6 +86,7 @@ export const load:PageServerLoad = (async (event) => {
          console.error(JSON.stringify(errors, null, 2));
          console.error(data?.data['createEtchPacket'])
       } else {
+         console.log(data)
          const packetDetails = data?.data['createEtchPacket']
          const anvilEID = packetDetails['eid']
          await prisma.lease.update({
@@ -73,7 +97,6 @@ export const load:PageServerLoad = (async (event) => {
                anvilEID 
             }
          })
-         await qStash.notify({eventId:lease.leaseId});
          const invoice = await prisma.invoice.findFirst({
             where: {
                leaseId: lease.leaseId

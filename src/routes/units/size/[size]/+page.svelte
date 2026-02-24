@@ -6,20 +6,20 @@
 	import UnitPricingForm from '$lib/forms/UnitPricingForm.svelte';
 	import UserEmployee from '$lib/displayComponents/UserEmployee.svelte';
 	import Revenue from '$lib/displayComponents/Revenue.svelte';
-	import type  { Lease, Unit } from '@prisma/client';
+	import type  { Lease, Unit } from '../../../../generated/prisma/browser';
 	import Address from '$lib/displayComponents/AddressEmployee.svelte';
 	import { goto, onNavigate } from '$app/navigation';
    import { browser } from '$app/environment';
-	import { PanelTopClose, SearchIcon } from 'lucide-svelte';
+   import { currencyFormatter } from "$lib/utils/currencyFormatter";
 	import FormModal from '$lib/displayComponents/Modals/FormModal.svelte';
 	import SearchDrawer from '$lib/displayComponents/Modals/SearchDrawer.svelte';
 	import ProgressLine from '$lib/displayComponents/ProgressLine.svelte';
    import ProgressRing from '$lib/displayComponents/ProgressRing.svelte';
    import Combobox from '$lib/formComponents/Combobox.svelte';
 	import RevenueBar from '$lib/displayComponents/RevenueBar.svelte';
+	import { humanUnitSize } from '$lib/utils/humanUnitSize';
 
    let { data }: { data: PageData } = $props();
-   const currencyFormatter = new Intl.NumberFormat('en-US', {style: 'currency', currency: 'USD'})
    let unitPricingModalOpen = $state(false);
    let currentOldPrice = $state(0);
    function openModal(oldPrice: number){
@@ -51,13 +51,13 @@
          revenue += unit.advertisedPrice
       }
       return revenue;
-   })
+   });
    interface ComboboxData {
       label: string;
       value: string;
    }
    const comboboxData:ComboboxData[] = $derived(data.sizes.map(size => ({
-      label: size.replace(/^0+/gm, '').replace(/x0/gm, 'x'),
+      label: humanUnitSize(size),
       value: size
    })))
    let searchDrawerOpen = $state(false);
@@ -68,10 +68,10 @@
       timeout = false;
    })
 </script>
-<Header title='All {data.size.replace(/^0+/gm,'').replace(/0x/gm,'x')} units' />
+<Header title='All {humanUnitSize(data.size)} units' />
 
 <FormModal
-   modalOpen={unitPricingModalOpen}
+   bind:modalOpen={unitPricingModalOpen}
 >  
    {#snippet content()}
       <UnitPricingForm data={data.unitPricingForm} bind:unitPricingFormModalOpen={unitPricingModalOpen} size={data.size} oldPrice={currentOldPrice}/>
@@ -125,16 +125,16 @@
                {#if timeout}
                   <ProgressLine value={null} />
                {/if}
-               <button class="btn preset-filled-primary-50-950 rounded-lg mt-5" onclick={()=>openModal(units[0].advertisedPrice)}>Change All {data.size.replace(/^0+/gm, '').replace(/x0/gm,'x')} prices</button>
+               <button class="btn preset-filled-primary-50-950 rounded-lg mt-5" onclick={()=>openModal(units[0].advertisedPrice)}>Change All {humanUnitSize(data.size)} prices</button>
             </div>
          {/snippet}
       </SearchDrawer>
       {#if units.length > 0 }
          <RevenueBar>
             {#snippet content()}               
-               <Revenue amount={currentRevenue(units)} label='Current revenue from {data.size.replace(/^0+/gm, '').replace(/x0/gm,'x')} units' />
+               <Revenue amount={currentRevenue(units)} label='Current revenue from {humanUnitSize(data.size)} units' />
                <span class="mx-1 sm:mx-2 w-1/3">Available: {availableUnits(units, leases).length} of {units.length} ({Math.round((availableUnits(units, leases).length*100)/units.length)}%)</span>
-               <span class="mx-1 sm:mx-2 w-1/3">Open revenue: {currencyFormatter.format(lostRevenue(availableUnits(units, leases)))}</span>
+               <span class="mx-1 sm:mx-2 w-1/3">Open revenue: {currencyFormatter(lostRevenue(availableUnits(units, leases)))}</span>
             {/snippet}
          </RevenueBar>
       {:else}

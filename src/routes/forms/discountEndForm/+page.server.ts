@@ -10,6 +10,7 @@ export const actions: Actions = {
       if(!event.locals.user?.employee){
          redirect(302, '/login?toast=employee');
       }
+      
       const formData = await event.request.formData();
       const discountEndForm = await superValidate(formData, valibot(cuidIdFormSchema));
       const { success, reset } = await ratelimit.employeeForm.limit(event.locals.user?.id)

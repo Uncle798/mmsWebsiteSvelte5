@@ -24,3 +24,4 @@ prisma/migrations/0_init/migration.sql
 log.txt
 app2.log
 .env*.local
+/src/generated/prisma

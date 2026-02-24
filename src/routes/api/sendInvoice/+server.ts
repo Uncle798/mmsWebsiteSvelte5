@@ -1,4 +1,4 @@
-import { sendInvoice } from '$lib/server/mailtrap';
+import { sendInvoice } from "$lib/server/mailtrap/sendInvoice";
 import { prisma } from '$lib/server/prisma';
 import { ratelimit } from '$lib/server/rateLimit';
 import type { RequestHandler } from './$types';
@@ -44,6 +44,6 @@ export const POST: RequestHandler = async (event) => {
    if(!address){
       return new Response(JSON.stringify('address not found'), {status:500})
    }
-   const res = await sendInvoice(invoice, customer, address);
+   const res = await sendInvoice(invoice, customer);
    return new Response(JSON.stringify(res), {status:200});
 };

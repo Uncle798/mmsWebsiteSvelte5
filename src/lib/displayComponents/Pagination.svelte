@@ -38,54 +38,55 @@
       isItemDisabled: (item) => item.value === size.toString()
    }))
 </script>
-
-<div class="flex flex-col sm:flex-row m-2 gap-2 {classes} justify-center">
-   <Combobox {collection} {onOpenChange} onValueChange={(e) => {
-      size=parseInt(e.value[0], 10);
-   }}>
-      <Combobox.Label>Select page size</Combobox.Label>
-      <Combobox.Control>
-         <Combobox.Input />
-         <Combobox.Trigger />
-      </Combobox.Control>
-      <Portal>
-         <Combobox.Positioner class='z-1!'>
-            <Combobox.Content>
-               {#each items as item}
-                  <Combobox.Item {item}>
-                     <Combobox.ItemText class='truncate'>{item.label}</Combobox.ItemText>
-                     <Combobox.ItemIndicator />
-                  </Combobox.Item>
-               {/each}
-            </Combobox.Content>
-         </Combobox.Positioner>
-      </Portal>
-   </Combobox>
-   <Pagination count={array.length} pageSize={size} page={pageNum} onPageChange={(e) => {pageNum = e.page;}} siblingCount={ pageNum > 3 ? 1 : 0 } >
-         <Pagination.Context>
-            {#snippet children(pages)}
-               <Pagination.FirstTrigger class='hidden sm:block' disabled={ pageNum === 1 ? true : undefined }>
-                  <IconArrowLeftFromLine />
-               </Pagination.FirstTrigger>
-               <Pagination.PrevTrigger>
-                  <IconArrowLeft />
-               </Pagination.PrevTrigger>
-               {#each pages().pages as page, index (page)}
-                  {#if page.type === 'page'}
-                     <Pagination.Item {...page}>
-                        {page.value}
-                     </Pagination.Item>
-                  {:else}
-                     <Pagination.Ellipsis {index}><IconEllipsis /></Pagination.Ellipsis>
-                  {/if}
-               {/each}
-               <Pagination.NextTrigger disabled={ pages().totalPages === pageNum ? true : undefined}>
-                  <IconArrowRight />
-               </Pagination.NextTrigger>
-               <Pagination.LastTrigger class='hidden sm:block' disabled={ pages().totalPages === pageNum ? true : undefined }>
-                  <IconArrowRightFromLine />
-               </Pagination.LastTrigger>
-            {/snippet}
-         </Pagination.Context>
-   </Pagination>
-</div>
+{#if array.length > size}
+   <div class="flex flex-col sm:flex-row m-2 gap-2 {classes} justify-center">
+      <Combobox {collection} {onOpenChange} onValueChange={(e) => {
+         size=parseInt(e.value[0], 10);
+      }}>
+         <Combobox.Label>Select page size</Combobox.Label>
+         <Combobox.Control>
+            <Combobox.Input />
+            <Combobox.Trigger />
+         </Combobox.Control>
+         <Portal>
+            <Combobox.Positioner class='z-1!'>
+               <Combobox.Content>
+                  {#each items as item}
+                     <Combobox.Item {item}>
+                        <Combobox.ItemText class='truncate'>{item.label}</Combobox.ItemText>
+                        <Combobox.ItemIndicator />
+                     </Combobox.Item>
+                  {/each}
+               </Combobox.Content>
+            </Combobox.Positioner>
+         </Portal>
+      </Combobox>
+      <Pagination count={array.length} pageSize={size} page={pageNum} onPageChange={(e) => {pageNum = e.page;}} siblingCount={ pageNum > 3 ? 1 : 0 } >
+            <Pagination.Context>
+               {#snippet children(pages)}
+                  <Pagination.FirstTrigger class='hidden sm:block' disabled={ pageNum === 1 ? true : undefined }>
+                     <IconArrowLeftFromLine />
+                  </Pagination.FirstTrigger>
+                  <Pagination.PrevTrigger>
+                     <IconArrowLeft />
+                  </Pagination.PrevTrigger>
+                  {#each pages().pages as page, index (page)}
+                     {#if page.type === 'page'}
+                        <Pagination.Item {...page}>
+                           {page.value}
+                        </Pagination.Item>
+                     {:else}
+                        <Pagination.Ellipsis {index}><IconEllipsis /></Pagination.Ellipsis>
+                     {/if}
+                  {/each}
+                  <Pagination.NextTrigger disabled={ pages().totalPages === pageNum ? true : undefined}>
+                     <IconArrowRight />
+                  </Pagination.NextTrigger>
+                  <Pagination.LastTrigger class='hidden sm:block' disabled={ pages().totalPages === pageNum ? true : undefined }>
+                     <IconArrowRightFromLine />
+                  </Pagination.LastTrigger>
+               {/snippet}
+            </Pagination.Context>
+      </Pagination>
+   </div>
+{/if}

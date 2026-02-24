@@ -6,7 +6,7 @@
 	import FormMessage from '$lib/formComponents/FormMessage.svelte';
    import { onMount } from 'svelte';
 	import { page } from '$app/state';
-	import type { User } from '@prisma/client';
+	import type { User } from '../../generated/prisma/browser';
    interface Props {
       data: SuperValidated<Infer<EmailFormSchema>>;
       emailModalOpen: boolean;
@@ -16,6 +16,7 @@
 
    let { data, emailModalOpen=$bindable(false), user, classes }:Props = $props();
    const url = page.url.pathname;
+   // svelte-ignore state_referenced_locally
    let { form, message, errors, constraints, enhance, delayed, timeout, capture, restore} = superForm(data, {
       onUpdated(){
          emailModalOpen=false;

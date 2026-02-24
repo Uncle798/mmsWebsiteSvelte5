@@ -29,15 +29,15 @@ export const ratelimit = {
    }),
    createLease: new Ratelimit({
       redis,
-      analytics: false,
+      analytics: true,
       prefix: 'ratelimit:createLease',
       limiter: Ratelimit.slidingWindow(1, '10s')
    }),
    employeeForm: new Ratelimit({
       redis,
-      analytics: false,
+      analytics: true,
       prefix: 'ratelimit:employeeForm',
-      limiter: Ratelimit.slidingWindow(1, '5s'),
+      limiter: Ratelimit.slidingWindow(1, '1s'),
    }),
    customerForm: new Ratelimit({
       redis,

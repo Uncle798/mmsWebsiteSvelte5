@@ -1,5 +1,5 @@
 <script lang="ts">
-   import type { PropertyWithLien } from "@prisma/client";
+   import type { PropertyWithLien } from "../../generated/prisma/browser";
 
    interface Props {
       property:PropertyWithLien,

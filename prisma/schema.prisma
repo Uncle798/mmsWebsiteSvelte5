@@ -1,45 +1,48 @@
 generator client {
-  provider        = "prisma-client-js"
-  previewFeatures = ["typedSql"]
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+  runtime  = "nodejs"
 }
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("POSTGRES_PRISMA_URL")
-  directUrl = env("DATABASE_URL")
+  provider = "postgresql"
 }
 
 model User {
-  id                       String             @id @unique @default(cuid(2)) @map("id")
-  createdAt                DateTime           @default(now()) @map("created_at")
-  updatedAt                DateTime?          @updatedAt @map("updated_at")
-  email                    String?            @unique
+  id                       String                     @id @unique @default(cuid(2)) @map("id")
+  createdAt                DateTime                   @default(now()) @map("created_at")
+  updatedAt                DateTime?                  @updatedAt @map("updated_at")
+  email                    String?                    @unique
   givenName                String?
   familyName               String?
   organizationName         String?
-  emailVerified            Boolean?           @map("email_verified")
-  employee                 Boolean            @default(false)
-  admin                    Boolean            @default(false)
-  archive                  Boolean            @default(false)
+  emailVerified            Boolean?                   @map("email_verified")
+  employee                 Boolean                    @default(false)
+  vendor                   Boolean                    @default(false)
+  admin                    Boolean                    @default(false)
+  archive                  Boolean                    @default(false)
   googleId                 String?
   yahooId                  String?
   customerNotes            String?
-  doNotRent                Boolean            @default(false)
-  alternative              Boolean            @default(false)
+  doNotRent                Boolean                    @default(false)
+  alternative              Boolean                    @default(false)
+  stripeId                 String?
   address                  Address[]
-  customerInvoices         Invoice[]          @relation("customer")
-  employeeInvoices         Invoice[]          @relation("employee")
-  customerLeases           Lease[]            @relation("customer")
-  employeeLeases           Lease[]            @relation("employee")
-  alternativeContactLeases Lease[]            @relation("alternativeContact")
-  paymentMade              PaymentRecord[]    @relation("customer")
-  paymentReceived          PaymentRecord[]    @relation("employee")
-  refundReceived           RefundRecord[]     @relation("customer")
-  refundMade               RefundRecord[]     @relation("employee")
+  customerInvoices         Invoice[]                  @relation("customer")
+  employeeInvoices         Invoice[]                  @relation("employee")
+  customerLeases           Lease[]                    @relation("customer")
+  employeeLeases           Lease[]                    @relation("employee")
+  paymentMade              PaymentRecord[]            @relation("customer")
+  paymentReceived          PaymentRecord[]            @relation("employee")
+  refundReceived           RefundRecord[]             @relation("customer")
+  refundMade               RefundRecord[]             @relation("employee")
   session                  Session[]
   verification             Verification[]
   employeeDiscountCode     DiscountCode[]
   PropertyWithLien         PropertyWithLien[]
+  leaseAlternativeContacts LeaseAlternativeContacts[]
+  expenses                 Expense[]                  @relation("employee")
+  transactions             Expense[]                  @relation("vendor")
 
   @@unique([id, email])
   @@unique([email, givenName, familyName])
@@ -61,14 +64,14 @@ model PropertyWithLien {
 model Address {
   addressId          String             @id @unique @default(cuid(2))
   userId             String
-  address1           String
+  address1           String?
   address2           String?
-  city               String
-  state              String
-  postalCode         String
-  country            String
-  phoneNum1          String
-  phoneNum1Country   String
+  city               String?
+  state              String?
+  postalCode         String?
+  country            String?
+  phoneNum1          String?
+  phoneNum1Country   String?
   phoneNum1Validated Boolean            @default(false)
   softDelete         Boolean            @default(false)
   user               User               @relation(fields: [userId], references: [id], onUpdate: NoAction)
@@ -94,34 +97,43 @@ model Unit {
 }
 
 model Lease {
-  leaseId              String             @id @unique @default(cuid(2))
-  customerId           String
-  employeeId           String
-  alternativeContactId String?
-  addressId            String
-  unitNum              String
-  price                Float
-  discountedAmount     Float?
-  discountId           String?
-  leaseCreatedAt       DateTime           @default(now())
-  leaseReturnedAt      DateTime?
-  leaseEffectiveDate   DateTime
-  leaseEnded           DateTime?
-  dropboxURL           String?
-  anvilEID             String?            @unique
-  subscriptionId       String?
-  keysProvided         Int                @default(0)
-  invoices             Invoice[]
-  Address              Address            @relation(fields: [addressId], references: [addressId], onDelete: NoAction, onUpdate: NoAction)
-  customer             User               @relation("customer", fields: [customerId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  employee             User               @relation("employee", fields: [employeeId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  alternativeContact   User?              @relation("alternativeContact", fields: [alternativeContactId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  unit                 Unit               @relation(fields: [unitNum], references: [num])
-  discountCode         DiscountCode?      @relation(fields: [discountId], references: [discountId])
-  PropertyWithLien     PropertyWithLien[]
+  leaseId                  String                     @id @unique @default(cuid(2))
+  customerId               String
+  employeeId               String
+  addressId                String
+  unitNum                  String
+  price                    Float
+  depositAmount            Float?
+  discountedAmount         Float?
+  discountId               String?
+  leaseCreatedAt           DateTime                   @default(now())
+  leaseReturnedAt          DateTime?
+  leaseEffectiveDate       DateTime
+  leaseEnded               DateTime?
+  dropboxURL               String?
+  anvilEID                 String?                    @unique
+  subscriptionId           String?
+  keysProvided             Int                        @default(0)
+  invoices                 Invoice[]
+  Address                  Address                    @relation(fields: [addressId], references: [addressId], onDelete: NoAction, onUpdate: NoAction)
+  customer                 User                       @relation("customer", fields: [customerId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  employee                 User                       @relation("employee", fields: [employeeId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  unit                     Unit                       @relation(fields: [unitNum], references: [num])
+  discountCode             DiscountCode?              @relation(fields: [discountId], references: [discountId])
+  PropertyWithLien         PropertyWithLien[]
+  leaseAlternativeContacts LeaseAlternativeContacts[]
 
   @@unique([leaseId, unitNum, price])
   @@index([leaseId, leaseCreatedAt(sort: Desc)])
+}
+
+model LeaseAlternativeContacts {
+  user    User   @relation(fields: [userId], references: [id])
+  userId  String
+  lease   Lease  @relation(fields: [leaseId], references: [leaseId])
+  leaseId String
+
+  @@id([userId, leaseId])
 }
 
 model Invoice {
@@ -144,23 +156,24 @@ model Invoice {
 }
 
 model PaymentRecord {
-  paymentNumber     Int            @id @unique @default(autoincrement())
-  transactionId     String?        @unique
-  invoiceNum        Int?
-  customerId        String
-  paymentAmount     Float
-  employeeId        String?
-  payee             String?
-  paymentCreated    DateTime       @default(now())
-  paymentCompleted  DateTime?
-  paymentNotes      String?
-  deposit           Boolean        @default(false)
-  refundedAmount    Float          @default(0.0)
-  paymentType       PaymentType
-  invoice           Invoice?       @relation(fields: [invoiceNum], references: [invoiceNum])
-  customer          User           @relation("customer", fields: [customerId], references: [id])
-  receiver          User?          @relation("employee", fields: [employeeId], references: [id])
-  refundRecords     RefundRecord[]
+  paymentNumber    Int            @id @unique @default(autoincrement())
+  transactionId    String?        @unique
+  invoiceNum       Int?
+  customerId       String
+  paymentAmount    Float
+  employeeId       String?
+  payee            String?
+  paymentCreated   DateTime       @default(now())
+  paymentCompleted DateTime?
+  paymentNotes     String?
+  deposit          Boolean        @default(false)
+  refundedAmount   Float          @default(0.0)
+  stripeId         String?        @unique()
+  paymentType      PaymentType
+  invoice          Invoice?       @relation(fields: [invoiceNum], references: [invoiceNum])
+  customer         User           @relation("customer", fields: [customerId], references: [id])
+  receiver         User?          @relation("employee", fields: [employeeId], references: [id])
+  refundRecords    RefundRecord[]
 }
 
 model RefundRecord {
@@ -173,6 +186,7 @@ model RefundRecord {
   refundCompleted  DateTime?
   paymentRecordNum Int
   deposit          Boolean         @default(false)
+  stripeId         String?         @unique()
   refundType       PaymentType
   paymentRecord    PaymentRecord[]
   customer         User            @relation("customer", fields: [customerId], references: [id])
@@ -225,4 +239,74 @@ enum PaymentType {
   CREDIT
   CASH
   CHECK
+  ONBOARDING_CREDIT
+  OVER_THE_PHONE_CREDIT
+  PAYPAL
+}
+
+model Expense {
+  id            String   @id @default(cuid(2))
+  explanation   String
+  amount        Float
+  createdAt     DateTime @default(now())
+  datePurchased DateTime
+  receiptLink   String
+  boxFileId     String
+  employeeId    String
+  vendorId      String
+  employee      User     @relation("employee", fields: [employeeId], references: [id])
+  vendor        User     @relation("vendor", fields: [vendorId], references: [id])
+}
+
+enum States {
+  AL
+  AK
+  AZ
+  AR
+  CA
+  CO
+  CT
+  DE
+  FL
+  GA
+  HI
+  ID
+  IL
+  IN
+  IA
+  KS
+  KY
+  LA
+  ME
+  MD
+  MA
+  MI
+  MN
+  MS
+  MO
+  MT
+  NE
+  NV
+  NH
+  NJ
+  NM
+  NY
+  NC
+  ND
+  OH
+  OK
+  OR
+  PA
+  RI
+  SC
+  SD
+  TN
+  TX
+  UT
+  VT
+  VA
+  WA
+  WV
+  WI
+  WY
 }

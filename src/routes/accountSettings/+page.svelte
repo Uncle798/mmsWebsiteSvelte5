@@ -27,7 +27,6 @@
 
    function setCurrentLeaseId(leaseId:string){
       currentLeaseId = leaseId;
-      console.log("leaseId", leaseId);
       modalSelector = 'leaseEnd';
       globalModalOpen = true;
    }
@@ -45,7 +44,7 @@
 </script>
 <Header title='Settings for {data.user?.givenName}' />
 <FormModal
-   modalOpen={globalModalOpen}
+   bind:modalOpen={globalModalOpen}
 >
    {#snippet content()}
       {#if modalSelector === 'emailVerification'}
@@ -59,7 +58,7 @@
          {/if}
       {/if}
       {#if modalSelector === 'name'}
-         <NameChangeForm data={data.nameForm} bind:nameModalOpen={globalModalOpen} />
+         <NameChangeForm data={data.nameForm} bind:nameModalOpen={globalModalOpen} userId={data.user!.id} />
       {/if}
       {#if modalSelector === 'email'}
          <EmailChangeForm data={data.emailForm} bind:emailModalOpen={globalModalOpen} user={data.user!}/>
@@ -78,7 +77,7 @@
    <div class="flex flex-col sm:flex-row gap-2">
       <div>
          {#if data.user}
-               <UserCustomer user={data.user}/>
+            <UserCustomer user={data.user}/>
          {/if}
          {#if data.user?.emailVerified}
          <div class="flex ">

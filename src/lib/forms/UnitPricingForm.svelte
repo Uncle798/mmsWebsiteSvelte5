@@ -8,6 +8,7 @@
 	import Switch from "$lib/formComponents/Switch.svelte";
 	import FormSubmitWithProgress from "$lib/formComponents/FormSubmitWithProgress.svelte";
 	import { onMount } from "svelte";
+	import { humanUnitSize } from "$lib/utils/humanUnitSize";
 
    interface Props {
       data: SuperValidated<Infer<UnitPricingFormSchema>>;
@@ -17,6 +18,7 @@
       classes?: string;
    }
    let { data, unitPricingFormModalOpen=$bindable(false), size, oldPrice, classes}:Props = $props();
+   // svelte-ignore state_referenced_locally
    let { form, message, errors, constraints, enhance, delayed, timeout} = superForm(data, {
       onChange(event) {
          if(event.target){
@@ -59,7 +61,7 @@
 <div class={classes}>
    <FormMessage message={$message} />
    <form action="/forms/unitPricingForm" method="POST" use:enhance>
-      <p class="">Change all {size.replace(/^0+/gm,'').replace(/x0/gm,'x')} units from ${oldPrice} to </p>
+      <p class="">Change all {humanUnitSize(size)} units from ${oldPrice} to </p>
       <NumberInput
          bind:value={$form.price}
          errors={$errors.price}
@@ -69,7 +71,7 @@
          classes='w-32'
          placeholder={oldPrice.toString()}
       />
-      <div class="flex flex-col sm:flex-row">
+      <div class="flex flex-col sm:flex-row gap-2 my-2">
          <Switch
             bind:checked={$form.changeDeposit}
             name='changeDeposit'

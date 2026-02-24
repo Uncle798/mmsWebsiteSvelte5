@@ -2,7 +2,7 @@
    import { fade } from 'svelte/transition';
    import type { PageData } from './$types';
    import UserEmployee from '$lib/displayComponents/UserEmployee.svelte';
-   import type { Invoice, User } from '@prisma/client';
+   import type { Invoice, User } from '../../../generated/prisma/browser';
    import InvoiceEmployee from '$lib/displayComponents/InvoiceEmployee.svelte';
    import Header from '$lib/Header.svelte';
    import Pagination from '$lib/displayComponents/Pagination.svelte';
@@ -110,7 +110,7 @@
                height='h-[180px]'
             >
                {#snippet content()}
-                  <div class="mt-8">
+                  <div class="mt-8 flex flex-row">
                      <Search data={data.searchForm} bind:search={search} searchType='invoice number' classes='m-1 sm:m-2 '/>
                      <Search data={data.searchForm} bind:search={nameSearch} searchType='Customer' classes='m-1 sm:m-2 '/>
                      <DateSearchForm

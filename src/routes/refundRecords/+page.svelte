@@ -3,7 +3,7 @@
 	import UserEmployee from '$lib/displayComponents/UserEmployee.svelte';
 	import Search from '$lib/forms/Search.svelte';
 	import type { PageData } from './$types';
-	import type { RefundRecord, User } from '@prisma/client';
+	import type { RefundRecord, User } from '../../generated/prisma/browser';
 	import Pagination from '$lib/displayComponents/Pagination.svelte';
 	import Revenue from '$lib/displayComponents/Revenue.svelte';
 	import Header from '$lib/Header.svelte';

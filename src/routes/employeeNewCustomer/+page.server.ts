@@ -4,7 +4,7 @@ import { valibot } from 'sveltekit-superforms/adapters';
 import { emailVerificationFormSchema } from '$lib/formSchemas/emailVerificationFormSchema';
 import { registerFormSchema } from '$lib/formSchemas/registerFormSchema';
 import { prisma } from '$lib/server/prisma';
-import type { User } from '@prisma/client';
+import type { User } from '../../generated/prisma/client';
 
 export const load = (async (event) => {
    const registerForm = await superValidate(valibot(registerFormSchema));

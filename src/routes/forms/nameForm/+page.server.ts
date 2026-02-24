@@ -28,7 +28,7 @@ export const actions: Actions = {
         }
         await prisma.user.update({
             where:{
-                id: event.locals.user?.id
+                id: nameForm.data.userId
             },
             data:{
                 givenName: nameForm.data.givenName,

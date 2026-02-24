@@ -1,6 +1,6 @@
 // See https://svelte.dev/docs/kit/types#app.d.ts
 
-import type { Session, User } from "@prisma/client";
+import type { Session, User } from "./generated/prisma/client";
 
 // for information about these interfaces
 declare global {

@@ -5,7 +5,7 @@ import { magicLinkFormSchema } from '$lib/formSchemas/magicLinkFormSchema';
 import { ratelimit } from '$lib/server/rateLimit';
 import { generateMagicLink } from '$lib/server/authUtils';
 import { prisma } from '$lib/server/prisma';
-import { sendMagicLinkEmail } from '$lib/server/mailtrap';
+import { sendMagicLinkEmail } from "$lib/server/mailtrap/sendMagicLinkEmail";
 import { PUBLIC_COMPANY_EMAIL } from '$env/static/public';
 
 export const load = (async (event) => {

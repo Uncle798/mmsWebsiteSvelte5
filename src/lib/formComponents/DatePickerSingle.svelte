@@ -9,12 +9,12 @@
       classes?: string;
       errors?: string[];
       constraints?: InputConstraint;
-      value: Date;
-      name: string
+      value: Date | undefined;
+      name: string;
+      placeholder?: string
    }
-   let { maxDate, minDate, label, value=$bindable(), errors, constraints, name, classes }:Props = $props();
+   let { maxDate, minDate, label, value=$bindable(), errors, constraints, name, placeholder, classes }:Props = $props();
    onMount(() => {
-      console.log(value);
       if(value){
          dateValue.push(parseDate(value));
       }
@@ -33,6 +33,7 @@
       class='gap-0!'
       numOfMonths={1}
       {name}
+      {placeholder}
    > 
       <DatePicker.Label>{label}</DatePicker.Label>
       <DatePicker.Control>
@@ -40,8 +41,8 @@
          <DatePicker.Trigger />
       </DatePicker.Control>
       <Portal>
-         <DatePicker.Positioner>
-            <DatePicker.Content>
+         <DatePicker.Positioner >
+            <DatePicker.Content class='z-50'>
                <DatePicker.View view='day'>
                      <DatePicker.Context>
                         {#snippet children(date)}
@@ -78,6 +79,32 @@
                               </DatePicker.Table>
                            {/snippet}
                         </DatePicker.Context>
+               </DatePicker.View>
+               <DatePicker.View view="month">
+					<DatePicker.Context>
+                     {#snippet children(datePicker)}
+                        <DatePicker.ViewControl>
+                           <DatePicker.PrevTrigger />
+                           <DatePicker.ViewTrigger>
+                              <DatePicker.RangeText />
+                           </DatePicker.ViewTrigger>
+                           <DatePicker.NextTrigger />
+                        </DatePicker.ViewControl>
+                        <DatePicker.Table>
+                           <DatePicker.TableBody>
+                              {#each datePicker().getMonthsGrid({ columns: 4, format: 'short' }) as months, id (id)}
+                                 <DatePicker.TableRow>
+                                    {#each months as month, id (id)}
+                                       <DatePicker.TableCell value={month.value}>
+                                          <DatePicker.TableCellTrigger>{month.label}</DatePicker.TableCellTrigger>
+                                       </DatePicker.TableCell>
+                                    {/each}
+                                 </DatePicker.TableRow>
+                              {/each}
+                           </DatePicker.TableBody>
+                        </DatePicker.Table>
+                     {/snippet}
+                  </DatePicker.Context>
                </DatePicker.View>
                <DatePicker.View view='year'>
                   <DatePicker.Context>

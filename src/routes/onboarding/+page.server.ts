@@ -3,13 +3,18 @@ import { superValidate } from 'sveltekit-superforms';
 import type { PageServerLoad } from './$types';
 import { valibot } from 'sveltekit-superforms/adapters';
 import { onboardingExistingLeaseSchema } from '$lib/formSchemas/onboardingExistingLeaseSchema';
-import { registerFormSchema } from '$lib/formSchemas/registerFormSchema';
-import { addressFormSchema } from '$lib/formSchemas/addressFormSchema';
-import type { Address, User, Lease, PropertyWithLien } from '@prisma/client';
+import { onboardingAddressFormSchema } from '$lib/formSchemas/onboardingAddressFormSchema';
+import type { Address, User, Lease, PropertyWithLien } from '../../generated/prisma/client';
 import { propertySubjectToLienSchema } from '$lib/formSchemas/propertySubjectToLienSchema';
 import { alternativeContactFormSchema } from '$lib/formSchemas/alternativeContactFormSchema';
+import { redirect } from '@sveltejs/kit';
+import { onboardingRegisterFormSchema } from '$lib/formSchemas/onboardingRegisterFormSchema';
+import { userSort } from '$lib/utils/userSort';
 
 export const load = (async (event) => {
+   if(!event.locals.user?.admin){
+      redirect(302, '/login?toast=admin');
+   }
    const userId = event.url.searchParams.get('userId');
    const addressId = event.url.searchParams.get('addressId');
    const leaseId = event.url.searchParams.get('leaseId');
@@ -33,6 +38,7 @@ export const load = (async (event) => {
       }
    })
    let customer:User | null = null;
+   let address:Address | null = null;
    if(userId){
       customer = await prisma.user.findUnique({
          where: {
@@ -40,7 +46,6 @@ export const load = (async (event) => {
          }
       })
    }
-   let address:Address | null = null;
    if(addressId){
       address = await prisma.address.findUnique({
          where: {
@@ -51,6 +56,8 @@ export const load = (async (event) => {
    let lease:Lease | null = null;
    let properties:PropertyWithLien[] | null = null;
    let lienHolderAddresses:Address[] = [];
+   let alternativeContacts:User[] = []; 
+   let alternativeAddresses:Address[] = [];
    const lienHolderContacts:User[] = [];
    if(leaseId){
       lease = await prisma.lease.findUnique({
@@ -60,9 +67,35 @@ export const load = (async (event) => {
       })
       properties = await prisma.propertyWithLien.findMany({
          where: {
-         leaseId,
+            leaseId,
          },
       });
+      alternativeContacts = await prisma.user.findMany({
+         where: {
+            leaseAlternativeContacts: {
+               some: {
+                  leaseId: lease?.leaseId
+               }
+            }
+         }
+      })
+      for(const altContact of alternativeContacts){
+         const address = await prisma.address.findFirst({
+            where: {
+               AND: [
+                  {
+                     userId: altContact.id
+                  },
+                  {
+                     softDelete: false
+                  }
+               ]
+            }
+         });
+         if(address){
+            alternativeAddresses.push(address)
+         }
+      }
       if(properties){
          for(const property of properties){
             const address = await prisma.address.findUnique({
@@ -86,12 +119,31 @@ export const load = (async (event) => {
    }
    const alternativeContactForm = await superValidate(valibot(alternativeContactFormSchema));
    let propertySubjectToLienForm = null;
-   console.log(lien);
    if(lien === 'true'){
       propertySubjectToLienForm = await superValidate(valibot(propertySubjectToLienSchema));
    }
-   const registerForm = await superValidate(valibot(registerFormSchema));
-   const addressForm = await superValidate(valibot(addressFormSchema));
+   let customers:User[] = [];
+   if(!userId){
+      customers = await prisma.user.findMany({
+         where: {
+            AND: [
+               {employee: false},
+               {alternative: false},
+            ]
+         },
+      })
+      customers = userSort(customers)
+   }
+   let existingAddresses:Address[] = [];
+   if(userId && !addressId){
+      existingAddresses = await prisma.address.findMany({
+         where: {
+            userId
+         }
+      })
+   }
+   const onboardingRegisterForm = await superValidate(valibot(onboardingRegisterFormSchema));
+   const onboardingAddressForm = await superValidate(valibot(onboardingAddressFormSchema));
    const onboardingExistingLeaseForm = await superValidate(valibot(onboardingExistingLeaseSchema));
    return { 
       units, 
@@ -101,8 +153,12 @@ export const load = (async (event) => {
       properties,
       lienHolderAddresses,
       lienHolderContacts,
-      registerForm, 
-      addressForm, 
+      alternativeContacts,
+      alternativeAddresses,
+      customers,
+      existingAddresses,
+      onboardingRegisterForm, 
+      onboardingAddressForm, 
       onboardingExistingLeaseForm, 
       propertySubjectToLienForm,
       alternativeContactForm

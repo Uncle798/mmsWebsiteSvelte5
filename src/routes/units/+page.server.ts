@@ -10,6 +10,7 @@ import { leaseEndFormSchema } from "$lib/formSchemas/leaseEndFormSchema";
 import type { PageServerLoad, Actions } from "./$types";
 
 import pricingData from "$lib/server/pricingData";
+import { changeDepositFormSchema } from "$lib/formSchemas/changeDepositFormSchema";
 
 export const load:PageServerLoad = async (event) =>{ 
    if(!event.locals.user){
@@ -19,9 +20,9 @@ export const load:PageServerLoad = async (event) =>{
       throw redirect(302, '/units/available')
    }
    const unitPricingForm = await superValidate(valibot(unitPricingFormSchema), {id: 'pricingFrom'});
-   const unitNotesForm = await superValidate(valibot(unitNotesFormSchema), {id: 'unitNotesForm'});
    const leaseEndForm = await superValidate(valibot(leaseEndFormSchema));
    const searchForm = await superValidate(valibot(searchFormSchema));
+   const changeDepositForm = await superValidate(valibot(changeDepositFormSchema));
    const leases =  prisma.lease.findMany({
       where: {
          leaseEnded: null
@@ -34,6 +35,9 @@ export const load:PageServerLoad = async (event) =>{
          num: 'asc'
       }
    });
+   const unitNotesForms = await Promise.all((await prisma.unit.findMany()).map(async (unit) => {
+      return await superValidate(valibot(unitNotesFormSchema), {id: unit.num});
+   }));
    const sizes:string[] = []
    for(const datum of pricingData){
       if(datum.size !== 'ours'){
@@ -44,8 +48,9 @@ export const load:PageServerLoad = async (event) =>{
       units,
       leases, 
       customers,
-      unitNotesForm,
+      unitNotesForms,
       unitPricingForm,
+      changeDepositForm,
       leaseEndForm,
       searchForm,
       addresses,

@@ -4,7 +4,7 @@
 	import Search from '$lib/forms/Search.svelte';
    import dayjs from 'dayjs';
    import type { PageData } from './$types';
-   import type { RefundRecord } from '@prisma/client'
+   import type { RefundRecord } from '../../../../generated/prisma/browser'
    import DateSearch from '$lib/forms/DateSearch.svelte';
    import Pagination from '$lib/displayComponents/Pagination.svelte';
    import Revenue from '$lib/displayComponents/Revenue.svelte';

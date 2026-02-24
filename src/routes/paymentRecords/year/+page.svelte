@@ -35,20 +35,22 @@
          }}
       />
    {/if}
-   {#if navDelayed}
-      <ProgressRing  
-         value={null} 
-         {@attach () => {
-            setTimeout(() => {
-               navDelayed = false;
-               navTimeout = true;
-            }, 800)
-         }}
-      />
-   {/if}
-   {#if navTimeout}
-      <ProgressLine 
-         value={null}
-      />
-   {/if}
+   <div class="m-1 mt-2">
+      {#if navDelayed}
+         <ProgressRing  
+            value={null} 
+            {@attach () => {
+               setTimeout(() => {
+                  navDelayed = false;
+                  navTimeout = true;
+               }, 800)
+            }}
+         />
+      {/if}
+      {#if navTimeout}
+         <ProgressLine 
+            value={null}
+         />
+      {/if}
+   </div>
 </div>

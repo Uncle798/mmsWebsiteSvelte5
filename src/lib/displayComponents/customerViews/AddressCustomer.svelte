@@ -1,11 +1,11 @@
 <script lang="ts">
-	import type { Address } from "@prisma/client";
+	import type { Address } from "../../../generated/prisma/browser";
    interface Props {
       address: Address;
       classes?: string;
    }
    let { address = $bindable(), classes }:Props = $props()
-   const formattedPhone =  + address.phoneNum1Country + ' (' + address.phoneNum1.substring(0,3) + ') ' + address.phoneNum1.substring(3,6) + '-' + address.phoneNum1.substring(6,10);
+   const formattedPhone = address.phoneNum1Country + ' (' + address.phoneNum1?.substring(0,3) + ') ' + address.phoneNum1?.substring(3,6) + '-' + address.phoneNum1?.substring(6,10);
 </script>
 
 <div class="{classes}">
@@ -13,6 +13,18 @@
    {#if address.address2}
       <p>{address.address2}</p>
    {/if}
-   <p>{address.city}, {address.state}, {address.postalCode}</p>
-   <div>{formattedPhone}</div>
+   <p>
+      {#if address.city}
+         {address.city}, 
+      {/if}
+      {#if address.state}
+         {address.state},
+      {/if}
+      {#if address.postalCode}
+         {address.postalCode}
+      {/if}
+   </p>
+   {#if address.phoneNum1}   
+      <div>{formattedPhone}</div>
+   {/if}
 </div>

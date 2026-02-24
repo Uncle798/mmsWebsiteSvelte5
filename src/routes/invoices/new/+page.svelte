@@ -4,7 +4,6 @@
 	import UserEmployee from '$lib/displayComponents/UserEmployee.svelte';
    import NewInvoiceForm from '$lib/forms/NewInvoiceForm.svelte';
 	import Header from '$lib/Header.svelte';
-   import FormMessage from '$lib/formComponents/FormMessage.svelte';
    import type { PageData } from './$types';
    import { fade } from 'svelte/transition';
 	import AddressForm from '$lib/forms/AddressForm.svelte';
@@ -33,7 +32,7 @@
    </FormModal>
       <div class="m-2 rounded-lg border border-primary-50-950 grid sm:grid-cols-2">
          {#if data.lease}
-            <LeaseEmployee lease={data.lease} classes='p-2'/>
+            <LeaseEmployee lease={data.lease} classes='p-2' open={true} />
          {/if}
          <div class="p-2">
             <UserEmployee user={data.customer} />

@@ -1,3 +1,10 @@
-import { PrismaClient } from '@prisma/client';
+import { POSTGRES_PRISMA_URL } from '$env/static/private';
+import { PrismaClient } from '../../generated/prisma/client';
+import { PrismaNeon} from '@prisma/adapter-neon'
 
-export const prisma = new PrismaClient({});
+const adapter = new PrismaNeon({
+   connectionString: POSTGRES_PRISMA_URL
+});
+export const prisma = new PrismaClient({
+   adapter 
+});

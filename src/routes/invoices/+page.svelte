@@ -2,19 +2,17 @@
    import { fade } from 'svelte/transition';
    import type { PageData } from './$types';
    import UserEmployee from '$lib/displayComponents/UserEmployee.svelte';
-   import type { Invoice, User } from '@prisma/client';
+   import type { Invoice, User } from '../../generated/prisma/browser';
    import InvoiceEmployee from '$lib/displayComponents/InvoiceEmployee.svelte';
    import Header from '$lib/Header.svelte';
    import Pagination from '$lib/displayComponents/Pagination.svelte';
    import Placeholder from '$lib/displayComponents/Placeholder.svelte';
    import Search from '$lib/forms/Search.svelte';
-   import DateSearch from '$lib/forms/DateSearch.svelte';
    import dayjs from 'dayjs';
    import utc from 'dayjs/plugin/utc'
    import Revenue from '$lib/displayComponents/Revenue.svelte';
    import Address from '$lib/displayComponents/AddressEmployee.svelte';
    import { goto, onNavigate } from '$app/navigation';
-   import { PanelTopClose, SearchIcon } from 'lucide-svelte';
 	import EmailCustomer from '$lib/EmailCustomer.svelte';
    import DownloadPdfButton from '$lib/DownloadPDFButton.svelte';
 	import { onMount } from 'svelte';
@@ -23,6 +21,9 @@
    import ProgressLine from '$lib/displayComponents/ProgressLine.svelte';
 	import SearchDrawer from '$lib/displayComponents/Modals/SearchDrawer.svelte';
 	import DateSearchForm from '$lib/forms/DateSearchForm.svelte';
+	import Button from '$lib/core/Button.svelte';
+	import FormModal from '$lib/displayComponents/Modals/FormModal.svelte';
+	import InvoiceChangeForm from '$lib/forms/InvoiceChangeForm.svelte';
 
    dayjs.extend(utc)
    let { data }: { data: PageData } = $props();
@@ -63,7 +64,7 @@
    let searchedInvoices = $derived((invoices:Invoice[]) => invoices.filter((invoice) => invoice.invoiceNum.toString().includes(search)));
    let dateSearchedInvoices = $derived((invoices:Invoice[]) => invoices.filter((invoice) => {
       if(!startDate || !endDate){
-         return
+         return invoice;
       }
       return invoice.invoiceCreated >= startDate && invoice.invoiceCreated <= endDate
    }))
@@ -161,8 +162,7 @@
          {/if}
       </div> 
       <Placeholder numCols={1} numRows={size} heightClass='h-40' classes='z-0'/>
-   </div>
-   
+   </div> 
    {:then invoices}
    {#await data.customers}
       <Header title='Loading customers' />
@@ -177,14 +177,12 @@
          </div>
          <Placeholder numCols={1} numRows={size} heightClass='h-40'/>
       {:then addresses}
-         {#if invoices.length >0}
             <Header title='All invoices' />
             <Revenue 
                label="Total invoiced (not including deposits)" 
-               amount={totalRevenue(searchedInvoices(dateSearchedInvoices(invoices)))} 
+               amount={totalRevenue(searchedInvoices(invoices))} 
                classes='bg-tertiary-50-950 w-full rounded-b-lg fixed top-11 sm:top-8 p-2 z-40'
             />
-
             <SearchDrawer
                bind:modalOpen={searchDrawerOpen}
                height='h-[160px]'
@@ -205,24 +203,26 @@
                         }}
                      />
                   </div>
-                     <button class="btn preset-filled-primary-50-950 h-8" onclick={()=> {
-                        sortBy = !sortBy;
-                        searchDrawerOpen = false;
-                     }}>
-                        Sort by date {sortBy? 'starting earliest' : 'starting latest'}
-                     </button>
+                     <Button
+                        label='Sort by date {sortBy? 'starting earliest' : 'starting latest'}'
+                        type='button'
+                        onClick={() => {
+                           sortBy = !sortBy;
+                           searchDrawerOpen = false;
+                        }}
+                     />
                {/snippet}
             </SearchDrawer>
             <div class="grid grid-cols-1 sm:m-2 m-1 gap-2 mt-28 sm:mt-20 mb-8 sm:mb-8" in:fade={{duration:600}} out:fade={{duration:0}}>
-               {#each slicedInvoices(sortedByDate(dateSearchedInvoices(searchedInvoices(searchByUser(invoices, currentUsers(customers)))))) as invoice}  
+               {#each slicedInvoices(sortedByDate(searchedInvoices(searchByUser(invoices, currentUsers(customers))))) as invoice}  
                {@const customer = customers.find((customer) => customer.id === invoice.customerId)}
                   <div class="sm:grid sm:grid-cols-2 border-2 border-primary-50-950 rounded-lg ">
                      {#if customer}
                      <div>
                         <InvoiceEmployee {invoice} classes=' px-2' />
-                        <div class="flex flex-col sm:flex-row">
+                        <div class="flex flex-col sm:flex-row gap-2 m-2">
                            {#if invoice.invoiceAmount > invoice.amountPaid}
-                              <a href="/paymentRecords/new?invoiceNum{invoice.invoiceNum}" class="btn preset-filled-primary-50-950">Make a payment record for this invoice</a>
+                              <a href="/paymentRecords/new?invoiceNum{invoice.invoiceNum}" class="btn preset-filled-primary-50-950 h-8 ">Make a payment record for this invoice</a>
                            {/if}
                            {#if customer?.email && customer.emailVerified}
                               <EmailCustomer
@@ -230,19 +230,13 @@
                                  recordNum={invoice.invoiceNum}
                                  buttonText='Email invoice'
                                  apiEndPoint='/api/sendInvoice'
-                                 classes='my-2 m-2'
+                                 classes=''
                               />
                            {/if}
                            <DownloadPdfButton
                               recordType='invoiceNum'
                               num={invoice.invoiceNum}
-                              classes='mx-2 mb-2'
-                           />
-                           <EmailCustomer
-                              recordNum={invoice.invoiceNum}
-                              apiEndPoint='/api/sendInvoice'
-                              emailAddress={customer.email!}
-                              buttonText='Email invoice to customer'
+                              classes=''
                            />
                         </div>
                      </div>
@@ -258,7 +252,6 @@
                {/each}
                <Pagination bind:pageNum={pageNum} bind:size={size} array={searchedInvoices(searchByUser(invoices, currentUsers(customers)))} label='invoices' />
             </div>
-         {/if}
       {/await}
    {/await}
 {/await}

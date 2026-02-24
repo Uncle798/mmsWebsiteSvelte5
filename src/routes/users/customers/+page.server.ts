@@ -7,6 +7,9 @@ import { userNotesFormSchema } from '$lib/formSchemas/userNotesFormSchema';
 import { leaseEndFormSchema } from '$lib/formSchemas/leaseEndFormSchema';
 import { unitNotesFormSchema } from '$lib/formSchemas/unitNotesFormSchema';
 import { searchFormSchema } from '$lib/formSchemas/searchFormSchema';
+import { newInvoiceFormSchema } from '$lib/formSchemas/newInvoiceFormSchema';
+import { registerFormSchema } from '$lib/formSchemas/registerFormSchema';
+import { emailVerificationFormSchema } from '$lib/formSchemas/emailVerificationFormSchema';
 
 export const load = (async (event) => {
    if(!event.locals.user?.employee){
@@ -16,6 +19,9 @@ export const load = (async (event) => {
    const userNotesForm = await superValidate(valibot(userNotesFormSchema));
    const leaseEndForm = await superValidate(valibot(leaseEndFormSchema));
    const unitNotesForm = await superValidate(valibot(unitNotesFormSchema));
+   const newInvoiceForm = await superValidate(valibot(newInvoiceFormSchema));
+   const registerForm = await superValidate(valibot(registerFormSchema));
+   const emailVerificationForm = await superValidate(valibot(emailVerificationFormSchema));
    const customerCount = await prisma.user.count({
       where: {
          customerLeases: {
@@ -25,7 +31,7 @@ export const load = (async (event) => {
          }
       }
    })
-   const customers = prisma.user.findMany({
+   let customers = prisma.user.findMany({
       where: {
          OR:[
             { 
@@ -46,9 +52,6 @@ export const load = (async (event) => {
             }
          ]
       },
-      orderBy: {
-         familyName: 'asc'
-      }
    });
    const leases = prisma.lease.findMany({
       where: {
@@ -129,7 +132,23 @@ export const load = (async (event) => {
       }
    })
    const demoCookie = event.cookies.get('customers');
-   return { customers, leases, userSearchForm, customerCount, addresses, invoices, paymentRecords, userNotesForm, leaseEndForm, unitNotesForm, units, demoCookie };
+   return { 
+      customers, 
+      leases, 
+      userSearchForm, 
+      customerCount, 
+      addresses, 
+      invoices, 
+      paymentRecords, 
+      userNotesForm, 
+      leaseEndForm, 
+      unitNotesForm, 
+      units, 
+      demoCookie, 
+      newInvoiceForm,
+      emailVerificationForm,
+      registerForm,
+   };
 }) satisfies PageServerLoad;
 
 export const actions: Actions = {

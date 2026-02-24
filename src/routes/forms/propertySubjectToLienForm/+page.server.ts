@@ -10,15 +10,15 @@ import { prisma } from '$lib/server/prisma';
 export const actions: Actions = {
    default: async (event) => {
       if(!event.locals.user){
-         redirect(302, '/login?toast=unauthorized')
+         return redirect(302, '/login?toast=unauthorized')
       }
       const formData = await event.request.formData();
       const propertySubjectToLienForm = await superValidate(formData, valibot(propertySubjectToLienSchema));
-      console.log(propertySubjectToLienForm);
       if(!propertySubjectToLienForm.valid){
+         console.error(propertySubjectToLienForm)
          return message(propertySubjectToLienForm, 'Form not valid');
       }
-      const { success, reset } = await ratelimit.customerForm.limit(event.locals.user?.id);
+      const { success, reset } = await ratelimit.customerForm.limit(event.locals.user.id);
       if(!success){
          const timeRemaining = Math.floor((reset - Date.now()) / 1000);
          return message(propertySubjectToLienForm, `Please wait ${timeRemaining} seconds before trying again`)
@@ -58,8 +58,14 @@ export const actions: Actions = {
       const leaseId = event.url.searchParams.get('leaseId');
       const userId = event.url.searchParams.get('userId');
       const addressId = event.url.searchParams.get('addressId');
+      const invoiceNum = event.url.searchParams.get('invoiceNum');
+      const propertyIds = event.url.searchParams.getAll('propertyId');
+      let redirectUrl = `${redirectTo}?leaseId=${leaseId}&userId=${userId}&addressId=${addressId}&propertyId=${property.id}&invoiceNum=${invoiceNum}`
+      for(const propertyId of propertyIds){
+         redirectUrl += `&propertyId=${propertyId}`
+      }
       if(redirectTo){
-         redirect(303, `/${redirectTo}?leaseId=${leaseId}&userId=${userId}&addressId=${addressId}&propertyId=${property.id}`)
+         redirect(303, redirectUrl)
 
       }
    }

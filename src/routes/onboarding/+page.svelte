@@ -4,25 +4,58 @@
 	import PropertyWithLien from '$lib/displayComponents/PropertyWithLien.svelte';
 	import UserAdmin from '$lib/displayComponents/UserAdmin.svelte';
 	import UserEmployee from '$lib/displayComponents/UserEmployee.svelte';
-	import AddressForm from '$lib/forms/AddressForm.svelte';
+	import OnboardingAddressForm from '$lib/forms/OnboardingAddressForm.svelte';
 	import AlternativeContactForm from '$lib/forms/AlternativeContactForm.svelte';
 	import OnboardingExistingLease from '$lib/forms/OnboardingExistingLease.svelte';
 	import PropertySubjectToLienForm from '$lib/forms/PropertySubjectToLienForm.svelte';
-	import RegisterForm from '$lib/forms/RegisterForm.svelte';
 	import Header from '$lib/Header.svelte';
    import type { PageProps } from './$types';
+	import Combobox from '$lib/formComponents/Combobox.svelte';
+	import { goto } from '$app/navigation';
+	import { page } from '$app/state';
+	import OnboardingRegisterForm from '$lib/forms/OnboardingRegisterForm.svelte';
 
    let { data }: PageProps = $props();
+   let customerComboboxData = $derived(data.customers.map((customer) => ({
+      label: customer.organizationName ? `${customer.organizationName} (${customer.email})` :  `${customer.givenName} ${customer.familyName} (${customer.email})`,
+      value: customer.id
+   })));
+   let addressComboboxData = $derived(data.existingAddresses.map((address) => ({
+      label: `${address.address1} ${address.city} ${address.state} ${address.postalCode}`,
+      value: address.addressId
+   })));
+   const url = page.url
 </script>
 
 <Header title='Input Lease Details' />
-<div class="mt-10 mx-2">
+<div class="mt-14 sm:mt-10 mx-2 mb-8">
    {#if !data.customer}  
-      <RegisterForm data={data.registerForm} formType='employee' redirectTo='onboarding'/>
+      <OnboardingRegisterForm data={data.onboardingRegisterForm} formType='employee' redirectTo='onboarding'/>
+      {#if customerComboboxData.length > 0}
+         <Combobox
+            data={customerComboboxData}
+            label='or chose current customer'
+            onValueChange={(e) => {
+               goto(`/onboarding?userId=${e.value[0]}`)
+            }}
+         />
+      {/if}
    {:else}
       <UserAdmin user={data.customer}/>
       {#if !data.address}
-         <AddressForm data={data.addressForm} userId={data.customer.id} redirectTo='onboarding'/>
+         <OnboardingAddressForm data={data.onboardingAddressForm} userId={data.customer.id} redirectTo='onboarding' />
+         {#if addressComboboxData.length > 0 }
+            <Combobox
+               data={addressComboboxData}
+               label='or choose existing address'
+               onValueChange={(e) => {
+                  const userId = url.searchParams.get('userId');
+                  if(userId){
+                     goto(`/onboarding?userId=${userId}&addressId=${e.value[0]}`)
+                  }
+               }}
+            />
+         {/if}
       {:else}
          <AddressEmployee address={data.address} />
          {#if !data.lease}
@@ -33,12 +66,28 @@
                address={data.address} 
             />
          {:else}
-            <LeaseEmployee lease={data.lease} />
+            <div>
+               <LeaseEmployee lease={data.lease} />
+               {#each data.alternativeContacts as user}
+               {@const address = data.alternativeAddresses.find((address) => address.userId === user.id)}
+                  <UserEmployee {user} />
+                  {#if address}
+                     <AddressEmployee {address} />
+                  {/if}
+               {/each}
+               <a href="/onboarding" class="btn preset-filled-primary-50-950">Create another lease</a>
+            </div>
             {#if data.alternativeContactForm}
                <div>
                   <h3 class="h3">Enter the alternative contact info</h3>
                </div>
-               <AlternativeContactForm data={data.alternativeContactForm} />
+               <AlternativeContactForm
+                  data={data.alternativeContactForm}
+                  addressId={data.address.addressId}
+                  userId={data.customer.id}
+                  redirectTo='onboarding'
+
+               />
             {/if}
             {#if data.propertySubjectToLienForm}
                <PropertySubjectToLienForm 

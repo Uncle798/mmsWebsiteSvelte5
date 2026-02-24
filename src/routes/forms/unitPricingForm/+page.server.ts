@@ -5,6 +5,7 @@ import { ratelimit } from '$lib/server/rateLimit';
 import { prisma } from '$lib/server/prisma';
 import { error, redirect } from '@sveltejs/kit';
 import { unitPricingFormSchema } from '$lib/formSchemas/unitPricingFormSchema';
+import { humanUnitSize } from '$lib/utils/humanUnitSize';
 
 export const actions: Actions = {
    default: async (event) => {
@@ -32,11 +33,11 @@ export const actions: Actions = {
       }
       if(unitPricingForm.data.price < unit?.advertisedPrice && unitPricingForm.data.lowerPrice === false){
          return message(unitPricingForm, `Please select Lower Price to lower the price of all\
-               ${unitPricingForm.data.size.replace(/^0+/gm,'').replace(/x0/gm,'x')} units.` )
+               ${humanUnitSize(unitPricingForm.data.size)} units.` )
       }
       if(unitPricingForm.data.price === unit?.advertisedPrice && unitPricingForm.data.lowerPrice === false){
          return message(unitPricingForm, 
-            `No change in price for ${unitPricingForm.data.size.replace(/^0+/gm,'').replace(/x0/gm,'x')} units.` )
+            `No change in price for ${humanUnitSize(unitPricingForm.data.size)} units.` )
       }
       let deposit = unit.advertisedPrice;
       if(unitPricingForm.data.changeDeposit){

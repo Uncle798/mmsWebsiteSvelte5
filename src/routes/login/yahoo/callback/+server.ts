@@ -6,14 +6,21 @@ import { decodeIdToken } from 'arctic';
 import { ObjectParser } from '@pilcrowjs/object-parser';
 import { prisma } from '$lib/server/prisma';
 import { createSession, generateSessionToken, setSessionTokenCookie } from '$lib/server/authUtils';
+import { error } from '@sveltejs/kit';
 
 export const GET: RequestHandler = async (event) => {
-   const storedState = event.cookies.get('yahooOauthState') ?? null
+   const storedState = event.cookies.get('yahooOauthState');
    const code = event.url.searchParams.get('code');
    const state = event.url.searchParams.get('state');
-   const redirectTo = event.cookies.get('redirectTo') ?? null;
-   const unitNum = event.cookies.get('unitNum') ?? null;
-   const invoiceNum = event.cookies.get('invoiceNum') ?? null
+   const redirectTo = event.cookies.get('redirectTo');
+   const unitNum = event.cookies.get('unitNum');
+   const invoiceNum = event.cookies.get('invoiceNum');
+   const oauthError = event.url.searchParams.get('error');
+   if(oauthError){
+      const errorDescription = event.url.searchParams.get('error_description');
+      console.log(oauthError);
+      throw error(500, errorDescription ? errorDescription : '');
+   }
    let response = new Response(null, {status:302, headers:{Location:'/'}});
       if(redirectTo){
       switch (redirectTo) {

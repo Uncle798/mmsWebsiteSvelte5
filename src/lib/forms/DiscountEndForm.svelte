@@ -12,6 +12,7 @@
       classes?: string;
    }
    let { data, discountId, classes }:Props = $props();
+// svelte-ignore state_referenced_locally
    let { form, errors, message, constraints, enhance, delayed, timeout} = superForm(data, {
       onUpdate(event) {
          invalidateAll();

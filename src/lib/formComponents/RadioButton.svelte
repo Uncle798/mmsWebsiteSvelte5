@@ -7,10 +7,12 @@
       constraints: InputConstraint | undefined;
       groupName: string | null | undefined;
       id: string | undefined;
-      disabled?: boolean 
+      disabled?: boolean;
       classes?: string;
+      onChange?: (e: Event & { currentTarget: EventTarget & HTMLInputElement;}) => void;
+      checked?: boolean;
    }
-   let { value = $bindable(), label, errors, constraints, groupName, id, disabled, classes }:Props = $props();
+   let { value = $bindable(), label, errors, constraints, groupName, id, onChange, checked, disabled, classes }:Props = $props();
 </script>
 <div class="flex mx-2 justify-items-center {classes}">
    <label for={id}><span class="label-text text-center">{label}</span>
@@ -22,6 +24,8 @@
       bind:value={value}
       {...constraints}
       {disabled}
+      onchange={onChange}
+      {checked}
    />
    </label>
    {#if errors}

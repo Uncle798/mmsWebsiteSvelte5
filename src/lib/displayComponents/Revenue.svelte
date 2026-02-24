@@ -1,4 +1,5 @@
 <script lang='ts'>
+   import { currencyFormatter } from "$lib/utils/currencyFormatter";
    
    interface Props {
       amount: number;
@@ -6,8 +7,7 @@
       classes?: string;
    }
    let { amount, label, classes}:Props = $props()
-   const currencyFormatter = new Intl.NumberFormat('en-US', {style:'currency', currency:'USD'});
 </script>
 <div class="flex {classes}">
-   <div class="">{label}:</div><div class="font-medium mx-2">{currencyFormatter.format(amount)}</div>
+   <div class="">{label}:</div><div class="font-medium mx-2">{currencyFormatter(amount)}</div>
 </div>

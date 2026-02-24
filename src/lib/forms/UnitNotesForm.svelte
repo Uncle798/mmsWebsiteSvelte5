@@ -6,7 +6,7 @@
 	import FormSubmitWithProgress from "$lib/formComponents/FormSubmitWithProgress.svelte";
 	import Switch from "$lib/formComponents/Switch.svelte";
 	import { onMount } from "svelte";
-	import type { Unit } from "@prisma/client";
+	import type { Unit } from "../../generated/prisma/browser";
 	import TextArea from "$lib/formComponents/TextArea.svelte";
 	import { page } from "$app/state";
 
@@ -16,12 +16,12 @@
       unit:Unit
       classes?: string;
    }
-   let { data, unitNotesFormModalOpen, unit, classes }:Props = $props();
+   let { data, unitNotesFormModalOpen = $bindable(), unit, classes }:Props = $props();
    const id = $props.id();
    const url = page.url.pathname;
+   // svelte-ignore state_referenced_locally
    let { form, message, errors, constraints, enhance, delayed, timeout, submit } = superForm(data, {
       onChange(event) {
-         console.log(event);
          if(event.target){
             if(event.path === 'notes'){
                const formName = `${url}/unitNotesForm${unit.num.toString()}`
@@ -43,25 +43,25 @@
    onMount(()=>{
       $form.unavailable = unit.unavailable;
       $form.notes = unit.notes;
-      for(const key in $form){
-         if(key === 'notes'){
-            let fullKey = `${url}/unitNotesForm${unit.num.toString()}:${key}`;
-            const storedValue = sessionStorage.getItem(fullKey)
-            if(storedValue){
-               if(isNaN(parseInt(storedValue, 10))){
-                  if(storedValue === 'true'){
-                     $form[key as keyof typeof $form] = true as never;
-                  } else if(storedValue === 'false'){
-                     $form[key as keyof typeof $form] = false as never;
-                  } else {
-                     $form[key as keyof typeof $form] = storedValue as never;
-                  }
-               } else {
-                  $form[key as keyof typeof $form] = parseInt(storedValue, 10) as never;
-               }
-            }
-         }
-         }
+      // for(const key in $form){
+      //    if(key === 'notes'){
+      //       let fullKey = `${url}/unitNotesForm${unit.num.toString()}:${key}`;
+      //       const storedValue = sessionStorage.getItem(fullKey)
+      //       if(storedValue){
+      //          if(isNaN(parseInt(storedValue, 10))){
+      //             if(storedValue === 'true'){
+      //                $form[key as keyof typeof $form] = true as never;
+      //             } else if(storedValue === 'false'){
+      //                $form[key as keyof typeof $form] = false as never;
+      //             } else {
+      //                $form[key as keyof typeof $form] = storedValue as never;
+      //             }
+      //          } else {
+      //             $form[key as keyof typeof $form] = parseInt(storedValue, 10) as never;
+      //          }
+      //       }
+      //    }
+      // }
    })
 </script>
 <div class="{classes} flex flex-col">
@@ -74,7 +74,7 @@
          label='Notes'
          name='notes'
       />
-      <div class="flex flex-col sm:flex-row gap-2 mt-2 justify-center">
+      <div class="flex flex-row gap-2 mt-2">
          <Switch 
             bind:checked={$form.unavailable}
             name='unavailable'
@@ -85,7 +85,7 @@
             }}
          />
          <input type="hidden" name="unitNum" id="unitNum" value={unit.num} />
-         <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} buttonText='Update notes'/>
+         <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} buttonText='Update notes' classes='mb-2'/>
       </div>
    </form>
 </div>

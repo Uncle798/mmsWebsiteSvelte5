@@ -2,7 +2,7 @@
 	import type { NewInvoiceFormSchema } from "$lib/formSchemas/newInvoiceFormSchema";
 	import type { EmailVerificationFormSchema } from '$lib/formSchemas/emailVerificationFormSchema';
 	import type { RegisterFormSchema } from '$lib/formSchemas/registerFormSchema';
-	import type { Lease, User } from "@prisma/client";
+	import type { Lease, User } from '../../generated/prisma/browser';
 	import { onMount } from "svelte";
 	import { superForm, type Infer, type SuperValidated } from "sveltekit-superforms";
 	import EmailVerificationForm from "./EmailVerificationForm.svelte";
@@ -23,6 +23,8 @@
 	import { Portal, Tooltip, useTooltip } from "@skeletonlabs/skeleton-svelte";
 	import TextArea from "$lib/formComponents/TextArea.svelte";
 	import DatePickerSingle from "$lib/formComponents/DatePickerSingle.svelte";
+	import { humanUnitNum } from "$lib/utils/humanUnitNum";
+	import { invoiceNoteRent } from "$lib/utils/invoiceNoteRent";
    
    interface Props {
       data: SuperValidated<Infer<NewInvoiceFormSchema>>;
@@ -33,6 +35,7 @@
       customer?: User;
       leases?: Lease[];
       lease?: Lease;
+      modalOpen?: boolean;
       classes?: string;
    }
    let {
@@ -43,10 +46,12 @@
       customers,
       customer,
       leases, 
-      lease, 
+      lease,
+      modalOpen=$bindable(), 
       classes,
    }:Props = $props();
-   let url = page.url.pathname
+   let url = page.url.pathname;
+   // svelte-ignore state_referenced_locally
    let { form, errors, message, constraints, enhance, delayed, timeout, } = superForm(data, {
       onChange(event) {
          if(event.target){
@@ -57,6 +62,11 @@
             }
          }
       },
+      onUpdated() {
+         if(!$message && !$errors){
+            modalOpen = false;
+         }
+      }
    });
    interface ComboboxData {
       label: string;
@@ -67,7 +77,7 @@
       value: customer.id
    })));
    const leasesComboboxData:ComboboxData[] | undefined = $derived(leases?.map(lease => ({
-      label: lease.unitNum.replace(/^0+/gm, ''),
+      label: humanUnitNum(lease.unitNum),
       value: lease.leaseId
    })));
    const id = $props.id();
@@ -75,26 +85,9 @@
    let registerFormModalOpen = $state(false);
    onMount(()=>{
       $form.invoiceDue=new Date();
-      for(const key in $form){
-         const fullKey = `newInvoiceForm:${key}`;
-         const storedValue = sessionStorage.getItem(fullKey);
-         if(storedValue){
-            if(isNaN(parseInt(storedValue, 10))){
-               if(storedValue === 'true'){
-                  $form[key as keyof typeof $form] = true as never;
-               } else if(storedValue === 'false'){
-                  $form[key as keyof typeof $form] = false as never;
-               } else {
-                  $form[key as keyof typeof $form] = storedValue as never;
-               }
-            } else {
-               $form[key as keyof typeof $form] = parseInt(storedValue, 10) as never;
-            }
-         }
-      }
       if(lease){
          $form.invoiceAmount=lease.price;
-         $form.invoiceNotes=`Rent for unit ${lease.unitNum.replace(/^0+/gm, '')} for ${dayjs().format('MMMM YYYY')}`;
+         $form.invoiceNotes=invoiceNoteRent(lease.unitNum, $form.invoiceDue);
       }
       if(customer){
          $form.customerId=customer.id;
@@ -264,10 +257,12 @@
             maxDate={dayjs().add(1, 'year').toDate()}
             name='invoiceDue'
             label='Invoice Due Date'
+            placeholder='Invoice due date'
          />
          <input type="hidden" name='employeeId' value={employeeId}/>
          <input type="hidden" name="customerId" value={customer?.id} />
-         <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} buttonText='Create Invoice'/>
+         <input type="hidden" name='leaseId' value={lease?.leaseId} />
+         <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} buttonText='Create Invoice' classes='mt-2'/>
       </form>
    {/if}
 </div>

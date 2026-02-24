@@ -9,10 +9,12 @@
    interface Props {
       data: SuperValidated<Infer<NameFormSchema>>;
       nameModalOpen: boolean;
+      userId: string;
       classes?: string;
    }
 
-   let { data, nameModalOpen=$bindable(false), classes }:Props = $props();
+   let { data, nameModalOpen=$bindable(false), userId, classes }:Props = $props();
+   // svelte-ignore state_referenced_locally
    let { form, errors, message, constraints, enhance, delayed, timeout} = superForm(data, {
       onChange(event) {
          if(event.target){
@@ -69,6 +71,7 @@
          placeholder='The Forrest'
          autocomplete='organization'
       />
+      <input type="hidden" value={userId} name="userId">
       <FormProgress delayed={$delayed} timeout={$timeout}/>
    </form>
 </div>

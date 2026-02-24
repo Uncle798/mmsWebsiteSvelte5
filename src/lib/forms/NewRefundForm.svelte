@@ -8,7 +8,7 @@
 	import { onMount } from "svelte";
 	import TextArea from "$lib/formComponents/TextArea.svelte";
    import RadioButton from "$lib/formComponents/RadioButton.svelte";
-	import type { PaymentRecord } from "@prisma/client";
+	import type { PaymentRecord } from '../../generated/prisma/browser';
 	import { page } from "$app/state";
    interface Props {
       data: SuperValidated<Infer<RefundFormSchema>>;
@@ -22,7 +22,8 @@
       paymentRecord,
       classes
    }:Props = $props();
-   const url = page.url.pathname
+   const url = page.url.pathname;
+   // svelte-ignore state_referenced_locally
    let { form, errors, message, constraints, enhance, delayed, timeout} = superForm(data, {
       onChange(event) {
          if(event.target){

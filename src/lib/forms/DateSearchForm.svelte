@@ -1,8 +1,6 @@
 <script lang='ts'>
 	import DatePicker from '$lib/formComponents/DatePickerDual.svelte';
 	import type { DateSearchFormSchema } from '$lib/formSchemas/dateSearchFormSchema';
-	import dayjs from 'dayjs';
-	import { parseDate } from '@skeletonlabs/skeleton-svelte';
 	import { onMount } from 'svelte';
 	import { superForm, type Infer, type SuperValidated } from 'sveltekit-superforms';
    interface Props {
@@ -23,7 +21,7 @@
 		label='Search by date range',
 		classes
 	}: Props = $props();
-
+// svelte-ignore state_referenced_locally
 	let { form, message, enhance, constraints, errors } = superForm(data, {
 	});
 	onMount(() => {

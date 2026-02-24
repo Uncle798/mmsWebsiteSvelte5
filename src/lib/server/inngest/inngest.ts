@@ -2,7 +2,7 @@ import { Inngest } from 'inngest';
 import { prisma } from '../prisma';
 import { schemas } from './types';
 
-export const inngest = new Inngest({id: 'ministorageManagementSoftware', schemas});
+export const inngest = new Inngest({id: 'ministorageManagementSoftware', schemas,});
 
 const unitUnavailableWhileRenting = inngest.createFunction({id: 'setUnitUnavailableWhileRenting'}, {event: 'leaseCreated'}, async({event, step}) => {
    const lease = await step.run('getLease', async () => {

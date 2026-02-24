@@ -1,6 +1,6 @@
 <script lang="ts">
    import type { PageData } from './$types';
-   import type { PaymentRecord, User } from '@prisma/client';
+   import type { PaymentRecord, User } from '../../generated/prisma/browser';
    import Header from '$lib/Header.svelte';
    import PaymentRecordEmployee from '$lib/displayComponents/PaymentRecordEmployee.svelte';
    import Pagination from '$lib/displayComponents/Pagination.svelte';
@@ -10,7 +10,6 @@
    import Placeholder from '$lib/displayComponents/Placeholder.svelte';
    import dayjs from 'dayjs';
    import utc from 'dayjs/plugin/utc'
-   import DateSearch from '$lib/forms/DateSearch.svelte';
    import Revenue from '$lib/displayComponents/Revenue.svelte';  
    import Address from '$lib/displayComponents/AddressEmployee.svelte';
    import RefundForm from '$lib/forms/NewRefundForm.svelte'
@@ -137,7 +136,7 @@
    })
 </script>
 <FormModal
-   modalOpen={modalOpen}
+   bind:modalOpen={modalOpen}
 >  
 {#snippet content()}
    <RefundForm data={data.refundForm} paymentRecord={currentPaymentRecord}/>

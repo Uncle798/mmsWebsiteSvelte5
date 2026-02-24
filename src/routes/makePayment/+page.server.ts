@@ -1,11 +1,9 @@
-import { prisma } from '$lib/server/prisma';
-import { redirect, error } from '@sveltejs/kit';
+import { redirect,  error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { superValidate } from 'sveltekit-superforms';
-import { valibot, } from 'sveltekit-superforms/adapters';
-import { creditCardFormSchema } from '$lib/formSchemas/creditCardFormSchema';
+import { prisma } from '$lib/server/prisma';
+import { stripe } from '$lib/server/stripe';
 
-export const load = (async (event) => {
+export const load:PageServerLoad = (async (event) => {
    if(!event.locals.user){
       redirect(302, '/login?toast=unauthorized')
    }
@@ -18,7 +16,7 @@ export const load = (async (event) => {
    }
    const invoice = await prisma.invoice.findUnique({
       where: {
-         invoiceNum:parseInt(invoiceNum!, 10),
+         invoiceNum:parseInt(invoiceNum, 10),
       }
    })
    if(!invoice){
@@ -26,9 +24,22 @@ export const load = (async (event) => {
    }
    const customer = await prisma.user.findFirst({
       where: {
-         id: invoice.customerId!, 
+         id: invoice.customerId, 
       }
-   })
-   const ccForm = await superValidate(valibot(creditCardFormSchema));
-   return {invoice, newLease, subscription, leaseId, customer, ccForm, };
-}) satisfies PageServerLoad;
+   });
+   if(!customer){
+      throw error(500, 'Customer not found');
+   }
+   const stripeId = event.url.searchParams.get('stripeId');
+   const sessionsList = await stripe.checkout.sessions.list({status:'open'});
+   if(sessionsList){
+      for(const session of sessionsList.data){
+         console.log(session)
+         if(session.customer?.toString() === customer.stripeId){
+            console.log(session)
+            await stripe.checkout.sessions.expire(session.id)
+         }
+      }
+   }
+   return { invoice, stripeId, customer, newLease, subscription, leaseId };
+})

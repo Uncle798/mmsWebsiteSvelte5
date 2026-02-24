@@ -6,7 +6,6 @@ import { ratelimit } from '$lib/server/rateLimit';
 import { valibot } from 'sveltekit-superforms/adapters';
 import { newInvoiceFormSchema } from '$lib/formSchemas/newInvoiceFormSchema';
 
-
 export const actions: Actions = {
    default: async (event) => {
       if(!event.locals.user?.employee){
@@ -22,7 +21,7 @@ export const actions: Actions = {
       if(!newInvoiceForm.valid){
         return message(newInvoiceForm, 'Unable to process')
       }
-      const invoice = await prisma.invoice.create({
+      await prisma.invoice.create({
          data: {
             invoiceAmount: newInvoiceForm.data.invoiceAmount,
             customerId: newInvoiceForm.data.customerId,
@@ -32,6 +31,6 @@ export const actions: Actions = {
             invoiceDue: newInvoiceForm.data.invoiceDue
          }
       })
-      redirect(302, `/invoices/${invoice.invoiceNum}`);
+      return {newInvoiceForm}
    }
 };

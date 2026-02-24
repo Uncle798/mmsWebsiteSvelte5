@@ -34,23 +34,7 @@ export const actions: Actions = {
          error(404)
       }
       if(lease.customerId !== event.locals.user.id && !event.locals.user.employee){
-         return message(leaseEndForm, 'Not your lease')
-      }
-      if(lease.subscriptionId){
-         const response = await event.fetch('/api/elavon/cancelRecurring', {
-            method: "POST",
-            body: JSON.stringify({leaseId: lease.leaseId})
-         })
-         if(response){
-            await prisma.lease.update({
-               where: {
-                  leaseId: lease.leaseId
-               },
-               data: {
-                  subscriptionId: null
-               }
-            })
-         }
+         return message(leaseEndForm, 'Not your lease');
       }
       lease = await prisma.lease.update({
          where: {
@@ -58,6 +42,16 @@ export const actions: Actions = {
          },
          data:{
             leaseEnded: new Date(),
+         }
+      });
+      await prisma.invoice.deleteMany({
+         where: {
+            AND: [
+               { leaseId: lease.leaseId},
+               { invoiceDue: {
+                  gt: new Date()
+               }}
+            ]
          }
       });
       let notes = ''

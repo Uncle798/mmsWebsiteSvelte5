@@ -5,6 +5,7 @@ export const emailFormSchema = v.pipe(
    v.object({
       email: v.pipe(v.string(), v.email()),
       confirmEmail: v.pipe(v.string(), v.email()),
+      userId: v.pipe(v.string(), v.cuid2()),
    }),
    v.rawCheck(({ dataset, addIssue }) => {
       if (dataset.typed) {

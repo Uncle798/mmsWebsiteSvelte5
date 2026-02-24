@@ -14,6 +14,7 @@
       classes?: string;
    }
    let { data, unitNum, customerId, classes }:Props = $props();
+   // svelte-ignore state_referenced_locally
    let { form, errors, message, constraints, enhance, delayed, timeout} = superForm(data, {
       onChange(event) {
          if(event.target){
@@ -52,14 +53,14 @@
    <FormMessage message={$message} />
    <form action='/forms/leaseDiscountForm?userId={customerId}' method="post" use:enhance>
          <TextInput
-         bind:value={$form.code}
-         errors={$errors.code}
-         constraints={$constraints.code}
-         label="Discount Code: (Case Sensitive)"
-         name='code'
-         placeholder='optional'
+            bind:value={$form.code}
+            errors={$errors.code}
+            constraints={$constraints.code}
+            label="Discount Code: (Case Sensitive)"
+            name='code'
+            placeholder='optional'
          />
          <input type="hidden" name="unitNum" value={unitNum} />
-         <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} buttonText="Apply discount"/>
+         <FormSubmitWithProgress delayed={$delayed} timeout={$timeout} buttonText="Apply discount" classes='mt-2'/>
    </form>
 </div>

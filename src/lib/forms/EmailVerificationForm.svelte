@@ -5,6 +5,7 @@
    import FormProgress from "$lib/formComponents/FormSubmitWithProgress.svelte";
    import FormMessage from "$lib/formComponents/FormMessage.svelte";
 	import { onMount } from "svelte";
+	import Button from "$lib/core/Button.svelte";
    
    interface Props {
       data: SuperValidated<Infer<EmailVerificationFormSchema>>; 
@@ -20,6 +21,7 @@
       redirect=$bindable(''),
       classes,
    }:Props = $props();
+   // svelte-ignore state_referenced_locally
    let { form, errors, constraints, message, enhance,  delayed, timeout } = superForm(data, {
       onSubmit(){
       }, 
@@ -30,14 +32,14 @@
    let emailAddress = $state('');
    let mounted = $state(false)
    onMount(async () => {
-      const response = await fetch('/api/sendEmailVerification', {
-         method: 'POST',
-         body: JSON.stringify({userId})
-      })
-      const body = await response.json();
-      if(body.email){
-         emailAddress = body.email
-      }
+      // const response = await fetch('/api/sendEmailVerification', {
+      //    method: 'POST',
+      //    body: JSON.stringify({userId})
+      // })
+      // const body = await response.json();
+      // if(body.email){
+      //    emailAddress = body.email
+      // }
       mounted = true;
    })
    async function resend(){
@@ -70,9 +72,14 @@
          constraints={$constraints.code}
          placeholder='12345678'
          />
-         <FormProgress delayed={$delayed} timeout={$timeout}/>
+         <FormProgress delayed={$delayed} timeout={$timeout} classes='mt-2'/>
       </form>
-      <button class="btn preset-filled-primary-50-950 rounded-lg" onclick={()=>resend()}>Resend email</button>
+      <Button
+         label='Resend email'
+         type='button'
+         onClick={() => resend()}
+         classes='mt-2'
+      />
    {:else}
       Sending verification...
    {/if}

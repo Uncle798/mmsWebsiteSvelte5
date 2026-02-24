@@ -1,6 +1,6 @@
 
 import { generateEmailVerificationRequest } from "$lib/server/authUtils";
-import { sendVerificationEmail } from "$lib/server/mailtrap";
+import { sendVerificationEmail } from "$lib/server/mailtrap/sendVerificationEmail";
 import { prisma } from "$lib/server/prisma";
 import { ratelimit } from "$lib/server/rateLimit";
 import type { RequestHandler } from "@sveltejs/kit";

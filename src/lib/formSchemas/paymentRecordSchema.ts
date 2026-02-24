@@ -1,5 +1,5 @@
 import * as v from 'valibot';
-import { PaymentType } from '@prisma/client';
+import { PaymentType } from '../../generated/prisma/client';
 
 export const paymentRecordSchema = v.object({
    customerId: v.pipe(v.string(), v.cuid2()),

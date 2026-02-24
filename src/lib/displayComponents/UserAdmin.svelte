@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { User } from '@prisma/client';
+	import type { User } from "../../generated/prisma/browser";
 	import { Check } from 'lucide-svelte';
 
 	interface Props {
@@ -26,5 +26,8 @@
 	</span>
 	{#if user.customerNotes}
 		<span>{user.customerNotes}</span>
+	{/if}
+	{#if user.alternative}
+		<span class="font-bold">Alternative Contact</span>
 	{/if}
 </div>

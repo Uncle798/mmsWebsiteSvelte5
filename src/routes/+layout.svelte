@@ -33,8 +33,10 @@
 		{link: '/discounts', label: 'Discounts', toolTip: 'Manage discounts here'},
 		{link: '/users/customers', label: 'Customers', toolTip: 'View all current customers here'},
 		{link: '/leases', label: 'All Leases', toolTip: 'Find every lease old and new here'},
+		{link: '/leases/templates', label: 'Lease templates'},
 		{link: '/invoices', label: 'Invoices', toolTip: 'All invoices, may take a second to load'},
 		{link: '/invoices/new', label: 'New Invoice', toolTip: 'Create a new invoice, the first step in getting paid'},
+		{link: '/invoices/createdToday', label: 'Invoices created today'},
 		{link: '/invoices/unpaid', label: 'Unpaid invoices', toolTip: 'Open invoices'},
 		{link: '/invoices/pastDue', label: 'Past due invoices', toolTip: 'Invoices that are unpaid and past due'},
 		{link: '/invoices/year', label: 'Invoices by year', toolTip: 'If you know what year you\'re looking for this will load faster'},
@@ -47,13 +49,15 @@
 		{link: '/refundRecords/year', label: 'Refunds by year', toolTip: 'If you know what year you\'re looking for this will load faster'},
 		{link: '/employeeNewLease', label:'New lease', toolTip: 'Rent a unit here'},
 		{link: '/employeeNewCustomer', label:'New customer', toolTip: 'Create a new customer'},
+		{link: '/expenses', label: 'Expenses'},
+		{link: '/expenses/new', label: 'New expense'},
 	]
 	let adminLinks:Link[] = [
 		{link: '/users', label:'All Users', toolTip: 'Change the employment status of a user here'},
 		{link: '/onboarding', label: 'Onboarding', toolTip: 'This is for onboarding existing leases'},
 	]
 	beforeNavigate(() =>{
-		mainMenuOpen.open = false
+		mainMenuOpen.open = false;
 	})
 	const formattedPhone = PUBLIC_PHONE.substring(0,1) +'-'+ PUBLIC_PHONE.substring(1,4)+'-'+PUBLIC_PHONE.substring(4,7)+'-'+PUBLIC_PHONE.substring(7);
 </script>
@@ -75,13 +79,13 @@
 			<Portal>
 				<Dialog.Backdrop class="fixed inset-0 bg-surface-50-950/50 transition transition-discrete opacity-0 starting:data-[state=open]:opacity-0 data-[state=open]:opacity-100"/>
 				<Dialog.Positioner class='fixed inset-0 z-41 flex justify-start rounded-none'>
-					<Dialog.Content class="h-screen card bg-surface-100-900 w-[250px] space-y-4 shadow-xl transition transition-discrete opacity-0 -translate-x-full 
+					<Dialog.Content class="h-screen card bg-surface-100-900 w-62 space-y-4 shadow-xl transition transition-discrete opacity-0 -translate-x-full 
 						starting:data-[state=open]:opacity-0 starting:data-[state=open]:-translate-x-full data-[state=open]:opacity-100 data-[state=open]:translate-x-0 rounded-l-none mainMenu">
 						<header class='flex justify-between items-center m-2'>
 							<Dialog.Title class='font-bold text-2xl' >Main Menu</Dialog.Title>
 							<Dialog.CloseTrigger><CircleX aria-label='close'/></Dialog.CloseTrigger>
 						</header>
-						<ul class="list-none">
+						<ul class="list-none overflow-auto max-h-[90vh] mb-8">
 							{#if data.user.employee}
 								{#each employeeLinks as employeeLink}
 									<li class="">
@@ -158,7 +162,7 @@
 			</Portal>
 		</Dialog>
 		<div class="bg-tertiary-50-950 fixed w-screen top-0 left-0 h-12 sm:h-8 text-center font-bold z-30 rounded-b-lg">
-			<div class="fixed top-0 left-[85px] w-[225px] sm:w-screen text-center sm:left-0 text-wrap">
+			<div class="fixed top-0 left-21 w-56 sm:w-screen text-center sm:left-0 text-wrap">
 				<a href="/" class="anchor">{PUBLIC_COMPANY_NAME}</a>
 			</div>
 		</div>
@@ -166,39 +170,41 @@
 {:else}
 	<header>
 		<Dialog>
-			<Dialog.Trigger class='btn bg-primary-50-950 hover:shadow-xl hover:border-2 border-secondary-50-950 fixed top-0 left-0 z-40 h-12 sm:h-8 rounded-tl-none'><Menu aria-label='Main Menu'/></Dialog.Trigger>
+			<Dialog.Trigger class='btn bg-primary-50-950 hover:shadow-xl hover:border-2 border-secondary-50-950 fixed top-0 left-0 z-40 h-8 rounded-tl-none'><Menu aria-label='Main Menu'/></Dialog.Trigger>
 			<Portal>
 				<Dialog.Backdrop class="fixed inset-0 bg-surface-50-950/50 transition transition-discrete opacity-0 starting:data-[state=open]:opacity-0 data-[state=open]:opacity-100"/>
 				<Dialog.Positioner class='fixed inset-0 z-40 flex justify-start'>
-					<Dialog.Content class="h-screen card bg-surface-100-900 w-[200px] p-4 space-y-4 shadow-xl transition transition-discrete opacity-0 -translate-x-full 
+					<Dialog.Content class="h-screen card bg-surface-100-900 w-50 p-4 space-y-4 shadow-xl transition transition-discrete opacity-0 -translate-x-full 
 						starting:data-[state=open]:opacity-0 starting:data-[state=open]:-translate-x-full data-[state=open]:opacity-100 data-[state=open]:translate-x-0 rounded-l-none">
 						<header class="flex justify-between items-center">
 							<Dialog.Title class='text-2xl font-bold'>Main Menu</Dialog.Title>
 							<Dialog.CloseTrigger><CircleX aria-label='close'/></Dialog.CloseTrigger>
 						</header>
-						<ul>
-							{#each customerLinks as link}
-								<li>
-									<a href={link.link}>{link.label}</a>
-								</li>
-							{/each}
-							<div class="absolute bottom-0 m-1 sm:m-2 mb-2  bg-surface-100-900">
-								{#if data.user}
-								<li><a href="/accountSettings" class="anchor">Settings</a></li>
-									<form action="/logout" method="post" use:enhance>
-										<li><button class="anchor mx-1" type="submit">Logout</button></li>
-									</form>
-								{:else}
-									<li><a class="anchor mx-1" href="/login">Login</a></li>
-								{/if}
-							</div>
-						</ul>
+						<div>
+							<ul class="overflow-y-scroll max-h-screen">
+								{#each customerLinks as link}
+									<li>
+										<a href={link.link}>{link.label}</a>
+									</li>
+								{/each}
+								<div class="absolute bottom-0 m-1 sm:m-2 mb-2  bg-surface-100-900">
+									{#if data.user}
+									<li><a href="/accountSettings" class="anchor">Settings</a></li>
+										<form action="/logout" method="post" use:enhance>
+											<li><button class="anchor mx-1" type="submit">Logout</button></li>
+										</form>
+									{:else}
+										<li><a class="anchor mx-1" href="/login">Login</a></li>
+									{/if}
+								</div>
+							</ul>
+						</div>
 					</Dialog.Content>
 				</Dialog.Positioner>
 			</Portal>
 		</Dialog>
 		<div class="bg-tertiary-50-950 fixed w-screen top-0 left-0 h-12 sm:h-8 text-center font-bold z-30 rounded-b-lg">
-			<div class="fixed top-0 left-[85px] w-[225px] sm:w-screen text-center sm:left-0 text-wrap mt-0.5">
+			<div class="fixed top-0 left-21 w-56 sm:w-screen text-center sm:left-0 text-wrap mt-0.5">
 				<a href="/" class="anchor">{PUBLIC_COMPANY_NAME}</a>
 			</div>
 		</div>

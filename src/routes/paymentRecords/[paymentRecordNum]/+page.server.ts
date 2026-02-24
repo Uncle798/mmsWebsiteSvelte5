@@ -1,11 +1,12 @@
 import { prisma } from '$lib/server/prisma';
 import { error, redirect } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
-import type { RefundRecord } from '@prisma/client';
+import type { RefundRecord } from '../../../generated/prisma/client';
 import { message, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import { paymentRecordDeleteSchema } from '$lib/formSchemas/paymentRecordDeleteSchema';
-import { sendPaymentReceipt } from '$lib/server/mailtrap';
+import { sendPaymentReceipt } from "$lib/server/mailtrap/sendPaymentReceipt";
+import { deleteRecordFormSchema } from '$lib/formSchemas/deleteRecordFormSchema';
 
 export const load = (async (event) => {
    const paymentRecordNum = event.params.paymentRecordNum;
@@ -17,6 +18,7 @@ export const load = (async (event) => {
    }
    if(paymentRecordNum){
       if(event.locals.user.employee){
+         const deleteRecordForm = await superValidate(valibot(deleteRecordFormSchema));
          const paymentRecord = await prisma.paymentRecord.findUnique({
             where: {
                paymentNumber:parseInt(paymentRecordNum, 10)
@@ -48,7 +50,7 @@ export const load = (async (event) => {
                }
             })
          }
-         return { paymentRecord, customer, invoice, refundRecords, address };
+         return { paymentRecord, customer, invoice, refundRecords, address, deleteRecordForm };
       } else {
          const paymentRecord = await prisma.paymentRecord.findUnique({
             where: {

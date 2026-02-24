@@ -5,7 +5,7 @@ import { prisma } from '$lib/server/prisma';
 import { ratelimit } from '$lib/server/rateLimit';
 import { valibot } from 'sveltekit-superforms/adapters';
 import { newPaymentRecordFormSchema } from '$lib/formSchemas/newPaymentRecordFormSchema';
-import { type Invoice } from '@prisma/client';
+import type { Invoice } from '../../../generated/prisma/client';
 
 
 export const actions:Actions = {
@@ -32,7 +32,7 @@ export const actions:Actions = {
             }
          })
       }
-      if(data.paymentType === 'CASH' || data.paymentType === 'CHECK'){
+      if(data.paymentType !== 'CREDIT'){
          const paymentRecord = await prisma.paymentRecord.create({
             data: {
                paymentAmount: data.paymentAmount,
@@ -56,7 +56,7 @@ export const actions:Actions = {
                }
             })
          }
-         redirect(302, '/paymentRecords/' + paymentRecord.paymentNumber)
+         return { newPaymentRecordForm }
       }
       
       if(data.paymentType === 'CREDIT'){

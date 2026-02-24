@@ -6,7 +6,7 @@ import { createSession, generateEmailVerificationRequest, generateSessionToken, 
 import { registerFormSchema } from '$lib/formSchemas/registerFormSchema';
 import { ratelimit } from '$lib/server/rateLimit';
 import { prisma } from '$lib/server/prisma';
-import { sendVerificationEmail } from "$lib/server/mailtrap";
+import { sendVerificationEmail } from "$lib/server/mailtrap/sendVerificationEmail";
 
 export const load = (async () => {
     return {};
@@ -70,20 +70,22 @@ export const actions: Actions = {
          const timeRemaining = Math.floor((reset - Date.now()) / 1000);
          return message(registerForm, `Please wait ${timeRemaining} seconds before trying again`)
       }
-      const userAlreadyExists = await prisma.user.findUnique({
-			where:{
-				email: registerForm.data.email
+		if(registerForm.data.email){
+			const userAlreadyExists = await prisma.user.findUnique({
+				where:{
+					email: registerForm.data.email
+				}
+			})
+			if(userAlreadyExists){
+				return message(registerForm, 'User Already exists');
 			}
-		})
-      if(userAlreadyExists){
-         return message(registerForm, 'User Already exists');
-      }
+		}
       const user = await prisma.user.create({
 			data:{ 
-				email: registerForm.data.email, 
-				givenName: registerForm.data.givenName,
-				familyName: registerForm.data.familyName,
-				organizationName: registerForm.data.organizationName,
+				email: registerForm.data.email ? registerForm.data.email : undefined, 
+				givenName: registerForm.data.givenName ? registerForm.data.givenName : undefined,
+				familyName: registerForm.data.familyName ? registerForm.data.familyName : undefined,
+				organizationName: registerForm.data.organizationName ? registerForm.data.organizationName : undefined,
 			}
 		});
 		const unitNum = event.url.searchParams.get('unitNum');
