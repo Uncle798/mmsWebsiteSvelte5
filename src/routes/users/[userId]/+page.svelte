@@ -254,9 +254,9 @@
       Loading leases...
    </div>
 {:then leases}
-   <div class=" columns-2">
+   {#if leases.length <= 1}
       {#each leases as lease}
-         <div class="rounded-lg border-2 border-primary-50-950 flex flex-col m-2 relative">
+         <div class="rounded-lg border-2 border-primary-50-950 w-115 m-2 relative">
             <LeaseEmployee lease={lease} classes='m-2' open={true} />
             <Menu
                onSelect={(e) => {
@@ -288,7 +288,43 @@
             </Menu>
          </div>
       {/each}
-   </div>
+   {:else}
+      <div class="columns-2">
+         {#each leases as lease}
+            <div class="rounded-lg border-2 border-primary-50-950 w-115 m-2 relative">
+               <LeaseEmployee lease={lease} classes='m-2' open={true} />
+               <Menu
+                  onSelect={(e) => {
+                     switch (e.value) {
+                        default:
+                           modalReason = e.value;
+                           currentLease = lease;
+                           modalOpen = true;
+                           break;
+                     }
+                  }}
+               >
+                  <Menu.Trigger class='btn preset-filled-primary-50-950 absolute top-2 left-2'><MenuIcon aria-label='Lease menu unit number {humanUnitNum(lease.unitNum)}'/></Menu.Trigger>
+                  <Portal>
+                     <Menu.Positioner>
+                        <Menu.Content>
+                           <Menu.Item value='endLease' disabled={lease.leaseEnded ? true : undefined}>
+                              <Menu.ItemText>End lease</Menu.ItemText>
+                           </Menu.Item>
+                           <Menu.Item value='newInvoice' disabled={lease.leaseEnded ? true : undefined}>
+                              <Menu.ItemText>Make single invoice for this lease</Menu.ItemText>
+                           </Menu.Item>
+                           <Menu.Item value='manyInvoices' disabled={lease.leaseEnded ? true : undefined}>
+                              <Menu.ItemText>Create many invoices for this lease</Menu.ItemText>
+                           </Menu.Item>
+                        </Menu.Content>
+                     </Menu.Positioner>
+                  </Portal>
+               </Menu>
+            </div>
+         {/each}
+      </div>
+   {/if}
 {/await}
 <div class="mb-9">
 {#await data.invoices}
