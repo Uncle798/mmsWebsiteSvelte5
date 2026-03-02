@@ -2,7 +2,7 @@ import { prisma } from '$lib/server/prisma';
 import { superValidate } from 'sveltekit-superforms';
 import type { PageServerLoad } from './$types';
 import { error, redirect } from '@sveltejs/kit';
-import { valibot } from 'sveltekit-superforms/adapters';
+import { valibot } from '$lib/valibot';
 import { deleteRecordFormSchema } from '$lib/formSchemas/deleteRecordFormSchema';
 import { invoiceChangeFormSchema } from '$lib/formSchemas/invoiceChangeFormSchema';
 

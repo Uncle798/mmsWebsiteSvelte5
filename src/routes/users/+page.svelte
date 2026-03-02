@@ -104,17 +104,17 @@
       })
       invalidateAll();
    }
-   const comboboxData = $derived(userSort(await data.users).map((user) => ({
+   const comboboxData = $derived(userSort(data.users).map((user) => ({
       label: userName(user),
       value: user.id
    })))
 </script>
 <Header title='All users' />
-{#await data.users}
+{#if !data.users}
    <div class="mt-14 sm:mt-10 mx-1 sm:mx-2">
       Loading {data.userCount} users...
    </div>
-{:then users }
+{:else if data.users}
    <SearchDrawer modalOpen={searchDrawerOpen} height='h-[180px]'>
       {#snippet content()}
          <Combobox
@@ -147,15 +147,18 @@
    </SearchDrawer>
    <div in:fade={{duration:600}} class="m-2 mt-14 sm:mt-10 mb-8 sm:mb-8">
       <div class="grid grid-cols-1 gap-y-3 gap-x-1">
-         {#each slicedSource(searchedUsers(filterAlternative(filterAdmin(filterEmployee(sortedUsers(users)))))) as user (user.id)}
+         {#each slicedSource(searchedUsers(filterAlternative(filterAdmin(filterEmployee(sortedUsers(data.users)))))) as user (user.id)}
+         {@const employmentChangeForm = data.employmentChangeForms.find((form) => form.id === user.id)}
             <div class="rounded-lg border border-primary-50-950 flex flex-col sm:flex-row">
                <UserAdmin {user} classes=" p-2 w-1/2"/>
                <div class="mb-2">
-                  <EmploymentChangeForm 
-                     data={data.employmentChangeForm} 
-                     user={user}
-                     classes="flex flex-col sm:flex-row"
-                  />
+                  {#if employmentChangeForm}                     
+                     <EmploymentChangeForm 
+                        data={employmentChangeForm} 
+                        user={user}
+                        classes="flex flex-col sm:flex-row"
+                     />
+                  {/if}
                   <Button
                      label='Delete user'
                      type='button'
@@ -165,6 +168,6 @@
             </div>
          {/each}
       </div>
-      <Pagination bind:size={size} bind:pageNum={pageNum} array={searchedUsers(users)} label='users'/>
+      <Pagination bind:size={size} bind:pageNum={pageNum} array={searchedUsers(data.users)} label='users'/>
    </div>
-{/await}
+{/if}

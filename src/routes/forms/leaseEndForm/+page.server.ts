@@ -1,73 +1,76 @@
 import { error, redirect } from '@sveltejs/kit';
 import { superValidate, message } from 'sveltekit-superforms';
-import { ratelimit } from "$lib/server/rateLimit";
-import { valibot } from 'sveltekit-superforms/adapters';
+import { ratelimit } from '$lib/server/rateLimit';
+//import { valibot } from 'sveltekit-superforms/adapters';
+import { valibot } from '$lib/valibot';
 import type { PageServerLoad, Actions } from './$types';
 import { leaseEndFormSchema } from '$lib/formSchemas/leaseEndFormSchema';
 import { prisma } from '$lib/server/prisma';
 
 export const load = (async () => {
-    return {};
+	return {};
 }) satisfies PageServerLoad;
 
 export const actions: Actions = {
-   default: async (event) => {
-      if(!event.locals.user?.id){
-         redirect(302, '/login?toast=unauthorized');
-      }
-      const formData = await event.request.formData();
-      const leaseEndForm = await superValidate(formData, valibot(leaseEndFormSchema));
-      const { success, reset } = await ratelimit.employeeForm.limit(event.locals.user.id)
-      if(!success) {
-         const timeRemaining = Math.floor((reset - Date.now()) /1000);
-         return message(leaseEndForm, `Please wait ${timeRemaining} seconds before trying again.`)
-      }
-      if(!leaseEndForm.valid){
-         return message(leaseEndForm, 'not valid');
-      }
-      let lease = await prisma.lease.findUnique({
-         where: {
-            leaseId: leaseEndForm.data.leaseId
-         }
-      })
-      if(!lease){
-         error(404)
-      }
-      if(lease.customerId !== event.locals.user.id && !event.locals.user.employee){
-         return message(leaseEndForm, 'Not your lease');
-      }
-      lease = await prisma.lease.update({
-         where: {
-            leaseId:leaseEndForm.data.leaseId
-         },
-         data:{
-            leaseEnded: new Date(),
-         }
-      });
-      await prisma.invoice.deleteMany({
-         where: {
-            AND: [
-               { leaseId: lease.leaseId},
-               { invoiceDue: {
-                  gt: new Date()
-               }}
-            ]
-         }
-      });
-      let notes = ''
-      if(leaseEndForm.data.customer){
-         notes='Customer has ended lease. Need to check if it\'s clear and clean'
-      }
-      await prisma.unit.update({
-         where: {
-            num: lease?.unitNum,
-         },
-         data: {
-            unavailable: leaseEndForm.data.customer ? true : false,
-            notes,
-            leasedPrice: null
-         }
-      })
-      return { leaseEndForm }
-   }
+	default: async (event) => {
+		if (!event.locals.user?.id) {
+			redirect(302, '/login?toast=unauthorized');
+		}
+		const formData = await event.request.formData();
+		const leaseEndForm = await superValidate(formData, valibot(leaseEndFormSchema));
+		const { success, reset } = await ratelimit.employeeForm.limit(event.locals.user.id);
+		if (!success) {
+			const timeRemaining = Math.floor((reset - Date.now()) / 1000);
+			return message(leaseEndForm, `Please wait ${timeRemaining} seconds before trying again.`);
+		}
+		if (!leaseEndForm.valid) {
+			return message(leaseEndForm, 'not valid');
+		}
+		let lease = await prisma.lease.findUnique({
+			where: {
+				leaseId: leaseEndForm.data.leaseId
+			}
+		});
+		if (!lease) {
+			error(404);
+		}
+		if (lease.customerId !== event.locals.user.id && !event.locals.user.employee) {
+			return message(leaseEndForm, 'Not your lease');
+		}
+		lease = await prisma.lease.update({
+			where: {
+				leaseId: leaseEndForm.data.leaseId
+			},
+			data: {
+				leaseEnded: new Date()
+			}
+		});
+		await prisma.invoice.deleteMany({
+			where: {
+				AND: [
+					{ leaseId: lease.leaseId },
+					{
+						invoiceDue: {
+							gt: new Date()
+						}
+					}
+				]
+			}
+		});
+		let notes = '';
+		if (leaseEndForm.data.customer) {
+			notes = "Customer has ended lease. Need to check if it's clear and clean";
+		}
+		await prisma.unit.update({
+			where: {
+				num: lease?.unitNum
+			},
+			data: {
+				unavailable: leaseEndForm.data.customer ? true : false,
+				notes,
+				leasedPrice: null
+			}
+		});
+		return { leaseEndForm };
+	}
 };
