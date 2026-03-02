@@ -13,7 +13,7 @@ export const ratelimit = {
       redis,
       analytics: false,
       prefix: 'ratelimit:register',
-      timeout: 1000,
+      timeout: 15000,
       limiter: Ratelimit.slidingWindow(1, '15s')
    }),
    login: new Ratelimit({

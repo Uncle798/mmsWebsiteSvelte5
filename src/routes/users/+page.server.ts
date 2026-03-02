@@ -16,11 +16,16 @@ export const load = (async (event) => {
 	const employmentChangeForm = await superValidate(valibot(employmentFormSchema));
 	const searchForm = await superValidate(valibot(searchFormSchema));
 	const userCount = await prisma.user.count();
-	const users = prisma.user.findMany({
+	const users = await prisma.user.findMany({
 		orderBy: [{ familyName: 'asc' }, { givenName: 'asc' }]
 	});
+	const employmentChangeForms = await Promise.all(
+		users.map(async (user) => {
+			return await superValidate(valibot(employmentFormSchema), {id: user.id})
+		})
+	)
 	const demoCookie = event.cookies.get('users');
-	return { users, userCount, employmentChangeForm, searchForm, demoCookie };
+	return { users, userCount, searchForm, demoCookie, employmentChangeForms };
 }) satisfies PageServerLoad;
 
 export const actions: Actions = {

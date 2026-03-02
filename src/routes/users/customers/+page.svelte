@@ -12,7 +12,7 @@
 	import UserNotesForm from '$lib/forms/UserNotesForm.svelte';
 	import LeaseEndForm from '$lib/forms/LeaseEndForm.svelte';
 	import UnitNotesForm from '$lib/forms/UnitNotesForm.svelte';
-	import { onNavigate } from '$app/navigation';
+	import { goto, onNavigate } from '$app/navigation';
 	import SearchDrawer from '$lib/displayComponents/Modals/SearchDrawer.svelte';
 	import FormModal from '$lib/displayComponents/Modals/FormModal.svelte';
 	import RevenueBar from '$lib/displayComponents/RevenueBar.svelte';
@@ -29,6 +29,8 @@
 	import { Menu, Portal } from '@skeletonlabs/skeleton-svelte';
 	import { MenuIcon } from 'lucide-svelte';
 	import UnitEmployee from '$lib/displayComponents/UnitEmployee.svelte';
+	import { userName } from '$lib/utils/userName';
+	import Combobox from '$lib/formComponents/Combobox.svelte';
    
    let { data }: { data: PageData } = $props();
    let pageNum = $state(1);
@@ -79,6 +81,12 @@
    let sortedUsers = $derived((customers:User[]) => userSort(customers));
    let overdueInvoices = $derived((invoices:Invoice[]) => invoices.filter((invoice) => {
       return invoice.invoiceDue <= new Date() && (invoice.invoiceAmount > invoice.amountPaid);
+   }));
+   const comboboxData = $derived(data.customers.map((customer) => {
+      return {
+         label: userName(customer),
+         value: customer.id
+      }
    }))
    let searchDrawerOpen = $state(false);
    let leaseEndModalOpen = $state(false);
@@ -92,6 +100,7 @@
 	let valueState = $state<{readonly current: string;}>();
 	let csvState = $state<{readonly current: string;}>();
    let csvPurpose = $state('');
+
    $effect(() => {
       if(csvState && csvState?.current !== '' && csvPurpose === 'currentCustomers'){
 			const blob = new Blob([csvState.current], {
@@ -162,11 +171,11 @@
       {/if}
    {/snippet}
 </FormModal>
-{#await data.customers}
+{#if !data.customers}
    <div class="mt-14 sm:mt-10 mx-2">
       Loading {data.customerCount} customers...
    </div>
-{:then customers}
+{:else if  data.customers}
    {#await data.leases}
       <div class="mt-14 sm:mt-10 mx-2">
          Loading leases...
@@ -203,7 +212,13 @@
                         height='h-[320px] sm:h-[280px] lg:h-[130px]'
                      >
                         {#snippet content()}
-                           <Search bind:search={search} searchType='customer name' data={data.userSearchForm} classes='' />
+                           <Combobox
+                              data={comboboxData}
+                              label='Search customers'
+                              onValueChange={(d) => {
+                                 goto(`/users/${d.value[0]}`)
+                              }}
+                           />
                            <Search bind:search={addressSearch} searchType='address or phone' data={data.userSearchForm}/>
                            <div class="flex flex-col">
                               <div class="flex flex-col sm:flex-row gap-2 justify-center align-middle">
@@ -239,11 +254,12 @@
                         {/snippet}
                      </SearchDrawer>
                      <div class="grid grid-cols-1 mx-1 sm:mx-2 gap-y-2 gap-x-1 ">
-                        {#each slicedSource(addressSearcher(searchedSource(sortedUsers(customers)), addresses)) as customer (customer.id)}
+                        {#each slicedSource(addressSearcher(searchedSource(sortedUsers(data.customers)), addresses)) as customer (customer.id)}
                         {@const address = addresses.find((address) => address.userId === customer.id)}
                         {@const customerLeases = leases.filter((lease) => lease.customerId === customer.id)}
                         {@const customerInvoices = invoices.filter((invoice) => invoice.customerId === customer.id)}
                         {@const customerPayments = paymentRecords.filter((payment) => payment.customerId === customer.id)}
+                        {@const userNotesForm = data.userNotesForms.find((form) => form.id === customer.id)}
                            <div class="border rounded-lg border-primary-50-950 sm:grid sm:grid-cols-1">
                               <div class="m-2 flex gap-2">
                                  <UserEmployee user={customer} classes='max-w-1/2'/>
@@ -252,7 +268,9 @@
                                  {/if}
                               </div>
                               <div class="m-2 ">
-                                 <UserNotesForm user={customer} data={data.userNotesForm} />
+                                 {#if userNotesForm}
+                                    <UserNotesForm user={customer} data={userNotesForm} />
+                                 {/if}
                                  <UserRevenue 
                                     totalInvoiced={totalInvoiced(customerInvoices)}
                                     totalPaid={totalPaid(customerPayments)}
@@ -314,11 +332,11 @@
                            </div>
                         {/each}
                      </div>
-                     <Pagination bind:pageNum={pageNum} bind:size={size} label='users' array={searchedSource(customers)}/>
+                     <Pagination bind:pageNum={pageNum} bind:size={size} label='users' array={searchedSource(data.customers)}/>
                   </div>
                {/await}
             {/await}            
          {/await}    
       {/await}
    {/await}
-{/await}
+{/if}

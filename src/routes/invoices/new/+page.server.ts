@@ -1,6 +1,5 @@
 import { superValidate } from 'sveltekit-superforms';
 import type { PageServerLoad } from './$types';
-//import { valibot } from 'sveltekit-superforms/adapters';
 import { valibot } from '$lib/valibot';
 import { newInvoiceFormSchema } from '$lib/formSchemas/newInvoiceFormSchema';
 import { emailVerificationFormSchema } from '$lib/formSchemas/emailVerificationFormSchema';

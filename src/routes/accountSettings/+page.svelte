@@ -69,7 +69,6 @@
       {#if modalSelector === 'leaseEnd'}
          <LeaseEndForm data={data.leaseEndForm} leaseId={currentLeaseId} employee={false} bind:leaseEndModalOpen={globalModalOpen}/>
       {/if}
-         <button class="btn preset-filled-primary-50-950 rounded-lg" onclick={()=>globalModalOpen = false}>Cancel</button>
    {/snippet}
 </FormModal>
 
@@ -184,5 +183,4 @@
          {/await}
       {/await}
    </div>
-   <ThemeSelector />
 </div>

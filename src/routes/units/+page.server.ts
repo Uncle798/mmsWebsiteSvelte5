@@ -12,6 +12,7 @@ import type { PageServerLoad, Actions } from './$types';
 
 import pricingData from '$lib/server/pricingData';
 import { changeDepositFormSchema } from '$lib/formSchemas/changeDepositFormSchema';
+import type { Unit } from '@prisma/client';
 
 export const load: PageServerLoad = async (event) => {
 	if (!event.locals.user) {
@@ -39,7 +40,7 @@ export const load: PageServerLoad = async (event) => {
 		}
 	});
 	const unitNotesForms = await Promise.all(
-		(await prisma.unit.findMany()).map(async (unit) => {
+		(await prisma.unit.findMany()).map(async (unit: Unit) => {
 			return await superValidate(valibot(unitNotesFormSchema), { id: unit.num });
 		})
 	);

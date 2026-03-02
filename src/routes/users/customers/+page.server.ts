@@ -32,7 +32,7 @@ export const load = (async (event) => {
 			}
 		}
 	});
-	let customers = prisma.user.findMany({
+	const customers = await prisma.user.findMany({
 		where: {
 			OR: [
 				{
@@ -54,6 +54,11 @@ export const load = (async (event) => {
 			]
 		}
 	});
+	const userNotesForms = await Promise.all(
+		customers.map(async (user) => {
+			return await superValidate(valibot(userNotesFormSchema), {id: user.id})
+		})
+	)
 	const leases = prisma.lease.findMany({
 		where: {
 			leaseEnded: null
@@ -143,7 +148,7 @@ export const load = (async (event) => {
 		addresses,
 		invoices,
 		paymentRecords,
-		userNotesForm,
+		userNotesForms,
 		leaseEndForm,
 		unitNotesForm,
 		units,
