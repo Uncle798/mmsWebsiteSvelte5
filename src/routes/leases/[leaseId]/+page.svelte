@@ -16,6 +16,7 @@
 	import Button from '$lib/core/Button.svelte';
 	import { Menu, Portal } from '@skeletonlabs/skeleton-svelte';
 	import { MenuIcon } from 'lucide-svelte';
+	import LeaseDeleteForm from '$lib/forms/LeaseDeleteForm.svelte';
 
    let { data }: { data: PageData } = $props();
    let modalOpen = $state(false);
@@ -31,11 +32,13 @@
          {#if modalReason === 'leaseEnd' && data.lease}
             <LeaseEndForm data={data.leaseEndForm} leaseId={data.lease.leaseId} bind:leaseEndModalOpen={modalOpen} />
          {:else if modalReason === 'alternativeContact'}
-            <AlternativeContactForm data={data.alternativeContactForm} leaseId={data.lease!.leaseId} bind:modalOpen={modalOpen} />
+            <AlternativeContactForm data={data.alternativeContactForm} bind:modalOpen={modalOpen} />
          {:else if modalReason === 'alternativeContactRemoval'}
             <AlternativeContactRemovalForm data={data.removeAlternativeContactForm} alternativeContactId={currentAlternativeContactId} bind:modalOpen={modalOpen} />
          {:else if modalReason === 'leaseChange' && data.lease}
             <LeaseChangeForm data={data.leaseChangeForm} lease={data.lease} bind:modalOpen={modalOpen}/>
+         {:else if modalReason === 'leaseDelete' && data.lease}
+            <LeaseDeleteForm data={data.leaseDeleteForm} lease={data.lease} bind:modalOpen={modalOpen} />
          {/if}
       {/snippet}
    </FormModal>
@@ -57,7 +60,7 @@
                <Portal>
                   <Menu.Positioner>
                      <Menu.Content>
-                        <Menu.Item value='alternativeContact'>
+                        <Menu.Item value='alternativeContact' disabled={data.lease.leaseEnded ? true : undefined}>
                            <Menu.ItemText>Add alternative contact</Menu.ItemText>
                         </Menu.Item>
                         <Menu.Item value='leaseChange' disabled={data.lease.leaseEnded ? true : undefined}>
@@ -65,6 +68,9 @@
                         </Menu.Item>
                         <Menu.Item value='leaseEnd' disabled={data.lease.leaseEnded ? true : undefined}>
                            <Menu.ItemText>End lease</Menu.ItemText>
+                        </Menu.Item>
+                        <Menu.Item value='leaseDelete' disabled={data.lease.leaseEnded ? undefined : true} >
+                           <Menu.ItemText>Delete lease</Menu.ItemText>
                         </Menu.Item>
                      </Menu.Content>
                   </Menu.Positioner>

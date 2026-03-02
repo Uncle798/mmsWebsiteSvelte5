@@ -10,7 +10,6 @@
 	import { fade } from 'svelte/transition';
 	import InvoiceCustomer from '$lib/displayComponents/customerViews/InvoiceCustomer.svelte';
 	import PaymentRecordCustomer from '$lib/displayComponents/customerViews/PaymentRecordCustomer.svelte';
-	import ThemeSelector from '$lib/displayComponents/ThemeSelector.svelte';
 	import UserCustomer from '$lib/displayComponents/customerViews/UserCustomer.svelte';
 	import { superForm } from 'sveltekit-superforms';
 	import NameChangeForm from '$lib/forms/NameChangeForm.svelte';

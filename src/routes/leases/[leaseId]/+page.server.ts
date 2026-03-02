@@ -10,6 +10,7 @@ import { alternativeContactFormSchema } from '$lib/formSchemas/alternativeContac
 import { alternativeContactRemovalFormSchema } from '$lib/formSchemas/alternativeContactRemovalFormSchema';
 import { leaseChangeFormSchema } from '$lib/formSchemas/leaseChangeFormSchema';
 import { onboardingCreateManyInvoicesFormSchema } from '$lib/formSchemas/onboardingCreateManyInvoicesFormSchema';
+import { leaseDeleteFormSchema } from '$lib/formSchemas/leaseDeleteFormSchema';
 
 export const load = (async (event) => {
 	if (!event.locals.user) {
@@ -30,6 +31,7 @@ export const load = (async (event) => {
 		valibot(alternativeContactRemovalFormSchema)
 	);
 	const leaseChangeForm = await superValidate(valibot(leaseChangeFormSchema));
+	const leaseDeleteForm = await superValidate(valibot(leaseDeleteFormSchema));
 	const onboardingCreateManyInvoicesForm = await superValidate(
 		valibot(onboardingCreateManyInvoicesFormSchema)
 	);
@@ -101,6 +103,7 @@ export const load = (async (event) => {
 		alternativeContactForm,
 		removeAlternativeContactForm,
 		onboardingCreateManyInvoicesForm,
+		leaseDeleteForm,
 		leaseChangeForm,
 		invoices,
 		alternativeContacts,
