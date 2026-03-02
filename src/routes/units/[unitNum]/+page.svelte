@@ -37,7 +37,7 @@
             <Revenue label='Total revenue from this unit' amount={data.totalRevenue} />
          {/snippet}
       </RevenueBar>
-      <div transition:fade={{duration:600}} class="m-1 sm:m-2 mt-12 sm:mt-12 mb-8 sm:mb-8">
+      <div transition:fade={{duration:600}} class="m-1 sm:m-2 mt-16 sm:mt-16 mb-8 sm:mb-8">
          <div class="border-2 border-primary-50-950 rounded-lg">
             <UnitEmployee {unit} classes='mx-2'/>
             <a href="/employeeNewLease?unitNum={unit.num}" class="btn preset-filled-primary-50-950 m-2 rounded-lg">Rent Unit {humanUnitNum(unit.num)}</a>
