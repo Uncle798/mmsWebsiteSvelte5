@@ -18,7 +18,7 @@ const fields = [
       "type": "shortText",
       "pageNum": 0,
       "rect": {
-         "x": 142,
+         "x": 148,
          "y": 151,
          "height": 15,
          "width": 28
@@ -31,10 +31,10 @@ const fields = [
       "type": "shortText",
       "pageNum": 0,
       "rect": {
-         "x": 215,
+         "x": 218,
          "y": 151,
          "height": 15,
-         "width": 50
+         "width": 70
       },
       fontWeight: 'bold',
       alignment: 'right'
@@ -45,7 +45,7 @@ const fields = [
       "type": "shortText",
       "pageNum": 0,
       "rect": {
-         "x": 295,
+         "x": 296,
          "y": 151,
          "height": 15,
          "width": 18
@@ -74,7 +74,7 @@ const fields = [
       "pageNum": 0,
       "rect": {
          "x": 264,
-         "y": 265,
+         "y": 266,
          "height": 15,
          "width": 44
       },
@@ -86,8 +86,8 @@ const fields = [
       "type": "shortText",
       "pageNum": 0,
       "rect": {
-         "x": 375,
-         "y": 265,
+         "x": 378,
+         "y": 266,
          "height": 15,
          "width": 50
       },
@@ -113,7 +113,7 @@ const fields = [
       "type": "shortText",
       "pageNum": 0,
       "rect": {
-         "x": 77,
+         "x": 80,
          "y": 425,
          "height": 15,
          "width": 103
@@ -140,8 +140,8 @@ const fields = [
       "type": "shortText",
       "pageNum": 0,
       "rect": {
-         "x": 331,
-         "y": 505,
+         "x": 332,
+         "y": 506,
          "height": 15,
          "width": 50
       },
@@ -243,12 +243,10 @@ export async function createLease(customer:User, lease:Lease, unit:Unit, employe
       prefix: 'MMS Lease'
    });
    const file = await fetch(templateFiles.blobs[0].url);
-   const arrayBuffer = await file.arrayBuffer();
-   let base64 = '';
-   if(file){
-      base64 = arrayBufferToBase64(arrayBuffer);
-   }
-   console.log('base64 length:', base64.length)
+   const blob = await file.blob();
+   const anvilFile = Anvil.prepareGraphQLFile(blob, {
+      filename: `Lease for unit ${humanUnitNum(unit.num)} at ${PUBLIC_COMPANY_NAME}.pdf`,
+   })
    const properties = await prisma.propertyWithLien.findMany({
       where: {
          leaseId: lease.leaseId
@@ -272,7 +270,7 @@ export async function createLease(customer:User, lease:Lease, unit:Unit, employe
       return `${n}${suffix}`;
    }
    const altAddress = alternateAddress?.address1 ? `${alternateAddress.address1} ${alternateAddress.address2}` : '';
-   const altName = alternateContact?.givenName || alternateContact?.familyName ? `${alternateContact.givenName} ${alternateContact.familyName}` : '';
+   const altName = alternateContact ? userName(alternateContact) : '';
    const altCity = alternateAddress?.city || alternateAddress?.state || alternateAddress?.postalCode ? `${alternateAddress.city} ${alternateAddress.state} ${alternateAddress.phoneNum1}` : '';
    const altPhone = alternateAddress?.phoneNum1 ? alternateAddress.phoneNum1 : '';
    let data: {
@@ -288,7 +286,8 @@ export async function createLease(customer:User, lease:Lease, unit:Unit, employe
          leaseTemplate: {
             data: {
                leaseStartDay: formatOrdinals(lease.leaseCreatedAt.getDate()),
-               leaseStartMonth: dayjs(lease.leaseCreatedAt).format('MMMM'),
+               leaseStartMonth: 'December',
+               // leaseStartMonth: dayjs(lease.leaseCreatedAt).format('MMMM'),
                leaseStartYear: dayjs(lease.leaseCreatedAt).format('YYYY'),
                tenantName: userName(customer),
                unitNum: humanUnitNum(unit.num),
@@ -321,7 +320,7 @@ export async function createLease(customer:User, lease:Lease, unit:Unit, employe
       {
          id: 'managerSigner',
          routingOrder: 2,
-         name: `${employee.givenName} ${employee.familyName}`,
+         name: userName(employee),
          email: employee.email!,
          fields: [
             {
@@ -345,7 +344,7 @@ export async function createLease(customer:User, lease:Lease, unit:Unit, employe
             "width": 196
          },
          alignment: 'right',
-         fontWeight: 'regular'
+         fontWeight: 'bold'
       });
       fields.push({
          "name": "City - Tenant Address",
@@ -428,9 +427,10 @@ export async function createLease(customer:User, lease:Lease, unit:Unit, employe
             "x": 300,
             "y": 170,
             "height": 15,
-            "width": 140
+            "width": 180
          },
-         fontWeight: 'bold'
+         fontWeight: 'bold',
+         alignment: 'right'
       });
       fields.push({
          "name": "State - Tenant Address",
@@ -438,12 +438,13 @@ export async function createLease(customer:User, lease:Lease, unit:Unit, employe
          "type": 'shortText',
          "pageNum": 4,
          "rect": {
-            "x": 440,
+            "x": 470,
             "y": 170,
             "height": 15,
             "width": 30
          },
-         fontWeight: 'bold'
+         fontWeight: 'bold',
+         alignment: 'right'
       });
       fields.push({
          "name": "Postal Code - Tenant Address",
@@ -466,7 +467,7 @@ export async function createLease(customer:User, lease:Lease, unit:Unit, employe
          "pageNum": 4,
          "rect": {
             "x": 340,
-            "y": 183,
+            "y": 185,
             "height": 15,
             "width": 200
             },
@@ -481,7 +482,7 @@ export async function createLease(customer:User, lease:Lease, unit:Unit, employe
            "pageNum": 4,
            "rect": {
              "x": 290,
-             "y": 204,
+             "y": 200,
              "height": 15,
              "width": 250
              },
@@ -586,7 +587,7 @@ export async function createLease(customer:User, lease:Lease, unit:Unit, employe
             "width": 200
          },
          alignment: 'center',
-         fontWeight: 'regular',
+         fontWeight: 'normal',
       });
       data.payloads.leaseTemplate.data.altName = altName;
    } else if (alternateContact?.givenName){
@@ -602,7 +603,7 @@ export async function createLease(customer:User, lease:Lease, unit:Unit, employe
             "width": 140
          },
          alignment: 'center',
-         fontWeight: 'regular'
+         fontWeight: 'normal'
       });
       data.payloads.leaseTemplate.data.altName = altName;
    }
@@ -671,24 +672,19 @@ export async function createLease(customer:User, lease:Lease, unit:Unit, employe
          isTest: true, 
          files: {
             id: 'leaseTemplate',
-            file: {
-               data: base64,
-               filename: `${PUBLIC_COMPANY_NAME} lease unit ${humanUnitNum(unit.num)} - ${userName(customer)}.pdf`,
-               mimetype: 'application/pdf',
-            },
+            file: anvilFile,
             fields,
             fontSize: 12,
             textColor: '#000000',
          },
          data,
          signers,
-         // signatureEmailSubject: `Lease for unit ${humanUnitNum(unit.num)} at ${PUBLIC_COMPANY_NAME}`,
-         // signatureEmailBody: `Please sign the lease for unit number ${humanUnitNum(unit.num)} at ${PUBLIC_COMPANY_NAME}.`,
-         // replyToName: PUBLIC_COMPANY_NAME,
-         // replyToEmail: PUBLIC_COMPANY_EMAIL,
+         signatureEmailSubject: `Lease for unit ${humanUnitNum(unit.num)} at ${PUBLIC_COMPANY_NAME}`,
+         signatureEmailBody: `Please sign the lease for unit number ${humanUnitNum(unit.num)} at ${PUBLIC_COMPANY_NAME}.`,
+         replyToName: PUBLIC_COMPANY_NAME,
+         replyToEmail: PUBLIC_COMPANY_EMAIL,
       }
    });
-   console.log(contract)
    if(contract.errors){
       console.error('There were errors!')
       console.error(JSON.stringify(contract.errors, null, 2));

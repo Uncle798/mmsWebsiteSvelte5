@@ -7,7 +7,7 @@
 
    let { data }: PageProps = $props();
 </script>
-<div class="mt-14 sm:mt-12 mb-8 mx-2">
+<div class="mt-14 sm:mt-12 mb-10 mx-2">
    <div class="flex flex-row gap-2">
       <div class="flex flex-col">
          {#if data.customer}
@@ -36,8 +36,6 @@
       <LeaseEmployee lease={data.lease} />
    {/if}
    {#if data.contract?.url}
-      <div class="relative w-full min-h-155 my-2">
-         <iframe src={data.contract.url} frameborder="0" title='Lease' class="sm:w-11/12 sm:h-screen place-self-center"></iframe>
-      </div>
+      <iframe src={data.contract.url} frameborder="0" title='Lease' class="w-250 h-230 self-center"></iframe>
    {/if}
 </div>
