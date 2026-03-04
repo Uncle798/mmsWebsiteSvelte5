@@ -4,7 +4,7 @@
    import EmailVerification from '$lib/forms/EmailVerificationForm.svelte'
 	import AddressCustomer from '$lib/displayComponents/customerViews/AddressCustomer.svelte';
 	import Header from '$lib/Header.svelte';
-	import { BadgeCheck, } from 'lucide-svelte';
+	import { BadgeCheck, MenuIcon, } from 'lucide-svelte';
 	import LeaseCustomer from '$lib/displayComponents/customerViews/LeaseCustomer.svelte';
 	import LeaseEndForm from '$lib/forms/LeaseEndForm.svelte';
 	import { fade } from 'svelte/transition';
@@ -16,9 +16,10 @@
 	import EmailChangeForm from '$lib/forms/EmailChangeForm.svelte';
 	import FormModal from '$lib/displayComponents/Modals/FormModal.svelte';
    import ProgressRing from '$lib/displayComponents/ProgressRing.svelte';
+	import { Menu, Portal } from '@skeletonlabs/skeleton-svelte';
 
    let {data}:{ data: PageData} = $props();
-   let globalModalOpen = $state(false);
+   let modalOpen = $state(false);
    let modalSelector = $state('')
    let currentLeaseId = $state('');
    let autoPaySpinner = $state(false);
@@ -27,7 +28,7 @@
    function setCurrentLeaseId(leaseId:string){
       currentLeaseId = leaseId;
       modalSelector = 'leaseEnd';
-      globalModalOpen = true;
+      modalOpen = true;
    }
    function autoPaySignUp(leaseId:string){
       currentLeaseId = leaseId;
@@ -43,70 +44,70 @@
 </script>
 <Header title='Settings for {data.user?.givenName}' />
 <FormModal
-   bind:modalOpen={globalModalOpen}
+   bind:modalOpen={modalOpen}
 >
    {#snippet content()}
       {#if modalSelector === 'emailVerification'}
          {#if data.user}
          <EmailVerification 
             data={data.emailVerificationForm} 
-            bind:emailVerificationModalOpen={globalModalOpen} 
+            bind:emailVerificationModalOpen={modalOpen} 
             redirect='false' 
             userId={data.user.id}
          />
          {/if}
       {/if}
       {#if modalSelector === 'name'}
-         <NameChangeForm data={data.nameForm} bind:nameModalOpen={globalModalOpen} userId={data.user!.id} />
+         <NameChangeForm data={data.nameForm} bind:nameModalOpen={modalOpen} userId={data.user!.id} />
       {/if}
       {#if modalSelector === 'email'}
-         <EmailChangeForm data={data.emailForm} bind:emailModalOpen={globalModalOpen} user={data.user!}/>
+         <EmailChangeForm data={data.emailForm} bind:emailModalOpen={modalOpen} user={data.user!}/>
       {/if}
       {#if modalSelector === 'address'}
-         <AddressForm data={data.addressForm} bind:addressModalOpen={globalModalOpen} userId={data.user?.id}/>
+         <AddressForm data={data.addressForm} bind:addressModalOpen={modalOpen} userId={data.user?.id}/>
       {/if}
       {#if modalSelector === 'leaseEnd'}
-         <LeaseEndForm data={data.leaseEndForm} leaseId={currentLeaseId} employee={false} bind:leaseEndModalOpen={globalModalOpen}/>
+         <LeaseEndForm data={data.leaseEndForm} leaseId={currentLeaseId} employee={false} bind:leaseEndModalOpen={modalOpen}/>
       {/if}
    {/snippet}
 </FormModal>
 
 <div in:fade={{duration:600}} class="mx-2 mb-24 sm:mb-14 lg:mb-9 mt-14 sm:mt-10">
-   <div class="flex flex-col sm:flex-row gap-2">
-      <div>
-         {#if data.user}
-            <UserCustomer user={data.user}/>
-         {/if}
-         {#if data.user?.emailVerified}
-         <div class="flex ">
-               Email Verified
-               <BadgeCheck size='20' class='mx-1 text-success-50-950'/>
-         </div>
-         {:else}
-            <div class="flex flex-col">
-               <button class="btn preset-filled-primary-50-950 mx-2 rounded-lg" onclick={()=>{
-                  modalSelector='emailVerification'
-                  globalModalOpen=true
-               }}>
-                  Please confirm your email address
-               </button>
-            </div>
-         {/if}
-      </div>
-      <div class="flex flex-col sm:flex-row gap-2 mx-2">
-         <button class="btn preset-filled-primary-50-950 rounded-lg" onclick={()=>{
-            modalSelector='name';
-            globalModalOpen=true;
-         }}>
-            Change Name
-         </button>
-         <button class="btn preset-filled-primary-50-950 rounded-lg " onclick={()=>{
-            modalSelector='email';
-            globalModalOpen=true;
-         }}>
-            Change Email
-         </button>
-      </div>
+   <div class="relative min-h-40">
+      {#if data.user}
+         <UserCustomer user={data.user} classes='absolute left-18 top-0'/>
+      {/if}
+      <Menu 
+         onSelect={(d) => {
+            switch (d.value) {
+               default:
+                  modalSelector = d.value;
+                  modalOpen = true;
+                  
+                  break;
+            }
+         }}
+      >
+         <Menu.Trigger class='btn preset-filled-primary-50-950 absolute top-0 left-0'><MenuIcon class='size-5' aria-label='User menu'/></Menu.Trigger>
+         <Portal>
+            <Menu.Positioner>
+               {#if !data.user?.emailVerified}                  
+                  <Menu.Item value='emailVerification'>
+                     <Menu.ItemText>Verify email address</Menu.ItemText>
+                  </Menu.Item>
+               {/if}
+               <Menu.Item value='name'>
+                  <Menu.ItemText>Change name</Menu.ItemText>
+               </Menu.Item>
+               <Menu.Item value='email'>
+                  <Menu.ItemText>Change email</Menu.ItemText>
+               </Menu.Item>
+            </Menu.Positioner>
+         </Portal>
+      </Menu>
+      {#if data.user?.emailVerified}
+         <BadgeCheck size='20' class='mx-1 text-success-50-950 absolute top-7 left-7'/>
+      {/if}
    </div>
    <div class="flex flex-col sm:flex-row gap-3">
       {#await data.addressPromise}
@@ -117,7 +118,7 @@
       {/if}
          <button class="btn preset-filled-primary-50-950 m-1 sm:m-2 rounded-lg" onclick={()=> {
             modalSelector = 'address'
-            globalModalOpen = true;
+            modalOpen = true;
          }}>
             {#if address}
                Change address
