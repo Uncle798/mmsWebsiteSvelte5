@@ -46,7 +46,7 @@ export const actions: Actions = {
 						invoiceNum: invoice.invoiceNum
 					}
 				});
-				redirect(308, '/invoices');
+				redirect(308, `/users/${invoice.customerId}`);
 			case 'payment':
 				const payment = await prisma.paymentRecord.findUnique({
 					where: {
@@ -70,7 +70,7 @@ export const actions: Actions = {
 					}
 				});
 				if (deleted) {
-					redirect(308, '/paymentRecords');
+					redirect(308, `/users/${payment.customerId}`);
 				}
 			case 'refund':
 				const refund = await prisma.refundRecord.findUnique({
@@ -86,7 +86,7 @@ export const actions: Actions = {
 						refundNumber: refund.refundNumber
 					}
 				});
-				redirect(308, '/refundRecords');
+				redirect(308, `/users/${refund.customerId}`);
 			default:
 				break;
 		}
