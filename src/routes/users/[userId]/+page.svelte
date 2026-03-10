@@ -289,7 +289,7 @@
          </div>
       {/each}
    {:else}
-      <div class="columns-2">
+      <div class="grid grid-cols-2">
          {#each leases as lease}
             <div class="rounded-lg border-2 border-primary-50-950 w-115 m-2 relative">
                <LeaseEmployee lease={lease} classes='m-2' open={true} />

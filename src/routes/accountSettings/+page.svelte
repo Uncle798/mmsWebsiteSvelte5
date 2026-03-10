@@ -40,6 +40,7 @@
       autoPayCancelSpinner = true;
       submit()
    }
+   // svelte-ignore state_referenced_locally
    let { form, enhance, submit } = superForm(data.autoPayForm)
 </script>
 <Header title='Settings for {data.user?.givenName}' />
@@ -83,7 +84,7 @@
                default:
                   modalSelector = d.value;
                   modalOpen = true;
-                  
+
                   break;
             }
          }}
@@ -138,7 +139,7 @@
                   <LeaseCustomer lease={lease} classes=''/>
                   {#if !lease.leaseEnded}
                      <button class="btn preset-filled-primary-50-950 rounded-lg m-1 sm:m-2" onclick={()=> setCurrentLeaseId(lease.leaseId)}>End Lease</button>
-                     {#if !lease.subscriptionId}
+                     <!-- {#if !lease.subscriptionId}
                         <form method="POST" action="?/autoPaySignUp" use:enhance>
                            <input type="hidden" name="cuid2Id" id="cuid2Id" value={lease.leaseId}>
                            <div class="flex">
@@ -157,7 +158,7 @@
                               <ProgressRing value={null} />
                            {/if}
                         </form>
-                     {/if}
+                     {/if} -->
                   {/if}
                </div>
          {/each}
