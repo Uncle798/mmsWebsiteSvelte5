@@ -48,6 +48,6 @@ export const actions: Actions = {
             leaseId: lease.leaseId
          }
       })
-      return redirect(302, '/leases');
+      return redirect(302, `/users/${lease.customerId}`);
    }
 };
