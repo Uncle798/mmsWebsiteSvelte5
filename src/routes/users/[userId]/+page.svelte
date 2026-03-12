@@ -30,6 +30,7 @@
 	import { MenuIcon } from 'lucide-svelte';
 	import { humanUnitNum } from '$lib/utils/humanUnitNum';
 	import EmploymentChangeForm from '$lib/forms/EmploymentChangeForm.svelte';
+	import { userName } from '$lib/utils/userName';
 
    let { data }: { data: PageData } = $props();
    let modalOpen = $state(false);
@@ -88,7 +89,7 @@
    })
    const comboboxData = $derived(data.customers.map((customer) => {
       return {
-         label: customer.organizationName ? customer.organizationName : `${customer.givenName} ${customer.familyName}`,
+         label: userName(customer),
          value: customer.id
       }
    }));
