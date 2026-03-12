@@ -40,7 +40,7 @@ export const actions: Actions = {
             leaseId: lease.leaseId
          }
       });
-      if(invoices){
+      if(invoices.length > 0){
          return message(leaseDeleteForm, 'Invoices must be deleted first');
       }
       await prisma.lease.delete({
