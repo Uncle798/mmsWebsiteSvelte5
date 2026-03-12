@@ -43,6 +43,11 @@ export const actions: Actions = {
       if(invoices.length > 0){
          return message(leaseDeleteForm, 'Invoices must be deleted first');
       }
+      const leaseAltContacts = await prisma.leaseAlternativeContacts.deleteMany({
+         where: {
+            leaseId: lease.leaseId,
+         }
+      });
       await prisma.lease.delete({
          where: {
             leaseId: lease.leaseId
