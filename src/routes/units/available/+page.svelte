@@ -54,31 +54,25 @@
       ...loading available units
    </div>
 {:then availableUnits}   
-   <SearchDrawer
-      modalOpen={searchDrawerOpen}
-      height='h-[180]'
-   >
-      {#snippet content()}         
-         <div class="m-1 sm:m-2 mt-11 sm:mt-11">
-            <Combobox
-               data={comboboxData}
-               label='Filter by Size' 
-               placeholder='Select size...'
-               onValueChange={(details) => {
-                  searchDrawerOpen = false
-                  selectedSize=details.value
-               }}
-            />
-         </div>
-      {/snippet}
-   </SearchDrawer>
    {#if data.user?.employee}
       <div class="flex fixed bg-tertiary-50-950 rounded-b-lg z-40 w-full top-11 sm:top-8">
          <span class="m-1">Available: {availableUnits.length} of {data.unitCount}</span>
          <span class="m-1">Percentage: {Math.round((availableUnits.length*100)/data.unitCount)}%</span>
          <span class="m-1">Open revenue per month: {currencyFormatter(lostRevenue(availableUnits))}</span>
       </div>
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 m-1 sm:m-2 bg-surface-50-950 mt-28 sm:mt-18">
+      <div class="m-1 sm:m-2 mt-11 sm:mt-11">
+         <Combobox
+            data={comboboxData}
+            label='Filter by Size' 
+            placeholder='Select size...'
+            onValueChange={(details) => {
+               searchDrawerOpen = false
+               selectedSize=details.value
+            }}
+         />
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 m-1 sm:m-2 mt-28 sm:mt-18">
          {#each filteredUnits(availableUnits) as unit}
          {@const unitNotesForm = data.unitNotesForms.find((form) => form.id === unit.num)}
             <div class="border-2 border-primary-50-950 rounded-lg">

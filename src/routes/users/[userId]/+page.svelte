@@ -438,18 +438,21 @@
                         checked={ isInvoiceSelected(invoice) }
                      />
                   </label>
-                  <InvoiceEmployee invoice={invoice} classes='w-100'/>
-                  {#if overDueInvoice(invoice) > 0 }
-                     <Button
-                        label='Make a payment record for invoice {invoice.invoiceNum}'
-                        type='button'
-                        onClick={() => {
-                           currentInvoice=invoice;
-                           modalReason='newPayment';
-                           modalOpen=true;
-                        }}
-                     />
-                  {/if}
+                  <div>
+                     <InvoiceEmployee invoice={invoice} classes='p-2 border border-primary-50-950 rounded-lg'/>
+                     {#if overDueInvoice(invoice) > 0 }
+                        <Button
+                           label='Make a payment record for invoice {invoice.invoiceNum}'
+                           type='button'
+                           onClick={() => {
+                              currentInvoice=invoice;
+                              modalReason='newPayment';
+                              modalOpen=true;
+                           }}
+                           classes='my-1'
+                        />
+                     {/if}
+                  </div>
                   <Accordion multiple>
                      {#each invoicePaymentRecords as paymentRecord (paymentRecord.paymentNumber)}
                         <Accordion.Item value={paymentRecord.paymentNumber.toString()} >
