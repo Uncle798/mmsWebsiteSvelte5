@@ -64,6 +64,23 @@ export const actions: Actions = {
 				if (refunds.length > 0) {
 					return message(deleteRecordForm, 'Refunds must be deleted first');
 				}
+				if(payment.invoiceNum){
+					const invoice = await prisma.invoice.findUnique({
+						where: {
+							invoiceNum: payment.invoiceNum
+						}
+					});
+					if(invoice){
+						await prisma.invoice.update({
+							where: {
+								invoiceNum: payment.invoiceNum
+							},
+							data: {
+								amountPaid: invoice.amountPaid - payment.paymentAmount
+							}
+						})
+					}
+				}
 				const deleted = await prisma.paymentRecord.delete({
 					where: {
 						paymentNumber: payment.paymentNumber
