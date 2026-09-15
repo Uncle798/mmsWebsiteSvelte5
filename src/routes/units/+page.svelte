@@ -31,6 +31,7 @@
 	import { MenuIcon } from 'lucide-svelte';
 	import { humanUnitSize } from '$lib/utils/humanUnitSize';
 	import { humanUnitNum } from '$lib/utils/humanUnitNum';
+	import DatePickerSingle from '$lib/formComponents/DatePickerSingle.svelte';
 
 	let { data }: { data: PageData } = $props();
 	let modalOpen = $state(false);
@@ -41,6 +42,7 @@
 	let connection: Source | undefined = $state();
 	let csv: Readable<string> & SourceSelected | undefined = $state();
 	let value: Readable<string> & SourceSelected | undefined = $state();
+	let csvDate = $state(new Date());
 	let valueState: {
     	readonly current: string;
 	} | undefined = $state();
@@ -225,12 +227,17 @@
 									label='Download CSV of all units.'
 									type='button'
 									onClick={() => {
-										connection = source('/api/csv?allUnits=true');
+										connection = source(`/api/csv?allUnits=true&date=${csvDate}`);
 										value = connection.select('message');
 										valueState = fromStore(value);
 										csv = connection.select('csv');
 										csvState = fromStore(csv);
 									}}
+								/>
+								<DatePickerSingle
+									value={csvDate}
+									name='csvDate'
+									label='Set CSV date'
 								/>
 								{valueState?.current}
 								</div>
