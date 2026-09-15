@@ -25,7 +25,7 @@ export const POST: RequestHandler = async (event) => {
          emit('message', 'Units gathered');
          let date = event.url.searchParams.get('date');
          if(!date){
-            date = String(new Date())
+            date = new Date().toDateString();
          }
          let leases;
          if(date){
