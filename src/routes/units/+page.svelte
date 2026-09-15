@@ -227,12 +227,12 @@
 									label='Download CSV of all units.'
 									type='button'
 									onClick={() => {
-										connection = source(`/api/csv?allUnits=true&date=${csvDate.toDateString()}`);
+										connection = source(`/api/csv?allUnits=true&date=${csvDate.toISOString()}`);
 										value = connection.select('message');
 										valueState = fromStore(value);
 										csv = connection.select('csv');
 										csvState = fromStore(csv);
-										console.log(`/api/csv?allUnits=true&date=${csvDate.toDateString()}`)
+										console.log(`/api/csv?allUnits=true&date=${csvDate.toISOString()}`)
 									}}
 								/>
 								<DatePickerSingle
