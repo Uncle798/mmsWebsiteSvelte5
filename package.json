@@ -81,7 +81,7 @@
 		"driver.js": "^1.4.0",
 		"dropbox": "^10.34.0",
 		"fuse.js": "^7.1.0",
-		"inngest": "^3.50.0",
+		"inngest": "^3.54.2",
 		"json-2-csv": "^5.5.10",
 		"lucide-svelte": "^0.563.0",
 		"mailtrap": "^4.4.0",
