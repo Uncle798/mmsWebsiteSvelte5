@@ -101,10 +101,6 @@ export const POST: RequestHandler = async (event) => {
          csv.on('error', (err) => {
             console.error(err.message)
          });
-         if(date){
-            csv.write('Date requested: ');
-            csv.write(new Date(date));
-         }
          emit('message', 'CSV being generated')
          for(const unit of units){
             const lease = leases.find((lease) => lease.unitNum === unit.num);
