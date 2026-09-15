@@ -90,7 +90,7 @@ export const POST: RequestHandler = async (event) => {
          const data:string[] = [];
          const csv = stringify({
             header: true,
-            columns: [{key: 'Unit number'}, {key: 'Size'}, {key: 'Family name'}, {key: 'Given name'}, {key: 'Invoice due'}, {key: 'Leased price'}, {key: 'Advertised price'}]
+            columns: [{key: 'Unit number'}, {key: 'Size'}, {key: 'Family name'}, {key: 'Given name'}, {key: 'Invoice due'}, {key: 'Leased price'}, {key: 'Advertised price'}, {key: 'Lease Start'}, {key: 'Date of Requested Report'}]
          });
          csv.on('readable', () => {
             let row;
@@ -101,6 +101,10 @@ export const POST: RequestHandler = async (event) => {
          csv.on('error', (err) => {
             console.error(err.message)
          });
+         if(date){
+            csv.write('Date requested: ');
+            csv.write(new Date(date));
+         }
          emit('message', 'CSV being generated')
          for(const unit of units){
             const lease = leases.find((lease) => lease.unitNum === unit.num);
@@ -124,6 +128,8 @@ export const POST: RequestHandler = async (event) => {
                'Invoice due': customerInvoices[0]?.invoiceDue ? dayjs(customerInvoices[0].invoiceDue).format('MM/DD/YYYY') : '',
                'Leased price': unit.leasedPrice ? unit.leasedPrice : 0,
                'Advertised price': unit.advertisedPrice,
+               'Lease Start': lease?.leaseEffectiveDate ? dayjs(lease.leaseEffectiveDate).format('MM/DD/YYYY') : '',
+               'Date of Requested Report': date ? dayjs(date).format('MM/DD/YYYY') : '',
             }
             csv.write(json);
          }
