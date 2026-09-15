@@ -236,7 +236,7 @@
 									}}
 								/>
 								<DatePickerSingle
-									value={csvDate}
+									bind:value={csvDate}
 									name='csvDate'
 									label='Set CSV date'
 								/>
