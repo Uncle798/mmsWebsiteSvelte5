@@ -55,7 +55,7 @@
 				type: 'application/csv'
 			});
 			const url = URL.createObjectURL(blob);
-			const filename = `${PUBLIC_COMPANY_NAME} units report ${dayjs().format('MMMM D YYYY HH:MM')}.csv`
+			const filename = `${PUBLIC_COMPANY_NAME} units report ${dayjs().format('MMMM D YYYY hh:mm:ss')}.csv`
 			const a = document.createElement('a');
 			a.download = filename;
 			a.href = url;
@@ -232,7 +232,6 @@
 										valueState = fromStore(value);
 										csv = connection.select('csv');
 										csvState = fromStore(csv);
-										console.log($state.snapshot(csvDate))
 									}}
 								/>
 								<DatePickerSingle
