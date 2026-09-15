@@ -1,7 +1,7 @@
 
 const pricingData = [
-   { size: '04x06', price: 20 },
-   { size: '06x08', price: 35 },
+   { size: '04x06', price: 25 },
+   { size: '06x08', price: 40 },
    { size: '06x10', price: 45 },
    { size: '06x12', price: 50 },
    { size: '06x16', price: 60 },

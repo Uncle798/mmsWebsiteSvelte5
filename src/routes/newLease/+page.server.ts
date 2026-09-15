@@ -209,7 +209,7 @@ export const actions: Actions = {
 		}
 		redirect(
 			303,
-			`/makePayment?invoiceNum=${invoice.invoiceNum}&newLease=true&leaseId=${lease.leaseId}`
+			`/newLease/signLease?leaseId=${lease.leaseId}`
 		);
 	}
 };

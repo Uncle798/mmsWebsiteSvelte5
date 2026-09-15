@@ -23,12 +23,49 @@ export const POST: RequestHandler = async (event) => {
             }
          });
          emit('message', 'Units gathered');
-         const leases = await prisma.lease.findMany({
-            where: {
-               leaseEnded: null
-            }
-         });
+         const date = event.url.searchParams.get('date');
+         let leases;
+         if(date){
+            leases = await prisma.lease.findMany({
+               where: {
+                  OR: [
+                     { leaseEnded: null},
+                     { AND: [
+                        { leaseEnded: {
+                              gte: new Date(date)
+                        }},
+                        {
+                           leaseEffectiveDate: {
+                              lte: new Date(date)
+                           }
+                        }
+                     ]}
+                  ]
+               },
+               include: {
+                  customer: {
+                     include: {
+                        address: true
+                     }
+                  }
+               }
+            })
+         } else {
+            leases = await prisma.lease.findMany({
+               where: {
+                  leaseEnded: null
+               },
+               include: {
+                  customer: {
+                     include: {
+                        address: true
+                     }
+                  }
+               }
+            });
+         }
          emit('message', 'Leases gathered');
+         
          const customers = await prisma.user.findMany({
             where: {
                customerLeases: {
@@ -67,11 +104,8 @@ export const POST: RequestHandler = async (event) => {
          emit('message', 'CSV being generated')
          for(const unit of units){
             const lease = leases.find((lease) => lease.unitNum === unit.num);
-            let customer: User | undefined = undefined;
+            let customer: User | undefined = lease?.customer;
             let customerInvoices:Invoice[] = [];
-            if(lease){
-               customer = customers.find((customer) => customer.id === lease.customerId);
-            }
             if(customer){
                customerInvoices = invoices.filter((invoice) => invoice.customerId === customer.id);
             }
@@ -301,6 +335,25 @@ export const POST: RequestHandler = async (event) => {
          emit('csv', data.join(''));
          emit('message', 'CSV ready');
          return function cancel(){};
+      }
+      const pastDueCustomers = event.url.searchParams.get('pastDueCustomers');
+      if(pastDueCustomers === 'true'){
+         const invoices = await prisma.invoice.findMany({
+            where: {
+               AND: [
+                  {
+                     amountPaid: {
+                        lt: prisma.invoice.fields.invoiceAmount
+                     }
+                  }, 
+                  {
+                     invoiceDue: {
+                        lt: new Date()
+                     }
+                  }
+               ]
+            }
+         })
       }
       return function cancel(){};
    })

@@ -244,8 +244,9 @@ export async function createLease(customer:User, lease:Lease, unit:Unit, employe
    });
    const file = await fetch(templateFiles.blobs[0].url);
    const blob = await file.blob();
+   const filename = `Lease for unit ${humanUnitNum(unit.num)} at ${PUBLIC_COMPANY_NAME}.pdf`
    const anvilFile = Anvil.prepareGraphQLFile(blob, {
-      filename: `Lease for unit ${humanUnitNum(unit.num)} at ${PUBLIC_COMPANY_NAME}.pdf`,
+      filename,
    })
    const properties = await prisma.propertyWithLien.findMany({
       where: {
@@ -696,7 +697,7 @@ export async function createLease(customer:User, lease:Lease, unit:Unit, employe
             signerEid: contract.data?.data.createEtchPacket.documentGroup.signers[0].eid
          }
       });
-      return { url, errors }
+      return { url, errors, filename }
    } 
    return contract 
 
