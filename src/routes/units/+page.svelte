@@ -55,7 +55,7 @@
 				type: 'application/csv'
 			});
 			const url = URL.createObjectURL(blob);
-			const filename = `${PUBLIC_COMPANY_NAME} units report ${dayjs().format('MMMM D YYYY')}.csv`
+			const filename = `${PUBLIC_COMPANY_NAME} units report ${dayjs().format('MMMM D YYYY HH:MM')}.csv`
 			const a = document.createElement('a');
 			a.download = filename;
 			a.href = url;
