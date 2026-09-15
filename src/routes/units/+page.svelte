@@ -232,7 +232,7 @@
 										valueState = fromStore(value);
 										csv = connection.select('csv');
 										csvState = fromStore(csv);
-										console.log(`/api/csv?allUnits=true&date=${csvDate.toISOString()}`)
+										console.log($state.snapshot(csvDate))
 									}}
 								/>
 								<DatePickerSingle
