@@ -227,7 +227,7 @@
 									label='Download CSV of all units.'
 									type='button'
 									onClick={() => {
-										connection = source(`/api/csv?allUnits=true&date=${csvDate}`);
+										connection = source(`/api/csv?allUnits=true&date=${csvDate.toDateString()}`);
 										value = connection.select('message');
 										valueState = fromStore(value);
 										csv = connection.select('csv');
