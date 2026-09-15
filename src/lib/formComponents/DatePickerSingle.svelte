@@ -27,6 +27,7 @@
       onValueChange={(e) => {
          dateValue = e.value;
          value = dateValue[0].toDate('UTC');
+         console.log(value);
       }} 
       min={minDate ? parseDate(minDate) : undefined}
       max={maxDate ? parseDate(maxDate) : undefined}
