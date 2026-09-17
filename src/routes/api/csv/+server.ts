@@ -80,21 +80,10 @@ export const POST: RequestHandler = async (event) => {
             }
          });
          emit('message', 'Customers gathered');
-         const invoices = await prisma.invoice.findMany({
-            where: {
-               amountPaid: {
-                  lt: prisma.invoice.fields.invoiceAmount
-               }
-            },
-            orderBy: {
-               invoiceDue: 'asc'
-            }
-         })
-         emit('message', 'Invoices gathered');
          const data:string[] = [];
          const csv = stringify({
             header: true,
-            columns: [{key: 'Unit number'}, {key: 'Size'}, {key: 'Family name'}, {key: 'Given name'}, {key: 'Invoice due'}, {key: 'Leased price'}, {key: 'Advertised price'}, {key: 'Lease Start'}, {key: 'Date of Requested Report'}]
+            columns: [{key: 'Unit number'}, {key: 'Size'}, {key: 'Advertised price'}, {key: 'Leased price'}, {key: 'Family name'}, {key: 'Given name'}, {key: 'Invoice due'}, {key: 'Amount Owed'}, {key: 'Lease Start'}, {key: 'Date of Requested Report'}]
          });
          csv.on('readable', () => {
             let row;
@@ -110,8 +99,25 @@ export const POST: RequestHandler = async (event) => {
             const lease = leases.find((lease) => lease.unitNum === unit.num);
             let customer: User | undefined = lease?.customer;
             let customerInvoices:Invoice[] = [];
+            let amountOwed = 0;
             if(customer){
-               customerInvoices = invoices.filter((invoice) => invoice.customerId === customer.id);
+               const invoices = await prisma.invoice.findMany({
+                  where: {
+                     AND: [
+                        { customerId: lease?.customerId },
+                        { 
+                           invoiceCreated: {
+                              lte: new Date(date)
+                           } 
+                        }
+                     ]
+                  }
+               });
+               for(const invoice of invoices){
+                  if(invoice.amountPaid <= invoice.invoiceAmount){
+                     amountOwed += invoice.invoiceAmount - invoice.amountPaid;
+                  }
+               }
             }
             let sortingName = customer?.organizationName ? customer.organizationName : customer?.familyName;
             if(sortingName === null || sortingName === undefined){
@@ -130,6 +136,7 @@ export const POST: RequestHandler = async (event) => {
                'Advertised price': unit.advertisedPrice,
                'Lease Start': lease?.leaseEffectiveDate ? dayjs(lease.leaseEffectiveDate).format('MM/DD/YYYY') : '',
                'Date of Requested Report': date ? dayjs(date).format('MM/DD/YYYY') : '',
+               'Amount Owed': amountOwed>0? amountOwed : '',
             }
             csv.write(json);
          }
@@ -167,7 +174,7 @@ export const POST: RequestHandler = async (event) => {
                      invoiceAmount: {
                         gt: prisma.invoice.fields.amountPaid
                      }
-                  }
+                  },
                ]
             },
             orderBy: {
