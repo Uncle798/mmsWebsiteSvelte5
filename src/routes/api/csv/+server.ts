@@ -2,7 +2,7 @@ import { redirect } from '@sveltejs/kit';
 import { produce } from 'sveltekit-sse';
 import type { RequestHandler } from './$types';
 import { prisma } from '$lib/server/prisma';
-import type { Invoice, User } from '../../../generated/prisma/client';
+import type { Invoice, Lease, User } from '../../../generated/prisma/client';
 import dayjs from 'dayjs';
 import { stringify } from 'csv';
 import { userSort } from '$lib/utils/userSort';
@@ -48,7 +48,7 @@ export const POST: RequestHandler = async (event) => {
                include: {
                   customer: {
                      include: {
-                        address: true
+                        customerInvoices: true,
                      }
                   }
                }
@@ -61,28 +61,29 @@ export const POST: RequestHandler = async (event) => {
                include: {
                   customer: {
                      include: {
-                        address: true
+                        customerInvoices: true
                      }
                   }
                }
             });
          }
          emit('message', 'Leases gathered');
-         
-         const customers = await prisma.user.findMany({
-            where: {
-               customerLeases: {
-                  some: {
-                     leaseEnded: null,
-                  }
-               }
-            }
-         });
-         emit('message', 'Customers gathered');
          const data:string[] = [];
          const csv = stringify({
             header: true,
-            columns: [{key: 'Unit number'}, {key: 'Size'}, {key: 'Advertised price'}, {key: 'Leased price'}, {key: 'Family name'}, {key: 'Given name'}, {key: 'Invoice due'}, {key: 'Amount Owed'}, {key: 'Lease Start'}, {key: 'Date of Requested Report'}]
+            columns: [
+               {key: 'Unit number'},
+               {key: 'Size'},
+               {key: 'Advertised price'},
+               {key: 'Notes'},
+               {key: 'Leased price'},
+               {key: 'Family name'},
+               {key: 'Given name'},
+               {key: 'Invoice due'},
+               {key: 'Total Amount Owed'},
+               {key: 'Lease Start'},
+               {key: 'Date of Requested Report'}
+            ]
          });
          csv.on('readable', () => {
             let row;
@@ -99,22 +100,14 @@ export const POST: RequestHandler = async (event) => {
             let customer: User | undefined = lease?.customer;
             let customerInvoices:Invoice[] = [];
             let amountOwed = 0;
+            emit('message', `${humanUnitNum(unit.num)} customer being gathered`);
             if(customer){
-               const invoices = await prisma.invoice.findMany({
-                  where: {
-                     AND: [
-                        { customerId: lease?.customerId },
-                        { 
-                           invoiceCreated: {
-                              lte: new Date(date)
-                           } 
-                        }
-                     ]
-                  }
-               });
-               for(const invoice of invoices){
-                  if(invoice.amountPaid <= invoice.invoiceAmount){
-                     amountOwed += invoice.invoiceAmount - invoice.amountPaid;
+               const invoices = lease?.customer.customerInvoices;
+               if(invoices){
+                  for(const invoice of invoices){
+                     if(invoice.amountPaid <= invoice.invoiceAmount){
+                        amountOwed += invoice.invoiceAmount - invoice.amountPaid;
+                     }
                   }
                }
             }
@@ -136,8 +129,10 @@ export const POST: RequestHandler = async (event) => {
                'Lease Start': lease?.leaseEffectiveDate ? dayjs(lease.leaseEffectiveDate).format('MM/DD/YYYY') : '',
                'Date of Requested Report': date ? dayjs(date).format('MM/DD/YYYY') : '',
                'Amount Owed': amountOwed>0? amountOwed : '',
+               'Notes': unit.notes,
             }
             csv.write(json);
+            emit('message', `${humanUnitNum(unit.num)} added`)
          }
          csv.end();
          emit('csv', data.join(''));
