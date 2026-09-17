@@ -24,7 +24,6 @@ export const POST: RequestHandler = async (event) => {
          });
          emit('message', 'Units gathered');
          let date = event.url.searchParams.get('date');
-         console.log(date);
          if(!date){
             date = new Date().toDateString();
          }
