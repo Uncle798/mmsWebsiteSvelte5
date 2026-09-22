@@ -185,7 +185,7 @@ export const POST: RequestHandler = async (event) => {
          const data:string[] = [];
          const csv = stringify({
             header: true,
-            columns: [{key:'Name'}, {key: 'Units'}, {key:'Phone number'}, {key: 'Earliest due date'}, {key: 'Amount due'}]
+            columns: [{key: 'Organization Name'}, {key:'Family Name'}, {key: 'Given Name'}, {key:'Phone number'}, {key: 'Email'}, {key: 'Address 1'}, {key: 'Address 2'}, {key: 'City'}, {key: 'State'}, {key: 'Postal Code'}, {key: 'Units'},{key: 'Earliest due date'}, {key: 'Amount due'}]
          });
          csv.on('readable', () => {
             let row;
@@ -226,14 +226,22 @@ export const POST: RequestHandler = async (event) => {
                   ]
                }
             });
-            const name =  customer.organizationName ? customer.organizationName : `${customer.givenName} ${customer.familyName}`
             const json = {
-               'Name': name,
-               'Units': unitNumbers.join(' '),
+               'Organization Name': customer.organizationName,
+               'Family Name': customer.familyName,
+               'Given Name': customer.givenName,
+               'Email': customer.email,
                'Phone number': address?.phoneNum1?.substring(0,3) + '.' + address?.phoneNum1?.substring(3,6) + '.' + address?.phoneNum1?.substring(6),
+               'Address 1': address?.address1,
+               'Address 2': address?.address2,
+               'City': address?.city,
+               'State': address?.state,
+               'Postal Code': address?.postalCode,
+               'Units': unitNumbers.join(' '),
                'Earliest due date': customerInvoices[0] ? dayjs(earliestDue).format('MM/DD/YYYY') : '',
                'Amount due': totalDue,
             }
+            const name = customer.organizationName ? customer.organizationName : `${customer.familyName}, ${customer.givenName}`
             csv.write(json);
             emit('message', `${name} added to CSV`)
          }
