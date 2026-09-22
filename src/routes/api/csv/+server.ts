@@ -187,9 +187,9 @@ export const POST: RequestHandler = async (event) => {
             header: true,
             columns: [
                {key: 'Organization Name'}, 
-               {key:'Family Name'}, 
+               {key: 'Family Name'}, 
                {key: 'Given Name'}, 
-               {key:'Phone number'}, 
+               {key: 'Phone number'}, 
                {key: 'Email'}, 
                {key: 'Address 1'}, 
                {key: 'Address 2'}, 
@@ -199,6 +199,7 @@ export const POST: RequestHandler = async (event) => {
                {key: 'Units'},
                {key: 'Earliest due date'}, 
                {key: 'Amount due'},
+               {key: 'Lease start'},
                {key: 'Notes'},
                {key: 'Do Not Rent'},
             ]
@@ -226,9 +227,14 @@ export const POST: RequestHandler = async (event) => {
                }
             };
             let unitNumbers:string[] = [];
-            const customerLeases = leases.filter((lease) => lease.customerId === customer.id)
+            const customerLeases = leases.filter((lease) => lease.customerId === customer.id);
+            let leaseStartDates = '';
             for(const lease of customerLeases){
                unitNumbers.push(humanUnitNum(lease.unitNum));
+               leaseStartDates.concat(lease.leaseEffectiveDate.toDateString());
+               if(customerLeases.length > 1){
+                  leaseStartDates.concat('; ')
+               }
             }
             const address = await prisma.address.findFirst({
                where: {
@@ -253,7 +259,8 @@ export const POST: RequestHandler = async (event) => {
                'City': address?.city ? address.city : '',
                'State': address?.state ? address.state : '',
                'Postal Code': address?.postalCode ? address.postalCode : '',
-               'Units': unitNumbers.join(' '),
+               'Units': unitNumbers.length > 1 ? unitNumbers.join('; ') : unitNumbers[0],
+               'Lease Start Date': leaseStartDates,
                'Earliest due date': customerInvoices[0] ? dayjs(earliestDue).format('MM/DD/YYYY') : '',
                'Amount due': totalDue,
                'Notes': customer.customerNotes,
