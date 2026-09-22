@@ -199,7 +199,7 @@ export const POST: RequestHandler = async (event) => {
                {key: 'Units'},
                {key: 'Earliest due date'}, 
                {key: 'Amount due'},
-               {key: 'Lease start'},
+               {key: 'Lease Start Dates'},
                {key: 'Notes'},
                {key: 'Do Not Rent'},
             ]
@@ -228,12 +228,12 @@ export const POST: RequestHandler = async (event) => {
             };
             let unitNumbers:string[] = [];
             const customerLeases = leases.filter((lease) => lease.customerId === customer.id);
-            let leaseStartDates = '';
+            const leaseStartDates = '';
             for(const lease of customerLeases){
                unitNumbers.push(humanUnitNum(lease.unitNum));
-               leaseStartDates.concat(lease.leaseEffectiveDate.toDateString());
+               leaseStartDates.concat(leaseStartDates, lease.leaseEffectiveDate.toDateString());
                if(customerLeases.length > 1){
-                  leaseStartDates.concat('; ')
+                  leaseStartDates.concat(leaseStartDates, '; ');
                }
             }
             const address = await prisma.address.findFirst({
@@ -260,7 +260,7 @@ export const POST: RequestHandler = async (event) => {
                'State': address?.state ? address.state : '',
                'Postal Code': address?.postalCode ? address.postalCode : '',
                'Units': unitNumbers.length > 1 ? unitNumbers.join('; ') : unitNumbers[0],
-               'Lease Start Date': leaseStartDates,
+               'Lease Start Dates': leaseStartDates,
                'Earliest due date': customerInvoices[0] ? dayjs(earliestDue).format('MM/DD/YYYY') : '',
                'Amount due': totalDue,
                'Notes': customer.customerNotes,
