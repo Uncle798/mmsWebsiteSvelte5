@@ -231,7 +231,7 @@ export const POST: RequestHandler = async (event) => {
             const leaseStartDates = '';
             for(const lease of customerLeases){
                unitNumbers.push(humanUnitNum(lease.unitNum));
-               leaseStartDates.concat(leaseStartDates, lease.leaseEffectiveDate.toDateString());
+               leaseStartDates.concat(leaseStartDates, dayjs(lease.leaseEffectiveDate).format('MM-DD-YYYY'));
                console.log(leaseStartDates)
                if(customerLeases.length > 1){
                   leaseStartDates.concat(leaseStartDates, '; ');
