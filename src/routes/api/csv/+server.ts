@@ -228,13 +228,13 @@ export const POST: RequestHandler = async (event) => {
             };
             let unitNumbers:string[] = [];
             const customerLeases = leases.filter((lease) => lease.customerId === customer.id);
-            const leaseStartDates = '';
+            let leaseStartDates = '';
             for(const lease of customerLeases){
                unitNumbers.push(humanUnitNum(lease.unitNum));
-               leaseStartDates.concat(leaseStartDates, dayjs(lease.leaseEffectiveDate).format('MM-DD-YYYY'));
-               console.log(dayjs(lease.leaseEffectiveDate).format('MM-DD-YYYY'));
+               leaseStartDates = leaseStartDates.concat(dayjs(lease.leaseEffectiveDate).format('MM-DD-YYYY'));
+               console.log(leaseStartDates);
                if(customerLeases.length > 1){
-                  leaseStartDates.concat(leaseStartDates, '; ');
+                  leaseStartDates = leaseStartDates.concat('; ');
                }
             }
             const address = await prisma.address.findFirst({
