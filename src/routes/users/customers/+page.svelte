@@ -107,7 +107,7 @@
 				type: 'application/csv'
 			});
 			const url = URL.createObjectURL(blob);
-			const filename = `${PUBLIC_COMPANY_NAME} current customers report ${dayjs().format('MMMM D YYYY')}.csv`
+			const filename = `${PUBLIC_COMPANY_NAME} current customers report ${dayjs().format('MMMM D YYYY hh-mm-ss')}.csv`
 			const a = document.createElement('a');
 			a.download = filename;
 			a.href = url;
@@ -121,7 +121,7 @@
 				type: 'application/csv'
 			});
 			const url = URL.createObjectURL(blob);
-			const filename = `${PUBLIC_COMPANY_NAME} phone book ${dayjs().format('MMMM D YYYY')}.csv`
+			const filename = `${PUBLIC_COMPANY_NAME} phone book ${dayjs().format('MMMM D YYYY hh-mm-ss')}.csv`
 			const a = document.createElement('a');
 			a.download = filename;
 			a.href = url;
