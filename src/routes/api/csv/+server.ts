@@ -232,7 +232,7 @@ export const POST: RequestHandler = async (event) => {
             for(const lease of customerLeases){
                unitNumbers.push(humanUnitNum(lease.unitNum));
                leaseStartDates.concat(leaseStartDates, dayjs(lease.leaseEffectiveDate).format('MM-DD-YYYY'));
-               console.log(leaseStartDates)
+               console.log(dayjs(lease.leaseEffectiveDate).format('MM-DD-YYYY'));
                if(customerLeases.length > 1){
                   leaseStartDates.concat(leaseStartDates, '; ');
                }
