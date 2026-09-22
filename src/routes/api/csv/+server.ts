@@ -185,7 +185,23 @@ export const POST: RequestHandler = async (event) => {
          const data:string[] = [];
          const csv = stringify({
             header: true,
-            columns: [{key: 'Organization Name'}, {key:'Family Name'}, {key: 'Given Name'}, {key:'Phone number'}, {key: 'Email'}, {key: 'Address 1'}, {key: 'Address 2'}, {key: 'City'}, {key: 'State'}, {key: 'Postal Code'}, {key: 'Units'},{key: 'Earliest due date'}, {key: 'Amount due'}]
+            columns: [
+               {key: 'Organization Name'}, 
+               {key:'Family Name'}, 
+               {key: 'Given Name'}, 
+               {key:'Phone number'}, 
+               {key: 'Email'}, 
+               {key: 'Address 1'}, 
+               {key: 'Address 2'}, 
+               {key: 'City'}, 
+               {key: 'State'}, 
+               {key: 'Postal Code'}, 
+               {key: 'Units'},
+               {key: 'Earliest due date'}, 
+               {key: 'Amount due'},
+               {key: 'Notes'},
+               {key: 'Do Not Rent'},
+            ]
          });
          csv.on('readable', () => {
             let row;
@@ -240,6 +256,8 @@ export const POST: RequestHandler = async (event) => {
                'Units': unitNumbers.join(' '),
                'Earliest due date': customerInvoices[0] ? dayjs(earliestDue).format('MM/DD/YYYY') : '',
                'Amount due': totalDue,
+               'Notes': customer.customerNotes,
+               'Do Not Rent': customer.doNotRent ? 'Do Not Rent': '',
             }
             const name = customer.organizationName ? customer.organizationName : `${customer.familyName}, ${customer.givenName}`
             csv.write(json);
