@@ -515,9 +515,9 @@ export const POST: RequestHandler = async (event) => {
                   '%': Intl.NumberFormat('en-US', {style: 'percent'}).format(size.count / units.length),
                   'SF': x*y,
                   'Total SF of Size': (x*y)*size.count,
-                  monthlyRentKey: size.monthlyRent,
                   '# Vacant': size.amountVacant,
                }
+               Object.defineProperty(json, monthlyRentKey, size.monthlyRent);
                csv.write(json);
                emit('message', `${humanUnitSize(size.size)} added to CSV`);
             }
