@@ -173,7 +173,7 @@
                <Revenue label='Advertised total rent of {humanSize}' amount={advertisedRent(allUnitsOfSize(size, data.units))} />
                <Revenue label='Leased rent of {humanSize}' amount={leasedRent(allUnitsOfSize(size, data.units))} />
                <Revenue label='Advertised price/sqFt for {humanSize}' amount={advertisedPricePerSqFt(allUnitsOfSize(size, data.units)[0])} />
-               <div>Number of {humanSize} units: {allUnitsOfSize(size, data.units)} of which {numberRented(allUnitsOfSize(size, data.units))} are currently rented.</div>
+               <div>Number of {humanSize} units: {allUnitsOfSize(size, data.units).length} of which {numberRented(allUnitsOfSize(size, data.units))} are currently rented.</div>
             </div>
          {/each}
       {/if}
