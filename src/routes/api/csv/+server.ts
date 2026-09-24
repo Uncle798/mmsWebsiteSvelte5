@@ -483,7 +483,7 @@ export const POST: RequestHandler = async (event) => {
             emit('message', `Unit ${humanUnitNum(unit.num)} analyzed`);
          }
          for(const size of sizes){
-            console.log(size);
+            emit('message', `${size} being added`);
             if(size.indexOf('x') >= 0){
                const x = parseInt(size.substring(0, size.indexOf('x')));
                const y = parseInt(size.substring(size.indexOf('x')+1));
