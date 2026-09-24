@@ -9,8 +9,51 @@
 	import Revenue from '$lib/displayComponents/Revenue.svelte';
    import type { Unit } from '../../../generated/prisma/browser';
 	import { humanUnitSize } from '$lib/utils/humanUnitSize';
+   import { source } from 'sveltekit-sse';
+	import { fromStore, type Readable } from 'svelte/store';
+	import type { SourceSelected, Source } from 'sveltekit-sse';
+	import { PUBLIC_COMPANY_NAME } from '$env/static/public';
+	import dayjs from 'dayjs';
+   import SearchDrawer from '$lib/displayComponents/Modals/SearchDrawer.svelte';
+	import Header from '$lib/Header.svelte';
+	import Button from '$lib/core/Button.svelte';
+	import DatePickerSingle from '$lib/formComponents/DatePickerSingle.svelte';
+
 
    let { data }: { data: PageData } = $props();
+   	let connection: Source | undefined = $state();
+	let csv: Readable<string> & SourceSelected | undefined = $state();
+	let value: Readable<string> & SourceSelected | undefined = $state();
+	let csvDate = $state(new Date());
+	let valueState: {
+    	readonly current: string;
+	} | undefined = $state();
+	let csvState: {
+    	readonly current: string;
+	} | undefined = $state();
+   let searchDrawerOpen = $state(false);
+	$effect(() => {
+		if(csvState && csvState?.current !== ''){
+			const blob = new Blob([csvState.current], {
+				type: 'application/csv'
+			});
+			const url = URL.createObjectURL(blob);
+			const filename = `${PUBLIC_COMPANY_NAME} units report ${dayjs().format('MM-D-YYYY hh:mm:ss')}.csv`
+			const a = document.createElement('a');
+			a.download = filename;
+			a.href = url;
+			document.body.append(a);
+			a.click();
+			document.body.removeChild(a);
+			URL.revokeObjectURL(url);
+		}
+		if(valueState && valueState.current === 'CSV ready'){
+			setTimeout(() => {
+				connection?.close();
+				valueState = undefined;
+			}, 1000);
+		}
+	})
    interface ComboboxData {
       label: string;
       value: string;
@@ -55,6 +98,30 @@
       }
    });
 </script>
+<Header title='Units by Size' />
+<SearchDrawer 
+   modalOpen={searchDrawerOpen}
+   height='h-[250px] sm:h-[180px]'
+>
+   {#snippet content()}
+      <Button 
+         type='button'
+         label='Download Units by Size Report'
+         onClick={() => {
+            connection = source(`/api/csv?unitsBySize=true&date${csvDate.toDateString()}`)
+            value = connection.select('message');
+            valueState = fromStore(value);
+            csv = connection.select('csv');
+            csvState = fromStore(csv);
+         }}
+      />
+      <DatePickerSingle
+        bind:value={csvDate}
+        name='csvDate'
+        label='Set Date for report' 
+      />
+   {/snippet}
+</SearchDrawer>
 <div class="mt-14 sm:mt-10 mx-2 mb-8 ">
    <div class="flex flex-row">
       <Combobox

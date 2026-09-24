@@ -396,6 +396,112 @@ export const POST: RequestHandler = async (event) => {
             }
          })
       }
+      const unitsBySize = event.url.searchParams.get('unitsBySize');
+      if(unitsBySize === 'true'){
+         const units = await prisma.unit.findMany();
+         emit('message', 'Units gathered');
+         const dateOfRequest = event.url.searchParams.get('date');
+         let date = new Date();
+         if(dateOfRequest){
+            date = new Date(dateOfRequest);
+         }
+         const data:string[] = [];
+         const monthlyRentKey = 'Rent Revenue As of '.concat(dayjs(date).format('MM-DD-YYYY'))
+         const csv = stringify(
+            {
+               header: true,
+               columns: [{key: 'Size'}, {key: '# of Units'}, {key: '%'}, {key: 'SF'}, {key: 'Total SF of Size'}, {key: monthlyRentKey}, {key: '# Vacant'}]
+            },
+         );
+         csv.on('readable', () => {
+            let row;
+            while((row = csv.read()) !== null){
+               data.push(row);
+            }
+         });
+         csv.on('error', (err) => {
+            console.error(err.message)
+         });
+         const leases = await prisma.lease.findMany({
+            where: {
+               OR: [
+                  {
+                     AND: [
+                        { 
+                           leaseEffectiveDate: {
+                              lte: date
+                           }
+                        },
+                        {
+                           leaseEnded: {
+                              gte: date
+                           }
+                        }
+                     ]
+                  },
+                  {
+                     AND: [
+                        {
+                           leaseEffectiveDate: {
+                              lte: date
+                           }
+                        },
+                        {
+                           leaseEnded: null
+                        }
+                     ]
+                  }
+               ]
+            }
+         });
+         emit('message', 'Leases gathered');
+         const sizes: string[] = [];
+         const numberPerSize: {size: string, amount: number}[] = [];
+         const monthlyRent: {size: string, amount: number}[] = [];
+         const numberVacant: {size: string, amount: number}[] = [];
+         for(const unit of units){
+            const lease = leases.find(lease => lease.unitNum === unit.num);
+            if(sizes.indexOf(unit.size) === -1){
+               sizes.push(unit.size)
+               numberPerSize.push({size: unit.size, amount: 1})
+               if(lease){
+                  monthlyRent.push({size: unit.size, amount: lease.price});
+               } else {
+                  numberVacant.push({size: unit.size, amount: 1});
+               }
+            } else {
+               numberPerSize[numberPerSize.findIndex( item => item.size === unit.size)].amount ++;
+               if(lease){
+                  monthlyRent[monthlyRent.findIndex(item => item.size === unit.size)].amount += lease?.price;
+               } else {
+                  numberVacant[numberVacant.findIndex(item => item.size === unit.size)].amount ++;
+               }
+            }
+            emit('message', `Unit ${humanUnitNum(unit.num)} analyzed`);
+         }
+         for(const size of sizes){
+            if(size.indexOf('x') >= 0){
+               const x = parseInt(size.substring(0, size.indexOf('x')));
+               const y = parseInt(size.substring(size.indexOf('x')+1));
+               const amountOfUnits = numberPerSize[numberPerSize.findIndex(item => item.size === size)].amount
+               const json = {
+                  'Size': humanUnitSize(size),
+                  '# of Units': amountOfUnits,
+                  '%': Intl.NumberFormat().format(amountOfUnits / units.length),
+                  'SF': x*y,
+                  'Total SF of Size': (x*y)*amountOfUnits,
+                  monthlyRentKey: monthlyRent[monthlyRent.findIndex(item => item.size === size)].amount,
+                  '# Vacant': numberVacant[numberVacant.findIndex(item => item.size === size)].amount,
+               }
+               csv.write(json);
+               emit('message', `${humanUnitSize(size)} added to CSV`);
+            }
+         }
+         csv.end();
+         emit('csv', data.join(''));
+         emit('message', 'CSV ready');
+         return function cancel(){};
+      }
       return function cancel(){};
    })
 };
