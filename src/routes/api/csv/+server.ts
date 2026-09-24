@@ -485,6 +485,7 @@ export const POST: RequestHandler = async (event) => {
                } else {
                   sizes[sizes.findIndex(size => size.size === unit.size)].count += 1;
                   sizes[sizes.findIndex(size => size.size === unit.size)].monthlyRent += lease.price;
+                  sizes[sizes.findIndex(size => size.size === unit.size)].amountVacant += 0;
                }
             } else {
                if(sizes.findIndex(size => size.size === unit.size) === -1){
@@ -496,6 +497,7 @@ export const POST: RequestHandler = async (event) => {
                   })
                } else {
                   sizes[sizes.findIndex(size => size.size === unit.size)].count += 1;
+                  sizes[sizes.findIndex(size => size.size === unit.size)].monthlyRent += 0;
                   sizes[sizes.findIndex(size => size.size === unit.size)].amountVacant += 1;
                }
             }
@@ -506,9 +508,7 @@ export const POST: RequestHandler = async (event) => {
             if(size.size.indexOf('x') >= 0){
                const x = parseInt(size.size.substring(0, size.size.indexOf('x')));
                const y = parseInt(size.size.substring(size.size.indexOf('x')+1));
-               emit('message', `${size} amount of units: ${size.count.toString()}`);
-               emit('message', `${size} monthly rent: ${size.monthlyRent.toString()}`);
-               emit('message', `${size} vacant count: ${size.amountVacant.toString()}`);
+               console.log(`${humanUnitSize(size.size)} monthly rent ${size.monthlyRent}`)
                const json = {
                   'Size': humanUnitSize(size.size),
                   '# of Units': size.count,
