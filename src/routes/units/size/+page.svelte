@@ -19,9 +19,8 @@
 	import Button from '$lib/core/Button.svelte';
 	import DatePickerSingle from '$lib/formComponents/DatePickerSingle.svelte';
 
-
    let { data }: { data: PageData } = $props();
-   	let connection: Source | undefined = $state();
+   let connection: Source | undefined = $state();
 	let csv: Readable<string> & SourceSelected | undefined = $state();
 	let value: Readable<string> & SourceSelected | undefined = $state();
 	let csvDate = $state(new Date());
@@ -90,7 +89,6 @@
       }
       const length = parseInt(unit.size.substring(0, unit.size.indexOf('x')), 10);
       const width = parseInt(unit.size.substring(unit.size.indexOf('x')+1), 10);
-      console.log(length, width)
       if(!isNaN(length) && !isNaN(width)){
          return unit.advertisedPrice / length * width;
       } else {
@@ -113,6 +111,7 @@
             valueState = fromStore(value);
             csv = connection.select('csv');
             csvState = fromStore(csv);
+            console.log(csvDate.toISOString())
          }}
       />
       <DatePickerSingle
