@@ -488,16 +488,19 @@ export const POST: RequestHandler = async (event) => {
                const x = parseInt(size.substring(0, size.indexOf('x')));
                const y = parseInt(size.substring(size.indexOf('x')+1));
                const amountOfUnits = numberPerSize[numberPerSize.findIndex(item => item.size === size)].amount;
-               emit('message', amountOfUnits.toString());
-               
+               emit('message', `${size} amount of units: ${amountOfUnits.toString()}`);
+               const sizeMonthlyRent = monthlyRent[monthlyRent.findIndex(item => item.size === size)].amount;
+               emit('message', `${size} monthly rent: ${monthlyRent.toString()}`);
+               const vacantCount = numberVacant[numberVacant.findIndex(item => item.size === size)].amount;
+               emit('message', `${size} vacant count: ${vacantCount.toString()}`);
                const json = {
                   'Size': humanUnitSize(size),
                   '# of Units': amountOfUnits,
                   '%': Intl.NumberFormat().format(amountOfUnits / units.length),
                   'SF': x*y,
                   'Total SF of Size': (x*y)*amountOfUnits,
-                  monthlyRentKey: monthlyRent[monthlyRent.findIndex(item => item.size === size)].amount,
-                  '# Vacant': numberVacant[numberVacant.findIndex(item => item.size === size)].amount,
+                  monthlyRentKey: sizeMonthlyRent,
+                  '# Vacant': vacantCount,
                }
                csv.write(json);
                emit('message', `${humanUnitSize(size)} added to CSV`);
