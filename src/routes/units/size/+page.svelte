@@ -115,7 +115,7 @@
          type='button'
          label='Download Units by Size Report'
          onClick={() => {
-            connection = source(`/api/csv?unitsBySize=true&date${csvDate.toDateString()}`)
+            connection = source(`/api/csv?unitsBySize=true&date=${csvDate.toDateString()}`)
             value = connection.select('message');
             valueState = fromStore(value);
             csv = connection.select('csv');
