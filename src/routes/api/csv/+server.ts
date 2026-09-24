@@ -401,6 +401,18 @@ export const POST: RequestHandler = async (event) => {
          const units = await prisma.unit.findMany({
             orderBy: {
                size: 'asc'
+            },
+            where: {
+               NOT: {
+                  OR: [
+                     {
+                        size: 'Outside'
+                     },
+                     {
+                        size: 'ours'
+                     }
+                  ]
+               }
             }
          });
          emit('message', 'Units gathered');
