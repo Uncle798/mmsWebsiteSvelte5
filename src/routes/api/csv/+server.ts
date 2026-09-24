@@ -463,16 +463,16 @@ export const POST: RequestHandler = async (event) => {
             const lease = leases.find(lease => lease.unitNum === unit.num);
             if(sizes.indexOf(unit.size) === -1){
                sizes.push(unit.size)
-               numberPerSize.push({size: unit.size, amount: 1})
-               if(lease){
+            } 
+            if(lease){
+               if(monthlyRent.findIndex(item => item.size === unit.size) === -1){
                   monthlyRent.push({size: unit.size, amount: lease.price});
                } else {
-                  numberVacant.push({size: unit.size, amount: 1});
+                  monthlyRent[monthlyRent.findIndex(item => item.size === unit.size)].amount += lease.price;
                }
             } else {
-               numberPerSize[numberPerSize.findIndex( item => item.size === unit.size)].amount ++;
-               if(lease){
-                  monthlyRent[monthlyRent.findIndex(item => item.size === unit.size)].amount += lease?.price;
+               if(numberVacant.findIndex(item => item.size === unit.size) === -1){
+                  numberVacant.push({size: unit.size, amount: 1});
                } else {
                   numberVacant[numberVacant.findIndex(item => item.size === unit.size)].amount ++;
                }
