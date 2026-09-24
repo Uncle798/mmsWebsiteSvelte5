@@ -95,6 +95,15 @@
          return -1;
       }
    });
+   const numberRented = $derived((units:Unit[]) => {
+      let numberRented = 0;
+      for(const unit of units){
+         if(unit.leasedPrice){
+            numberRented += 1;
+         }
+      }
+      return numberRented;
+   })
 </script>
 <Header title='Units by Size' />
 <SearchDrawer 
@@ -164,6 +173,7 @@
                <Revenue label='Advertised total rent of {humanSize}' amount={advertisedRent(allUnitsOfSize(size, data.units))} />
                <Revenue label='Leased rent of {humanSize}' amount={leasedRent(allUnitsOfSize(size, data.units))} />
                <Revenue label='Advertised price/sqFt for {humanSize}' amount={advertisedPricePerSqFt(allUnitsOfSize(size, data.units)[0])} />
+               <div>Number of {humanSize} units: {allUnitsOfSize(size, data.units)} of which {numberRented(allUnitsOfSize(size, data.units))} are currently rented.</div>
             </div>
          {/each}
       {/if}
