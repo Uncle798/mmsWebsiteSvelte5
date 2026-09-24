@@ -504,20 +504,20 @@ export const POST: RequestHandler = async (event) => {
             emit('message', `Unit ${humanUnitNum(unit.num)} analyzed`);
          }
          for(const size of sizes){
-            emit('message', `${size} being added`);
+            emit('message', `${size.size} being added`);
             if(size.size.indexOf('x') >= 0){
                const x = parseInt(size.size.substring(0, size.size.indexOf('x')));
                const y = parseInt(size.size.substring(size.size.indexOf('x')+1));
-               console.log(`${humanUnitSize(size.size)} monthly rent ${size.monthlyRent}`)
+               console.log(`${humanUnitSize(size.size)} monthly rent ${size.monthlyRent}`);
                const json = {
                   'Size': humanUnitSize(size.size),
                   '# of Units': size.count,
                   '%': Intl.NumberFormat('en-US', {style: 'percent'}).format(size.count / units.length),
                   'SF': x*y,
                   'Total SF of Size': (x*y)*size.count,
+                  [monthlyRentKey]: size.monthlyRent,
                   '# Vacant': size.amountVacant,
                }
-               Object.defineProperty(json, monthlyRentKey, size.monthlyRent);
                csv.write(json);
                emit('message', `${humanUnitSize(size.size)} added to CSV`);
             }
