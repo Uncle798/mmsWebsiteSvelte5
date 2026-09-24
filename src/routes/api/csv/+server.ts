@@ -462,8 +462,11 @@ export const POST: RequestHandler = async (event) => {
          for(const unit of units){
             const lease = leases.find(lease => lease.unitNum === unit.num);
             if(sizes.indexOf(unit.size) === -1){
-               sizes.push(unit.size)
-            } 
+               sizes.push(unit.size);
+               numberPerSize.push({size: unit.size, amount: 1});
+            } else {
+               numberPerSize[numberPerSize.findIndex(item => item.size === unit.size)].amount += 1;
+            }
             if(lease){
                if(monthlyRent.findIndex(item => item.size === unit.size) === -1){
                   monthlyRent.push({size: unit.size, amount: lease.price});
@@ -474,7 +477,7 @@ export const POST: RequestHandler = async (event) => {
                if(numberVacant.findIndex(item => item.size === unit.size) === -1){
                   numberVacant.push({size: unit.size, amount: 1});
                } else {
-                  numberVacant[numberVacant.findIndex(item => item.size === unit.size)].amount ++;
+                  numberVacant[numberVacant.findIndex(item => item.size === unit.size)].amount += 1;
                }
             }
             emit('message', `Unit ${humanUnitNum(unit.num)} analyzed`);
