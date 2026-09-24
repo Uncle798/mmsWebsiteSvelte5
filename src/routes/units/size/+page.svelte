@@ -129,7 +129,6 @@
         label='Set Date for report' 
       />
       {valueState?.current}
-      {csvState?.current}
    {/snippet}
 </SearchDrawer>
 <div class="mt-14 sm:mt-10 mx-2 mb-8 ">
