@@ -398,7 +398,11 @@ export const POST: RequestHandler = async (event) => {
       }
       const unitsBySize = event.url.searchParams.get('unitsBySize');
       if(unitsBySize === 'true'){
-         const units = await prisma.unit.findMany();
+         const units = await prisma.unit.findMany({
+            orderBy: {
+               size: 'asc'
+            }
+         });
          emit('message', 'Units gathered');
          const dateOfRequest = event.url.searchParams.get('date');
          let date = new Date();
