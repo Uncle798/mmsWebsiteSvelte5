@@ -488,6 +488,7 @@ export const POST: RequestHandler = async (event) => {
                const x = parseInt(size.substring(0, size.indexOf('x')));
                const y = parseInt(size.substring(size.indexOf('x')+1));
                const amountOfUnits = numberPerSize[numberPerSize.findIndex(item => item.size === size)].amount;
+               emit('message', amountOfUnits.toString());
                const json = {
                   'Size': humanUnitSize(size),
                   '# of Units': amountOfUnits,
