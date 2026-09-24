@@ -455,55 +455,55 @@ export const POST: RequestHandler = async (event) => {
             }
          });
          emit('message', 'Leases gathered');
-         const sizes: string[] = [];
-         const numberPerSize: {size: string, amount: number}[] = [];
-         const monthlyRent: {size: string, amount: number}[] = [];
-         const numberVacant: {size: string, amount: number}[] = [];
+         const sizes: {size: string, count: number, monthlyRent: number, amountVacant: number}[] = [];
          for(const unit of units){
             const lease = leases.find(lease => lease.unitNum === unit.num);
-            if(sizes.indexOf(unit.size) === -1){
-               sizes.push(unit.size);
-               numberPerSize.push({size: unit.size, amount: 1});
-            } else {
-               numberPerSize[numberPerSize.findIndex(item => item.size === unit.size)].amount += 1;
-            }
             if(lease){
-               if(monthlyRent.findIndex(item => item.size === unit.size) === -1){
-                  monthlyRent.push({size: unit.size, amount: lease.price});
+               if(sizes.findIndex(size => size.size === unit.size) === -1){
+                  sizes.push({
+                     size: unit.size,
+                     count: 1,
+                     monthlyRent: lease.price,
+                     amountVacant: 0
+                  })
                } else {
-                  monthlyRent[monthlyRent.findIndex(item => item.size === unit.size)].amount += lease.price;
+                  sizes[sizes.findIndex(size => size.size === unit.size)].count += 1;
+                  sizes[sizes.findIndex(size => size.size === unit.size)].monthlyRent += lease.price;
                }
             } else {
-               if(numberVacant.findIndex(item => item.size === unit.size) === -1){
-                  numberVacant.push({size: unit.size, amount: 1});
+               if(sizes.findIndex(size => size.size === unit.size) === -1){
+                  sizes.push({
+                     size: unit.size,
+                     count: 1,
+                     monthlyRent: 0,
+                     amountVacant: 1
+                  })
                } else {
-                  numberVacant[numberVacant.findIndex(item => item.size === unit.size)].amount += 1;
+                  sizes[sizes.findIndex(size => size.size === unit.size)].count += 1;
+                  sizes[sizes.findIndex(size => size.size === unit.size)].amountVacant += 1;
                }
             }
             emit('message', `Unit ${humanUnitNum(unit.num)} analyzed`);
          }
          for(const size of sizes){
             emit('message', `${size} being added`);
-            if(size.indexOf('x') >= 0){
-               const x = parseInt(size.substring(0, size.indexOf('x')));
-               const y = parseInt(size.substring(size.indexOf('x')+1));
-               const amountOfUnits = numberPerSize[numberPerSize.findIndex(item => item.size === size)].amount;
-               emit('message', `${size} amount of units: ${amountOfUnits.toString()}`);
-               const sizeMonthlyRent = monthlyRent[monthlyRent.findIndex(item => item.size === size)].amount;
-               emit('message', `${size} monthly rent: ${monthlyRent.toString()}`);
-               const vacantCount = numberVacant[numberVacant.findIndex(item => item.size === size)].amount;
-               emit('message', `${size} vacant count: ${vacantCount.toString()}`);
+            if(size.size.indexOf('x') >= 0){
+               const x = parseInt(size.size.substring(0, size.size.indexOf('x')));
+               const y = parseInt(size.size.substring(size.size.indexOf('x')+1));
+               emit('message', `${size} amount of units: ${size.count.toString()}`);
+               emit('message', `${size} monthly rent: ${size.monthlyRent.toString()}`);
+               emit('message', `${size} vacant count: ${size.amountVacant.toString()}`);
                const json = {
-                  'Size': humanUnitSize(size),
-                  '# of Units': amountOfUnits,
-                  '%': Intl.NumberFormat().format(amountOfUnits / units.length),
+                  'Size': humanUnitSize(size.size),
+                  '# of Units': size.count,
+                  '%': Intl.NumberFormat().format(size.count / units.length),
                   'SF': x*y,
-                  'Total SF of Size': (x*y)*amountOfUnits,
-                  monthlyRentKey: sizeMonthlyRent,
-                  '# Vacant': vacantCount,
+                  'Total SF of Size': (x*y)*size.count,
+                  monthlyRentKey: size.monthlyRent,
+                  '# Vacant': size.amountVacant,
                }
                csv.write(json);
-               emit('message', `${humanUnitSize(size)} added to CSV`);
+               emit('message', `${humanUnitSize(size.size)} added to CSV`);
             }
          }
          csv.end();
