@@ -501,6 +501,7 @@ export const POST: RequestHandler = async (event) => {
             }
          }
          csv.end();
+         console.log(data.join(''));
          emit('csv', data.join(''));
          emit('message', 'CSV ready');
          return function cancel(){};
