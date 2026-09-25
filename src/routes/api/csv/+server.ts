@@ -517,7 +517,7 @@ export const POST: RequestHandler = async (event) => {
                const json = {
                   'Size': humanUnitSize(size.size),
                   '# of Units': size.count,
-                  '%': Intl.NumberFormat('en-US', {style: 'percent'}).format(parseFloat((size.count / units.length).toFixed(2))),
+                  '% of total units': Intl.NumberFormat('en-US', {style: 'percent'}).format(parseFloat((size.count / units.length).toFixed(2))),
                   'SF': x*y,
                   'Total SF of Size': (x*y)*size.count,
                   [monthlyRentKey]: Intl.NumberFormat('en-US', {style: 'currency', currency: 'USD'}).format(size.monthlyRent),
