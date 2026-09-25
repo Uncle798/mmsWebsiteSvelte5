@@ -422,11 +422,11 @@ export const POST: RequestHandler = async (event) => {
             date = new Date(dateOfRequest);
          }
          const data:string[] = [];
-         const monthlyRentKey = 'Rent Revenue As of '.concat(dayjs(date).format('MM-DD-YYYY'))
+         const monthlyRentKey = 'Rent Revenue As of '.concat(dayjs(date).format('MM-DD-YYYY'));
          const csv = stringify(
             {
                header: true,
-               columns: [{key: 'Size'}, {key: '# of Units'}, {key: '%'}, {key: 'SF'}, {key: 'Total SF of Size'}, {key: monthlyRentKey}, {key: '# Vacant'}]
+               columns: [{key: 'Size'}, {key: '# of Units'}, {key: '% of total units'}, {key: 'SF'}, {key: 'Total SF of Size'}, {key: monthlyRentKey}, {key: '# Vacant'}]
             },
          );
          csv.on('readable', () => {
