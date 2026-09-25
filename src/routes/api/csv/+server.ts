@@ -505,6 +505,9 @@ export const POST: RequestHandler = async (event) => {
             }
             emit('message', `Unit ${humanUnitNum(unit.num)} analyzed`);
          }
+         let totalSqFt = 0;
+         let totalRent = 0;
+         let totalVacant = 0;
          for(const size of sizes){
             emit('message', `${size.size} being added`);
             if(size.size.indexOf('x') >= 0){
@@ -523,8 +526,12 @@ export const POST: RequestHandler = async (event) => {
                }
                csv.write(json);
                emit('message', `${humanUnitSize(size.size)} added to CSV`);
+               totalSqFt += (x*y)*size.count;
+               totalRent += size.monthlyRent;
+               totalVacant += size.amountVacant;
             }
          }
+         csv.write(`Total:, ${units.length}, 100%, ${totalSqFt}, ${totalSqFt}, ${totalRent}, ${totalVacant}`)
          csv.end();
          emit('csv', data.join(''));
          emit('message', 'CSV ready');
