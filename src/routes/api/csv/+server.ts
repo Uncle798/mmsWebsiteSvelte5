@@ -422,11 +422,11 @@ export const POST: RequestHandler = async (event) => {
             date = new Date(dateOfRequest);
          }
          const data:string[] = [];
-         const monthlyRentKey = 'Rent Revenue As of '.concat(dayjs(date).format('MM-DD-YYYY'));
+         const monthlyRentKey = 'Monthly Rent Revenue As of '.concat(dayjs(date).format('MM-DD-YYYY'));
          const csv = stringify(
             {
                header: true,
-               columns: [{key: 'Size'}, {key: '# of Units'}, {key: '% of total units'}, {key: 'SF'}, {key: 'Total SF of Size'}, {key: monthlyRentKey}, {key: '# Vacant'}]
+               columns: [{key: 'Size'}, {key: '# of Units'}, {key: '% of total units'}, {key: 'SF'}, {key: 'Total SF of Size'}, {key: 'Advertised Rent'},{key: monthlyRentKey}, {key: '# Vacant'}]
             },
          );
          csv.on('readable', () => {
@@ -471,7 +471,7 @@ export const POST: RequestHandler = async (event) => {
             }
          });
          emit('message', 'Leases gathered');
-         const sizes: {size: string, count: number, monthlyRent: number, amountVacant: number}[] = [];
+         const sizes: {size: string, count: number, monthlyRent: number, amountVacant: number, advertisedRent: number}[] = [];
          for(const unit of units){
             const lease = leases.find(lease => lease.unitNum === unit.num);
             if(lease){
@@ -480,7 +480,8 @@ export const POST: RequestHandler = async (event) => {
                      size: unit.size,
                      count: 1,
                      monthlyRent: lease.price,
-                     amountVacant: 0
+                     amountVacant: 0,
+                     advertisedRent: unit.advertisedPrice,
                   })
                } else {
                   sizes[sizes.findIndex(size => size.size === unit.size)].count += 1;
@@ -493,7 +494,8 @@ export const POST: RequestHandler = async (event) => {
                      size: unit.size,
                      count: 1,
                      monthlyRent: 0,
-                     amountVacant: 1
+                     amountVacant: 1,
+                     advertisedRent: unit.advertisedPrice,
                   })
                } else {
                   sizes[sizes.findIndex(size => size.size === unit.size)].count += 1;
@@ -517,6 +519,7 @@ export const POST: RequestHandler = async (event) => {
                   'Total SF of Size': (x*y)*size.count,
                   [monthlyRentKey]: Intl.NumberFormat('en-US', {style: 'currency', currency: 'USD'}).format(size.monthlyRent),
                   '# Vacant': size.amountVacant,
+                  'Advertised Rent': Intl.NumberFormat('en-US', {style: 'currency', currency: 'USD'}).format(size.advertisedRent),
                }
                csv.write(json);
                emit('message', `${humanUnitSize(size.size)} added to CSV`);
