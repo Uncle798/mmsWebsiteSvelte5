@@ -531,7 +531,6 @@ export const POST: RequestHandler = async (event) => {
                totalVacant += size.amountVacant;
             }
          }
-         csv.write(`Total:, ${units.length}, 100%, ${totalSqFt}, ${totalSqFt}, ${totalRent}, ${totalVacant}`)
          csv.end();
          emit('csv', data.join(''));
          emit('message', 'CSV ready');
