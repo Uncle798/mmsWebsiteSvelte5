@@ -26,7 +26,7 @@
       value={dateValue}
       onValueChange={(e) => {
          dateValue = e.value;
-         value = dateValue[0].toDate('MDT');
+         value = dateValue[0].toDate('UTC');
       }} 
       min={minDate ? parseDate(minDate) : undefined}
       max={maxDate ? parseDate(maxDate) : undefined}
