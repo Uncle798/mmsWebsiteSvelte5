@@ -124,7 +124,8 @@ export const POST: RequestHandler = async (event) => {
                'Family name': sortingName,
                'Given name': customer?.givenName ? customer.givenName : '',
                'Invoice due': customerInvoices[0]?.invoiceDue ? dayjs(customerInvoices[0].invoiceDue).format('MM/DD/YYYY') : '',
-               'Leased price': unit.leasedPrice ? unit.leasedPrice : 0,
+               'Leased price': unit.leasedPrice ? unit.leasedPrice : '',
+               'Lease deposit': lease?.depositAmount ? lease.depositAmount : '',
                'Advertised price': unit.advertisedPrice,
                'Lease Start': lease?.leaseEffectiveDate ? dayjs(lease.leaseEffectiveDate).format('MM/DD/YYYY') : '',
                'Date of Requested Report': date ? dayjs(date).format('MM/DD/YYYY') : '',
@@ -200,6 +201,7 @@ export const POST: RequestHandler = async (event) => {
                {key: 'Earliest due date'}, 
                {key: 'Amount due'},
                {key: 'Lease Start Dates'},
+               {key: 'Deposit'},
                {key: 'Notes'},
                {key: 'Do Not Rent'},
             ]
@@ -229,12 +231,15 @@ export const POST: RequestHandler = async (event) => {
             let unitNumbers:string[] = [];
             const customerLeases = leases.filter((lease) => lease.customerId === customer.id);
             let leaseStartDates = '';
+            let leaseDeposits = '';
             for(const lease of customerLeases){
                unitNumbers.push(humanUnitNum(lease.unitNum));
                leaseStartDates = leaseStartDates.concat(dayjs(lease.leaseEffectiveDate).format('MM-DD-YYYY'));
+               leaseDeposits = lease.depositAmount ? lease.depositAmount.toString() : '';
                console.log(leaseStartDates);
                if(customerLeases.length > 1){
                   leaseStartDates = leaseStartDates.concat('; ');
+                  leaseDeposits = leaseDeposits.concat('; ');
                }
             }
             const address = await prisma.address.findFirst({
@@ -262,6 +267,7 @@ export const POST: RequestHandler = async (event) => {
                'Postal Code': address?.postalCode ? address.postalCode : '',
                'Units': unitNumbers.length > 1 ? unitNumbers.join('; ') : unitNumbers[0],
                'Lease Start Dates': leaseStartDates,
+               'Deposits': leaseDeposits,
                'Earliest due date': customerInvoices[0] ? dayjs(earliestDue).format('MM/DD/YYYY') : '',
                'Amount due': totalDue,
                'Notes': customer.customerNotes,
