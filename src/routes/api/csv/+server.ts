@@ -77,6 +77,7 @@ export const POST: RequestHandler = async (event) => {
                {key: 'Advertised price'},
                {key: 'Notes'},
                {key: 'Leased price'},
+               {key: 'Lease deposit'},
                {key: 'Family name'},
                {key: 'Given name'},
                {key: 'Invoice due'},
