@@ -202,7 +202,7 @@ export const POST: RequestHandler = async (event) => {
                {key: 'Earliest due date'}, 
                {key: 'Amount due'},
                {key: 'Lease Start Dates'},
-               {key: 'Deposit'},
+               {key: 'Deposits'},
                {key: 'Notes'},
                {key: 'Do Not Rent'},
             ]
