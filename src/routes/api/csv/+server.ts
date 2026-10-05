@@ -412,9 +412,6 @@ export const POST: RequestHandler = async (event) => {
                NOT: {
                   OR: [
                      {
-                        size: 'Outside'
-                     },
-                     {
                         size: 'ours'
                      }
                   ]
@@ -513,23 +510,25 @@ export const POST: RequestHandler = async (event) => {
          }
          for(const size of sizes){
             emit('message', `${size.size} being added`);
+            let x = 10;
+            let y = 15;
             if(size.size.indexOf('x') >= 0){
-               const x = parseInt(size.size.substring(0, size.size.indexOf('x')));
-               const y = parseInt(size.size.substring(size.size.indexOf('x')+1));
-               console.log(`${humanUnitSize(size.size)} monthly rent ${size.monthlyRent}`);
-               const json = {
-                  'Size': humanUnitSize(size.size),
-                  '# of Units': size.count,
-                  '% of total units': Intl.NumberFormat('en-US', {style: 'percent'}).format(parseFloat((size.count / units.length).toFixed(2))),
-                  'SF': x*y,
-                  'Total SF of Size': (x*y)*size.count,
-                  [monthlyRentKey]: Intl.NumberFormat('en-US', {style: 'currency', currency: 'USD'}).format(size.monthlyRent),
-                  '# Vacant': size.amountVacant,
-                  'Advertised Rent': Intl.NumberFormat('en-US', {style: 'currency', currency: 'USD'}).format(size.advertisedRent),
-               }
-               csv.write(json);
-               emit('message', `${humanUnitSize(size.size)} added to CSV`);
+               x = parseInt(size.size.substring(0, size.size.indexOf('x')));
+               y = parseInt(size.size.substring(size.size.indexOf('x')+1));
+            } 
+            console.log(`${humanUnitSize(size.size)} monthly rent ${size.monthlyRent}`);
+            const json = {
+               'Size': humanUnitSize(size.size),
+               '# of Units': size.count,
+               '% of total units': Intl.NumberFormat('en-US', {style: 'percent'}).format(parseFloat((size.count / units.length).toFixed(2))),
+               'SF': x*y,
+               'Total SF of Size': (x*y)*size.count,
+               [monthlyRentKey]: Intl.NumberFormat('en-US', {style: 'currency', currency: 'USD'}).format(size.monthlyRent),
+               '# Vacant': size.amountVacant,
+               'Advertised Rent': Intl.NumberFormat('en-US', {style: 'currency', currency: 'USD'}).format(size.advertisedRent),
             }
+            csv.write(json);
+            emit('message', `${humanUnitSize(size.size)} added to CSV`);
          }
          csv.end();
          emit('csv', data.join(''));
