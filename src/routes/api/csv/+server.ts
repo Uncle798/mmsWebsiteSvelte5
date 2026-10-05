@@ -202,6 +202,7 @@ export const POST: RequestHandler = async (event) => {
                {key: 'Earliest due date'}, 
                {key: 'Amount due'},
                {key: 'Lease Start Dates'},
+               {key: 'Lease prices'},
                {key: 'Deposits'},
                {key: 'Notes'},
                {key: 'Do Not Rent'},
@@ -233,14 +234,17 @@ export const POST: RequestHandler = async (event) => {
             const customerLeases = leases.filter((lease) => lease.customerId === customer.id);
             let leaseStartDates = '';
             let leaseDeposits = '';
+            let leasePrices = '';
             for(const lease of customerLeases){
                unitNumbers.push(humanUnitNum(lease.unitNum));
                leaseStartDates = leaseStartDates.concat(dayjs(lease.leaseEffectiveDate).format('MM-DD-YYYY'));
-               leaseDeposits = lease.depositAmount ? lease.depositAmount.toString() : '';
+               leaseDeposits = lease.depositAmount ? leaseDeposits.concat(lease.depositAmount.toString()) : leaseDeposits;
+               leasePrices = leasePrices.concat(lease.price.toString());
                console.log(leaseStartDates);
                if(customerLeases.length > 1){
                   leaseStartDates = leaseStartDates.concat('; ');
                   leaseDeposits = leaseDeposits.concat('; ');
+                  leasePrices = leasePrices.concat('; ');
                }
             }
             const address = await prisma.address.findFirst({
@@ -268,6 +272,7 @@ export const POST: RequestHandler = async (event) => {
                'Postal Code': address?.postalCode ? address.postalCode : '',
                'Units': unitNumbers.length > 1 ? unitNumbers.join('; ') : unitNumbers[0],
                'Lease Start Dates': leaseStartDates,
+               'Lease prices': leasePrices,
                'Deposits': leaseDeposits,
                'Earliest due date': customerInvoices[0] ? dayjs(earliestDue).format('MM/DD/YYYY') : '',
                'Amount due': totalDue,
